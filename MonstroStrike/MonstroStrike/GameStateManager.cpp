@@ -1,13 +1,41 @@
-enum GameStates {
-	MainMenu = 0,
-	GameLobby,
-	Area1,
-	Area2
-};
+#include "GameStateManager.h"
+#include "Level1.h"
+#include "GameLobby.h"
 
+int current = 0, previous = 0, next = 0;
 
-typedef void(*GameStateCycle)(void);
+GameStateCycle fpLoad = nullptr, fpInitialize = nullptr, fpUpdate = nullptr, fpDraw = nullptr, fpFree = nullptr, fpUnload = nullptr;
 
-extern int current, next;
+void GSM_Initialize(int startingState)
+{
+	current = previous = next = startingState;
+}
 
-extern GameStateCycle fpLoad, fpInitialize, fpUpdate, fpDraw, fpFree, fpUnload;
+void GSM_Update()
+{
+	switch (current)
+	{
+	case MainMenu:
+		fpLoad = Level1_Load;
+		fpInitialize = Level1_Initialize;
+		fpUpdate = Level1_Update;
+		fpDraw = Level1_Draw;
+		fpFree = Level1_Free;
+		fpUnload = Level1_Unload;
+		break;
+	case GameLobby:
+		fpLoad = GameLobby_Load;
+		fpInitialize = GameLobby_Initialize;
+		fpUpdate = GameLobby_Update;
+		fpDraw = GameLobby_Draw;
+		fpFree = GameLobby_Free;
+		fpUnload = GameLobby_Unload;
+		break;
+	case Area1:
+		break;
+	case Quit:
+		break;
+	default:
+		break;
+	}
+}

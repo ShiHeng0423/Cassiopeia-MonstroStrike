@@ -14,6 +14,7 @@
 // includes
 #include <crtdbg.h> // To check for memory leaks
 #include "AEEngine.h"
+#include "GameStateManager.h"
 // ---------------------------------------------------------------------------
 // main
 
@@ -27,35 +28,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-
-	int gGameRunning = 1;
-
-	// Initialization of your own variables go here
-
 	// Using custom window procedure
 	AESysInit(hInstance, nCmdShow, 1600, 900, 0, 60, true, NULL);
 
 	// Changing the window title
 	AESysSetWindowTitle("MonstroStrike");
 
-	// Game Loop
-	while (gGameRunning)
+	GSM_Initialize(GameStates::MainMenu);
+
+	while (current != GameStates::Quit)
 	{
-		// Informing the system about the loop's start
-		AESysFrameStart();
+		GSM_Update();
+		fpLoad();
+		fpInitialize();
 
-		// Your own rendering logic goes here
-		// Tell the Alpha Engine to set the background to black.
-		AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
+		// Game Loop
+		while (current == next)
+		{
+			// Informing the system about the loop's start
+			AESysFrameStart();
 
-		// Informing the system about the loop's end
-		AESysFrameEnd();
+			fpUpdate();
+			fpDraw();
 
-		// check if forcing the application to quit
-		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
-			gGameRunning = 0;
+			// Informing the system about the loop's end
+			AESysFrameEnd();
+		}
+		fpFree();
+		fpUnload();
 	}
-
 	// free the system
 	AESysExit();
 }
