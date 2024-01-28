@@ -1,18 +1,15 @@
 #pragma once
-#include "AEEngine.h"
-
-struct Position {
-	f32 x;
-	f32 y;
-};
-
-struct Sprite {
-	AEGfxTexture* pTex;
-	f32 scale;
-};
+#include "Utils.h"
 
 struct Player {
-	Position pos;
-	f32 speed;
-	Sprite img;
-}extern player{ {0.f,0.f},10.f,{nullptr,1000.f} };
+	Object obj;
+
+	bool isFacingRight;
+
+	AEVec2 expectedLocation;
+
+	f32 lookAheadMutliplier;
+};
+
+Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
+void PlayerUpdate(Player& player);
