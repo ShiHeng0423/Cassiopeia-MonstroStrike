@@ -103,6 +103,10 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="json.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -14,6 +14,7 @@
 // includes
 #include <crtdbg.h> // To check for memory leaks
 #include "AEEngine.h"
+#include "Inventory.h"
 // ---------------------------------------------------------------------------
 // main
 
@@ -46,7 +47,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		// Your own rendering logic goes here
 		// Tell the Alpha Engine to set the background to black.
-		AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
+		AEGfxSetBackgroundColor(1.0f, 1.0f, 1.0f);
+
+		std::string	filepath = "test.json";
+		Inventory::ReadJsonFile(filepath);
+
+		//AEGfxPrint(out);
 
 		// Informing the system about the loop's end
 		AESysFrameEnd();

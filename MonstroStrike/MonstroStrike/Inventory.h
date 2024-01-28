@@ -14,11 +14,12 @@
 // includes
 #include <crtdbg.h> // To check for memory leaks
 #include <string>
-
+#include <iostream>
+#include <fstream>
+#include "json.hpp"
 #include "AEEngine.h"
 // ---------------------------------------------------------------------------
 #pragma once
-
 
 namespace Inventory
 {
@@ -56,7 +57,7 @@ namespace Inventory
 		int defence;
 	};
 
-
+	std::vector<Inventory> ReadJsonFile(const std::string& filepath);
 	void InitInventory();
 	void UpdateInventory();
 
