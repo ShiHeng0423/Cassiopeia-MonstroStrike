@@ -17,11 +17,14 @@
 #include "CSVMapLoader.h"
 #include "AEEngine.h"
 #include <iostream>
+#include "CollisionShape.h"
+#include "Physics.h"
 // ---------------------------------------------------------------------------
 // main
 
 namespace {
 	s32 cursorX, cursorY; //Mouse coordinate
+	const f32 friction = 0.95f;
 }
 
 struct Grids2D {
@@ -36,11 +39,37 @@ struct Grids2D {
 
 	AEVec2 size;
 	AEVec2 position;
+	AEVec2 velocity;
+
+	f32 restitution;
+	f32 mass;
+	f32 inverseMass;
 
 	GRID_TYPES typeOfGrid;
 
+	AABB collisionBox; //Rectangle collision box
+
 } grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE];
 
+struct Player {
+	AEMtx33 scale;
+	AEMtx33 rotation;
+	AEMtx33 translation;
+	AEMtx33 transformation;
+
+	AEVec2 size;
+	AEVec2 position;
+	AEVec2 velocity;
+
+	f32 restitution;
+	f32 mass;
+	f32 inverseMass;
+
+	AABB collisionBox;
+
+	bool onFloor;
+	bool isJump;
+}player;
 
 //This is for printing the map
 void InitializeGrid(Grids2D& theGrids)
@@ -54,7 +83,7 @@ void InitializeGrid(Grids2D& theGrids)
 	theGrids.rotation = { 0 };
 	AEMtx33Rot(&theGrids.rotation, 0);
 
-	//Printing the map
+	//Positioning the grid
 	theGrids.position.x = -AEGfxGetWindowWidth() * 0.5f + theGrids.size.x * (theGrids.colIndex - 0.5f);
 	theGrids.position.y = AEGfxGetWindowHeight() * 0.5f - theGrids.size.x * (theGrids.rowIndex - 0.5f);
 
@@ -63,6 +92,17 @@ void InitializeGrid(Grids2D& theGrids)
 	theGrids.transformation = { 0 };
 	AEMtx33Concat(&theGrids.transformation, &theGrids.rotation, &theGrids.scale);
 	AEMtx33Concat(&theGrids.transformation, &theGrids.translation, &theGrids.transformation);
+
+	// Initialize AABB based on the grid's position and size
+	theGrids.collisionBox.minimum.x = theGrids.position.x - theGrids.size.x * 0.5f;
+	theGrids.collisionBox.minimum.y = theGrids.position.y - theGrids.size.y * 0.5f;
+	theGrids.collisionBox.maximum.x = theGrids.position.x + theGrids.size.x * 0.5f;
+	theGrids.collisionBox.maximum.y = theGrids.position.y + theGrids.size.y * 0.5f;
+
+	//Implementing physics test
+	theGrids.restitution = 0.3f;
+	theGrids.mass = 2.0f;
+	theGrids.inverseMass = 1 / theGrids.mass;
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -119,6 +159,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		-0.5f, 0.5f, 0xFFFF0000, 0.0f, 0.0f);  // top-left: blue
 
 	AEGfxVertexList* pMeshYellow = AEGfxMeshEnd();
+
+	// *Color follows ARGB format (Alpha, Red, Green, Blue)
+//Yellow Mesh
+	AEGfxTriAdd(
+		-0.5f, -0.5f, 0xFFFFFF00, 0.0f, 1.0f,  // bottom-left: red
+		0.5f, -0.5f, 0xFFFFFF00, 1.0f, 1.0f,   // bottom-right: green
+		-0.5f, 0.5f, 0xFFFFFF00, 0.0f, 0.0f);  // top-left: blue
+
+	AEGfxTriAdd(
+		0.5f, -0.5f, 0xFFFFFF00, 1.0f, 1.0f,   // bottom-right: green
+		0.5f, 0.5f, 0xFFFFFF00, 1.0f, 0.0f,    // top-right: white
+		-0.5f, 0.5f, 0xFFFFFF00, 0.0f, 0.0f);  // top-left: blue
+
+	AEGfxVertexList* pMeshBlack = AEGfxMeshEnd();
 #pragma endregion
 
 	//Load Fonts
@@ -135,6 +189,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //This is just for checking if the map data is stored properly
 	}
 
+	//Temporary player
+	player.position.x = 100;
+	player.position.y = 400;
+	player.size.x = AEGfxGetWindowWidth() * 0.025f; // *1.f means cover whole width, *0.1f means 10 tiles per 1600px width map, * 0.01f means 100 tiles
+	player.size.y = AEGfxGetWindowWidth() * 0.025f;
+	player.scale = { 0 };
+	AEMtx33Scale(&player.scale, player.size.x, player.size.y);
+
+	player.rotation = { 0 };
+	AEMtx33Rot(&player.rotation, 0);
+
+	AEMtx33Trans(&player.translation, player.position.x, player.position.y);
+
+	player.transformation = { 0 };
+	AEMtx33Concat(&player.transformation, &player.rotation, &player.scale);
+	AEMtx33Concat(&player.transformation, &player.translation, &player.transformation);
+
+	//Implementing physics test
+	player.restitution = 0.5f;
+	player.mass = 80.0f;
+	player.inverseMass = 1 / player.mass;
+	player.onFloor = false;
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
@@ -166,19 +242,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			if (grids2D[rows][cols].typeOfGrid == NORMAL_GROUND)
 			{
 				InitializeGrid(grids2D[rows][cols]);
-
 				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
 				AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
 			}
 			else if (grids2D[rows][cols].typeOfGrid == EMPTY)
 			{
-
 				InitializeGrid(grids2D[rows][cols]);
 				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
 				AEGfxMeshDraw(pMesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
 	}
+
 #pragma region 1x1 Texture
 	//	//1x1 Texture Initialization
 	AEMtx33 borderScale = { 0 };
@@ -204,7 +279,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE); //This one only renders texture
-
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 		// the rest of the components remain the same!
@@ -217,34 +291,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 		AEInputGetCursorPosition(&cursorX, &cursorY);
 
-		//Ignore this
-		if (AEInputCheckCurr(VK_LEFT))
+		//Just for limitation
+		if (player.velocity.x > 200.f)
 		{
-			for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
-			{
-				for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
-				{
-					grids2D[rows][cols].position.x -= 10;
-					AEMtx33Trans(&grids2D[rows][cols].translation, grids2D[rows][cols].position.x, grids2D[rows][cols].position.y);
-					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-					AEMtx33Concat(&grids2D[rows][cols].transformation, &grids2D[rows][cols].rotation, &grids2D[rows][cols].scale);
-					AEMtx33Concat(&grids2D[rows][cols].transformation, &grids2D[rows][cols].translation, &grids2D[rows][cols].transformation);
-				}
-			}
+			player.velocity.x = 200.f;
 		}
-		else if (AEInputCheckCurr(VK_UP))
+		else if (player.velocity.x < -200.f)
 		{
-			for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
-			{
-				for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
-				{
-					grids2D[rows][cols].position.y -= 10;
-					AEMtx33Trans(&grids2D[rows][cols].translation, grids2D[rows][cols].position.x, grids2D[rows][cols].position.y);
-					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-					AEMtx33Concat(&grids2D[rows][cols].transformation, &grids2D[rows][cols].rotation, &grids2D[rows][cols].scale);
-					AEMtx33Concat(&grids2D[rows][cols].transformation, &grids2D[rows][cols].translation, &grids2D[rows][cols].transformation);
-				}
-			}
+			player.velocity.x = -200;
 		}
 
 		//For printing the grids every frame
@@ -252,9 +306,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
 			{
-
 				if (grids2D[rows][cols].typeOfGrid == NORMAL_GROUND)
 				{
+					if (AABBvsAABB(player.collisionBox, grids2D[rows][cols].collisionBox)) //Collision true
+					{
+						if (!player.onFloor)
+						{
+							AEVec2 collisionNormal = NormalizeValue(player.collisionBox, grids2D[rows][cols].collisionBox);
+							AEVec2 penetrationDepth = CalculatePenetrationDepth(player.collisionBox, grids2D[rows][cols].collisionBox, collisionNormal);
+							PositionalCorrection(player, grids2D[rows][cols], penetrationDepth, collisionNormal);
+							player.velocity.y = 0.f;
+							player.onFloor = true;
+						}
+					}
 					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
 					AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
 				}
@@ -265,6 +329,49 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				}
 			}
 		}
+
+		if (AEInputCheckCurr(VK_LEFT))
+		{
+			player.velocity.x -= 5.f;
+		}
+		if (AEInputCheckCurr(VK_RIGHT))
+		{
+			player.velocity.x += 5.f;
+		}
+
+		if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
+		{
+			std::cout << "JUMP" << std::endl;
+			player.velocity.y = 400.f;
+			player.onFloor = false;
+		}
+		
+		if (!player.onFloor)
+		{
+			ApplyGravity(player);
+		}
+		else
+		{
+			player.velocity.x *= friction;
+		}
+
+		//std::cout << "Y " << player.velocity.y << std::endl;
+		//Update player position via velocity
+		player.position.x += player.velocity.x * static_cast<f32>(AEFrameRateControllerGetFrameTime());
+		player.position.y += player.velocity.y * static_cast<f32>(AEFrameRateControllerGetFrameTime());
+
+		//Resetting AABB box...
+		player.collisionBox.minimum.x = player.position.x - player.size.x * 0.5f;
+		player.collisionBox.minimum.y = player.position.y - player.size.y * 0.5f;
+		player.collisionBox.maximum.x = player.position.x + player.size.x * 0.5f;
+		player.collisionBox.maximum.y = player.position.y + player.size.y * 0.5f;
+
+		AEMtx33Trans(&player.translation, player.position.x, player.position.y);
+		AEGfxSetTransform(player.transformation.m);
+		AEMtx33Concat(&player.transformation, &player.rotation, &player.scale);
+		AEMtx33Concat(&player.transformation, &player.translation, &player.transformation);
+		AEGfxMeshDraw(pMeshBlack, AE_GFX_MDM_TRIANGLES);
+
 
 		// Informing the system about the loop's end
 		AESysFrameEnd();
@@ -278,6 +385,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxTextureUnload(pTex);
 	AEGfxMeshFree(pMesh);
 	AEGfxMeshFree(pMeshYellow);
+	AEGfxMeshFree(pMeshBlack);
 	AEGfxDestroyFont(pFont);
 
 	//Resizing vector, clear content, then resize it to 0

@@ -98,12 +98,19 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="CSVMapLoader.h" />
     <ClInclude Include="GridTypesList.h" />
+    <ClInclude Include="Physics.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Assets\GameMap.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
