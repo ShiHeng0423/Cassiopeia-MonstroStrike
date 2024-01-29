@@ -41,9 +41,7 @@ struct Grids2D {
 	AEVec2 position;
 	AEVec2 velocity;
 
-	f32 restitution;
 	f32 mass;
-	f32 inverseMass;
 
 	GRID_TYPES typeOfGrid;
 
@@ -61,11 +59,9 @@ struct Player {
 	AEVec2 position;
 	AEVec2 velocity;
 
-	f32 restitution;
 	f32 mass;
-	f32 inverseMass;
-
 	AABB collisionBox;
+	AABB checkGround;
 
 	bool onFloor;
 	bool isJump;
@@ -100,9 +96,7 @@ void InitializeGrid(Grids2D& theGrids)
 	theGrids.collisionBox.maximum.y = theGrids.position.y + theGrids.size.y * 0.5f;
 
 	//Implementing physics test
-	theGrids.restitution = 0.3f;
 	theGrids.mass = 2.0f;
-	theGrids.inverseMass = 1 / theGrids.mass;
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -207,9 +201,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEMtx33Concat(&player.transformation, &player.translation, &player.transformation);
 
 	//Implementing physics test
-	player.restitution = 0.5f;
 	player.mass = 80.0f;
-	player.inverseMass = 1 / player.mass;
 	player.onFloor = false;
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
@@ -218,13 +210,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			switch (gameMap[rows][cols].symbol) //For checking the map symbol from the csv file
 			{
-			case '0':
+			case 0:
 				grids2D[rows][cols].typeOfGrid = EMPTY;
 				break;
-			case '1':
+			case 1:
 				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
 				break;
-				//Add more if needed to...
 			default:
 				break;
 			}
@@ -308,15 +299,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			{
 				if (grids2D[rows][cols].typeOfGrid == NORMAL_GROUND)
 				{
+					if (!AABBvsAABB(player.checkGround, grids2D[rows][cols].collisionBox))
+					{
+						player.onFloor = false;
+					}
+
 					if (AABBvsAABB(player.collisionBox, grids2D[rows][cols].collisionBox)) //Collision true
 					{
-						if (!player.onFloor)
+						//Between player and grid only
+						AEVec2 collisionNormal = NormalizeValue(player.collisionBox, grids2D[rows][cols].collisionBox);
+
+						if (collisionNormal.y == 1) // Vertical collision (floor)
 						{
-							AEVec2 collisionNormal = NormalizeValue(player.collisionBox, grids2D[rows][cols].collisionBox);
-							AEVec2 penetrationDepth = CalculatePenetrationDepth(player.collisionBox, grids2D[rows][cols].collisionBox, collisionNormal);
-							PositionalCorrection(player, grids2D[rows][cols], penetrationDepth, collisionNormal);
+							ResolveVerticalCollision(player, grids2D[rows][cols], &collisionNormal);
 							player.velocity.y = 0.f;
-							player.onFloor = true;
+
+						}
+						else // Horizontal collision
+						{
+							ResolveHorizontalCollision(player, grids2D[rows][cols], &collisionNormal);
 						}
 					}
 					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
@@ -339,6 +340,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			player.velocity.x += 5.f;
 		}
 
+		std::cout << player.onFloor << std::endl;
 		if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
 		{
 			std::cout << "JUMP" << std::endl;
@@ -365,6 +367,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		player.collisionBox.minimum.y = player.position.y - player.size.y * 0.5f;
 		player.collisionBox.maximum.x = player.position.x + player.size.x * 0.5f;
 		player.collisionBox.maximum.y = player.position.y + player.size.y * 0.5f;
+
+		player.checkGround.minimum.x = player.collisionBox.minimum.x;
+		player.checkGround.maximum.x = player.collisionBox.maximum.x;
+		player.checkGround.minimum.y = player.collisionBox.minimum.y + 10.f;
+		player.checkGround.maximum.y = player.collisionBox.maximum.y + 10.f;
 
 		AEMtx33Trans(&player.translation, player.position.x, player.position.y);
 		AEGfxSetTransform(player.transformation.m);

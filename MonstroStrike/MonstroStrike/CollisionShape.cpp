@@ -5,7 +5,7 @@
 
 bool AABBvsAABB(AABB firstBox, AABB secondBox)
 {
-	const f32 epsilon = 0.1f;
+	const f32 epsilon = 0.001f;
 	//Return false if there are no intersection found separated along axis
 	if (firstBox.maximum.x + epsilon < secondBox.minimum.x || firstBox.minimum.x > secondBox.maximum.x + epsilon)
 	{

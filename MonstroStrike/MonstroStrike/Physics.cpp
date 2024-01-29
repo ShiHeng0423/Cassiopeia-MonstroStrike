@@ -1,6 +1,6 @@
 #include "Physics.h"
 
-AEVec2 NormalizeValue(AABB firstBox, AABB secondBox)
+AEVec2 NormalizeValue(AABB firstBox, AABB secondBox) //AABB only
 {
 	AEVec2 result = { 0.f, 0.f };
 
@@ -23,32 +23,4 @@ AEVec2 NormalizeValue(AABB firstBox, AABB secondBox)
 f32 DotProduct(const AEVec2& first, const AEVec2& second)
 {
 	return first.x * second.x + first.y * second.y;
-}
-
-AEVec2 CalculatePenetrationDepth(const AABB& first, const AABB& second, AEVec2& collisionNormal)
-{
-	f32 overlap = 0.0f;
-
-	if (collisionNormal.x < 0)
-	{
-		overlap = second.maximum.x - first.minimum.x;
-	}
-	else
-	{
-		overlap = first.maximum.x - second.minimum.x;
-	}
-
-	if (collisionNormal.y < 0)
-	{
-		overlap = min(overlap, second.maximum.y - first.minimum.y);
-	}
-	else
-	{
-		overlap = min(overlap, first.maximum.y - second.minimum.y);
-	}
-
-	AEVec2 result;
-	AEVec2Scale(&result, &collisionNormal, overlap);
-
-	return result;
 }

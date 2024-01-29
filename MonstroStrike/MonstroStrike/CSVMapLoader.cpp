@@ -57,7 +57,7 @@ bool MapLoader(const char *csvFilePath, std::vector<std::vector<MapCell>>& map, 
             {
                 if (cellValue != ',')
                 {
-                    map[row][col].symbol = cellValue;
+                    map[row][col].symbol = cellValue - '0';
                     col++;
                 }
             }
