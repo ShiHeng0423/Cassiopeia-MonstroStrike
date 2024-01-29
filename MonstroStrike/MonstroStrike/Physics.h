@@ -22,20 +22,21 @@ void ApplyGravity(T1& object)
 template <typename T1, typename T2>
 void ResolveVerticalCollision(T1& first, T2& second, AEVec2* collisionNormal)
 {
-    float penetrationDepth = (collisionNormal->y == 1) ? second.collisionBox.maximum.y - first.collisionBox.minimum.y
-        : second.collisionBox.minimum.y - first.collisionBox.maximum.y;
-
     if (collisionNormal->y == 1)
     {
         float penetrationDepth = second.collisionBox.maximum.y - first.collisionBox.minimum.y;
         first.position.y += penetrationDepth;
+        first.onFloor = true;
     }
     else if (collisionNormal->y == -1)
     {
         float penetrationDepth = second.collisionBox.minimum.y - first.collisionBox.maximum.y;
         first.position.y += penetrationDepth;
     }
-
+    if (collisionNormal->y != 0)
+    {
+        first.velocity.y = 0.f;
+    }
     collisionNormal->y = 0;
 }
 
@@ -48,18 +49,14 @@ void ResolveHorizontalCollision(T1& first, T2& second, AEVec2* collisionNormal)
     {
         penetrationDepth = second.collisionBox.maximum.x - first.collisionBox.minimum.x;
         first.position.x += penetrationDepth;
+        first.velocity.x = 0.f;
     }
     else if (collisionNormal->x == -1)
     {
         penetrationDepth = first.collisionBox.maximum.x - second.collisionBox.minimum.x;
         first.position.x -= penetrationDepth;
-    }
-
-    if (collisionNormal->x != 0)
-    {
         first.velocity.x = 0.f;
     }
-
     collisionNormal->x = 0;
 }
-#endif // PHYSICS_H6
+#endif // PHYSICS_H

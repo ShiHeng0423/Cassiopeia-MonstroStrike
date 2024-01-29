@@ -45,6 +45,8 @@ struct Grids2D {
 
 	GRID_TYPES typeOfGrid;
 
+	bool someoneOnTop;
+
 	AABB collisionBox; //Rectangle collision box
 
 } grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE];
@@ -97,6 +99,7 @@ void InitializeGrid(Grids2D& theGrids)
 
 	//Implementing physics test
 	theGrids.mass = 2.0f;
+	theGrids.someoneOnTop = false;
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -292,72 +295,31 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			player.velocity.x = -200;
 		}
 
-		//For printing the grids every frame
-		for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
-		{
-			for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
-			{
-				if (grids2D[rows][cols].typeOfGrid == NORMAL_GROUND)
-				{
-					if (!AABBvsAABB(player.checkGround, grids2D[rows][cols].collisionBox))
-					{
-						player.onFloor = false;
-					}
-
-					if (AABBvsAABB(player.collisionBox, grids2D[rows][cols].collisionBox)) //Collision true
-					{
-						//Between player and grid only
-						AEVec2 collisionNormal = NormalizeValue(player.collisionBox, grids2D[rows][cols].collisionBox);
-
-						if (collisionNormal.y == 1) // Vertical collision (floor)
-						{
-							ResolveVerticalCollision(player, grids2D[rows][cols], &collisionNormal);
-							player.velocity.y = 0.f;
-
-						}
-						else // Horizontal collision
-						{
-							ResolveHorizontalCollision(player, grids2D[rows][cols], &collisionNormal);
-						}
-					}
-					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-					AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
-				}
-				else if (grids2D[rows][cols].typeOfGrid == EMPTY)
-				{
-					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-					AEGfxMeshDraw(pMesh, AE_GFX_MDM_TRIANGLES);
-				}
-			}
-		}
 
 		if (AEInputCheckCurr(VK_LEFT))
 		{
-			player.velocity.x -= 5.f;
+			player.velocity.x -= 25.f;
 		}
 		if (AEInputCheckCurr(VK_RIGHT))
 		{
-			player.velocity.x += 5.f;
+			player.velocity.x += 25.f;
 		}
-
-		std::cout << player.onFloor << std::endl;
+		 
 		if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
 		{
 			std::cout << "JUMP" << std::endl;
-			player.velocity.y = 400.f;
 			player.onFloor = false;
+			player.velocity.y = 400.f;
+			std::cout << player.velocity.y << std::endl;
 		}
-		
-		if (!player.onFloor)
-		{
-			ApplyGravity(player);
-		}
-		else
+
+		if (player.onFloor)
 		{
 			player.velocity.x *= friction;
 		}
+		ApplyGravity(player); //Gravity application
 
-		//std::cout << "Y " << player.velocity.y << std::endl;
+
 		//Update player position via velocity
 		player.position.x += player.velocity.x * static_cast<f32>(AEFrameRateControllerGetFrameTime());
 		player.position.y += player.velocity.y * static_cast<f32>(AEFrameRateControllerGetFrameTime());
@@ -368,10 +330,40 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		player.collisionBox.maximum.x = player.position.x + player.size.x * 0.5f;
 		player.collisionBox.maximum.y = player.position.y + player.size.y * 0.5f;
 
-		player.checkGround.minimum.x = player.collisionBox.minimum.x;
-		player.checkGround.maximum.x = player.collisionBox.maximum.x;
-		player.checkGround.minimum.y = player.collisionBox.minimum.y + 10.f;
-		player.checkGround.maximum.y = player.collisionBox.maximum.y + 10.f;
+		//For printing the grids every frame
+		for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+		{
+			for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+			{
+				switch (grids2D[rows][cols].typeOfGrid)
+				{
+				case NORMAL_GROUND:
+					
+					//Give up, ask shi heng to use ray casting instead
+					if (AABBvsAABB(player.collisionBox, grids2D[rows][cols].collisionBox)) //Collision true
+					{
+						//Between player and grid only
+						AEVec2 collisionNormal = NormalizeValue(player.collisionBox, grids2D[rows][cols].collisionBox);
+
+						if (collisionNormal.x == 1 || collisionNormal.x == -1) // Vertical collision (floor)
+						{
+							ResolveHorizontalCollision(player, grids2D[rows][cols], &collisionNormal);
+						}
+						else // Horizontal collision
+						{
+							ResolveVerticalCollision(player, grids2D[rows][cols], &collisionNormal);
+						}
+					}
+					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
+					AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
+					break;
+				case EMPTY:
+					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
+					AEGfxMeshDraw(pMesh, AE_GFX_MDM_TRIANGLES);
+					break;
+				}
+			}
+		}
 
 		AEMtx33Trans(&player.translation, player.position.x, player.position.y);
 		AEGfxSetTransform(player.transformation.m);
