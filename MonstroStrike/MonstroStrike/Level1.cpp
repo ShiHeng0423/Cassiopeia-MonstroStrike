@@ -3,17 +3,22 @@
 #include "GameStateManager.h"
 #include "TransformMatrix.h"
 #include "Player.h"
+#include "Enemy.h"
 #include <iostream>
 
 AEGfxVertexList* pWhiteSquareMesh;
-AEGfxTexture* background;
-Player* player;
-
 AEGfxVertexList* pLineMesh;
+AEGfxTexture* background;
+
+Player* player;
+Enemy* enemy;
+
+
 
 void Level1_Load()
 {
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 100.f,100.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+	enemy = ENEMY_Init("Assets/SubaDuck.png", { 100.f,100.f }, { 200.f,0.f }, { 10.f,0.f }, ENEMY_IDLE);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 
 	AEGfxMeshStart();
@@ -45,6 +50,13 @@ void Level1_Initialize()
 void Level1_Update()
 {
 	PlayerUpdate(*player);
+	ENEMY_Update(*enemy, *player);
+
+
+
+
+
+
 	if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 	{
 		current = GameStates::Quit;
@@ -70,6 +82,13 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x,player->obj.pos.y,0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+
+	AEGfxTextureSet(enemy->obj.img.pTex, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy->obj.pos.x, enemy->obj.pos.y, 0.f, enemy->obj.img.scale.x, enemy->obj.img.scale.y).m);
+	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -82,6 +101,8 @@ void Level1_Draw()
 
 void Level1_Free()
 {
+	Enemy_Free(enemy);
+
 }
 
 void Level1_Unload()
