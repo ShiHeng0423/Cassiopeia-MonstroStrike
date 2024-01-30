@@ -20,11 +20,11 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 	return true;
 }
 
-bool CirclevsCircle(Circle first, Circle second)
-{
-	float totalRadius = first.radius + second.radius;
-
-	totalRadius *= totalRadius;
-	
-	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
-}
+//bool CirclevsCircle(Circle first, Circle second)
+//{
+//	float totalRadius = first.radius + second.radius;
+//
+//	totalRadius *= totalRadius;
+//	
+//	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
+//}

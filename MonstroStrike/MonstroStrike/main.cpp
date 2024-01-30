@@ -24,7 +24,7 @@
 
 namespace {
 	s32 cursorX, cursorY; //Mouse coordinate
-	const f32 friction = 0.95f;
+	const f32 friction = 0.95f; //Friction, const for now unless some tile add friction
 }
 
 struct Grids2D {
@@ -45,8 +45,6 @@ struct Grids2D {
 
 	GRID_TYPES typeOfGrid;
 
-	bool someoneOnTop;
-
 	AABB collisionBox; //Rectangle collision box
 
 } grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE];
@@ -60,13 +58,13 @@ struct Player {
 	AEVec2 size;
 	AEVec2 position;
 	AEVec2 velocity;
-
 	f32 mass;
-	AABB collisionBox;
-	AABB checkGround;
 
-	bool onFloor;
-	bool isJump;
+	AABB collisionBox;
+	AABB boxHeadFeet;
+	AABB arms;
+
+	bool canJump;
 }player;
 
 //This is for printing the map
@@ -99,7 +97,6 @@ void InitializeGrid(Grids2D& theGrids)
 
 	//Implementing physics test
 	theGrids.mass = 2.0f;
-	theGrids.someoneOnTop = false;
 }
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -174,21 +171,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//Load Fonts
 	s8 pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
-
-	AEGfxTexture* pTex = AEGfxTextureLoad("Assets/border.png");
-
 	//2D vector create
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE));
 	const char* fileName = "Assets/GameMap.csv";
 
+	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
-		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //This is just for checking if the map data is stored properly
+		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //Just for checking if the map data is stored properly
 	}
 
 	//Temporary player
-	player.position.x = 100;
-	player.position.y = 400;
+	player.position.x = 0.f;
+	player.position.y = 0.f;
 	player.size.x = AEGfxGetWindowWidth() * 0.025f; // *1.f means cover whole width, *0.1f means 10 tiles per 1600px width map, * 0.01f means 100 tiles
 	player.size.y = AEGfxGetWindowWidth() * 0.025f;
 	player.scale = { 0 };
@@ -205,7 +200,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	//Implementing physics test
 	player.mass = 80.0f;
-	player.onFloor = false;
+	player.canJump = false;
+
+	player.collisionBox.minimum.x = player.position.x - player.size.x * 0.5f;
+	player.collisionBox.minimum.y = player.position.y - player.size.y * 0.5f;
+	player.collisionBox.maximum.x = player.position.x + player.size.x * 0.5f;
+	player.collisionBox.maximum.y = player.position.y + player.size.y * 0.5f;
+
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
@@ -248,22 +249,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
-#pragma region 1x1 Texture
-	//	//1x1 Texture Initialization
-	AEMtx33 borderScale = { 0 };
-	AEMtx33 borderRotate = { 0 };
-	AEMtx33 borderTranslate = { 0 };
-
-	AEMtx33Scale(&borderScale, static_cast<f32>(AEGfxGetWindowWidth()), static_cast<f32>(AEGfxGetWindowHeight()));
-	AEMtx33Rot(&borderRotate, 0);
-	AEMtx33Trans(&borderTranslate, 0.f, 0.f);
-
-	AEMtx33 borderTransform = { 0 };
-	AEMtx33Concat(&borderTransform, &borderRotate, &borderScale);
-	AEMtx33Concat(&borderTransform, &borderTranslate, &borderTransform);
-
-#pragma endregion
-
 	//The game loop
 	while (gGameRunning)
 	{
@@ -272,7 +257,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		//deltaTime += AEFrameRateControllerGetFrameTime();
 
 		AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE); //This one only renders texture
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 		// the rest of the components remain the same!
@@ -281,7 +265,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f); //Careful of adding color
 		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 		AEGfxSetTransparency(1.0f);
-		AEGfxTextureSet(pTex, 0, 0);
 
 		AEInputGetCursorPosition(&cursorX, &cursorY);
 
@@ -295,7 +278,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			player.velocity.x = -200;
 		}
 
-
+		//Temporary movement, use as reference...
 		if (AEInputCheckCurr(VK_LEFT))
 		{
 			player.velocity.x -= 25.f;
@@ -305,30 +288,41 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			player.velocity.x += 25.f;
 		}
 		 
-		if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
+		//How the player can check to jump
+		if (AEInputCheckTriggered(VK_SPACE) && player.canJump)
 		{
-			std::cout << "JUMP" << std::endl;
-			player.onFloor = false;
+			player.canJump = false;
 			player.velocity.y = 400.f;
 			std::cout << player.velocity.y << std::endl;
 		}
 
-		if (player.onFloor)
+		if (player.canJump)
 		{
 			player.velocity.x *= friction;
 		}
 		ApplyGravity(player); //Gravity application
 
-
 		//Update player position via velocity
 		player.position.x += player.velocity.x * static_cast<f32>(AEFrameRateControllerGetFrameTime());
 		player.position.y += player.velocity.y * static_cast<f32>(AEFrameRateControllerGetFrameTime());
 
-		//Resetting AABB box...
-		player.collisionBox.minimum.x = player.position.x - player.size.x * 0.5f;
-		player.collisionBox.minimum.y = player.position.y - player.size.y * 0.5f;
-		player.collisionBox.maximum.x = player.position.x + player.size.x * 0.5f;
-		player.collisionBox.maximum.y = player.position.y + player.size.y * 0.5f;
+		//Resetting main AABB box...
+		player.collisionBox.minimum.x = player.position.x - player.size.x * 0.25f;
+		player.collisionBox.minimum.y = player.position.y - player.size.y * 0.25f;
+		player.collisionBox.maximum.x = player.position.x + player.size.x * 0.25f;
+		player.collisionBox.maximum.y = player.position.y + player.size.y * 0.25f;
+
+		//Making a cross...
+
+		//Vertical
+		player.boxHeadFeet = player.collisionBox; // Get original collision box size
+		player.boxHeadFeet.minimum.y -= player.size.y * 0.25f;
+		player.boxHeadFeet.maximum.y += player.size.y * 0.25f;
+
+		//Horizontal
+		player.arms = player.collisionBox;
+		player.arms.minimum.x -= player.size.x * 0.25f;
+		player.arms.maximum.x += player.size.x * 0.25f;
 
 		//For printing the grids every frame
 		for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
@@ -338,22 +332,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 				switch (grids2D[rows][cols].typeOfGrid)
 				{
 				case NORMAL_GROUND:
-					
-					//Give up, ask shi heng to use ray casting instead
-					if (AABBvsAABB(player.collisionBox, grids2D[rows][cols].collisionBox)) //Collision true
-					{
-						//Between player and grid only
-						AEVec2 collisionNormal = NormalizeValue(player.collisionBox, grids2D[rows][cols].collisionBox);
 
-						if (collisionNormal.x == 1 || collisionNormal.x == -1) // Vertical collision (floor)
-						{
-							ResolveHorizontalCollision(player, grids2D[rows][cols], &collisionNormal);
-						}
-						else // Horizontal collision
-						{
-							ResolveVerticalCollision(player, grids2D[rows][cols], &collisionNormal);
-						}
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+						AEVec2 collisionNormal = AABBNormalize(player.boxHeadFeet, grids2D[rows][cols].collisionBox);
+
+						ResolveVerticalCollision(player, grids2D[rows][cols], &collisionNormal);
 					}
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player.arms, grids2D[rows][cols].collisionBox)) {
+						AEVec2 collisionNormal = AABBNormalize(player.boxHeadFeet, grids2D[rows][cols].collisionBox);
+						ResolveHorizontalCollision(player, grids2D[rows][cols], &collisionNormal);
+					}
+
+					//For drawing the images
 					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
 					AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
 					break;
@@ -371,7 +365,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		AEMtx33Concat(&player.transformation, &player.translation, &player.transformation);
 		AEGfxMeshDraw(pMeshBlack, AE_GFX_MDM_TRIANGLES);
 
-
 		// Informing the system about the loop's end
 		AESysFrameEnd();
 
@@ -381,12 +374,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	/*-----------Freeing Images and others----------*/
-	AEGfxTextureUnload(pTex);
 	AEGfxMeshFree(pMesh);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshBlack);
 	AEGfxDestroyFont(pFont);
-
 	//Resizing vector, clear content, then resize it to 0
 	gameMap.clear();
 	gameMap.resize(0);

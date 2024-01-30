@@ -1,6 +1,6 @@
 #include "Physics.h"
 
-AEVec2 NormalizeValue(AABB firstBox, AABB secondBox) //AABB only
+AEVec2 AABBNormalize(AABB firstBox, AABB secondBox) //AABB only
 {
 	AEVec2 result = { 0.f, 0.f };
 

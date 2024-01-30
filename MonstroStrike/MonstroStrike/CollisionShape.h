@@ -18,4 +18,4 @@ struct Circle
 bool AABBvsAABB(AABB firstBox, AABB secondBox);
 
 //Circle vs Circle Collision
-bool CirclevsCircle(Circle first, Circle second);
+//bool CirclevsCircle(Circle first, Circle second);
