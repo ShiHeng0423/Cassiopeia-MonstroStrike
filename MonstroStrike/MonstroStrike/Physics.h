@@ -39,6 +39,7 @@ void ResolveVerticalCollision(T1& first, T2& second, AEVec2* collisionNormal)
         penetrationDepth = second.collisionBox.minimum.y - first.boxHeadFeet.maximum.y;
         first.position.y += penetrationDepth;
     }
+
     if (collisionNormal->y != 0)
     {
         first.velocity.y = 0.f;
