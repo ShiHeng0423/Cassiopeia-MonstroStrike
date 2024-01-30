@@ -19,6 +19,7 @@
 #include <iostream>
 #include "CollisionShape.h"
 #include "Physics.h"
+#include "GameStateManager.h"
 // ---------------------------------------------------------------------------
 // main
 
@@ -109,12 +110,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(lpCmdLine);
 
-	int gGameRunning = 1;
-
-	// Initialization of your own variables go here
-
 	// Using custom window procedure
-	nCmdShow = true;
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, true, NULL);
 
 	// Changing the window title
@@ -346,7 +342,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 						AEVec2 collisionNormal = AABBNormalize(player.boxHeadFeet, grids2D[rows][cols].collisionBox);
 						ResolveHorizontalCollision(player, grids2D[rows][cols], &collisionNormal);
 					}
-
 					//For drawing the images
 					AEGfxSetTransform(grids2D[rows][cols].transformation.m);
 					AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
@@ -364,13 +359,28 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		AEMtx33Concat(&player.transformation, &player.rotation, &player.scale);
 		AEMtx33Concat(&player.transformation, &player.translation, &player.transformation);
 		AEGfxMeshDraw(pMeshBlack, AE_GFX_MDM_TRIANGLES);
+	GSM_Initialize(GameStates::MainMenu);
 
-		// Informing the system about the loop's end
-		AESysFrameEnd();
+	while (current != GameStates::Quit)
+	{
+		GSM_Update();
+		fpLoad();
+		fpInitialize();
 
-		// check if forcing the application to quit
-		if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
-			gGameRunning = 0;
+		// Game Loop
+		while (current == next)
+		{
+			// Informing the system about the loop's start
+			AESysFrameStart();
+
+			fpUpdate();
+			fpDraw();
+
+			// Informing the system about the loop's end
+			AESysFrameEnd();
+		}
+		fpFree();
+		fpUnload();
 	}
 
 	/*-----------Freeing Images and others----------*/
@@ -381,8 +391,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//Resizing vector, clear content, then resize it to 0
 	gameMap.clear();
 	gameMap.resize(0);
-	/*-----------------------------------*/
+}
+
 	// free the system
 	AESysExit();
 }
-
