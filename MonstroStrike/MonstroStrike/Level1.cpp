@@ -5,7 +5,7 @@
 #include "Player.h"
 #include <iostream>
 
-AEGfxVertexList* pWhiteSquareMesh;
+AEGfxVertexList* pWhiteSquareMesh1;
 AEGfxTexture* background;
 Player* player;
 
@@ -29,7 +29,7 @@ void Level1_Load()
 		-0.5f, 0.5f, 0xFFFFFFFF, 0.0f, 0.0f);
 
 	// Saving the mesh (list of triangles) in pMesh
-	pWhiteSquareMesh = AEGfxMeshEnd();
+	pWhiteSquareMesh1 = AEGfxMeshEnd();
 
 
 	AEGfxMeshStart();
@@ -64,19 +64,19 @@ void Level1_Draw()
 
 	AEGfxTextureSet(background, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 1920.f, 1080.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxMeshDraw(pWhiteSquareMesh1, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x,player->obj.pos.y,0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxMeshDraw(pWhiteSquareMesh1, AE_GFX_MDM_TRIANGLES);
 
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam.x, cam.y , 0.f, AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxMeshDraw(pWhiteSquareMesh1, AE_GFX_MDM_TRIANGLES);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam.x, cam.y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxMeshDraw(pWhiteSquareMesh1, AE_GFX_MDM_TRIANGLES);
 
 }
 
