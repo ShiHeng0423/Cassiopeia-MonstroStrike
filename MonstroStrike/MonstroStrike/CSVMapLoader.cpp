@@ -84,3 +84,36 @@ void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols)
         std::cout << std::endl;
     }
 }
+
+//This is for printing the map
+void InitializeGrid(Grids2D& theGrids)
+{
+    //Setting up the scale
+    theGrids.size.x = AEGfxGetWindowWidth() * 0.025f; // *1.f means cover whole width, *0.1f means 10 tiles per 1600px width map, * 0.01f means 100 tiles
+    theGrids.size.y = AEGfxGetWindowWidth() * 0.025f;
+    theGrids.scale = { 0 };
+    AEMtx33Scale(&theGrids.scale, theGrids.size.x, theGrids.size.y);
+
+    theGrids.rotation = { 0 };
+    AEMtx33Rot(&theGrids.rotation, 0);
+
+    //Positioning the grid
+    theGrids.position.x = -AEGfxGetWindowWidth() * 0.5f + theGrids.size.x * (theGrids.colIndex - 0.5f);
+    theGrids.position.y = AEGfxGetWindowHeight() * 0.5f - theGrids.size.x * (theGrids.rowIndex - 0.5f);
+
+    AEMtx33Trans(&theGrids.translation, theGrids.position.x, theGrids.position.y);
+
+    theGrids.transformation = { 0 };
+    AEMtx33Concat(&theGrids.transformation, &theGrids.rotation, &theGrids.scale);
+    AEMtx33Concat(&theGrids.transformation, &theGrids.translation, &theGrids.transformation);
+
+    // Initialize AABB based on the grid's position and size
+    theGrids.collisionBox.minimum.x = theGrids.position.x - theGrids.size.x * 0.5f;
+    theGrids.collisionBox.minimum.y = theGrids.position.y - theGrids.size.y * 0.5f;
+    theGrids.collisionBox.maximum.x = theGrids.position.x + theGrids.size.x * 0.5f;
+    theGrids.collisionBox.maximum.y = theGrids.position.y + theGrids.size.y * 0.5f;
+
+    //Implementing physics test
+    theGrids.mass = 2.0f;
+}
+

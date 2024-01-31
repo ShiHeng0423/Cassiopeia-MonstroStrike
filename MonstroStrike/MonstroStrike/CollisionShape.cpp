@@ -28,3 +28,48 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //	
 //	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
 //}
+
+//Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
+void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* canJump)
+{
+    f32 penetrationDepth = 0.f;
+    std::cout << "Resolving vertical collision" << std::endl;
+    if (collisionNormal->y == 1)
+    {
+        penetrationDepth = second.maximum.y - firstBoxHeadFeet.minimum.y;
+        position->y += penetrationDepth;
+        *canJump = true;
+    }
+    else if (collisionNormal->y == -1)
+    {
+        penetrationDepth = second.minimum.y - firstBoxHeadFeet.maximum.y;
+        position->y += penetrationDepth;
+    }
+
+    if (collisionNormal->y != 0)
+    {
+        velocity->y = 0.f;
+    }
+    collisionNormal->y = 0;
+}
+
+//Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
+void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* canJump)
+{
+    float penetrationDepth = 0.f;
+    std::cout << "Resolving horizontal collision" << std::endl;
+
+    if (collisionNormal->x == 1)
+    {
+        penetrationDepth = second.maximum.x - firstArms.minimum.x;
+        position->x += penetrationDepth;
+        velocity->x = 0.f;
+    }
+    else if (collisionNormal->x == -1)
+    {
+        penetrationDepth = firstArms.maximum.x - second.minimum.x;
+        position->x += penetrationDepth;
+        velocity->x = 0.f;
+    }
+    collisionNormal->x = 0;
+}
