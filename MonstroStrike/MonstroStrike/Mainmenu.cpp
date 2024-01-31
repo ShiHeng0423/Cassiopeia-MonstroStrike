@@ -50,7 +50,7 @@ void Menu_Draw()
 	AEGfxSetTransparency(1.0f);
 
 	AEGfxTextureSet(menuButtonBackground.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-700.f, 0.f, 0.f, menuButtonBackground.img.scale.x, menuButtonBackground.img.scale.y).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-600.f, 0.f, 0.f, menuButtonBackground.img.scale.x, menuButtonBackground.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, menuButtonBackground.img.scale.x, menuButtonBackground.img.scale.y).m);
