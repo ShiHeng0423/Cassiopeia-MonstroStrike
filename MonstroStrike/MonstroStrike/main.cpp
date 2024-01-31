@@ -245,25 +245,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 	}
 
-	//The game loop
-	while (gGameRunning)
-	{
-		// Informing the system about the loop's start
-		AESysFrameStart();
-		//deltaTime += AEFrameRateControllerGetFrameTime();
-
-		AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-
-		// the rest of the components remain the same!
-		AEGfxSetColorToMultiply(1.0f, 1.0f, 1.0f, 1.0f);
-
-		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f); //Careful of adding color
-		AEGfxSetBlendMode(AE_GFX_BM_BLEND);
-		AEGfxSetTransparency(1.0f);
-
-		AEInputGetCursorPosition(&cursorX, &cursorY);
-
 		//Just for limitation
 		if (player.velocity.x > 200.f)
 		{
@@ -395,4 +376,3 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// free the system
 	AESysExit();
-}
