@@ -11,14 +11,15 @@ AEGfxVertexList* pLineMesh;
 AEGfxTexture* background;
 
 Player* player;
-Enemy* enemy;
+Enemy* enemy[2];
 
 
 
 void Level1_Load()
 {
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 100.f,100.f }, { 0.f,0.f }, { 10.f,0.f }, true);
-	enemy = ENEMY_Init("Assets/SubaDuck.png", { 100.f,100.f }, { 200.f,0.f }, { 10.f,0.f }, ENEMY_IDLE);
+	enemy[0] = ENEMY_Init({100.f,100.f}, {500.f,0.f}, ENEMY_JUMPER, ENEMY_IDLE);
+	enemy[1] = ENEMY_Init({100.f,100.f }, {-500.f,0.f}, ENEMY_FLY, ENEMY_IDLE);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 
 	AEGfxMeshStart();
@@ -45,12 +46,17 @@ void Level1_Load()
 
 void Level1_Initialize()
 {
+
 }
 
 void Level1_Update()
 {
 	PlayerUpdate(*player);
-	ENEMY_Update(*enemy, *player);
+
+	for (int i = 0; i < 2; ++i) {
+		Enemy_Update_Choose(*enemy[i], *player);
+	}
+
 
 
 
@@ -82,10 +88,12 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x,player->obj.pos.y,0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+	for (int i = 0; i < 2; ++i) {
+		AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
 
-	AEGfxTextureSet(enemy->obj.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy->obj.pos.x, enemy->obj.pos.y, 0.f, enemy->obj.img.scale.x, enemy->obj.img.scale.y).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
 
@@ -101,7 +109,10 @@ void Level1_Draw()
 
 void Level1_Free()
 {
-	Enemy_Free(enemy);
+	for (int i = 0; i < 2; ++i) {
+		Enemy_Free(enemy[i]);
+	}
+
 
 }
 

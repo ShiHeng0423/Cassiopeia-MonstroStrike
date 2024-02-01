@@ -9,8 +9,17 @@ enum ENEMY_STATES
 	ENEMY_IDLE = 0,
 	ENEMY_CHASE,
 	ENEMY_SHOOT,
-	ENEMY_RETURN
 
+};
+
+enum ENEMY_TYPES 
+{
+	ENEMY_JUMPER = 0,
+	ENEMY_CHARGER,
+	ENEMY_FLY,
+	ENEMY_PASSIVE,
+	ENEMY_BOSS1,
+	ENEMY_BOSS2,
 };
 
 
@@ -26,15 +35,21 @@ struct Enemy {
 	f32 lineOfSight = 350;
 	f32 shootingRange = 250;
 	f32 fireRate = 5.0f;
+
+	int enemyCurrent = ENEMY_IDLE;
+	int enemyNext = ENEMY_IDLE;
+	int enemyType = ENEMY_JUMPER;
 };
 
 
 
 
 
-Enemy* ENEMY_Init(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, int startingState);
+Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
 void ENEMY_Update(Enemy& enemy, Player& player);
+void ENEMY1_Update(Enemy& enemy, Player& player);
 void Enemy_Free(Enemy* enemy);
+void Enemy_Update_Choose(Enemy& enemy, Player& player);
 
 void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed);
 bool CanFire(f32 fireRate);
