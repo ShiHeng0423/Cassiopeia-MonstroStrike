@@ -13,10 +13,38 @@
 // ---------------------------------------------------------------------------
 // includes
 #include <crtdbg.h> // To check for memory leaks
+#include "GridTypesList.h"
+#include "CSVMapLoader.h"
 #include "AEEngine.h"
+#include <iostream>
+#include "CollisionShape.h"
+#include "Physics.h"
 #include "GameStateManager.h"
 // ---------------------------------------------------------------------------
 // main
+
+namespace {
+	s32 cursorX, cursorY; //Mouse coordinate
+	const f32 friction = 0.95f; //Friction, const for now unless some tile add friction
+}
+
+struct Player {
+	AEMtx33 scale;
+	AEMtx33 rotation;
+	AEMtx33 translation;
+	AEMtx33 transformation;
+
+	AEVec2 size;
+	AEVec2 position;
+	AEVec2 velocity;
+	f32 mass;
+
+	AABB collisionBox;
+	AABB boxHeadFeet;
+	AABB arms;
+
+	bool canJump;
+}player;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	_In_opt_ HINSTANCE hPrevInstance,
@@ -33,6 +61,13 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Changing the window title
 	AESysSetWindowTitle("MonstroStrike");
+
+	//// reset the system modules
+	//AESysReset();
+
+	//Load Fonts
+	s8 pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
+	//2D vector create
 
 	GSM_Initialize(GameStates::MainMenu);
 
@@ -56,7 +91,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		fpFree();
 		fpUnload();
+		current = next;
 	}
+	/*-----------Freeing Images and others----------*/
+
+	AEGfxDestroyFont(pFont);
+	//Resizing vector, clear content, then resize it to 0
+	
 	// free the system
 	AESysExit();
 }
+
