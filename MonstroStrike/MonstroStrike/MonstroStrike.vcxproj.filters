@@ -33,7 +33,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
     <ClCompile Include="Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,7 +80,6 @@
     <ClInclude Include="TransformMatrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Enemy.h">
     <ClInclude Include="Armor_add.h">
       <Filter>Header Files</Filter>
     </ClInclude>

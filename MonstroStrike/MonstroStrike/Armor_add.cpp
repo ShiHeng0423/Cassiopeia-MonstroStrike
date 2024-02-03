@@ -3,6 +3,6 @@
 void equip_armor(Player& player, const Armor& armor)
 {
 
-	player.equippedArmor.armorType = armor;
+	player.equippedArmor = armor;
 
 }

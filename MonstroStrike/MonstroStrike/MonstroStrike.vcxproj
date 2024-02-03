@@ -98,6 +98,8 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Armor.cpp" />
+    <ClCompile Include="Armor_add.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameLobby.cpp" />
@@ -113,8 +115,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Enemy.h" />
+    <ClInclude Include="Armor.h" />
     <ClInclude Include="Armor_add.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameLobby.h" />
     <ClCompile Include="Utils.h" />
     <ClInclude Include="GameStateManager.h" />
@@ -127,11 +130,11 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="CSVMapLoader.h" />
     <ClInclude Include="GridTypesList.h" />
     <ClInclude Include="Physics.h" />
-     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="json.hpp" />
   </ItemGroup>
   <ItemGroup>
-  <None Include="..\Assets\GameMap.csv" />
+    <None Include="..\Assets\GameMap.csv" />
   </ItemGroup>
   <ItemGroup>
     <None Include="test.json" />

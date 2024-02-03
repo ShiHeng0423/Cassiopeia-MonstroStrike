@@ -20,6 +20,8 @@ AEGfxVertexList* pMeshGrey;
 Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
 Enemy* enemy[2];
+Player* player;
+AEGfxTexture* background;
 void Level1_Load()
 {
 
