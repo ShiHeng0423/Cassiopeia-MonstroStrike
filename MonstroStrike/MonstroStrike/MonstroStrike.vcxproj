@@ -106,11 +106,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="Mainmenu.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="TransformMatrix.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="CollisionShape.cpp" />
-    <ClCompile Include="CSVMapLoader.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Physics.cpp" />
     <ClCompile Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -120,13 +115,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="Mainmenu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TransformMatrix.h" />
-        <ClInclude Include="CollisionShape.h" />
-    <ClInclude Include="CSVMapLoader.h" />
-    <ClInclude Include="GridTypesList.h" />
-    <ClInclude Include="Physics.h" />
-  </ItemGroup>
-  <ItemGroup>
-  <None Include="..\Assets\GameMap.csv" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h" />
