@@ -6,11 +6,14 @@ struct Player {
 	Object obj;
 
 	bool isFacingRight;
-	bool canJump; //Added to check entity on floor, hence can jump
+	bool onFloor; //Added to check entity on floor, hence can jump
 
 	AEVec2 expectedLocation;
 	AEVec2 velocity; //Added for movement - Johny
+	AEVec2 collisionNormal;
 	f32 lookAheadMutliplier;
+	
+	
 	//Gravity affection
 	f32 mass;
 	
@@ -18,6 +21,7 @@ struct Player {
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;
+
 
 };
 

@@ -69,31 +69,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	s8 pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	//2D vector create
 
-		//Just for limitation
-		//if (player.velocity.x > 200.f)
-		//{
-		//	player.velocity.x = 200.f;
-		//}
-		//else if (player.velocity.x < -200.f)
-		//{
-		//	player.velocity.x = -200;
-		//}
-
-		////Temporary movement, use as reference...
-		//if (AEInputCheckCurr(VK_LEFT))
-		//{
-		//	player.velocity.x -= 25.f;
-		//}
-		//if (AEInputCheckCurr(VK_RIGHT))
-		//{
-		//	player.velocity.x += 25.f;
-		//}
-
-		//if (player.canJump)
-		//{
-		//	player.velocity.x *= friction;
-		//}
-
 	GSM_Initialize(GameStates::MainMenu);
 
 	while (current != GameStates::Quit)

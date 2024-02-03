@@ -24,7 +24,7 @@ std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP
 
 void Level1_Load()
 {
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 100.f,100.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -153,7 +153,6 @@ void Level1_Update()
 		current = GameStates::Quit;
 	}
 
-	//For Grid Drawing
 	//For printing the grids every frame
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
@@ -167,16 +166,18 @@ void Level1_Update()
 				//Resolve + Vertical Collision only for entity x (wall or ground)
 				//Check vertical box (Head + Feet) 
 				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-					AEVec2 collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+					 player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
 
-					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &collisionNormal, &player->obj.pos,
-						&player->velocity, &player->canJump);
+					 ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+						 &player->velocity, &player->onFloor);
 				}
+
 				//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox)) {
-					AEVec2 collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveVerticalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &collisionNormal, &player->obj.pos,
-						&player->velocity, &player->canJump);
+					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+
+					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor);
 				}
 				break;
 			case EMPTY:

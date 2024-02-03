@@ -22,7 +22,7 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox);
 
 
 //Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
-void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* canJump);
+void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor);
 
 //Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
-void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* canJump);
+void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor);

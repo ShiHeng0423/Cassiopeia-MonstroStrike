@@ -30,15 +30,17 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //}
 
 //Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
-void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* canJump)
+void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
 {
     f32 penetrationDepth = 0.f;
     std::cout << "Resolving vertical collision" << std::endl;
+    std::cout << "Normal: " << collisionNormal->y << std::endl;
+
     if (collisionNormal->y == 1)
     {
         penetrationDepth = second.maximum.y - firstBoxHeadFeet.minimum.y;
         position->y += penetrationDepth;
-        *canJump = true;
+        *onFloor = true;
     }
     else if (collisionNormal->y == -1)
     {
@@ -50,14 +52,14 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
     {
         velocity->y = 0.f;
     }
-    collisionNormal->y = 0;
+
 }
 
-//Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
-void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* canJump)
+//Entity arms, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
+void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
 {
-    float penetrationDepth = 0.f;
-    std::cout << "Resolving horizontal collision" << std::endl;
+    f32 penetrationDepth = 0.f;
+    std::cout << "Resolving Horizontal " << collisionNormal->x << std::endl;
 
     if (collisionNormal->x == 1)
     {
@@ -67,7 +69,7 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
     }
     else if (collisionNormal->x == -1)
     {
-        penetrationDepth = firstArms.maximum.x - second.minimum.x;
+        penetrationDepth = second.minimum.x - firstArms.maximum.x;
         position->x += penetrationDepth;
         velocity->x = 0.f;
     }
