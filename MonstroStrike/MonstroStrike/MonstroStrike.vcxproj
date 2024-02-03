@@ -98,19 +98,47 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="Level1.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mainmenu.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Utils.h" />
+<<<<<<< HEAD
+=======
+    <ClCompile Include="Weapon.cpp" />
+    <ClCompile Include="TransformMatrix.cpp" />
+    <ClCompile Include="CollisionShape.cpp" />
+    <ClCompile Include="CSVMapLoader.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics.cpp" />
+>>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameLobby.h" />
+    <ClCompile Include="Utils.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="Level1.h" />
+    <ClInclude Include="Mainmenu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TransformMatrix.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="Weapon.h" />
+    <ClInclude Include="CollisionShape.h" />
+    <ClInclude Include="CSVMapLoader.h" />
+    <ClInclude Include="GridTypesList.h" />
+    <ClInclude Include="Physics.h" />
+     <ClInclude Include="Inventory.h" />
+    <ClInclude Include="json.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+  <None Include="..\Assets\GameMap.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="test.json" />
+>>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
