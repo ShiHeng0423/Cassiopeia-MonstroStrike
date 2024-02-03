@@ -45,7 +45,7 @@ namespace Inventory
 
 	struct Inventory
 	{
-		std::string UID;
+		int UID;
 		int ID;
 		std::string name;
 		std::string description;
