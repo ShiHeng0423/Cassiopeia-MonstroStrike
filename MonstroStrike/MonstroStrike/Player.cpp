@@ -1,19 +1,12 @@
 #include "Player.h"
 #include "AEEngine.h"
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 #include "Armor_add.h"
 #include "Weapon.h"
 #include <iostream>
 #include "Physics.h"
->>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
-
-=======
 #include "Armor_add.h"
 #include "Weapon.h"
 #include <iostream>
->>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
 #define camXBoundary (250.f)
 #define camFollowupSpeedX (0.05f)
 
@@ -76,26 +69,9 @@ void PlayerUpdate(Player& player)
 	{
 		player.velocity.x *= 0.85f; //Friction application
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-	//player position
->>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
-	player.obj.pos.x += player.obj.speed.x;
-	
 	
 	if (AEInputCheckTriggered(AEVK_LBUTTON))
 	{
-
-<<<<<<< HEAD
-=======
-	
-	
-	if (AEInputCheckTriggered(AEVK_LBUTTON))
-	{
-
-=======
->>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
 		std::cout << "Attack triggered!" << std::endl;
 	}
 	//Start of armor equip
@@ -129,7 +105,6 @@ void PlayerUpdate(Player& player)
 	
 
 	// End of armor equip
-<<<<<<< HEAD
 
 	// Update the player's position
 	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
@@ -170,9 +145,6 @@ void PlayerUpdate(Player& player)
 
 #pragma region Camera Section
 	//Camera region
->>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
-=======
->>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 

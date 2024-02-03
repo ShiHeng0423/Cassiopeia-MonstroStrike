@@ -104,20 +104,12 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="Level1.cpp" />
     <ClCompile Include="Mainmenu.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Utils.h" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-    <ClCompile Include="Weapon.cpp" />
     <ClCompile Include="TransformMatrix.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Physics.cpp" />
->>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
-=======
     <ClCompile Include="Weapon.cpp" />
->>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Armor_add.h" />
@@ -128,9 +120,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="Mainmenu.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TransformMatrix.h" />
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="CSVMapLoader.h" />
@@ -144,10 +133,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemGroup>
   <ItemGroup>
     <None Include="test.json" />
->>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
-=======
-    <ClInclude Include="Weapon.h" />
->>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
