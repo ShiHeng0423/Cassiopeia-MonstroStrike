@@ -10,9 +10,3 @@ struct Object {
 	AEVec2 speed;
 	Sprite img;
 };
-
-struct Button {
-	Sprite img;
-	AEVec2 pos;
-	void (*Ptr)(void);
-};

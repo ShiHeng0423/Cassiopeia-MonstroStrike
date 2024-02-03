@@ -1,7 +1,6 @@
 #include "GameStateManager.h"
 #include "Level1.h"
 #include "GameLobby.h"
-#include "Mainmenu.h"
 
 int current = 0, previous = 0, next = 0;
 
@@ -17,12 +16,12 @@ void GSM_Update()
 	switch (current)
 	{
 	case MainMenu:
-		fpLoad = Menu_Load;
-		fpInitialize = Menu_Initialize;
-		fpUpdate = Menu_Update;
-		fpDraw = Menu_Draw;
-		fpFree = Menu_Free;
-		fpUnload = Menu_Unload;
+		fpLoad = Level1_Load;
+		fpInitialize = Level1_Initialize;
+		fpUpdate = Level1_Update;
+		fpDraw = Level1_Draw;
+		fpFree = Level1_Free;
+		fpUnload = Level1_Unload;
 		break;
 	case GameLobby:
 		fpLoad = GameLobby_Load;
@@ -33,12 +32,6 @@ void GSM_Update()
 		fpUnload = GameLobby_Unload;
 		break;
 	case Area1:
-		fpLoad = Level1_Load;
-		fpInitialize = Level1_Initialize;
-		fpUpdate = Level1_Update;
-		fpDraw = Level1_Draw;
-		fpFree = Level1_Free;
-		fpUnload = Level1_Unload;
 		break;
 	case Quit:
 		break;
