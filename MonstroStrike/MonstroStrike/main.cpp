@@ -16,7 +16,6 @@
 #include "GridTypesList.h"
 #include "CSVMapLoader.h"
 #include "AEEngine.h"
-#include "Inventory.h"
 #include <iostream>
 #include "CollisionShape.h"
 #include "Physics.h"
@@ -78,14 +77,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		fpLoad();
 		fpInitialize();
 
-		// Your own rendering logic goes here
-		// Tell the Alpha Engine to set the background to black.
-		AEGfxSetBackgroundColor(1.0f, 1.0f, 1.0f);
-
-		std::string	filepath = "test.json";
-		Inventory::ReadJsonFile(filepath);
-
-		//AEGfxPrint(out);
 		// Game Loop
 		while (current == next)
 		{
@@ -100,6 +91,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		fpFree();
 		fpUnload();
+		current = next;
 	}
 	/*-----------Freeing Images and others----------*/
 
