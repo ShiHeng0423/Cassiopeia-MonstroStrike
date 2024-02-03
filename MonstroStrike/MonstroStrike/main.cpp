@@ -91,6 +91,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		fpFree();
 		fpUnload();
+		current = next;
 	}
 	/*-----------Freeing Images and others----------*/
 
