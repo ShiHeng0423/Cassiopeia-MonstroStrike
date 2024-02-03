@@ -1,6 +1,10 @@
 #pragma once
 #include "Utils.h"
+#include "Armor_add.h"
+#include "Weapon.h"
 #include "CollisionShape.h" //To add AABB boxes
+#include "Armor_add.h"
+#include "Weapon.h"
 
 struct Player {
 	Object obj;
@@ -12,8 +16,10 @@ struct Player {
 	AEVec2 velocity; //Added for movement - Johny
 	AEVec2 collisionNormal;
 	f32 lookAheadMutliplier;
-	
-	
+
+	Armor equippedArmor;
+
+	Weapon equippedWeapon;
 	//Gravity affection
 	f32 mass;
 	
@@ -21,7 +27,6 @@ struct Player {
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;
-
 
 };
 

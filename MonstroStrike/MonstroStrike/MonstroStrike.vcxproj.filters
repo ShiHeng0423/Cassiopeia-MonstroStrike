@@ -19,7 +19,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Inventory.cpp">
-    <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
       <Filter>Source Files</Filter>
@@ -34,6 +34,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Enemy.cpp">
+    <ClCompile Include="Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mainmenu.cpp">
@@ -42,14 +43,17 @@
     <ClCompile Include="TransformMatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-        <ClCompile Include="CSVMapLoader.cpp">
+    <ClCompile Include="CSVMapLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CollisionShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Physics.cpp">
-          <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -62,7 +66,6 @@
     <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <None Include="test.json" />
     <ClInclude Include="Level1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -79,6 +82,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
+    <ClInclude Include="Armor_add.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Mainmenu.h">
@@ -99,6 +106,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="test.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
