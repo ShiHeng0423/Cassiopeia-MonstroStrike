@@ -25,9 +25,9 @@ AEGfxTexture* background;
 void Level1_Load()
 {
 
-	enemy[0] = ENEMY_Init({100.f,100.f}, {500.f,0.f}, ENEMY_JUMPER, ENEMY_IDLE);
-	enemy[1] = ENEMY_Init({100.f,100.f }, {-500.f,0.f}, ENEMY_FLY, ENEMY_IDLE);
-	player = PlayerInitialize("Assets/Playerplaceholder.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+	enemy[0] = ENEMY_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_JUMPER, ENEMY_IDLE);
+	enemy[1] = ENEMY_Init({80.f,80.f }, {-500.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
+	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map

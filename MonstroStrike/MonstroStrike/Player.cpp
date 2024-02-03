@@ -14,7 +14,7 @@
 Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	Player *player = new Player;
-	player->obj.img.pTex = AEGfxTextureLoad("Assets/Playerplaceholder.png");
+	player->obj.img.pTex = AEGfxTextureLoad(filename);
 	player->obj.speed = speed;
 
 	AEVec2Set(&player->obj.pos, location.x, location.y);

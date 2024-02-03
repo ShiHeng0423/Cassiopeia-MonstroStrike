@@ -39,6 +39,22 @@ struct Enemy {
 	int enemyCurrent = ENEMY_IDLE;
 	int enemyNext = ENEMY_IDLE;
 	int enemyType = ENEMY_JUMPER;
+
+
+
+
+
+	bool onFloor; //Added to check entity on floor, hence can jump
+	//Gravity affection
+	f32 mass;
+	AEVec2 velocity; //speed is the scalar of the velocity
+	AEVec2 collisionNormal; 
+	//Collision boxes
+	AABB collisionBox;
+	AABB boxHeadFeet;
+	AABB boxArms;
+
+
 };
 
 
