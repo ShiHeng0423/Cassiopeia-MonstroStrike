@@ -16,7 +16,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "json.hpp"
+//#include "json.hpp"
 #include "AEEngine.h"
 // ---------------------------------------------------------------------------
 #pragma once
@@ -57,7 +57,7 @@ namespace Inventory
 		int defence;
 	};
 
-	std::vector<Inventory> ReadJsonFile(const std::string& filepath);
+	//std::vector<Inventory> ReadJsonFile(const std::string& filepath);
 	void InitInventory();
 	void UpdateInventory();
 

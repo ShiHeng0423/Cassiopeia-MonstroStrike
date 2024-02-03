@@ -19,6 +19,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Inventory.cpp">
+    <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -27,9 +29,6 @@
     </ClCompile>
     <ClCompile Include="GameLobby.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils.h">
-      <Filter>Header Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
@@ -51,14 +50,15 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
     <ClInclude Include="Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="test.json" />
     <ClInclude Include="Level1.h">
       <Filter>Header Files</Filter>
