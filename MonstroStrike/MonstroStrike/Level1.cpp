@@ -13,7 +13,7 @@ AEGfxVertexList* pLineMesh;
 
 void Level1_Load()
 {
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 100.f,100.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+	player = PlayerInitialize("Assets/Playerplaceholder.png", { 100.f,100.f }, { 0.f,0.f }, { 10.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 
 	AEGfxMeshStart();

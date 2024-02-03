@@ -1,5 +1,7 @@
 #pragma once
 #include "Utils.h"
+#include "Armor_add.h"
+#include "Weapon.h"
 
 struct Player {
 	Object obj;
@@ -9,6 +11,10 @@ struct Player {
 	AEVec2 expectedLocation;
 
 	f32 lookAheadMutliplier;
+
+	Armor equippedArmor;
+
+	Weapon equippedWeapon;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
