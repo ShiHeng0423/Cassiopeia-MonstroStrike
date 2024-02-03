@@ -34,6 +34,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     <ClCompile Include="Weapon.cpp">
       <Filter>Source Files</Filter>
@@ -54,6 +55,11 @@
           <Filter>Source Files</Filter>
     </ClCompile>
 >>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
+=======
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+>>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utils.h">
@@ -82,13 +88,17 @@
       <Filter>Header Files</Filter>
     </ClInclude>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
     <ClInclude Include="Armor_add.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -110,5 +120,7 @@
       <Filter>Resource Files</Filter>
     </None>
 >>>>>>> parent of 725b5c2 (Revert "Merge branch 'main' into Jian-Wei")
+=======
+>>>>>>> parent of 462cee0 (Revert "Updated the weapon struct and the armor struct")
   </ItemGroup>
 </Project>
