@@ -12,7 +12,8 @@
 
 
 f32 timeSinceLastFire;
-
+//int Bulletindex;
+//Bullet bullet[10];
 
 
 
@@ -21,7 +22,7 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 	Enemy* enemy = new Enemy;
 	switch (enemy_type) {
 	case ENEMY_JUMPER:	
-		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel.png"); //assign the texture
+		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_3.png"); //assign the texture
 		break;
 	case ENEMY_CHARGER:
 		break;
@@ -356,8 +357,19 @@ void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 			break;
 		}
 		enemy.enemyCurrent = enemy.enemyNext;
+		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 	}//if boss1 AI
+}
+void ENEMY_BOSSWING1_Update(Enemy& enemy, Player& player) {
 
+	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	if (enemy.health <= 0)
+	{
+		enemy.isAlive = false;
+	}
 	if (enemy.enemyType == ENEMY_BOSS1_WING1) {
 		if (AEInputCheckTriggered(AEVK_X)) {
 			enemy.isAlive = false;
@@ -413,6 +425,11 @@ void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 			if (distanceFromPlayer <= enemy.shootingRange) {
 				if (CanFire(enemy.fireRate)) {
 					//std::cout << "HELLO Shooting!\n";
+					//bullet[Bulletindex].obj.pos = enemy.obj.pos;
+					//waterBullets[index].direction = CP_Vector_Normalize(CP_Vector_Subtract(playerPos, waterBullets[index].position));
+					//AEVec2Sub(&bullet[Bulletindex].obj.speed, &enemy.obj.pos, &player.obj.pos);
+					//AEVec2Normalize(&bullet[Bulletindex].obj.speed, &bullet[Bulletindex].obj.speed);
+					//Bulletindex++;
 				}
 				enemy.enemyNext = ENEMY_SHOOT;
 			}
@@ -425,11 +442,21 @@ void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 			break;
 		}
 		enemy.enemyCurrent = enemy.enemyNext;
+		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
-	
 	}
+}
 
 
+void ENEMY_BOSSWING2_Update(Enemy& enemy, Player& player){
+	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	if (enemy.health <= 0)
+	{
+		enemy.isAlive = false;
+	}
 	if (enemy.enemyType == ENEMY_BOSS1_WING2) {
 		if (AEInputCheckTriggered(AEVK_Z)) {
 			enemy.isAlive = false;
@@ -499,7 +526,10 @@ void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 			break;
 		}
 		enemy.enemyCurrent = enemy.enemyNext;
-
+		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
 	}
 
@@ -591,9 +621,6 @@ bool CanFire(f32 fireRate) {
 }
 
 
-void SpawnBullet(AEVec2& shooter) {
-}
-
 
 void Enemy_Update_Choose(Enemy& enemy, Player& player) {
 	switch (enemy.enemyType) {
@@ -611,10 +638,10 @@ void Enemy_Update_Choose(Enemy& enemy, Player& player) {
 		ENEMY_BOSS_Update(enemy, player);
 		break;
 	case ENEMY_BOSS1_WING1:
-		ENEMY_BOSS_Update(enemy, player);
+		ENEMY_BOSSWING1_Update(enemy, player);
 		break;
 	case ENEMY_BOSS1_WING2:
-		ENEMY_BOSS_Update(enemy, player);
+		ENEMY_BOSSWING2_Update(enemy, player);
 		break;
 	case ENEMY_BOSS2:
 		break;

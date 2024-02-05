@@ -43,6 +43,7 @@ namespace {
 	const int size = 5;
 	Enemy* enemy[size];
 	Player* player;
+
 	AEGfxTexture* background;
 
 	bool inventory_open = false;
@@ -79,6 +80,12 @@ void Level1_Load()
 	enemy[2] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING1, ENEMY_IDLE);
 	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
 	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
+
+
+	//for (Bullet &num : bullet) {
+	//	num.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.jpg");
+	//	AEVec2Set(&num.obj.img.scale, 20.f, 20.f);
+	//}
 
 
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { 0.f,0.f }, { 10.f,0.f }, true);
@@ -254,8 +261,10 @@ void Level1_Update()
 	if (player->isAttacking)
 	{
 		for (int i = 0; i < size; i++)
-		{
-			CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+		{	
+			if (enemy[i]->isAlive) {
+				CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+			}
 		}
 	}
 
@@ -264,6 +273,16 @@ void Level1_Update()
 			Enemy_Update_Choose(*enemy[i], *player);
 		}
 	}
+
+	//for (int i = 0; i < 10; ++i) {
+	//	if (bullet[i].obj.speed.x == 0 && bullet[i].obj.speed.y == 0)
+	//		continue;
+	//	bullet[i].obj.pos.x += bullet[i].obj.speed.x * (f32)AEFrameRateControllerGetFrameTime() * 200.f;
+	//	bullet[i].obj.pos.y += bullet[i].obj.speed.y * (f32)AEFrameRateControllerGetFrameTime() * 200.f;
+	//	
+	//}
+
+
 
 	if (AEInputCheckTriggered(AEVK_I))
 	{
@@ -391,6 +410,13 @@ void Level1_Draw()
 		
 	}
 
+	//for (int i = 0; i < 10; ++i) {
+	//	if (bullet[i].obj.speed.x == 0 && bullet[i].obj.speed.y == 0)
+	//		continue;
+	//	AEGfxTextureSet(bullet[i].obj.img.pTex, 0, 0);
+	//	AEGfxSetTransform(ObjectTransformationMatrixSet(bullet[i].obj.pos.x, bullet[i].obj.pos.y, 0.f, bullet[i].obj.img.scale.x, bullet[i].obj.img.scale.y).m);
+	//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	//}
 
 
 	AEVec2 cam;

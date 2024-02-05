@@ -59,12 +59,14 @@ struct Enemy {
 	AABB boxArms;
 };
 
-struct Bullet {
-	Object obj;
-	f32 speed = 80.f;
-
-};
-
+//
+//struct Bullet {
+//	Object obj;
+//	f32 speed = 80.f;
+//
+//};
+//
+//extern Bullet bullet[10];
 
 
 
@@ -74,6 +76,8 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingSta
 void ENEMY_Update(Enemy& enemy, struct Player& player);
 void ENEMY1_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
+void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player);
+void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 void Enemy_Free(Enemy* enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
