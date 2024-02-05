@@ -17,7 +17,10 @@
 #include <iostream>
 #include <fstream>
 //#include "json.hpp"
+#include <vector>
+
 #include "AEEngine.h"
+#include "rapidjson/document.h"
 // ---------------------------------------------------------------------------
 #pragma once
 
@@ -45,20 +48,22 @@ namespace Inventory
 
 	struct Inventory
 	{
-		int UID;
+		std::string UID;
 		int ID;
 		std::string name;
 		std::string description;
-		Item_Type item_type;
-		Rarity rarity;
+		int item_type;
+		int rarity;
 		int quantity;
 		bool stackable;
 		int attack;
 		int defence;
 	};
 
-	//std::vector<Inventory> ReadJsonFile(const std::string& filepath);
+	std::vector<Inventory> ReadJsonFile(const std::string& filepath);
+	std::vector<Inventory> SaveToJsonFile(const std::string& filepath, Inventory inventory);
 	void InitInventory();
+	void Load_Inventory();
 	void UpdateInventory();
 
 	void Open_Inventory();

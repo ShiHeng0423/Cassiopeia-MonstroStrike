@@ -25,7 +25,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	player->isFacingRight = isFacingRight;
 	player->lookAheadMutliplier = 50.f;
 	player->onFloor = false; //Set as false first, will be set as true when ground detected
-	player->mass = 80.f;
+	player->mass = 60.f;
 
 	//Initializing collision box starting position
 	player->collisionBox.minimum.x = player->obj.pos.x - player->obj.img.scale.x * 0.5f;
@@ -39,11 +39,14 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
 	std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
+
+	player->burningEffect = false;
 	return player;
 }
 
 void PlayerUpdate(Player& player)
 {
+
 	//X-Axis control
 	if (AEInputCheckCurr(AEVK_D))
 	{
@@ -100,9 +103,6 @@ void PlayerUpdate(Player& player)
 
 		std::cout << "Equipped " << armorName << "!" << std::endl;
 	}
-		
-
-	
 
 	// End of armor equip
 

@@ -54,7 +54,7 @@ void Menu_Update()
 		AEInputGetCursorPosition(&x, &y);
 		AEVec2 mousePos;
 		mousePos.x = x - AEGfxGetWindowWidth() * 0.5f;
-		mousePos.y = y - AEGfxGetWindowHeight() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - y;
 		if (AETestPointToRect(&mousePos, &menuButton.pos, menuButton.img.scale.x, menuButton.img.scale.y))
 			menuButton.Ptr();
 	}
