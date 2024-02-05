@@ -19,7 +19,9 @@ AEGfxVertexList* pMeshGrey;
 
 Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
-Enemy* enemy[2];
+const int size = 5;
+Enemy* enemy[size];
+
 Player* player;
 AEGfxTexture* background;
 void Level1_Load()
@@ -27,6 +29,16 @@ void Level1_Load()
 
 	enemy[0] = ENEMY_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_JUMPER, ENEMY_IDLE);
 	enemy[1] = ENEMY_Init({80.f,80.f }, {-500.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
+	enemy[2] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING1, ENEMY_IDLE);
+	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
+	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
+
+
+
+
+
+
+
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
@@ -152,8 +164,10 @@ void Level1_Update()
 {
 	PlayerUpdate(*player);
 
-	for (int i = 0; i < 2; ++i) {
-		Enemy_Update_Choose(*enemy[i], *player);
+	for (int i = 0; i < size; ++i) {
+		if (enemy[i]->isAlive) {
+			Enemy_Update_Choose(*enemy[i], *player);
+		}
 	}
 
 
@@ -219,12 +233,23 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x,player->obj.pos.y,0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	for (int i = 0; i < 2; ++i) {
-		AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	for (int i = 0; i < size; ++i) {
+		if (enemy[i]->isAlive) {
+			if (enemy[i]->isShooting) {
+				AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
+				AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+			else {
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+		
 	}
-
 
 
 
@@ -259,7 +284,7 @@ void Level1_Draw()
 
 void Level1_Free()
 {
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < size; ++i) {
 		Enemy_Free(enemy[i]);
 	}
 
