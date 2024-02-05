@@ -3,6 +3,7 @@
 #include "GameStateManager.h"
 #include "TransformMatrix.h"
 #include "Player.h"
+#include "Enemy.h"
 #include <iostream>
 
 #include "CSVMapLoader.h"
@@ -11,9 +12,6 @@
 #include "CollisionShape.h" //For Verticl + Horizontal collision
 
 AEGfxVertexList* pWhiteSquareMesh;
-AEGfxTexture* background;
-Player* player;
-
 AEGfxVertexList* pLineMesh;
 AEGfxVertexList* pMeshYellow;
 AEGfxVertexList* pMeshRed;
@@ -21,10 +19,15 @@ AEGfxVertexList* pMeshGrey;
 
 Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
-
+Enemy* enemy[2];
+Player* player;
+AEGfxTexture* background;
 void Level1_Load()
 {
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+
+	enemy[0] = ENEMY_Init({100.f,100.f}, {500.f,0.f}, ENEMY_JUMPER, ENEMY_IDLE);
+	enemy[1] = ENEMY_Init({100.f,100.f }, {-500.f,0.f}, ENEMY_FLY, ENEMY_IDLE);
+	player = PlayerInitialize("Assets/Playerplaceholder.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/background.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -148,6 +151,17 @@ void Level1_Initialize()
 void Level1_Update()
 {
 	PlayerUpdate(*player);
+
+	for (int i = 0; i < 2; ++i) {
+		Enemy_Update_Choose(*enemy[i], *player);
+	}
+
+
+
+
+
+
+
 	if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 	{
 		next = GameStates::Quit;
@@ -205,6 +219,15 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x,player->obj.pos.y,0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+	for (int i = 0; i < 2; ++i) {
+		AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
+
+
+
+
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -236,6 +259,10 @@ void Level1_Draw()
 
 void Level1_Free()
 {
+	for (int i = 0; i < 2; ++i) {
+		Enemy_Free(enemy[i]);
+	}
+
 	//Free vectors
 	gameMap.clear();
 	gameMap.resize(0);
