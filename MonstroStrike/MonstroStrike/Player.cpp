@@ -39,11 +39,14 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
 	std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
+
+	player->burningEffect = false;
 	return player;
 }
 
 void PlayerUpdate(Player& player)
 {
+
 	//X-Axis control
 	if (AEInputCheckCurr(AEVK_D))
 	{

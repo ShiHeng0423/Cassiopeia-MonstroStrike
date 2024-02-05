@@ -28,6 +28,7 @@ struct Player {
 	AABB boxHeadFeet;
 	AABB boxArms;
 
+	bool burningEffect;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

@@ -17,3 +17,9 @@ struct Button {
 	AEVec2 pos;
 	void (*Ptr)(void);
 };
+
+struct ButtonGearUI {
+	Sprite img;
+	AEVec2 pos;
+	bool isWeapon;
+};
