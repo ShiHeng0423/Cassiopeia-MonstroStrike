@@ -74,9 +74,6 @@ void Equip(int index, ButtonGearUI tmp)
 void Level1_Load()
 {
 
-
-
-
 	enemy[0] = ENEMY_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_JUMPER, ENEMY_IDLE);
 	enemy[1] = ENEMY_Init({80.f,80.f }, {-500.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
 	enemy[2] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING1, ENEMY_IDLE);
@@ -256,7 +253,7 @@ void Level1_Update()
 	//This is set here temporary so that thing actually work, need to move
 	if (player->isAttacking)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < size; i++)
 		{
 			CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
 		}
@@ -377,7 +374,7 @@ void Level1_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	for (int i = 0; i < size; ++i) {
-		if (enemy[i]->isAlive || enemy[i]->health == 0) {
+		if (enemy[i]->isAlive) {
 			if (enemy[i]->isShooting) {
 				AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
 				AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);

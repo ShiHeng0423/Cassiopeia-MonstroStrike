@@ -40,8 +40,9 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
 	AEVec2Set(&player->equippedWeapon.Scale, 20.f, 20.f);
 	player->attackTime = 1.f;
+	player->isAttacking = false;
 
-	std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
+	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
 
 	player->burningEffect = false;
 	return player;
@@ -137,6 +138,7 @@ void PlayerUpdate(Player& player)
 	player.boxArms.maximum.x += player.obj.img.scale.x * 0.25f;
 	//Update player weapon hit box
 
+	//Weapon hit box update only
 	if (player.isAttacking)
 	{
 		if (player.attackTime > 0)

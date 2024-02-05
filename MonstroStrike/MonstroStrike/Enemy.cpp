@@ -114,6 +114,11 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos); 
 
+	if (enemy.health <= 0)
+	{
+		enemy.isAlive = false;
+	}
+
 	switch (enemy.enemyCurrent)
 	{
 	case ENEMY_IDLE:
@@ -199,6 +204,10 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 void ENEMY1_Update(Enemy& enemy, Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	if (enemy.health <= 0)
+	{
+		enemy.isAlive = false;
+	}
 
 	switch (enemy.enemyCurrent)
 	{
@@ -279,6 +288,10 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	if (enemy.health <= 0)
+	{
+		enemy.isAlive = false;
+	}
 
 	if (enemy.enemyType == ENEMY_BOSS1) {
 		switch (enemy.enemyCurrent)

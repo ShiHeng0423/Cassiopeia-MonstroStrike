@@ -71,9 +71,9 @@ struct Bullet {
 
 
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
-void ENEMY_Update(Enemy& enemy, Player& player);
-void ENEMY1_Update(Enemy& enemy, Player& player);
-void ENEMY_BOSS_Update(Enemy& enemy, Player& player);
+void ENEMY_Update(Enemy& enemy, struct Player& player);
+void ENEMY1_Update(Enemy& enemy, struct Player& player);
+void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
 void Enemy_Free(Enemy* enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 

@@ -10,12 +10,11 @@
 Weapon createWeapon(const std::string& name, float x, float y) {
     Weapon weapon;
     weapon.name = name;
-    weapon.damage = 10;
+    weapon.damage = 50;
     weapon.position.x = x;
     weapon.position.y = y;
     return weapon;
 }
-
 
 void UpdateWeaponHitBox(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
 {
