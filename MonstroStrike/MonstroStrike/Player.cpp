@@ -38,6 +38,9 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	AEVec2Set(&player->collisionNormal, 0.f, 0.f);
 
 	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
+	AEVec2Set(&player->equippedWeapon.Scale, 20.f, 20.f);
+	player->attackTime = 1.f;
+
 	std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
 	return player;
 }
@@ -65,15 +68,12 @@ void PlayerUpdate(Player& player)
 	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
 	AEVec2Add(&player.expectedLocation, &player.obj.pos, &desiredLocation);
 
+	//For friction
 	if (player.onFloor) //Means confirm on floor
 	{
 		player.velocity.x *= 0.85f; //Friction application
 	}
 	
-	if (AEInputCheckTriggered(AEVK_LBUTTON))
-	{
-		std::cout << "Attack triggered!" << std::endl;
-	}
 	//Start of armor equip
 	if (AEInputCheckTriggered(AEVK_1))
 	{
@@ -103,17 +103,11 @@ void PlayerUpdate(Player& player)
 
 	// End of armor equip
 
-	// Update the player's position
+	//For jumping
 	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
 	{
 		player.onFloor = false;
 		player.velocity.y = 400.f;
-	}
-
-	if (player.collisionNormal.y == 0)
-	{
-		std::cout << "Player jumped" << std::endl;
-		std::cout << "Normal Y " << player.collisionNormal.y << std::endl;
 	}
 	ApplyGravity(&player.velocity, player.mass); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 
@@ -138,8 +132,28 @@ void PlayerUpdate(Player& player)
 	player.boxArms = player.collisionBox;
 	player.boxArms.minimum.x -= player.obj.img.scale.x * 0.25f;
 	player.boxArms.maximum.x += player.obj.img.scale.x * 0.25f;
+	//Update player weapon hit box
 
-
+	if (player.isAttacking)
+	{
+		if (player.attackTime > 0)
+		{
+			player.attackTime -= AEFrameRateControllerGetFrameTime();
+			f32 attackProgress = 1.0f - (player.attackTime / 1.0f);
+			UpdateWeaponHitBox(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
+		}
+		else //Reach 0
+		{
+			player.attackTime = 1.f;
+			player.isAttacking = false;
+			player.equippedWeapon.weaponHIT = false;
+		}
+	}
+	else
+	{
+		player.equippedWeapon.position.x = player.obj.pos.x;
+		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
+	}
 #pragma region Camera Section
 	//Camera region
 	AEVec2 cam;

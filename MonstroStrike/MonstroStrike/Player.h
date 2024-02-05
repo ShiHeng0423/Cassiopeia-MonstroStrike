@@ -11,6 +11,7 @@ struct Player {
 
 	bool isFacingRight;
 	bool onFloor; //Added to check entity on floor, hence can jump
+	bool isAttacking;
 
 	AEVec2 expectedLocation;
 	AEVec2 velocity; //Added for movement - Johny
@@ -28,6 +29,7 @@ struct Player {
 	AABB boxHeadFeet;
 	AABB boxArms;
 
+	f32 attackTime;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

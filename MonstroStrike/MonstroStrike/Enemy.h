@@ -1,7 +1,7 @@
 #pragma once
 #include "Utils.h"
 #include "Player.h"
-
+#include "CollisionShape.h"
 
 
 enum ENEMY_STATES
@@ -35,10 +35,13 @@ struct Enemy {
 	f32 lineOfSight = 350;
 	f32 shootingRange = 250;
 	f32 fireRate = 5.0f;
+	f32 health = 100;
 
 	int enemyCurrent = ENEMY_IDLE;
 	int enemyNext = ENEMY_IDLE;
 	int enemyType = ENEMY_JUMPER;
+	
+	AABB collisionBox;
 };
 
 
@@ -46,10 +49,10 @@ struct Enemy {
 
 
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
-void ENEMY_Update(Enemy& enemy, Player& player);
-void ENEMY1_Update(Enemy& enemy, Player& player);
+void ENEMY_Update(Enemy& enemy, struct Player& player);
+void ENEMY1_Update(Enemy& enemy, struct Player& player);
 void Enemy_Free(Enemy* enemy);
-void Enemy_Update_Choose(Enemy& enemy, Player& player);
+void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
 void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed);
 bool CanFire(f32 fireRate);

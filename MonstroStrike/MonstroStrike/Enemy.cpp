@@ -51,9 +51,6 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 
 
 
-
-
-
 	enemy->starting_position = location;
 	enemy->waypoint1.x = location.x + 200.f;
 
@@ -62,8 +59,11 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 	AEVec2Set(&enemy->obj.img.scale, scale.x, scale.y); //set scale of the image
 
 
-
-
+	//AABB Box init
+	enemy->collisionBox.minimum.x = enemy->obj.pos.x - enemy->obj.img.scale.x * 0.5f;
+	enemy->collisionBox.minimum.y = enemy->obj.pos.y - enemy->obj.img.scale.y * 0.5f;
+	enemy->collisionBox.maximum.x = enemy->obj.pos.x + enemy->obj.img.scale.x * 0.5f;
+	enemy->collisionBox.maximum.y = enemy->obj.pos.y + enemy->obj.img.scale.y * 0.5f;
 
 
 	enemy->enemyCurrent = starting_state;
@@ -85,7 +85,7 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
 			enemy.loop_idle = false;
-			std::cout << "CHASING\n";
+			//std::cout << "CHASING\n";
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
@@ -106,7 +106,7 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 			}
 
 
-			std::cout << enemy.obj.pos.x << "IDLE\n";
+			//std::cout << enemy.obj.pos.x << "IDLE\n";
 		}
 		break;
 
@@ -118,19 +118,19 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
 			MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed); 
-			std::cout  << "CHASING HERE!\n";
+			//std::cout  << "CHASING HERE!\n";
 
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-			std::cout << "Going back to IDLE!\n";
+			//std::cout << "Going back to IDLE!\n";
 		}
 		break;
 
 	case ENEMY_SHOOT:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			if (CanFire(enemy.fireRate)) {
-				std::cout << "Shooting!\n";
+				//std::cout << "Shooting!\n";
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
@@ -144,7 +144,10 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 	}
 
 	enemy.enemyCurrent = enemy.enemyNext;
-
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
 }
 
@@ -166,7 +169,7 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
 			enemy.loop_idle = false;
-			std::cout << "HELLO CHASING\n";
+			//std::cout << "HELLO CHASING\n";
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
@@ -187,7 +190,7 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 			}
 
 
-			std::cout << enemy.obj.pos.x << "HELLO IDLE\n";
+			//std::cout << enemy.obj.pos.x << "HELLO IDLE\n";
 		}
 		break;
 
@@ -199,19 +202,19 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
 			MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed);
-			std::cout << "HELLO CHASING HERE!\n";
+			//std::cout << "HELLO CHASING HERE!\n";
 
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-			std::cout << "HELLO Going back to IDLE!\n";
+			//std::cout << "HELLO Going back to IDLE!\n";
 		}
 		break;
 
 	case ENEMY_SHOOT:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			if (CanFire(enemy.fireRate)) {
-				std::cout << "HELLO Shooting!\n";
+				//std::cout << "HELLO Shooting!\n";
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
@@ -225,8 +228,11 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 	}
 
 	enemy.enemyCurrent = enemy.enemyNext;
-
-
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+	//std::cout << "Enemy Collision X " << enemy.collisionBox.minimum.x << std::endl;
 }
 
 

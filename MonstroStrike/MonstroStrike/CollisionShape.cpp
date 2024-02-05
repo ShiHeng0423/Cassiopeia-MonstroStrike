@@ -33,8 +33,8 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
 {
     f32 penetrationDepth = 0.f;
-    std::cout << "Resolving vertical collision" << std::endl;
-    std::cout << "Normal: " << collisionNormal->y << std::endl;
+    //std::cout << "Resolving vertical collision" << std::endl;
+    //std::cout << "Normal: " << collisionNormal->y << std::endl;
 
     if (collisionNormal->y == 1)
     {

@@ -151,6 +151,19 @@ void Level1_Initialize()
 void Level1_Update()
 {
 	PlayerUpdate(*player);
+	if (AEInputCheckTriggered(AEVK_LBUTTON))
+	{
+		player->isAttacking = true;
+	}
+
+	//This is set here temporary so that thing actually work, need to move
+	if (player->isAttacking)
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+		}
+	}
 
 	for (int i = 0; i < 2; ++i) {
 		Enemy_Update_Choose(*enemy[i], *player);
@@ -214,9 +227,12 @@ void Level1_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	for (int i = 0; i < 2; ++i) {
-		AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		if (enemy[i]->health > 0)
+		{
+			AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
 	}
 
 	AEVec2 cam;
@@ -246,6 +262,11 @@ void Level1_Draw()
 		}
 	}
 
+	if (player->isAttacking)
+	{
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x, player->equippedWeapon.position.y, 0.f, player->equippedWeapon.Scale.x, player->equippedWeapon.Scale.y).m);
+		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	}
 }
 
 void Level1_Free()
