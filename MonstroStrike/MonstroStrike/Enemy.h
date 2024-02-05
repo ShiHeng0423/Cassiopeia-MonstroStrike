@@ -19,6 +19,8 @@ enum ENEMY_TYPES
 	ENEMY_FLY,
 	ENEMY_PASSIVE,
 	ENEMY_BOSS1,
+	ENEMY_BOSS1_WING1,
+	ENEMY_BOSS1_WING2,
 	ENEMY_BOSS2,
 };
 
@@ -41,16 +43,37 @@ struct Enemy {
 	int enemyNext = ENEMY_IDLE;
 	int enemyType = ENEMY_JUMPER;
 	
+	bool isAlive = true;
+	bool isShooting = false;
+
+
+
+	bool onFloor; //Added to check entity on floor, hence can jump
+	//Gravity affection
+	f32 mass;
+	AEVec2 velocity; //speed is the scalar of the velocity
+	AEVec2 collisionNormal; 
+	//Collision boxes
 	AABB collisionBox;
+	AABB boxHeadFeet;
+	AABB boxArms;
+};
+
+struct Bullet {
+	Object obj;
+	f32 speed = 80.f;
+
 };
 
 
 
 
 
+
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
-void ENEMY_Update(Enemy& enemy, struct Player& player);
-void ENEMY1_Update(Enemy& enemy, struct Player& player);
+void ENEMY_Update(Enemy& enemy, Player& player);
+void ENEMY1_Update(Enemy& enemy, Player& player);
+void ENEMY_BOSS_Update(Enemy& enemy, Player& player);
 void Enemy_Free(Enemy* enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
