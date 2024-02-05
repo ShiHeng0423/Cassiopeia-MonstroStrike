@@ -27,8 +27,8 @@ void Level1_Load()
 
 	enemy[0] = ENEMY_Init({100.f,100.f}, {500.f,0.f}, ENEMY_JUMPER, ENEMY_IDLE);
 	enemy[1] = ENEMY_Init({100.f,100.f }, {-500.f,0.f}, ENEMY_FLY, ENEMY_IDLE);
-	player = PlayerInitialize("Assets/Playerplaceholder.png", { 80.f,80.f }, { 0.f,0.f }, { 10.f,0.f }, true);
-	background = AEGfxTextureLoad("Assets/background.jpg");
+	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
@@ -156,12 +156,6 @@ void Level1_Update()
 		Enemy_Update_Choose(*enemy[i], *player);
 	}
 
-
-
-
-
-
-
 	if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 	{
 		next = GameStates::Quit;
@@ -212,7 +206,7 @@ void Level1_Draw()
 	AEGfxSetTransparency(1.0f);
 
 	AEGfxTextureSet(background, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 1920.f, 1080.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 4200, 1080.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
@@ -224,9 +218,6 @@ void Level1_Draw()
 		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
-
-
-
 
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);

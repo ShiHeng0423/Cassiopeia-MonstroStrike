@@ -59,7 +59,7 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
 void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
 {
     f32 penetrationDepth = 0.f;
-    std::cout << "Resolving Horizontal " << collisionNormal->x << std::endl;
+    //std::cout << "Resolving Horizontal " << collisionNormal->x << std::endl;
 
     if (collisionNormal->x == 1)
     {

@@ -109,60 +109,60 @@ namespace Inventory
 		return inventory;
 	}
 
-	std::vector<Inventory> SaveToJsonFile(const std::string& filepath,  Inventory& inventory)
-	{
-		Document json;
-		assert(json.IsObject());
-		json.SetObject();
+	//std::vector<Inventory> SaveToJsonFile(const std::string& filepath,  Inventory& inventory)
+	//{
+	//	Document json;
+	//	assert(json.IsObject());
+	//	json.SetObject();
 
-		Value out();
+	//	Value out();
 
-		//json = inventory;
+	//	//json = inventory;
 
-		std::ofstream ofs(filepath);
-		if (!ofs.is_open())
-		{
-			std::cerr << "Failed to open the JSON file" << std::endl;
-			//return inventory;
-		}
-	//	for (SizeType loc = 0; loc < inventory.Size(); loc++)
-		{
+	//	std::ofstream ofs(filepath);
+	//	if (!ofs.is_open())
+	//	{
+	//		std::cerr << "Failed to open the JSON file" << std::endl;
+	//		//return inventory;
+	//	}
+	////	for (SizeType loc = 0; loc < inventory.Size(); loc++)
+	//	{
 
-		}
+	//	}
 
-		// Writer<Inventory> writer(inventory);
-		//
-		// writer.StartObject();
-		// writer.Key("hello");
-		// writer.String("world");
-		// writer.Key("t");
-		// writer.Bool(true);
-		// writer.Key("f");
-		// writer.Bool(false);
-		// writer.Key("n");
-		// writer.Null();
-		// writer.Key("i");
-		// writer.Uint(123);
-		// writer.Key("pi");
-		// writer.Double(3.1416);
-		// writer.Key("a");
-		// writer.StartArray();
-		// for (unsigned i = 0; i < 4; i++)
-		// 	writer.Uint(i);
-		// writer.EndArray();
-		// writer.EndObject();
+	//	// Writer<Inventory> writer(inventory);
+	//	//
+	//	// writer.StartObject();
+	//	// writer.Key("hello");
+	//	// writer.String("world");
+	//	// writer.Key("t");
+	//	// writer.Bool(true);
+	//	// writer.Key("f");
+	//	// writer.Bool(false);
+	//	// writer.Key("n");
+	//	// writer.Null();
+	//	// writer.Key("i");
+	//	// writer.Uint(123);
+	//	// writer.Key("pi");
+	//	// writer.Double(3.1416);
+	//	// writer.Key("a");
+	//	// writer.StartArray();
+	//	// for (unsigned i = 0; i < 4; i++)
+	//	// 	writer.Uint(i);
+	//	// writer.EndArray();
+	//	// writer.EndObject();
 
-		//std::cout << inventory << std::endl;
-		
-		//OStreamWrapper osw(ofs);
+	//	//std::cout << inventory << std::endl;
+	//	
+	//	//OStreamWrapper osw(ofs);
 
-		// Writer<OStreamWrapper> writer(osw);
-		// json.Accept(writer);
-
-
+	//	// Writer<OStreamWrapper> writer(osw);
+	//	// json.Accept(writer);
 
 
-	}
+
+
+	//}
 
 
 	void Load_Inventory()
