@@ -61,6 +61,7 @@ namespace Inventory
 	};
 
 	std::vector<Inventory> ReadJsonFile(const std::string& filepath);
+	std::vector<Inventory> SaveToJsonFile(const std::string& filepath, Inventory inventory);
 	void InitInventory();
 	void Load_Inventory();
 	void UpdateInventory();
