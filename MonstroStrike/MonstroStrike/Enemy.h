@@ -5,6 +5,7 @@
 #include <vector>
 
 
+
 enum ENEMY_STATES
 {
 	ENEMY_IDLE = 0,
@@ -25,7 +26,12 @@ enum ENEMY_TYPES
 	ENEMY_BOSS2,
 };
 
-
+struct Bullet {
+	Object obj;
+	float bulletSpeed;
+	AEVec2 bulletVel;
+	int lifetime;
+};
 
 struct Enemy {
 	Object obj;
@@ -38,6 +44,7 @@ struct Enemy {
 	f32 lineOfSight = 350;
 	f32 shootingRange = 250;
 	f32 fireRate = 5.0f;
+	f32 timeSinceLastFire = 0;
 	f32 health = 100;
 
 	int enemyCurrent = ENEMY_IDLE;
@@ -61,21 +68,12 @@ struct Enemy {
 	AABB boxHeadFeet;
 	AABB boxArms;
 
-
+	std::vector<Bullet> bullets;	// Shared vector container for bullets
 };
 
 
-struct Bullet {
-	Object obj;
-	float bulletSpeed;
-	AEVec2 bulletVel;
-	int lifetime;
-};
 
-#ifndef BULLET_CONTAINER_H
-#define BULLET_CONTAINER_H
-extern std::vector<Bullet> bullets;
-#endif /* BULLET_CONTAINER_H */
+
 
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
@@ -96,6 +94,6 @@ void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 
 //(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed);
-bool CanFire(f32 fireRate);
+bool CanFire(Enemy& enemy);
 void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
 //(EnemyUtils)-------------------------------------------------------------------------

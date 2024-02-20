@@ -3,7 +3,8 @@
 #include "AEEngine.h"
 #include <iostream>
 
-f32 timeSinceLastFire;
+
+
 
 void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed) {
 
@@ -23,19 +24,17 @@ void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed) {
 }
 
 
-bool CanFire(f32 fireRate) {
+bool CanFire(Enemy& enemy) {
 
-	timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
-
-	if (timeSinceLastFire >= 1.0f / fireRate) {
-		timeSinceLastFire = 0.0f; //reset
+	if (enemy.timeSinceLastFire >= 1.0f / enemy.fireRate) {
+		enemy.timeSinceLastFire = 0.0f; //reset
 		return true;
 	}
 	return false;
 }
 
 
-void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets) {
+void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& vecbullets) {
 	//dir vec from enemy to player
 	AEVec2 direction;
 	AEVec2Sub(&direction, &player_position, &enemy_position); //player - enemy
@@ -48,14 +47,16 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 	bullet.lifetime = 50;													//lifetime
 	bullet.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png");			//image
 	AEVec2Set(&bullet.obj.pos, enemy_position.x, enemy_position.y);			//start position
-	AEVec2Set(&bullet.obj.img.scale, 100.f, 100.f);							//set scale of the image
+	AEVec2Set(&bullet.obj.img.scale, 80.f, 80.f);							//set scale of the image
 
 	//set velocity of bullet
 	bullet.bulletSpeed = 5.f;
 	AEVec2Set(&bullet.bulletVel, direction.x * bullet.bulletSpeed, direction.y * bullet.bulletSpeed);
 
+
 	// Push the bullet into the vector
-	bullets.push_back(bullet);
+	vecbullets.push_back(bullet);
+
 
 }
 

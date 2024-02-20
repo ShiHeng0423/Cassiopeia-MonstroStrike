@@ -266,26 +266,18 @@ void Level1_Update()
 		}
 	}
 
+
+
+
+
+
 	for (int i = 0; i < size; ++i) {
 		if (enemy[i]->isAlive) {
+
 			Enemy_Update_Choose(*enemy[i], *player);
 		}
 	}
 
-
-	//update bullet
-	for (auto it = bullets.begin(); it != bullets.end(); ) {
-		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
-		it->obj.pos.y += it->bulletVel.y * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
-
-		it->lifetime--;	//decrease lifetime
-		if (it->lifetime <= 0) {
-			it = bullets.erase(it);
-		}
-		else {
-			++it;
-		}
-	}
 
 
 	if (AEInputCheckTriggered(AEVK_I))
@@ -403,6 +395,11 @@ void Level1_Draw()
 				AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+				for (const Bullet& bullet : enemy[i]->bullets) {
+					AEGfxTextureSet(bullet.obj.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
+					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+				}
 			}
 			else {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
@@ -413,19 +410,6 @@ void Level1_Draw()
 		}	
 	}
 
-	for (const auto& bullet : bullets) {
-		AEGfxTextureSet(bullet.obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	}
-
-	//for (int i = 0; i < 10; ++i) {
-	//	if (bullet[i].obj.speed.x == 0 && bullet[i].obj.speed.y == 0)
-	//		continue;
-	//	AEGfxTextureSet(bullet[i].obj.img.pTex, 0, 0);
-	//	AEGfxSetTransform(ObjectTransformationMatrixSet(bullet[i].obj.pos.x, bullet[i].obj.pos.y, 0.f, bullet[i].obj.img.scale.x, bullet[i].obj.img.scale.y).m);
-	//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	//}
 
 
 	AEVec2 cam;

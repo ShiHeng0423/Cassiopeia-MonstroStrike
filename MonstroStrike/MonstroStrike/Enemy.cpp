@@ -11,7 +11,8 @@
 
 
 
-std::vector<Bullet> bullets;
+
+
 
 
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_state) {
@@ -69,25 +70,40 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 
 
 
-
-
-
-
 void Enemy_Free(Enemy* enemy) {
 	delete enemy;
 }
 
 
 
-void Enemy_Update_Choose(Enemy& enemy, Player& player) {
+void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
+//(update bullet)---------------------------------------------------------------------------------------
+	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
+		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
+		it->obj.pos.y += it->bulletVel.y * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
+
+		it->lifetime--;	//decrease lifetime
+		if (it->lifetime <= 0) {
+			it = enemy.bullets.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+//(update bullet)---------------------------------------------------------------------------------------
+	
+	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+	
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		ENEMY_JUMPER_Update(enemy, player);
+		std::cout << "Enemy: " << enemy.enemyType << " " << enemy.timeSinceLastFire << std::endl;
 		break;
 	case ENEMY_CHARGER:
 		break;
 	case ENEMY_FLY:
 		ENEMY_FLY_Update(enemy, player);
+		std::cout << "Enemy: " << enemy.enemyType << " " << enemy.timeSinceLastFire << std::endl;
 		break;
 	case ENEMY_PASSIVE:
 		break;
@@ -142,7 +158,7 @@ void Enemy_Update_Choose(Enemy& enemy, Player& player) {
 
 
 
-void ENEMY_JUMPER_Update(Enemy &enemy, Player& player)
+void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos); 
 
@@ -202,8 +218,9 @@ void ENEMY_JUMPER_Update(Enemy &enemy, Player& player)
 	case ENEMY_SHOOT:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
-			if (CanFire(enemy.fireRate)) {
-				SpawnBullet(enemy.obj.pos, player.obj.pos, bullets);
+			if (CanFire(enemy)) {
+				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
+				std::cout << "enemy1\n";
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
@@ -234,7 +251,7 @@ void ENEMY_JUMPER_Update(Enemy &enemy, Player& player)
 
 
 
-void ENEMY_FLY_Update(Enemy& enemy, Player& player)
+void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	if (enemy.health <= 0)
@@ -293,8 +310,9 @@ void ENEMY_FLY_Update(Enemy& enemy, Player& player)
 	case ENEMY_SHOOT:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
-			if (CanFire(enemy.fireRate)) {
-				SpawnBullet(enemy.obj.pos, player.obj.pos, bullets);
+			if (CanFire(enemy)) {
+				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
+				std::cout << "enemy2\n";
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
@@ -346,7 +364,7 @@ void ENEMY_FLY_Update(Enemy& enemy, Player& player)
 
 
 
-void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
+void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	if (enemy.health <= 0)
@@ -403,7 +421,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 
 		case ENEMY_SHOOT:
 			if (distanceFromPlayer <= enemy.shootingRange) {
-				if (CanFire(enemy.fireRate)) {
+				if (CanFire(enemy)) {
 					//std::cout << "HELLO Shooting!\n";
 				}
 				enemy.enemyNext = ENEMY_SHOOT;
@@ -423,7 +441,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, Player& player)
 		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 	}//if boss1 AI
 }
-void ENEMY_BOSSWING1_Update(Enemy& enemy, Player& player) {
+void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player) {
 
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	if (enemy.health <= 0)
@@ -483,7 +501,7 @@ void ENEMY_BOSSWING1_Update(Enemy& enemy, Player& player) {
 
 		case ENEMY_SHOOT:
 			if (distanceFromPlayer <= enemy.shootingRange) {
-				if (CanFire(enemy.fireRate)) {
+				if (CanFire(enemy)) {
 
 				}
 				enemy.enemyNext = ENEMY_SHOOT;
@@ -506,7 +524,7 @@ void ENEMY_BOSSWING1_Update(Enemy& enemy, Player& player) {
 }
 
 
-void ENEMY_BOSSWING2_Update(Enemy& enemy, Player& player){
+void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player){
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	if (enemy.health <= 0)
 	{
@@ -566,7 +584,7 @@ void ENEMY_BOSSWING2_Update(Enemy& enemy, Player& player){
 		case ENEMY_SHOOT:
 			if (distanceFromPlayer <= enemy.shootingRange) {
 				enemy.isShooting = true;
-				if (CanFire(enemy.fireRate)) {
+				if (CanFire(enemy)) {
 					//std::cout << "HELLO Shooting!\n";
 				}
 				enemy.enemyNext = ENEMY_SHOOT;
