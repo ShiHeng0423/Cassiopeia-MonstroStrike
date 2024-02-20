@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "Player.h"
 #include "CollisionShape.h"
+#include <vector>
 
 
 enum ENEMY_STATES
@@ -27,7 +28,7 @@ enum ENEMY_TYPES
 
 
 struct Enemy {
-	Object obj = { 0 };
+	Object obj;
 
 	AEVec2 starting_position = { 0 }; //startinglocation whr enemy spawns
 	AEVec2 waypoint1 = { 0 };	//waypoints are for enemy idle back n forth points
@@ -49,37 +50,52 @@ struct Enemy {
 
 
 	bool onFloor; //Added to check entity on floor, hence can jump
+
 	//Gravity affection
 	f32 mass;
 	AEVec2 velocity; //speed is the scalar of the velocity
 	AEVec2 collisionNormal; 
+
 	//Collision boxes
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;
+
+
 };
 
-//
-//struct Bullet {
-//	Object obj;
-//	f32 speed = 80.f;
-//
-//};
-//
-//extern Bullet bullet[10];
 
+struct Bullet {
+	Object obj;
+	float bulletSpeed;
+	AEVec2 bulletVel;
+	int lifetime;
+};
 
-
-
+#ifndef BULLET_CONTAINER_H
+#define BULLET_CONTAINER_H
+extern std::vector<Bullet> bullets;
+#endif /* BULLET_CONTAINER_H */
 
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
-void ENEMY_Update(Enemy& enemy, struct Player& player);
-void ENEMY1_Update(Enemy& enemy, struct Player& player);
+void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
+void Enemy_Free(Enemy* enemy);
+
+
+
+
+
+
+void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player);
+void ENEMY_FLY_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
-void Enemy_Free(Enemy* enemy);
-void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
+
+
+//(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed);
 bool CanFire(f32 fireRate);
+void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
+//(EnemyUtils)-------------------------------------------------------------------------

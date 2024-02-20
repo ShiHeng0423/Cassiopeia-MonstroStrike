@@ -11,10 +11,7 @@
 
 
 
-f32 timeSinceLastFire;
-//int Bulletindex;
-//Bullet bullet[10];
-
+std::vector<Bullet> bullets;
 
 
 Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_state) {
@@ -22,23 +19,23 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 	Enemy* enemy = new Enemy;
 	switch (enemy_type) {
 	case ENEMY_JUMPER:	
-		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_3.png"); //assign the texture
+		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_3.png"); 
 		break;
 	case ENEMY_CHARGER:
 		break;
 	case ENEMY_FLY:
-		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_2.png"); //assign the texture
+		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_2.png"); 
 		break;
 	case ENEMY_PASSIVE:
 		break;
 	case ENEMY_BOSS1:
-		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/SubaDuck.png"); //assign the texture
+		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/SubaDuck.png"); 
 		break;
 	case ENEMY_BOSS1_WING1:
-		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png"); //assign the texture
+		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png"); 
 		break;
 	case ENEMY_BOSS1_WING2:
-		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/BlueCircle.png"); //assign the texture
+		enemy->obj.img.pTex = AEGfxTextureLoad("Assets/BlueCircle.png"); 
 		break;
 	case ENEMY_BOSS2:
 		break;
@@ -76,6 +73,42 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 
 
 
+void Enemy_Free(Enemy* enemy) {
+	delete enemy;
+}
+
+
+
+void Enemy_Update_Choose(Enemy& enemy, Player& player) {
+	switch (enemy.enemyType) {
+	case ENEMY_JUMPER:
+		ENEMY_JUMPER_Update(enemy, player);
+		break;
+	case ENEMY_CHARGER:
+		break;
+	case ENEMY_FLY:
+		ENEMY_FLY_Update(enemy, player);
+		break;
+	case ENEMY_PASSIVE:
+		break;
+	case ENEMY_BOSS1:
+		ENEMY_BOSS_Update(enemy, player);
+		break;
+	case ENEMY_BOSS1_WING1:
+		ENEMY_BOSSWING1_Update(enemy, player);
+		break;
+	case ENEMY_BOSS1_WING2:
+		ENEMY_BOSSWING2_Update(enemy, player);
+		break;
+	case ENEMY_BOSS2:
+		break;
+
+	default:
+		break;
+
+	}
+
+}
 
 
 
@@ -109,9 +142,7 @@ Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int starting_st
 
 
 
-
-
-void ENEMY_Update(Enemy &enemy, Player& player)
+void ENEMY_JUMPER_Update(Enemy &enemy, Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos); 
 
@@ -172,12 +203,13 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
 			if (CanFire(enemy.fireRate)) {
-				//std::cout << "Shooting!\n";
+				SpawnBullet(enemy.obj.pos, player.obj.pos, bullets);
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.isShooting = false;
+
 			enemy.enemyNext = ENEMY_CHASE;
 			//std::cout << "Shooting!\n";
 		}
@@ -202,7 +234,7 @@ void ENEMY_Update(Enemy &enemy, Player& player)
 
 
 
-void ENEMY1_Update(Enemy& enemy, Player& player)
+void ENEMY_FLY_Update(Enemy& enemy, Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	if (enemy.health <= 0)
@@ -262,12 +294,13 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
 			if (CanFire(enemy.fireRate)) {
-				//std::cout << "HELLO Shooting!\n";
+				SpawnBullet(enemy.obj.pos, player.obj.pos, bullets);
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.isShooting = false;
+
 			enemy.enemyNext = ENEMY_CHASE;
 			//std::cout << "Shooting!\n";
 		}
@@ -283,6 +316,33 @@ void ENEMY1_Update(Enemy& enemy, Player& player)
 	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 	//std::cout << "Enemy Collision X " << enemy.collisionBox.minimum.x << std::endl;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -424,12 +484,7 @@ void ENEMY_BOSSWING1_Update(Enemy& enemy, Player& player) {
 		case ENEMY_SHOOT:
 			if (distanceFromPlayer <= enemy.shootingRange) {
 				if (CanFire(enemy.fireRate)) {
-					//std::cout << "HELLO Shooting!\n";
-					//bullet[Bulletindex].obj.pos = enemy.obj.pos;
-					//waterBullets[index].direction = CP_Vector_Normalize(CP_Vector_Subtract(playerPos, waterBullets[index].position));
-					//AEVec2Sub(&bullet[Bulletindex].obj.speed, &enemy.obj.pos, &player.obj.pos);
-					//AEVec2Normalize(&bullet[Bulletindex].obj.speed, &bullet[Bulletindex].obj.speed);
-					//Bulletindex++;
+
 				}
 				enemy.enemyNext = ENEMY_SHOOT;
 			}
@@ -537,118 +592,3 @@ void ENEMY_BOSSWING2_Update(Enemy& enemy, Player& player){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Enemy_Free(Enemy* enemy) {
-	delete enemy;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed) {
-
-	f32 speed_x = speed;
-
-	if ((moving_entity.x != target_position.x)) {
-		if (moving_entity.x >= target_position.x) {
-			speed_x *= -1.0f;
-			//std::cout << "x greater\n";
-		}
-		if (moving_entity.x <= target_position.x) {
-			speed_x *= 1.0f;
-
-		}
-	}
-
-	moving_entity.x += speed_x * (f32)AEFrameRateControllerGetFrameTime();
-}
-
-
-
-
-bool CanFire(f32 fireRate) {
-
-	timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
-
-	if (timeSinceLastFire >= 1.0f / fireRate) {
-		timeSinceLastFire = 0.0f; //reset
-		return true;
-	}
-	return false;
-}
-
-
-
-void Enemy_Update_Choose(Enemy& enemy, Player& player) {
-	switch (enemy.enemyType) {
-	case ENEMY_JUMPER:
-		ENEMY_Update(enemy, player);
-		break;
-	case ENEMY_CHARGER:
-		break;
-	case ENEMY_FLY:
-		ENEMY1_Update(enemy, player);
-		break;
-	case ENEMY_PASSIVE:
-		break;
-	case ENEMY_BOSS1:
-		ENEMY_BOSS_Update(enemy, player);
-		break;
-	case ENEMY_BOSS1_WING1:
-		ENEMY_BOSSWING1_Update(enemy, player);
-		break;
-	case ENEMY_BOSS1_WING2:
-		ENEMY_BOSSWING2_Update(enemy, player);
-		break;
-	case ENEMY_BOSS2:
-		break;
-
-	default:
-		break;
-
-	}
-
-}

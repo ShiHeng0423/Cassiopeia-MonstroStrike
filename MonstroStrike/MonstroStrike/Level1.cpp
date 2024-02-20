@@ -11,6 +11,7 @@
 #include "Physics.h"
 #include "CollisionShape.h" //For Verticl + Horizontal collision
 #include <string>
+#include <vector>
 
 
 
@@ -40,7 +41,9 @@ namespace {
 
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
-	const int size = 5;
+
+
+	const int size = 5;	//size so that loops work
 	Enemy* enemy[size];
 	Player* player;
 
@@ -76,16 +79,11 @@ void Level1_Load()
 {
 
 	enemy[0] = ENEMY_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_JUMPER, ENEMY_IDLE);
-	enemy[1] = ENEMY_Init({80.f,80.f }, {-500.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
+	enemy[1] = ENEMY_Init({80.f,80.f }, {200.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
 	enemy[2] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING1, ENEMY_IDLE);
 	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
 	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
 
-
-	//for (Bullet &num : bullet) {
-	//	num.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.jpg");
-	//	AEVec2Set(&num.obj.img.scale, 20.f, 20.f);
-	//}
 
 
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { 0.f,0.f }, { 10.f,0.f }, true);
@@ -274,14 +272,20 @@ void Level1_Update()
 		}
 	}
 
-	//for (int i = 0; i < 10; ++i) {
-	//	if (bullet[i].obj.speed.x == 0 && bullet[i].obj.speed.y == 0)
-	//		continue;
-	//	bullet[i].obj.pos.x += bullet[i].obj.speed.x * (f32)AEFrameRateControllerGetFrameTime() * 200.f;
-	//	bullet[i].obj.pos.y += bullet[i].obj.speed.y * (f32)AEFrameRateControllerGetFrameTime() * 200.f;
-	//	
-	//}
 
+	//update bullet
+	for (auto it = bullets.begin(); it != bullets.end(); ) {
+		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
+		it->obj.pos.y += it->bulletVel.y * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
+
+		it->lifetime--;	//decrease lifetime
+		if (it->lifetime <= 0) {
+			it = bullets.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
 
 
 	if (AEInputCheckTriggered(AEVK_I))
@@ -406,8 +410,13 @@ void Level1_Draw()
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
-		}
-		
+		}	
+	}
+
+	for (const auto& bullet : bullets) {
+		AEGfxTextureSet(bullet.obj.img.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 
 	//for (int i = 0; i < 10; ++i) {
