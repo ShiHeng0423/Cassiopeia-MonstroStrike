@@ -28,39 +28,49 @@ enum ENEMY_TYPES
 
 struct Bullet {
 	Object obj;
+
 	float bulletSpeed;
 	AEVec2 bulletVel;
 	int lifetime;
 };
 
+//for wings
+struct EnemyPart {
+	Object obj;
+	AABB collisionBox;
+};
+
+
 struct Enemy {
 	Object obj;
 
-	AEVec2 starting_position = { 0 }; //startinglocation whr enemy spawns
-	AEVec2 waypoint1 = { 0 };	//waypoints are for enemy idle back n forth points
-	bool loop_idle = true;
+	AEVec2 starting_position;	//startinglocation whr enemy spawns
+	AEVec2 waypoint;			//waypoints are for enemy idle back n forth points
+	bool loop_idle;
 
-	f32 speed = 80.f;
-	f32 lineOfSight = 350;
-	f32 shootingRange = 250;
-	f32 fireRate = 5.0f;
-	f32 timeSinceLastFire = 0;
-	f32 health = 100;
-
-	int enemyCurrent = ENEMY_IDLE;
-	int enemyNext = ENEMY_IDLE;
-	int enemyType = ENEMY_JUMPER;
+	int enemyCurrent;
+	int enemyNext;
+	int enemyType;
 	
-	bool isAlive = true;
-	bool isShooting = false;
+	bool isAlive;
+	bool isShooting;
 
-
-
-	bool onFloor; //Added to check entity on floor, hence can jump
+//(stats)----------------------------------------------
+	f32 speed;
+	f32 lineOfSight;
+	f32 shootingRange;
+	f32 fireRate;
+	f32 timeSinceLastFire;
+	f32 health;
 
 	//Gravity affection
 	f32 mass;
-	AEVec2 velocity; //speed is the scalar of the velocity
+	AEVec2 velocity;			//speed is the scalar of the velocity
+//(stats)----------------------------------------------
+
+
+	bool onFloor; //Added to check entity on floor, hence can jump
+	//Gravity affection
 	AEVec2 collisionNormal; 
 
 	//Collision boxes
@@ -69,15 +79,20 @@ struct Enemy {
 	AABB boxArms;
 
 	std::vector<Bullet> bullets;	// Shared vector container for bullets
+
+
+
+	EnemyPart wing1, wing2;
 };
 
 
 
 
 
-Enemy* ENEMY_Init(AEVec2 scale, AEVec2 location, int enemy_type, int startingState);
+void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
+void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
-void Enemy_Free(Enemy* enemy);
+//void Enemy_Free(Enemy* enemy);
 
 
 

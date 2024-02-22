@@ -43,8 +43,10 @@ namespace {
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
 
 
-	const int size = 5;	//size so that loops work
-	Enemy* enemy[size];
+	//const int size = 5;	//size so that loops work
+	//Enemy* enemy[size];
+	std::vector<Enemy> vecEnemy; //enemy container
+
 	Player* player;
 
 	AEGfxTexture* background;
@@ -78,11 +80,13 @@ void Equip(int index, ButtonGearUI tmp)
 void Level1_Load()
 {
 
-	enemy[0] = ENEMY_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_JUMPER, ENEMY_IDLE);
-	enemy[1] = ENEMY_Init({80.f,80.f }, {200.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
-	enemy[2] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING1, ENEMY_IDLE);
-	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
-	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
+
+	//loading texture only, push back into the vector
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	//Enemy_Load(ENEMY_BOSS1_WING1, vecEnemy);
+	//Enemy_Load(ENEMY_BOSS1_WING2, vecEnemy);
+	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 
 
 
@@ -245,6 +249,16 @@ void Level1_Initialize()
 			}
 		}
 	}
+
+
+	//looping thru to init all enemy variables
+	Enemy_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({80.f,80.f}, {200.f,-150.f}, ENEMY_IDLE, vecEnemy[1]);
+	//Enemy_Init({80.f,80.f}, { -500.f,150.f }, ENEMY_IDLE, vecEnemy[2]);
+	//Enemy_Init({80.f,80.f}, { -500.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({80.f,80.f}, { -500.f,150.f }, ENEMY_IDLE, vecEnemy[2]);
+
+
 }
 
 void Level1_Update()
@@ -258,23 +272,24 @@ void Level1_Update()
 	//This is set here temporary so that thing actually work, need to move
 	if (player->isAttacking)
 	{
-		for (int i = 0; i < size; i++)
-		{	
-			if (enemy[i]->isAlive) {
-				CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+		//for (int i = 0; i < size; i++)
+		//{	
+		//	if (enemy[i]->isAlive) {
+		//		CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+		//	}
+		//}
+
+		for (Enemy& enemy : vecEnemy) {
+			if (enemy.isAlive) {
+				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
 			}
 		}
+
 	}
 
-
-
-
-
-
-	for (int i = 0; i < size; ++i) {
-		if (enemy[i]->isAlive) {
-
-			Enemy_Update_Choose(*enemy[i], *player);
+	for (Enemy& enemy : vecEnemy) {
+		if (enemy.isAlive) {
+			Enemy_Update_Choose(enemy, *player);
 		}
 	}
 
@@ -388,14 +403,24 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	for (int i = 0; i < size; ++i) {
-		if (enemy[i]->isAlive) {
-			if (enemy[i]->isShooting) {
+
+
+	for (Enemy& enemy : vecEnemy) {
+		if (enemy.isAlive) {
+			if (enemy.isShooting) {
 				AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
-				AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-				for (const Bullet& bullet : enemy[i]->bullets) {
+				if (enemy.enemyType == ENEMY_BOSS1) {
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+					AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+					AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				}
+
+				for (const Bullet& bullet : enemy.bullets) {
 					AEGfxTextureSet(bullet.obj.img.pTex, 0, 0);
 					AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
 					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -403,12 +428,21 @@ void Level1_Draw()
 			}
 			else {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				AEGfxTextureSet(enemy[i]->obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy[i]->obj.pos.x, enemy[i]->obj.pos.y, 0.f, enemy[i]->obj.img.scale.x, enemy[i]->obj.img.scale.y).m);
+				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+				if (enemy.enemyType == ENEMY_BOSS1) {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+					AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+					AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				}
 			}
-		}	
+		}
 	}
+
+
 
 
 
@@ -483,9 +517,9 @@ void Level1_Draw()
 
 void Level1_Free()
 {
-	for (int i = 0; i < size; ++i) {
-		Enemy_Free(enemy[i]);
-	}
+
+	//Free Enemy Vector
+	vecEnemy.clear();
 
 	//Free vectors
 	gameMap.clear();
