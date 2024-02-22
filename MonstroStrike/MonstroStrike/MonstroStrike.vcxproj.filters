@@ -249,5 +249,8 @@
     <ClInclude Include="rapidjson\ostreamwrapper.h">
       <Filter>Header Files\RapidJason Header</Filter>
     </ClInclude>
+    <ClInclude Include="EnemyUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

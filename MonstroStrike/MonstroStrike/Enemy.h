@@ -21,11 +21,11 @@ enum ENEMY_TYPES
 	ENEMY_FLY,
 	ENEMY_PASSIVE,
 	ENEMY_BOSS1,
-	ENEMY_BOSS1_WING1,
-	ENEMY_BOSS1_WING2,
 	ENEMY_BOSS2,
 };
 
+
+ 
 struct Bullet {
 	Object obj;
 
@@ -38,6 +38,14 @@ struct Bullet {
 struct EnemyPart {
 	Object obj;
 	AABB collisionBox;
+
+	//stats
+	bool isAlive;
+	f32 Offset;
+	f32 fireRate;
+	f32 timeSinceLastFire;
+	f32 health;
+
 };
 
 
@@ -92,7 +100,7 @@ struct Enemy {
 void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
 void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
-//void Enemy_Free(Enemy* enemy);
+
 
 
 
@@ -108,7 +116,9 @@ void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 
 
 //(EnemyUtils)-------------------------------------------------------------------------
-void MoveTowards(AEVec2& moving_entity, AEVec2 target_position, f32 speed);
+void MoveTowards(Enemy& moving_entity, AEVec2 target_position);
 bool CanFire(Enemy& enemy);
+bool CanPartFire(EnemyPart& part);
 void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
+void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
 //(EnemyUtils)-------------------------------------------------------------------------

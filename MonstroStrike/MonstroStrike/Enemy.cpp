@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include "Player.h"
 #include "AEEngine.h"
-
+#include "Physics.h"
 
 #include <iostream>
 
@@ -28,12 +28,6 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png");
 		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/BlueCircle.png");
 		break;
-	case ENEMY_BOSS1_WING1:
-		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png");
-		break;
-	case ENEMY_BOSS1_WING2:
-		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/BlueCircle.png");
-		break;
 	case ENEMY_BOSS2:
 		break;
 
@@ -55,7 +49,6 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) {
 
 	//Initializing Enemy struct variables
-
 	AEVec2Set(&enemy.obj.pos, location.x, location.y); //set starting location
 	AEVec2Set(&enemy.obj.img.scale, scale.x, scale.y); //set scale of the image
 
@@ -87,7 +80,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
 		enemy.mass = 100.f;
-		enemy.velocity = { 0 };
+		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_CHARGER:
 
@@ -100,49 +93,48 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
 		enemy.mass = 100.f;
-		enemy.velocity = { 0 };
+		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_PASSIVE:
 
 		break;
 	case ENEMY_BOSS1:
+		//main body
 		enemy.speed = 80.f;
 		enemy.lineOfSight = 300.f;
 		enemy.shootingRange = 250;
 		enemy.fireRate = 5.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
-		enemy.mass = 100.f;
-		enemy.velocity = { 0 };
+		enemy.mass = 10.f;
+		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 
 		//wing1
-		AEVec2Set(&enemy.wing1.obj.pos, location.x, location.y); //set starting location
+		enemy.wing1.isAlive = true;
+		enemy.wing1.Offset = 100.f;
+		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x, scale.y); //set scale of the image
-		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.fireRate = 5.0f;
+		enemy.wing1.timeSinceLastFire = 0;
+		enemy.wing1.health = 100;
+
+		//wing2
+		enemy.wing2.isAlive = true;
+		enemy.wing2.Offset = -100.f;
+		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
+		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x, scale.y); //set scale of the image
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.fireRate = 5.0f;
+		enemy.wing2.timeSinceLastFire = 0;
+		enemy.wing2.health = 100;
 		break;
-	//case ENEMY_BOSS1_WING1:
-	//	enemy.speed = 80.f;
-	//	enemy.lineOfSight = 300.f;
-	//	enemy.shootingRange = 250;
-	//	enemy.fireRate = 5.0f;
-	//	enemy.timeSinceLastFire = 0;
-	//	enemy.health = 100;
-	//	enemy.mass = 100.f;
-	//	enemy.velocity = { 0 };
-	//	break;
-	//case ENEMY_BOSS1_WING2:
-	//	enemy.speed = 80.f;
-	//	enemy.lineOfSight = 300.f;
-	//	enemy.shootingRange = 250;
-	//	enemy.fireRate = 5.0f;
-	//	enemy.timeSinceLastFire = 0;
-	//	enemy.health = 100;
-	//	enemy.mass = 100.f;
-	//	enemy.velocity = { 0 };
-	//	break;
 	case ENEMY_BOSS2:
 		break;
 
@@ -167,6 +159,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 
 		it->lifetime--;	//decrease lifetime
 		if (it->lifetime <= 0) {
+
 			it = enemy.bullets.erase(it);
 		}
 		else {
@@ -176,6 +169,11 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 //(update bullet)---------------------------------------------------------------------------------------
 	
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+
+	ApplyGravity(&enemy.velocity, enemy.mass);
+	
 	
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
@@ -190,13 +188,8 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		break;
 	case ENEMY_BOSS1:
 		ENEMY_BOSS_Update(enemy, player);
+		std::cout << enemy.velocity.x << " " << enemy.velocity.y << "\n";
 		break;
-	//case ENEMY_BOSS1_WING1:
-	//	ENEMY_BOSSWING1_Update(enemy, player);
-	//	break;
-	//case ENEMY_BOSS1_WING2:
-	//	ENEMY_BOSSWING2_Update(enemy, player);
-	//	break;
 	case ENEMY_BOSS2:
 		break;
 
@@ -204,6 +197,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		break;
 
 	}
+
 
 }
 
@@ -254,14 +248,14 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
 			enemy.loop_idle = false;
-			//std::cout << "CHASING\n";
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-			//long condition to stop jittering
-			//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
+	
 			if (enemy.loop_idle) {
-				MoveTowards(enemy.obj.pos, enemy.waypoint, enemy.speed);
+				MoveTowards(enemy, enemy.waypoint);
+
+				
 				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
 					enemy.loop_idle = false;
 				}
@@ -271,11 +265,9 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 			}
 			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
 				
-				MoveTowards(enemy.obj.pos, enemy.starting_position, enemy.speed);
-			}
+				MoveTowards(enemy, enemy.starting_position);
 
-
-			
+			}		
 		}
 		break;
 
@@ -286,8 +278,8 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 		}
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
-			MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed); 
-			//std::cout  << "CHASING HERE!\n";
+			MoveTowards(enemy, player.obj.pos); 
+
 
 		}
 		else {
@@ -301,7 +293,7 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 			enemy.isShooting = true;
 			if (CanFire(enemy)) {
 				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
-				std::cout << "enemy1\n";
+
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
@@ -315,6 +307,9 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 	default:
 		break;
 	}
+
+
+
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
@@ -334,6 +329,7 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 
 void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 {
+
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	if (enemy.health <= 0)
 	{
@@ -350,10 +346,9 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-			//long condition to stop jittering
-			//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
 			if (enemy.loop_idle) {
-				MoveTowards(enemy.obj.pos, enemy.waypoint, enemy.speed);
+				MoveTowards(enemy, enemy.waypoint);
+
 				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
 					enemy.loop_idle = false;
 				}
@@ -363,11 +358,11 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			}
 			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
 
-				MoveTowards(enemy.obj.pos, enemy.starting_position, enemy.speed);
+				MoveTowards(enemy, enemy.starting_position);
+
 			}
 
 
-			//std::cout << enemy.obj.pos.x << "HELLO IDLE\n";
 		}
 		break;
 
@@ -378,7 +373,8 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 		}
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
-			MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed);
+			MoveTowards(enemy, player.obj.pos);
+
 			//std::cout << "HELLO CHASING HERE!\n";
 
 		}
@@ -393,7 +389,6 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			enemy.isShooting = true;
 			if (CanFire(enemy)) {
 				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
-				std::cout << "enemy2\n";
 			}
 			enemy.enemyNext = ENEMY_SHOOT;
 		}
@@ -407,6 +402,9 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 	default:
 		break;
 	}
+
+
+
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;

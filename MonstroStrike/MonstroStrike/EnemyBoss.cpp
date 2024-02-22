@@ -10,246 +10,142 @@
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+
+//health check
 	if (enemy.health <= 0)
 	{
 		enemy.isAlive = false;
 	}
+	if (enemy.wing1.health <= 0)
+	{
+		enemy.wing1.isAlive = false;
+	}
+	if (enemy.wing2.health <= 0)
+	{
+		enemy.wing2.isAlive = false;
+	}
 
-	if (enemy.enemyType == ENEMY_BOSS1) {
-		switch (enemy.enemyCurrent)
-		{
-		case ENEMY_IDLE:
-			if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-				enemy.enemyNext = ENEMY_CHASE;
-				enemy.loop_idle = false;
-				//std::cout << "HELLO CHASING\n";
-			}
-			else {
-				enemy.enemyNext = ENEMY_IDLE;
-				//long condition to stop jittering
-				//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
-				if (enemy.loop_idle) {
-					MoveTowards(enemy.obj.pos, enemy.waypoint, enemy.speed);
-					if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-						enemy.loop_idle = false;
-					}
-				}
-				if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-					enemy.loop_idle = true;
-				}
-				if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
 
-					MoveTowards(enemy.obj.pos, enemy.starting_position, enemy.speed);
-				}
-				//std::cout << enemy.obj.pos.x << "HELLO IDLE\n";
-			}
-			break;
 
-		case ENEMY_CHASE:
 
-			if (distanceFromPlayer <= enemy.shootingRange) {
-				enemy.enemyNext = ENEMY_SHOOT;
-			}
-			else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-				enemy.enemyNext = ENEMY_CHASE;
-				MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed);
-				//std::cout << "HELLO CHASING HERE!\n";
 
-			}
-			else {
-				enemy.enemyNext = ENEMY_IDLE;
-				//std::cout << "HELLO Going back to IDLE!\n";
-			}
-			break;
 
-		case ENEMY_SHOOT:
-			if (distanceFromPlayer <= enemy.shootingRange) {
-				enemy.isShooting = true;
-				if (CanFire(enemy)) {
-					//std::cout << "HELLO Shooting!\n";
-				}
 
-			}
-			if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-				enemy.isShooting = false;
-				enemy.enemyNext = ENEMY_CHASE;
-				//std::cout << "Shooting!\n";
-			}
-			break;
-		default:
-			break;
+
+
+
+
+
+
+
+
+
+
+
+
+	switch (enemy.enemyCurrent)
+	{
+	case ENEMY_IDLE:
+		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
+			enemy.enemyNext = ENEMY_CHASE;
+			enemy.loop_idle = false;
 		}
-		enemy.enemyCurrent = enemy.enemyNext;
-		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-	}//if boss1 AI
+		else {
+			enemy.enemyNext = ENEMY_IDLE;
+			//long condition to stop jittering
+			//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
+			if (enemy.loop_idle) {
+				MoveTowards(enemy, enemy.waypoint);
+
+				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
+					enemy.loop_idle = false;
+				}
+			}
+			if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
+				enemy.loop_idle = true;
+			}
+			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
+				MoveTowards(enemy, enemy.starting_position);
+			}
+		}
+		break;
+
+	case ENEMY_CHASE:
+
+		if (distanceFromPlayer <= enemy.shootingRange) {
+			enemy.enemyNext = ENEMY_SHOOT;
+		}
+		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
+			enemy.enemyNext = ENEMY_CHASE;
+			MoveTowards(enemy, player.obj.pos);
+
+
+
+		}
+		else {
+			enemy.enemyNext = ENEMY_IDLE;
+		}
+		break;
+
+	case ENEMY_SHOOT:
+		if (distanceFromPlayer <= enemy.shootingRange) {
+			enemy.isShooting = true;
+			//if(CanFire(enemy)) {
+			//	SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
+			//}
+			if(CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {;
+				SpawnBullet(enemy.wing1.obj.pos, player.obj.pos, enemy.bullets);
+
+			}
+			if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
+				SpawnBullet(enemy.wing2.obj.pos, player.obj.pos, enemy.bullets);
+			}
+		}
+
+		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
+			enemy.isShooting = false;
+			enemy.enemyNext = ENEMY_CHASE;
+
+		}
+		break;
+	default:
+		break;
+	}
+
+
+
+
+	//set to next state
+	enemy.enemyCurrent = enemy.enemyNext;
+
+	enemy.obj.pos.y += enemy.velocity.y;
+
+	//main body collision box
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+
+	//wings collision box
+	if (enemy.wing1.isAlive) {
+		enemy.wing1.obj.pos.x = enemy.obj.pos.x + enemy.wing1.Offset;
+		enemy.wing1.obj.pos.y = enemy.obj.pos.y;
+
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+	}
+	if (enemy.wing2.isAlive) {
+
+		enemy.wing2.obj.pos.x = enemy.obj.pos.x + enemy.wing2.Offset;
+		enemy.wing2.obj.pos.y = enemy.obj.pos.y;
+
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+	}
+		
+
 }
-//void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player) {
-//
-//	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-//	if (enemy.health <= 0)
-//	{
-//		enemy.isAlive = false;
-//	}
-//	if (enemy.enemyType == ENEMY_BOSS1_WING1) {
-//		if (AEInputCheckTriggered(AEVK_X)) {
-//			enemy.isAlive = false;
-//			return;
-//		}
-//		switch (enemy.enemyCurrent)
-//		{
-//		case ENEMY_IDLE:
-//			if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_CHASE;
-//				enemy.loop_idle = false;
-//				//std::cout << "HELLO CHASING\n";
-//			}
-//			else {
-//				enemy.enemyNext = ENEMY_IDLE;
-//				//long condition to stop jittering
-//				//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
-//				if (enemy.loop_idle) {
-//					MoveTowards(enemy.obj.pos, enemy.waypoint, enemy.speed);
-//					if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-//						enemy.loop_idle = false;
-//					}
-//				}
-//				if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-//					enemy.loop_idle = true;
-//				}
-//				if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-//
-//					MoveTowards(enemy.obj.pos, enemy.starting_position, enemy.speed);
-//				}
-//				//std::cout << enemy.obj.pos.x << "HELLO IDLE\n";
-//			}
-//			break;
-//
-//		case ENEMY_CHASE:
-//
-//			if (distanceFromPlayer <= enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_SHOOT;
-//			}
-//			else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_CHASE;
-//				MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed);
-//				//std::cout << "HELLO CHASING HERE!\n";
-//
-//			}
-//			else {
-//				enemy.enemyNext = ENEMY_IDLE;
-//				//std::cout << "HELLO Going back to IDLE!\n";
-//			}
-//			break;
-//
-//		case ENEMY_SHOOT:
-//			if (distanceFromPlayer <= enemy.shootingRange) {
-//				if (CanFire(enemy)) {
-//
-//				}
-//				enemy.enemyNext = ENEMY_SHOOT;
-//			}
-//			if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_CHASE;
-//				//std::cout << "Shooting!\n";
-//			}
-//			break;
-//		default:
-//			break;
-//		}
-//		enemy.enemyCurrent = enemy.enemyNext;
-//		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-//		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-//		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-//		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-//
-//	}
-//}
-//
-//
-//void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player) {
-//	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-//	if (enemy.health <= 0)
-//	{
-//		enemy.isAlive = false;
-//	}
-//	if (enemy.enemyType == ENEMY_BOSS1_WING2) {
-//		if (AEInputCheckTriggered(AEVK_Z)) {
-//			enemy.isAlive = false;
-//			return;
-//		}
-//		switch (enemy.enemyCurrent)
-//		{
-//		case ENEMY_IDLE:
-//			if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_CHASE;
-//				enemy.loop_idle = false;
-//				//std::cout << "HELLO CHASING\n";
-//			}
-//			else {
-//				enemy.enemyNext = ENEMY_IDLE;
-//				//long condition to stop jittering
-//				//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
-//				if (enemy.loop_idle) {
-//					MoveTowards(enemy.obj.pos, enemy.waypoint, enemy.speed);
-//					if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-//						enemy.loop_idle = false;
-//					}
-//				}
-//				if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-//					enemy.loop_idle = true;
-//				}
-//				if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-//
-//					MoveTowards(enemy.obj.pos, enemy.starting_position, enemy.speed);
-//				}
-//				//std::cout << enemy.obj.pos.x << "HELLO IDLE\n";
-//			}
-//			break;
-//
-//		case ENEMY_CHASE:
-//
-//			if (distanceFromPlayer <= enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_SHOOT;
-//			}
-//			else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//				enemy.enemyNext = ENEMY_CHASE;
-//				MoveTowards(enemy.obj.pos, player.obj.pos, enemy.speed);
-//				//std::cout << "HELLO CHASING HERE!\n";
-//
-//			}
-//			else {
-//				enemy.enemyNext = ENEMY_IDLE;
-//				//std::cout << "HELLO Going back to IDLE!\n";
-//			}
-//			break;
-//
-//		case ENEMY_SHOOT:
-//			if (distanceFromPlayer <= enemy.shootingRange) {
-//				enemy.isShooting = true;
-//				if (CanFire(enemy)) {
-//					//std::cout << "HELLO Shooting!\n";
-//				}
-//				enemy.enemyNext = ENEMY_SHOOT;
-//			}
-//			if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//				enemy.isShooting = false;
-//				enemy.enemyNext = ENEMY_CHASE;
-//				//std::cout << "Shooting!\n";
-//			}
-//			break;
-//		default:
-//			break;
-//		}
-//		enemy.enemyCurrent = enemy.enemyNext;
-//		enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-//		enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-//		enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-//		enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-//
-//	}
-//
-//
-//}
