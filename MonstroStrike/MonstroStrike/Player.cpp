@@ -7,8 +7,6 @@
 #include "Armor_add.h"
 #include "Weapon.h"
 #include <iostream>
-#define camXBoundary (250.f)
-#define camFollowupSpeedX (0.05f)
 
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
@@ -159,23 +157,4 @@ void PlayerUpdate(Player& player)
 		player.equippedWeapon.position.x = player.obj.pos.x;
 		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 	}
-#pragma region Camera Section
-	//Camera region
-	AEVec2 cam;
-	AEGfxGetCamPosition(&cam.x, &cam.y);
-
-	//150.f refers to the cam boundary;
-	if ((player.expectedLocation.x > cam.x + camXBoundary) && player.isFacingRight)
-	{
-		AEVec2 desiredCamLocation{ cam.x + camXBoundary,0.f };
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x - camXBoundary, cam.y);
-	}
-	else if ((player.expectedLocation.x < cam.x - camXBoundary) && !player.isFacingRight)
-	{
-		AEVec2 desiredCamLocation{ cam.x - camXBoundary,0.f };
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x + camXBoundary, cam.y);
-	}
-#pragma endregion
 }

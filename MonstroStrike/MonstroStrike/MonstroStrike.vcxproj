@@ -100,12 +100,15 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   <ItemGroup>
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Armor_add.cpp" />
+    <ClCompile Include="AudioManager.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="Level1.cpp" />
     <ClCompile Include="Mainmenu.cpp" />
+    <ClCompile Include="Utils.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="TransformMatrix.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
@@ -117,6 +120,8 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   <ItemGroup>
     <ClInclude Include="Armor.h" />
     <ClInclude Include="Armor_add.h" />
+    <ClInclude Include="AudioManager.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="GameLobby.h" />
     <ClCompile Include="Utils.h" />
