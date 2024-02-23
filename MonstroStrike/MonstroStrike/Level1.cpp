@@ -92,6 +92,7 @@ void Level1_Load()
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 	Enemy_Load(ENEMY_FLY, vecEnemy);
 	Enemy_Load(ENEMY_BOSS1, vecEnemy);
+
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
 
@@ -258,8 +259,8 @@ void Level1_Initialize()
 
 
 	//looping thru to init all enemy variables
-	Enemy_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({80.f,80.f}, {100.f,-150.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({80.f,80.f}, {500.f,-100.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({80.f,80.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
 	Enemy_Init({80.f,80.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
 
 
@@ -357,14 +358,19 @@ void Level1_Update()
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity, &player->onFloor);
 				}
-
-				//is this efficient? 
+//(ENEMY AND BULLETS COLLISION CHECKING)
+//is this efficient? 
 				for (Enemy& enemy : vecEnemy) {
 					if (AABBvsAABB(enemy.collisionBox, grids2D[rows][cols].collisionBox)) {
-						//enemy.collisionNormal = AABBNormalize(enemy.collisionBox, grids2D[rows][cols].collisionBox);
-						//ResolveHorizontalCollision(enemy.collisionBox, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-						//	&enemy.velocity, &enemy.onFloor);
+						enemy.collisionNormal = AABBNormalize(enemy.collisionBox, grids2D[rows][cols].collisionBox);
+						ResolveVerticalCollision(enemy.collisionBox, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+							&enemy.velocity, &enemy.onFloor);
 						enemy.loop_idle = false;
+					}
+					for ( Bullet& bullet : enemy.bullets) {
+						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
+							bullet.lifetime = 0.f; //makes bullet erase
+						}
 					}
 				}
 

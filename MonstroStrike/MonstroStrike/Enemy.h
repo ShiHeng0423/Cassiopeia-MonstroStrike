@@ -32,6 +32,7 @@ struct Bullet {
 	float bulletSpeed;
 	AEVec2 bulletVel;
 	int lifetime;
+	AABB collisionBox;
 };
 
 //for wings

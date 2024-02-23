@@ -64,7 +64,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.isShooting = false;
 
 	//AABB Box init, Collision boxes
-	enemy.onFloor = true;
+	enemy.onFloor = false;
 
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
@@ -157,6 +157,12 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 		it->obj.pos.y += it->bulletVel.y * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 
+		it->collisionBox.minimum.x = it->obj.pos.x - it->obj.img.scale.x * 0.5f;
+		it->collisionBox.minimum.y = it->obj.pos.y - it->obj.img.scale.y * 0.5f;
+		it->collisionBox.maximum.x = it->obj.pos.x + it->obj.img.scale.x * 0.5f;
+		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.img.scale.y * 0.5f;
+
+
 		it->lifetime--;	//decrease lifetime
 		if (it->lifetime <= 0) {
 
@@ -172,8 +178,10 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 
-	ApplyGravity(&enemy.velocity, enemy.mass);
-	
+	if (!enemy.onFloor) {
+		ApplyGravity(&enemy.velocity, enemy.mass);
+	}
+
 	
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
@@ -188,7 +196,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		break;
 	case ENEMY_BOSS1:
 		ENEMY_BOSS_Update(enemy, player);
-		std::cout << enemy.velocity.x << " " << enemy.velocity.y << "\n";
+		std::cout << enemy.velocity.x << " " << enemy.velocity.y << " " << enemy.onFloor << "\n";
 		break;
 	case ENEMY_BOSS2:
 		break;
@@ -308,8 +316,8 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 		break;
 	}
 
-
-
+	//for gravity
+	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
@@ -404,7 +412,8 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 	}
 
 
-
+	//for gravity
+	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;

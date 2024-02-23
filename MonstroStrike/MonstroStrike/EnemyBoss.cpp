@@ -118,7 +118,8 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	//set to next state
 	enemy.enemyCurrent = enemy.enemyNext;
 
-	enemy.obj.pos.y += enemy.velocity.y;
+	//for gravity
+	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
 	//main body collision box
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
