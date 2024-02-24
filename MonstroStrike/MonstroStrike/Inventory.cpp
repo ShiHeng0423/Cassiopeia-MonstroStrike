@@ -40,33 +40,35 @@ namespace Inventory
 			std::cerr << "Failed to open the JSON file" << std::endl;
 			return inventory;
 		}
-		else 
+		else
 		{
 			Document json;
 			IStreamWrapper isw(ifs);
 			json.ParseStream(isw);
 
 			// Check if the document is valid 
-			if (json.HasParseError()) {
+			if (json.HasParseError())
+			{
 				std::cerr << "Error: failed to parse JSON document"
 					<< std::endl;
 				ifs.close();
 			}
 
 			printf("\nAccess values in document:\n");
-			assert(json.IsObject());    // Document is a JSON value represents the root of DOM. Root can be either an object or array.
+			assert(json.IsObject());
+			// Document is a JSON value represents the root of DOM. Root can be either an object or array.
 
 			//assert(json.HasMember("items"));
 
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
 
-			for(SizeType loc = 0 ; loc < items.Size();loc++)
+			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
-				std::cout << loc<< std::endl;
-				
+				std::cout << loc << std::endl;
+
 				const Value& ind_item = items[loc];
-			
+
 				//std::cout <<"JSON" <<ind_item["name"].GetString() << std::endl;
 				//std::cout << "JSON" << ind_item["UID"].GetString() << std::endl;
 
@@ -89,7 +91,7 @@ namespace Inventory
 				std::cout << newItem.name << std::endl;
 				std::cout << newItem.description << std::endl;
 				std::cout << newItem.item_type << std::endl;
-				std::cout << "enum"<<newItem.rarity << std::endl;
+				std::cout << "enum" << newItem.rarity << std::endl;
 				std::cout << newItem.quantity << std::endl;
 				std::cout << newItem.stackable << std::endl;
 				std::cout << newItem.attack << std::endl;
@@ -97,7 +99,6 @@ namespace Inventory
 
 
 				inventory.push_back(newItem);
-
 			}
 
 
@@ -109,60 +110,60 @@ namespace Inventory
 		return inventory;
 	}
 
-	//std::vector<Inventory> SaveToJsonFile(const std::string& filepath,  Inventory& inventory)
-	//{
-	//	Document json;
-	//	assert(json.IsObject());
-	//	json.SetObject();
 
-	//	Value out();
+	void WriteJsonFile(const std::vector<Inventory>& inventory, const std::string& filepath)
+	{
+		std::cout << "start writing JSON" << std::endl;
 
-	//	//json = inventory;
+		Document json;
+		json.SetObject();
 
-	//	std::ofstream ofs(filepath);
-	//	if (!ofs.is_open())
-	//	{
-	//		std::cerr << "Failed to open the JSON file" << std::endl;
-	//		//return inventory;
-	//	}
-	////	for (SizeType loc = 0; loc < inventory.Size(); loc++)
-	//	{
+		Value items(kArrayType);
 
-	//	}
+		for (const auto& item : inventory)
+		{
+			Value ind_item(kObjectType);
+			ind_item.AddMember("UID", Value(item.UID.c_str(), json.GetAllocator()), json.GetAllocator());
+			ind_item.AddMember("ID", item.ID, json.GetAllocator());
+			ind_item.AddMember("name", Value(item.name.c_str(), json.GetAllocator()), json.GetAllocator());
+			ind_item.AddMember("description", Value(item.description.c_str(), json.GetAllocator()),
+			                   json.GetAllocator());
+			ind_item.AddMember("item_type", item.item_type, json.GetAllocator());
+			ind_item.AddMember("rarity", item.rarity, json.GetAllocator());
+			ind_item.AddMember("quantity", item.quantity, json.GetAllocator());
+			ind_item.AddMember("stackable", item.stackable, json.GetAllocator());
+			ind_item.AddMember("attack", item.attack, json.GetAllocator());
+			ind_item.AddMember("defence", item.defence, json.GetAllocator());
 
-	//	// Writer<Inventory> writer(inventory);
-	//	//
-	//	// writer.StartObject();
-	//	// writer.Key("hello");
-	//	// writer.String("world");
-	//	// writer.Key("t");
-	//	// writer.Bool(true);
-	//	// writer.Key("f");
-	//	// writer.Bool(false);
-	//	// writer.Key("n");
-	//	// writer.Null();
-	//	// writer.Key("i");
-	//	// writer.Uint(123);
-	//	// writer.Key("pi");
-	//	// writer.Double(3.1416);
-	//	// writer.Key("a");
-	//	// writer.StartArray();
-	//	// for (unsigned i = 0; i < 4; i++)
-	//	// 	writer.Uint(i);
-	//	// writer.EndArray();
-	//	// writer.EndObject();
+			items.PushBack(ind_item, json.GetAllocator());
+		}
 
-	//	//std::cout << inventory << std::endl;
-	//	
-	//	//OStreamWrapper osw(ofs);
+		json.AddMember("items", items, json.GetAllocator());
 
-	//	// Writer<OStreamWrapper> writer(osw);
-	//	// json.Accept(writer);
+		StringBuffer buffer;
+		Writer<StringBuffer> writer(buffer);
+		json.Accept(writer);
+
+		std::ofstream ofs(filepath);
+		if (ofs.is_open())
+		{
+			ofs << buffer.GetString();
+			ofs.close();
+			std::cout << "Successfully wrote to the JSON file: " << filepath << std::endl;
+		}
+		else
+		{
+			std::cerr << "Failed to open the output JSON file: " << filepath << std::endl;
+		}
+	}
+
+	void OpenInventory(Inventory& inventory)
+	{
+		//make grid
 
 
-
-
-	//}
+		//store items into grid
+	}
 
 
 	void Load_Inventory()
