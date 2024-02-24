@@ -131,11 +131,16 @@ void PlayerUpdate(Player& player)
 	player.boxHeadFeet = player.collisionBox; // Get original collision box size
 	player.boxHeadFeet.minimum.y -= player.obj.img.scale.y * 0.25f;
 	player.boxHeadFeet.maximum.y += player.obj.img.scale.y * 0.25f;
+	player.boxHeadFeet.minimum.x -= player.obj.img.scale.x * 0.25f;
+	player.boxHeadFeet.maximum.x += player.obj.img.scale.x * 0.25f;
 
 	//Horizontal
-	player.boxArms = player.collisionBox;
+	player.boxArms = player.collisionBox; // Get original collision box size
+	player.boxArms.minimum.y -= player.obj.img.scale.y * 0.25f;
+	player.boxArms.maximum.y += player.obj.img.scale.y * 0.25f;
 	player.boxArms.minimum.x -= player.obj.img.scale.x * 0.25f;
 	player.boxArms.maximum.x += player.obj.img.scale.x * 0.25f;
+
 	//Update player weapon hit box
 
 	//Weapon hit box update only

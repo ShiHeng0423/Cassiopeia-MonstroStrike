@@ -9,10 +9,29 @@
 #include "CSVMapLoader.h"
 #include "GridTypesList.h"
 #include "Physics.h"
-#include "CollisionShape.h" //For Verticl + Horizontal collision
+#include "CollisionShape.h" //For Vertical + Horizontal collision
 #include <string>
 
+//Temporary moving platform object
+struct MovingPlatform
+{
+	AEVec2 velocity; //Added for movement - Johny
+	AEVec2 collisionNormal;
+	AEVec2 size;
+	AEVec2 position;
 
+	AEVec2 endPoint;
+	AEVec2 startPoint;
+
+	AABB collisionBox;
+
+	AEMtx33 scale;
+	AEMtx33 rotation;
+	AEMtx33 translation;
+	AEMtx33 transformation;
+
+	GRID_TYPES gridType;
+};
 
 namespace {
 	ButtonGearUI inventoryBackground;
@@ -40,6 +59,9 @@ namespace {
 
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
+
+	MovingPlatform movingObject;
+
 	const int size = 5;
 	Enemy* enemy[size];
 	Player* player;
@@ -80,8 +102,12 @@ void Level1_Load()
 	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
 	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
 
+<<<<<<< Updated upstream
 
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { 0.f,0.f }, { 10.f,0.f }, true);
+=======
+	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 10.f,0.f }, true);
+>>>>>>> Stashed changes
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -117,7 +143,6 @@ void Level1_Load()
 	inventoryButton[2].isWeapon = true;
 	inventoryButton[3].img.pTex = Gear4;
 	inventoryButton[4].img.pTex = Gear5;
-
 
 	equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 	AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
@@ -212,13 +237,13 @@ void Level1_Initialize()
 				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
 				break;
 			default:
+				grids2D[rows][cols].typeOfGrid = NONE;
 				break;
 			}
 		}
 	}
 
 	//For Initializing the grids
-	//Drawing first instance
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
 		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
@@ -226,29 +251,49 @@ void Level1_Initialize()
 			grids2D[rows][cols].rowIndex = rows;
 			grids2D[rows][cols].colIndex = cols;
 
-			if (grids2D[rows][cols].typeOfGrid == NORMAL_GROUND)
-			{
-				InitializeGrid(grids2D[rows][cols]);
-				//AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-				//AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
-			}
-			else if (grids2D[rows][cols].typeOfGrid == EMPTY) //Maybe can just don't draw at all
-			{
-				InitializeGrid(grids2D[rows][cols]);
-				//AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-				//AEGfxMeshDraw(pMeshGrey, AE_GFX_MDM_TRIANGLES);
-			}
+			InitializeGrid(grids2D[rows][cols]);
 		}
 	}
+
+
+	//Moving platform test, success
+	AEVec2Zero(&movingObject.collisionNormal);
+	
+	movingObject.rotation = { 0 };
+	AEMtx33Rot(&movingObject.rotation, 0.f);
+
+	AEVec2Set(&movingObject.size, 140.f, 50.f);
+	AEMtx33Scale(&movingObject.scale, movingObject.size.x, movingObject.size.y);
+	
+	AEVec2Set(&movingObject.position, 1200, -340.f);
+	AEMtx33Trans(&movingObject.translation, movingObject.position.x, movingObject.position.y);
+
+	movingObject.transformation = { 0 };
+	AEMtx33Concat(&movingObject.transformation, &movingObject.rotation, &movingObject.scale);
+	AEMtx33Concat(&movingObject.transformation, &movingObject.translation, &movingObject.transformation);
+
+	movingObject.gridType = NORMAL_GROUND;
+
+	movingObject.startPoint = movingObject.position;
+	movingObject.endPoint.x = movingObject.startPoint.x + 300.f;
+	movingObject.endPoint.y = movingObject.position.y;
+
+	AEVec2Set(&movingObject.velocity, movingObject.endPoint.x - movingObject.startPoint.x, movingObject.endPoint.y - movingObject.startPoint.y);
+	AEVec2Normalize(&movingObject.velocity, &movingObject.velocity);
+	float speed = 5.0f; // Adjust as needed
+	AEVec2Scale(&movingObject.velocity, &movingObject.velocity, speed);
 }
 
 void Level1_Update()
 {
+
 	PlayerUpdate(*player);
 	if (AEInputCheckTriggered(AEVK_LBUTTON))
 	{
 		player->isAttacking = true;
 	}
+	//std::cout << player->obj.pos.x << std::endl;
+	//std::cout << player->obj.pos.y << std::endl;
 
 	//This is set here temporary so that thing actually work, need to move
 	if (player->isAttacking)
@@ -317,6 +362,8 @@ void Level1_Update()
 				//Check vertical box (Head + Feet) 
 				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
 					 player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+					 std::cout << "Normal X at Horizontal:" << player->collisionNormal.x << std::endl;
+					 std::cout << "Normal Y at Horizontal:" << player->collisionNormal.y << std::endl;
 
 					 ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						 &player->velocity, &player->onFloor);
@@ -325,7 +372,8 @@ void Level1_Update()
 				//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox)) {
 					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-
+					 std::cout << "Normal X at Horizontal:" << player->collisionNormal.x << std::endl;
+					 std::cout << "Normal Y at Horizontal:" << player->collisionNormal.y << std::endl;
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity, &player->onFloor);
 				}
@@ -336,6 +384,7 @@ void Level1_Update()
 		}
 	}
 
+	//Burning effect
 	if (player->burningEffect)
 	{
 		if (timer >= burningEffectDuration)
@@ -353,6 +402,56 @@ void Level1_Update()
 		else
 			timer += AEFrameRateControllerGetFrameTime();
 	}
+
+	//Testing moving platform logic
+
+	// Update platform position based on velocity
+	//movingObject.velocity.x += 50.f * static_cast<float>(AEFrameRateControllerGetFrameTime());
+	AEVec2Add(&movingObject.position, &movingObject.position, &movingObject.velocity);
+
+
+	AEMtx33Trans(&movingObject.translation, movingObject.position.x, movingObject.position.y);
+	AEMtx33Concat(&movingObject.transformation, &movingObject.rotation, &movingObject.scale);
+	AEMtx33Concat(&movingObject.transformation, &movingObject.translation, &movingObject.transformation);
+
+	if (AEVec2Distance(&movingObject.position, &movingObject.endPoint) < 1.0f) {
+		// Swap start and end points
+		AEVec2 temp = movingObject.startPoint;
+		movingObject.startPoint = movingObject.endPoint;
+		movingObject.endPoint = temp;
+		// Recalculate velocity direction
+		AEVec2Set(&movingObject.velocity, movingObject.endPoint.x - movingObject.startPoint.x, movingObject.endPoint.y - movingObject.startPoint.y);
+		AEVec2Normalize(&movingObject.velocity, &movingObject.velocity);
+		AEVec2Scale(&movingObject.velocity, &movingObject.velocity, 5.f);
+	}
+
+	//Check horizontal box (Left arm -> Right arm)
+	if (AABBvsAABB(player->boxArms, movingObject.collisionBox)) {
+		player->collisionNormal = AABBNormalize(player->boxArms, movingObject.collisionBox);
+
+
+
+		ResolveHorizontalCollision(player->boxArms, movingObject.collisionBox, &player->collisionNormal, &player->obj.pos,
+			&player->velocity, &player->onFloor);
+	}
+
+	//Vertical
+	if (AABBvsAABB(player->boxHeadFeet, movingObject.collisionBox)) {
+		player->collisionNormal = AABBNormalize(player->boxHeadFeet, movingObject.collisionBox);
+
+		ResolveVerticalCollision(player->boxHeadFeet, movingObject.collisionBox, &player->collisionNormal, &player->obj.pos,
+			&player->velocity, &player->onFloor);
+
+		player->obj.pos.x += movingObject.velocity.x;
+		player->obj.pos.y += movingObject.velocity.y;
+	}
+
+
+	movingObject.collisionBox.minimum.x = movingObject.position.x - movingObject.size.x * 0.5f;
+	movingObject.collisionBox.minimum.y = movingObject.position.y - movingObject.size.y * 0.5f;
+	movingObject.collisionBox.maximum.x = movingObject.position.x + movingObject.size.x * 0.5f;
+	movingObject.collisionBox.maximum.y = movingObject.position.y + movingObject.size.y * 0.5f;
+
 }
 
 void Level1_Draw()
@@ -369,6 +468,30 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 4200, 1080.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+	//For Grid Drawing
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+	{
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+		{
+			switch (grids2D[rows][cols].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
+				AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
+				break;
+			case EMPTY:
+				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
+				AEGfxMeshDraw(pMeshGrey, AE_GFX_MDM_TRIANGLES);
+				break;
+			}
+		}
+	}
+
+	AEGfxSetTransform(movingObject.transformation.m);
+	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -391,8 +514,11 @@ void Level1_Draw()
 		
 	}
 
+<<<<<<< Updated upstream
 
 
+=======
+>>>>>>> Stashed changes
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -401,24 +527,6 @@ void Level1_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam.x, cam.y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	//For Grid Drawing
-	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
-	{
-		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
-		{
-			switch (grids2D[rows][cols].typeOfGrid)
-			{
-			case NORMAL_GROUND:
-				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-				AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
-				break;
-			case EMPTY:
-				//AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-				//AEGfxMeshDraw(pMeshGrey, AE_GFX_MDM_TRIANGLES);
-				break;
-			}
-		}
-	}
 	AEGfxSetTransform(ObjectTransformationMatrixSet(-800 + hp + cam.x, 450 + cam.y, 0, hp * 2, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
@@ -428,6 +536,7 @@ void Level1_Draw()
 	AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
 	AEGfxPrint(pFont, pText, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
 
+	//Inventory images
 	if (inventory_open)
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -455,6 +564,7 @@ void Level1_Draw()
 		}
 	}
 
+	//Player attack
 	if (player->isAttacking)
 	{
 		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x, player->equippedWeapon.position.y, 0.f, player->equippedWeapon.Scale.x, player->equippedWeapon.Scale.y).m);

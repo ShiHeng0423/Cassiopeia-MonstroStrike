@@ -28,50 +28,52 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //	
 //	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
 //}
-
-//Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
 void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
 {
     f32 penetrationDepth = 0.f;
-    //std::cout << "Resolving vertical collision" << std::endl;
-    //std::cout << "Normal: " << collisionNormal->y << std::endl;
 
-    if (collisionNormal->y == 1)
+    if (collisionNormal->y == 1) // Colliding from bottom
     {
         penetrationDepth = second.maximum.y - firstBoxHeadFeet.minimum.y;
-        position->y += penetrationDepth;
-        *onFloor = true;
+        if (penetrationDepth > 0) {
+            position->y += penetrationDepth;
+            *onFloor = true;
+        }
     }
-    else if (collisionNormal->y == -1)
+    else if (collisionNormal->y == -1) // Colliding from top
     {
-        penetrationDepth = second.minimum.y - firstBoxHeadFeet.maximum.y;
-        position->y += penetrationDepth;
+        penetrationDepth = firstBoxHeadFeet.maximum.y - second.minimum.y;
+        if (penetrationDepth > 0) {
+            position->y -= penetrationDepth;
+        }
     }
 
-    if (collisionNormal->y != 0)
-    {
+    if (penetrationDepth > 0) {
         velocity->y = 0.f;
     }
-
 }
 
-//Entity arms, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
 void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
 {
     f32 penetrationDepth = 0.f;
-    //std::cout << "Resolving Horizontal " << collisionNormal->x << std::endl;
 
-    if (collisionNormal->x == 1)
+    if (collisionNormal->x == 1) // Colliding from right
     {
         penetrationDepth = second.maximum.x - firstArms.minimum.x;
-        position->x += penetrationDepth;
-        velocity->x = 0.f;
+        if (penetrationDepth > 0) {
+            position->x += penetrationDepth;
+            velocity->x = 0.f;
+        }
     }
-    else if (collisionNormal->x == -1)
+    else if (collisionNormal->x == -1) // Colliding from left
     {
-        penetrationDepth = second.minimum.x - firstArms.maximum.x;
-        position->x += penetrationDepth;
-        velocity->x = 0.f;
+        penetrationDepth = firstArms.maximum.x - second.minimum.x;
+        if (penetrationDepth > 0) {
+            position->x -= penetrationDepth;
+            velocity->x = 0.f;
+        }
     }
-    collisionNormal->x = 0;
+    if (penetrationDepth > 0) {
+        collisionNormal->x = 0; // Reset collision normal
+    }
 }
