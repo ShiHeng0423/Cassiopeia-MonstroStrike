@@ -65,6 +65,7 @@ namespace {
 	const int size = 5;
 	Enemy* enemy[size];
 	Player* player;
+
 	AEGfxTexture* background;
 
 	bool inventory_open = false;
@@ -102,12 +103,7 @@ void Level1_Load()
 	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
 	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
 
-<<<<<<< Updated upstream
-
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { 0.f,0.f }, { 10.f,0.f }, true);
-=======
 	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 10.f,0.f }, true);
->>>>>>> Stashed changes
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -299,8 +295,10 @@ void Level1_Update()
 	if (player->isAttacking)
 	{
 		for (int i = 0; i < size; i++)
-		{
-			CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+		{	
+			if (enemy[i]->isAlive) {
+				CheckWeaponCollision(&player->equippedWeapon, *enemy[i], *player);
+			}
 		}
 	}
 
@@ -514,11 +512,6 @@ void Level1_Draw()
 		
 	}
 
-<<<<<<< Updated upstream
-
-
-=======
->>>>>>> Stashed changes
 	AEVec2 cam;
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
