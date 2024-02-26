@@ -89,9 +89,10 @@ void Level1_Load()
 
 
 	//loading texture only, push back into the vector
-	Enemy_Load(ENEMY_FLY, vecEnemy);
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_BOSS1, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
@@ -259,10 +260,10 @@ void Level1_Initialize()
 
 
 	//looping thru to init all enemy variables
-	Enemy_Init({80.f,80.f}, {500.f,-100.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({80.f,80.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({80.f,80.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
-
+	Enemy_Init({70.f,70.f}, {500.f,-100.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({70.f,70.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f,70.f }, { 300.f,250.f }, ENEMY_IDLE, vecEnemy[3]);
 
 }
 
@@ -384,6 +385,7 @@ void Level1_Update()
 					for ( Bullet& bullet : enemy.bullets) {
 						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
 							bullet.lifetime = 0.f; //makes bullet erase
+
 						}
 					}
 				}

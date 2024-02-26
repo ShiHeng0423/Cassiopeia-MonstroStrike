@@ -10,19 +10,30 @@
 
 void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 
+	//enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
+
+	//if ((enemy.obj.pos.x != target_position.x)) {
+	//	if (enemy.obj.pos.x >= target_position.x) {
+	//		enemy.velocity.x *= -1.0f;
+	//	}
+	//	if (enemy.obj.pos.x <= target_position.x) {
+	//		enemy.velocity.x *= 1.0f;
+
+	//	}
+	//}
+	//enemy.obj.pos.x += enemy.velocity.x;
+
+
+
+
+	// Calculate the direction towards the target position
+	float direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
+
+	// Calculate the distance to move based on speed and elapsed time
 	enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
 
-	if ((enemy.obj.pos.x != target_position.x)) {
-		if (enemy.obj.pos.x >= target_position.x) {
-			enemy.velocity.x *= -1.0f;
-		}
-		if (enemy.obj.pos.x <= target_position.x) {
-			enemy.velocity.x *= 1.0f;
-
-		}
-	}
-	enemy.obj.pos.x += enemy.velocity.x;
-
+	// Update the position based on the calculated direction and distance
+	enemy.obj.pos.x += direction * enemy.velocity.x;
 }
 
 
@@ -64,10 +75,10 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 	bullet.bulletSpeed = 5.f;
 	AEVec2Set(&bullet.bulletVel, direction.x * bullet.bulletSpeed, direction.y * bullet.bulletSpeed);
 
-	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.img.scale.x * 0.5f;
-	bullet.collisionBox.minimum.y = bullet.obj.pos.y - bullet.obj.img.scale.y * 0.5f;
-	bullet.collisionBox.maximum.x = bullet.obj.pos.x + bullet.obj.img.scale.x * 0.5f;
-	bullet.collisionBox.maximum.y = bullet.obj.pos.y + bullet.obj.img.scale.y * 0.5f;
+	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.img.scale.x * 0.25f;
+	bullet.collisionBox.minimum.y = bullet.obj.pos.y - bullet.obj.img.scale.y * 0.25f;
+	bullet.collisionBox.maximum.x = bullet.obj.pos.x + bullet.obj.img.scale.x * 0.25f;
+	bullet.collisionBox.maximum.y = bullet.obj.pos.y + bullet.obj.img.scale.y * 0.25f;
 
 	// Push the bullet into the vector
 	vecbullets.push_back(bullet);
@@ -115,3 +126,7 @@ bool areAligned(AEVec2 player_position, AEVec2 enemy_position) {
 	return std::abs(player_position.y - enemy_position.y) < tolerance;
 }
 
+void Jump(Enemy& enemy, f32 value) {
+	enemy.onFloor = false;
+	enemy.velocity.y = value;
+}

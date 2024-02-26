@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
+void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 
@@ -19,9 +19,9 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	{
 	case ENEMY_IDLE:
 		//std::cout << player.obj.pos.y << " " << enemy.obj.pos.y << "\n";
-		//std::cout << areAligned(player.obj.pos, enemy.obj.pos) << "\n";
+		//std::cout << enemy.obj.pos.x << "\n";
 
-		if (distanceFromPlayer <= enemy.lineOfSight && areAligned(player.obj.pos, enemy.obj.pos)) {
+		if (distanceFromPlayer <= enemy.lineOfSight) {
 			enemy.enemyNext = ENEMY_TRANSITION;
 			enemy.isCollision = false;
 			enemy.timePassed = 0.0f;
@@ -29,9 +29,20 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-
+			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 			if (enemy.loop_idle) {
-				MoveTowards(enemy, enemy.waypoint);
+
+
+				if (enemy.timePassed >= 2.0f) {
+					enemy.timePassed = 0.0f;
+					if (enemy.onFloor) {
+						Jump(enemy, 300.f);
+					}
+				}
+				if (!enemy.onFloor) {
+					MoveTowards(enemy, enemy.waypoint);
+				}
+
 
 
 				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
@@ -43,7 +54,18 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 			}
 			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
 
-				MoveTowards(enemy, enemy.starting_position);
+				if (enemy.timePassed >= 2.0f) {
+					enemy.timePassed = 0.0f;
+					if (enemy.onFloor) {
+						Jump(enemy, 300.f);
+					}
+				}
+				if (!enemy.onFloor) {
+					MoveTowards(enemy, enemy.starting_position);
+				}
+
+
+
 
 			}
 		}
@@ -71,17 +93,43 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 		}
 
 		break;
-	case ENEMY_ATTACK: 
-		Attack_Charge(enemy, enemy.target_position);	//the charge attack
+	case ENEMY_ATTACK:
+		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
+		//Change to jump attack
+		//Attack_Charge(enemy, enemy.target_position);	//the charge attack
 
-		if (enemy.isCollision == true) {
+		//if (enemy.isCollision == true) {
 
-			enemy.isCollision = false;
-			enemy.isShooting = false;	//out of attacking mode
-			enemy.speed = 80.f;			//return to normal speed after attack
-			enemy.target_position = ENEMY_DEFAULT;
-			enemy.enemyNext = ENEMY_IDLE;
+		//	enemy.isCollision = false;
+		//	enemy.isShooting = false;	//out of attacking mode
+		//	enemy.speed = 80.f;			//return to normal speed after attack
+		//	enemy.target_position = ENEMY_DEFAULT;
+		//	enemy.enemyNext = ENEMY_IDLE;
+		//}
+
+
+		if (distanceFromPlayer < enemy.lineOfSight) {
+
+			if (enemy.timePassed >= 0.5f) {
+				enemy.timePassed = 0.0f;
+				if (enemy.onFloor) {
+					Jump(enemy, 500.f);
+				}
+			}
+			if (!enemy.onFloor) {
+				MoveTowards(enemy, player.obj.pos);
+			}
+			
 		}
+		else {
+			enemy.isShooting = false;
+			enemy.timePassed = 0.f;
+			enemy.enemyNext = ENEMY_IDLE;
+			//std::cout << "Going back to IDLE!\n";
+		}
+
+
+
 		break;
 	default:
 		break;

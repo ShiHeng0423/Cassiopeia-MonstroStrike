@@ -135,5 +135,5 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
 
 void Attack_Charge(Enemy& enemy, int target_position);
 bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
-
+void Jump(Enemy& enemy, f32 value);
 //(EnemyUtils)-------------------------------------------------------------------------
