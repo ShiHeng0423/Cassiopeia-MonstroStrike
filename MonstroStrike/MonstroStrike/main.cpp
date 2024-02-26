@@ -24,12 +24,14 @@
 // ---------------------------------------------------------------------------
 // main
 
-namespace {
+namespace
+{
 	s32 cursorX, cursorY; //Mouse coordinate
 	const f32 friction = 0.95f; //Friction, const for now unless some tile add friction
 }
 
-struct Player {
+struct Player
+{
 	AEMtx33 scale;
 	AEMtx33 rotation;
 	AEMtx33 translation;
@@ -45,12 +47,12 @@ struct Player {
 	AABB arms;
 
 	bool canJump;
-}player;
+} player;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
-	_In_opt_ HINSTANCE hPrevInstance,
-	_In_ LPWSTR    lpCmdLine,
-	_In_ int       nCmdShow)
+                      _In_opt_ HINSTANCE hPrevInstance,
+                      _In_ LPWSTR lpCmdLine,
+                      _In_ int nCmdShow)
 {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
@@ -99,8 +101,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	AEGfxDestroyFont(pFont);
 	//Resizing vector, clear content, then resize it to 0
-	
+
 	// free the system
 	AESysExit();
 }
-

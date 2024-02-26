@@ -28,11 +28,17 @@
 
 using namespace rapidjson;
 
+
+
 namespace Inventory
 {
-	std::vector<Inventory> ReadJsonFile(const std::string& filepath)
+	//Global Variable
+	std::vector<Inventory::Item> Player_Inventory;
+
+	std::vector<Item> ReadJsonFile(const std::string& filepath)
 	{
-		std::vector<Inventory> inventory;
+		//std::vector<Inventory> inventory = new std::vector<Inventory>[1000];
+		std::vector<Item> inventory;
 
 		std::ifstream ifs(filepath);
 		if (!ifs.is_open())
@@ -54,11 +60,9 @@ namespace Inventory
 				ifs.close();
 			}
 
-			printf("\nAccess values in document:\n");
+			printf("\nAccess items in Inventory:\n");
 			assert(json.IsObject());
 			// Document is a JSON value represents the root of DOM. Root can be either an object or array.
-
-			//assert(json.HasMember("items"));
 
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
@@ -69,10 +73,7 @@ namespace Inventory
 
 				const Value& ind_item = items[loc];
 
-				//std::cout <<"JSON" <<ind_item["name"].GetString() << std::endl;
-				//std::cout << "JSON" << ind_item["UID"].GetString() << std::endl;
-
-				Inventory newItem;
+				Item newItem;
 
 				newItem.UID = ind_item["UID"].GetString();
 				newItem.ID = ind_item["ID"].GetInt();
@@ -86,16 +87,16 @@ namespace Inventory
 				newItem.defence = ind_item["defence"].GetInt();
 
 
-				std::cout << newItem.UID << std::endl;
-				std::cout << newItem.ID << std::endl;
-				std::cout << newItem.name << std::endl;
-				std::cout << newItem.description << std::endl;
-				std::cout << newItem.item_type << std::endl;
-				std::cout << "enum" << newItem.rarity << std::endl;
-				std::cout << newItem.quantity << std::endl;
-				std::cout << newItem.stackable << std::endl;
-				std::cout << newItem.attack << std::endl;
-				std::cout << newItem.defence << std::endl;
+				// std::cout << newItem.UID << std::endl;
+				// std::cout << newItem.ID << std::endl;
+				// std::cout << newItem.name << std::endl;
+				// std::cout << newItem.description << std::endl;
+				// std::cout << newItem.item_type << std::endl;
+				// std::cout << "enum" << newItem.rarity << std::endl;
+				// std::cout << newItem.quantity << std::endl;
+				// std::cout << newItem.stackable << std::endl;
+				// std::cout << newItem.attack << std::endl;
+				// std::cout << newItem.defence << std::endl;
 
 
 				inventory.push_back(newItem);
@@ -111,14 +112,20 @@ namespace Inventory
 	}
 
 
-	void WriteJsonFile(const std::vector<Inventory>& inventory, const std::string& filepath)
+	void WriteJsonFile(const std::vector<Item> inventory, const std::string& filepath)
 	{
 		std::cout << "start writing JSON" << std::endl;
 
-		Document json;
-		json.SetObject();
+		 Document json;
+		 json.SetObject();
 
 		Value items(kArrayType);
+
+		// StringBuffer s;
+		// Writer<StringBuffer> writer(s);
+		//
+		// writer.StartObject();
+
 
 		for (const auto& item : inventory)
 		{
@@ -134,6 +141,17 @@ namespace Inventory
 			ind_item.AddMember("stackable", item.stackable, json.GetAllocator());
 			ind_item.AddMember("attack", item.attack, json.GetAllocator());
 			ind_item.AddMember("defence", item.defence, json.GetAllocator());
+
+			std::cout << item.UID << std::endl;
+			std::cout << item.ID << std::endl;
+			std::cout << item.name << std::endl;
+			std::cout << item.description << std::endl;
+			std::cout << item.item_type << std::endl;
+			std::cout << "enum" << item.rarity << std::endl;
+			std::cout << item.quantity << std::endl;
+			std::cout << item.stackable << std::endl;
+			std::cout << item.attack << std::endl;
+			std::cout << item.defence << std::endl;
 
 			items.PushBack(ind_item, json.GetAllocator());
 		}
@@ -157,21 +175,43 @@ namespace Inventory
 		}
 	}
 
-	void OpenInventory(Inventory& inventory)
-	{
-		//make grid
-
-
-		//store items into grid
-	}
 
 
 	void Load_Inventory()
 	{
-		ReadJsonFile("Assets/test.json");
+		Player_Inventory = ReadJsonFile("Assets/test.json");
+		//WriteJsonFile(Player_Inventory, "Assets/test.json");
+		
+	}
+
+	//Update inventory vector every frame
+	void UpdateInventory(std::vector<Item>& inventory, ButtonGearUI button[])
+	{
+		for(SizeType i=0; i<inventory.size(); ++i)
+		{
+			button[i].Item = inventory[i];
+			
+		}
+	}
+
+	void Item_Pickup(Item& item)
+	{
+	}
+
+	void Item_Drop()
+	{
+	}
+
+	void Item_Equip(Item& item)
+	{
 	}
 
 	void InitInventory()
 	{
+	}
+
+	void SaveInventory()
+	{
+		WriteJsonFile(Player_Inventory, "Assets/test.json");
 	}
 }
