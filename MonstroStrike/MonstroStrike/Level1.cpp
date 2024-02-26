@@ -13,6 +13,7 @@
 #include <string>
 
 #include "MapPlatformGenerate.h"
+#include "NonPlayableCharacters.h"
 
 namespace {
 	ButtonGearUI inventoryBackground;
@@ -77,7 +78,6 @@ void Equip(int index, ButtonGearUI tmp)
 
 void Level1_Load()
 {
-
 	enemy[0] = ENEMY_Init({80.f,80.f}, {500.f,-150.f}, ENEMY_JUMPER, ENEMY_IDLE);
 	enemy[1] = ENEMY_Init({80.f,80.f }, {-500.f,-150.f}, ENEMY_FLY, ENEMY_IDLE);
 	enemy[2] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING1, ENEMY_IDLE);
@@ -133,6 +133,8 @@ void Level1_Load()
 		AEVec2Set(&button.pos, -375.f, -index * 90 + 180);
 		index++;
 	}
+
+	LoadNPC();
 #pragma region Mesh Creations
 	// *Color follows ARGB format (Alpha, Red, Green, Blue)
 	AEGfxTriAdd(
@@ -237,6 +239,8 @@ void Level1_Initialize()
 	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, movingObject[1]);
 	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, movingObject[2]);
 
+	//Initialize NPCs
+	InitializeNPC();
 }
 
 void Level1_Update()
@@ -357,6 +361,7 @@ void Level1_Update()
 	//Testing moving platform logic
 
 	UpdatePlatforms(movingObject, 3, *player); //Numbers based on how many moving platforms
+	UpdateNPC();
 }
 
 void Level1_Draw()
@@ -396,12 +401,13 @@ void Level1_Draw()
 	AEGfxSetTransform(movingObject[0].transformation.m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
-
 	AEGfxSetTransform(movingObject[1].transformation.m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetTransform(movingObject[2].transformation.m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+
+	DrawNPC(*pWhiteSquareMesh);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
@@ -489,16 +495,15 @@ void Level1_Free()
 	gameMap.clear();
 	gameMap.resize(0);
 
+	FreeNPC();
+}
+
+void Level1_Unload()
+{
 	//Free meshes
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pLineMesh);
 	AEGfxMeshFree(pWhiteSquareMesh);
-
-}
-
-void Level1_Unload()
-{
-
 }
