@@ -32,10 +32,12 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
 {
     f32 penetrationDepth = 0.f;
 
-    if (collisionNormal->y == 1) // Colliding from bottom
+    if (collisionNormal->y == 1) // Colliding from entity bottom
     {
         penetrationDepth = second.maximum.y - firstBoxHeadFeet.minimum.y;
         if (penetrationDepth > 0) {
+            f32 dampingFactor = 0.3f;
+            penetrationDepth *= dampingFactor;
             position->y += penetrationDepth;
             *onFloor = true;
         }
@@ -44,11 +46,12 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
     {
         penetrationDepth = firstBoxHeadFeet.maximum.y - second.minimum.y;
         if (penetrationDepth > 0) {
-            position->y -= penetrationDepth;
+            f32 dampingFactor = 0.3f;
+            position->y -= penetrationDepth * dampingFactor;
         }
     }
 
-    if (penetrationDepth > 0) {
+    if (penetrationDepth > 0.f) {
         velocity->y = 0.f;
     }
 }
@@ -61,7 +64,8 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
     {
         penetrationDepth = second.maximum.x - firstArms.minimum.x;
         if (penetrationDepth > 0) {
-            position->x += penetrationDepth;
+            f32 dampingFactor = 0.3f;
+            position->x += penetrationDepth * dampingFactor;
             velocity->x = 0.f;
         }
     }
@@ -69,11 +73,16 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
     {
         penetrationDepth = firstArms.maximum.x - second.minimum.x;
         if (penetrationDepth > 0) {
-            position->x -= penetrationDepth;
+            f32 dampingFactor = 0.3f;
+            
+            position->x -= penetrationDepth * dampingFactor;
             velocity->x = 0.f;
+
         }
     }
-    if (penetrationDepth > 0) {
-        collisionNormal->x = 0; // Reset collision normal
+
+    if (penetrationDepth > 0.f) {
+        velocity->x = 0.f;
     }
+
 }

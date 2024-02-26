@@ -12,26 +12,7 @@
 #include "CollisionShape.h" //For Vertical + Horizontal collision
 #include <string>
 
-//Temporary moving platform object
-struct MovingPlatform
-{
-	AEVec2 velocity; //Added for movement - Johny
-	AEVec2 collisionNormal;
-	AEVec2 size;
-	AEVec2 position;
-
-	AEVec2 endPoint;
-	AEVec2 startPoint;
-
-	AABB collisionBox;
-
-	AEMtx33 scale;
-	AEMtx33 rotation;
-	AEMtx33 translation;
-	AEMtx33 transformation;
-
-	GRID_TYPES gridType;
-};
+#include "MapPlatformGenerate.h"
 
 namespace {
 	ButtonGearUI inventoryBackground;
@@ -60,7 +41,7 @@ namespace {
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
 
-	MovingPlatform movingObject;
+	Platforms movingObject[3]; //Indicate total number of movingObjects
 
 	const int size = 5;
 	Enemy* enemy[size];
@@ -103,7 +84,7 @@ void Level1_Load()
 	enemy[3] = ENEMY_Init({80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1_WING2, ENEMY_IDLE);
 	enemy[4] = ENEMY_Init({ 80.f,80.f }, { -500.f,150.f }, ENEMY_BOSS1, ENEMY_IDLE);
 
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 10.f,0.f }, true);
+	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -251,33 +232,11 @@ void Level1_Initialize()
 		}
 	}
 
+	//Need to place the objects one by one 
+	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, movingObject[0]);
+	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, movingObject[1]);
+	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, movingObject[2]);
 
-	//Moving platform test, success
-	AEVec2Zero(&movingObject.collisionNormal);
-	
-	movingObject.rotation = { 0 };
-	AEMtx33Rot(&movingObject.rotation, 0.f);
-
-	AEVec2Set(&movingObject.size, 140.f, 50.f);
-	AEMtx33Scale(&movingObject.scale, movingObject.size.x, movingObject.size.y);
-	
-	AEVec2Set(&movingObject.position, 1200, -340.f);
-	AEMtx33Trans(&movingObject.translation, movingObject.position.x, movingObject.position.y);
-
-	movingObject.transformation = { 0 };
-	AEMtx33Concat(&movingObject.transformation, &movingObject.rotation, &movingObject.scale);
-	AEMtx33Concat(&movingObject.transformation, &movingObject.translation, &movingObject.transformation);
-
-	movingObject.gridType = NORMAL_GROUND;
-
-	movingObject.startPoint = movingObject.position;
-	movingObject.endPoint.x = movingObject.startPoint.x + 300.f;
-	movingObject.endPoint.y = movingObject.position.y;
-
-	AEVec2Set(&movingObject.velocity, movingObject.endPoint.x - movingObject.startPoint.x, movingObject.endPoint.y - movingObject.startPoint.y);
-	AEVec2Normalize(&movingObject.velocity, &movingObject.velocity);
-	float speed = 5.0f; // Adjust as needed
-	AEVec2Scale(&movingObject.velocity, &movingObject.velocity, speed);
 }
 
 void Level1_Update()
@@ -288,8 +247,6 @@ void Level1_Update()
 	{
 		player->isAttacking = true;
 	}
-	//std::cout << player->obj.pos.x << std::endl;
-	//std::cout << player->obj.pos.y << std::endl;
 
 	//This is set here temporary so that thing actually work, need to move
 	if (player->isAttacking)
@@ -360,8 +317,6 @@ void Level1_Update()
 				//Check vertical box (Head + Feet) 
 				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
 					 player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-					 std::cout << "Normal X at Horizontal:" << player->collisionNormal.x << std::endl;
-					 std::cout << "Normal Y at Horizontal:" << player->collisionNormal.y << std::endl;
 
 					 ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						 &player->velocity, &player->onFloor);
@@ -370,8 +325,6 @@ void Level1_Update()
 				//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox)) {
 					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					 std::cout << "Normal X at Horizontal:" << player->collisionNormal.x << std::endl;
-					 std::cout << "Normal Y at Horizontal:" << player->collisionNormal.y << std::endl;
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity, &player->onFloor);
 				}
@@ -403,53 +356,7 @@ void Level1_Update()
 
 	//Testing moving platform logic
 
-	// Update platform position based on velocity
-	//movingObject.velocity.x += 50.f * static_cast<float>(AEFrameRateControllerGetFrameTime());
-	AEVec2Add(&movingObject.position, &movingObject.position, &movingObject.velocity);
-
-
-	AEMtx33Trans(&movingObject.translation, movingObject.position.x, movingObject.position.y);
-	AEMtx33Concat(&movingObject.transformation, &movingObject.rotation, &movingObject.scale);
-	AEMtx33Concat(&movingObject.transformation, &movingObject.translation, &movingObject.transformation);
-
-	if (AEVec2Distance(&movingObject.position, &movingObject.endPoint) < 1.0f) {
-		// Swap start and end points
-		AEVec2 temp = movingObject.startPoint;
-		movingObject.startPoint = movingObject.endPoint;
-		movingObject.endPoint = temp;
-		// Recalculate velocity direction
-		AEVec2Set(&movingObject.velocity, movingObject.endPoint.x - movingObject.startPoint.x, movingObject.endPoint.y - movingObject.startPoint.y);
-		AEVec2Normalize(&movingObject.velocity, &movingObject.velocity);
-		AEVec2Scale(&movingObject.velocity, &movingObject.velocity, 5.f);
-	}
-
-	//Check horizontal box (Left arm -> Right arm)
-	if (AABBvsAABB(player->boxArms, movingObject.collisionBox)) {
-		player->collisionNormal = AABBNormalize(player->boxArms, movingObject.collisionBox);
-
-
-
-		ResolveHorizontalCollision(player->boxArms, movingObject.collisionBox, &player->collisionNormal, &player->obj.pos,
-			&player->velocity, &player->onFloor);
-	}
-
-	//Vertical
-	if (AABBvsAABB(player->boxHeadFeet, movingObject.collisionBox)) {
-		player->collisionNormal = AABBNormalize(player->boxHeadFeet, movingObject.collisionBox);
-
-		ResolveVerticalCollision(player->boxHeadFeet, movingObject.collisionBox, &player->collisionNormal, &player->obj.pos,
-			&player->velocity, &player->onFloor);
-
-		player->obj.pos.x += movingObject.velocity.x;
-		player->obj.pos.y += movingObject.velocity.y;
-	}
-
-
-	movingObject.collisionBox.minimum.x = movingObject.position.x - movingObject.size.x * 0.5f;
-	movingObject.collisionBox.minimum.y = movingObject.position.y - movingObject.size.y * 0.5f;
-	movingObject.collisionBox.maximum.x = movingObject.position.x + movingObject.size.x * 0.5f;
-	movingObject.collisionBox.maximum.y = movingObject.position.y + movingObject.size.y * 0.5f;
-
+	UpdatePlatforms(movingObject, 3, *player); //Numbers based on how many moving platforms
 }
 
 void Level1_Draw()
@@ -486,7 +393,14 @@ void Level1_Draw()
 		}
 	}
 
-	AEGfxSetTransform(movingObject.transformation.m);
+	AEGfxSetTransform(movingObject[0].transformation.m);
+	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+
+
+	AEGfxSetTransform(movingObject[1].transformation.m);
+	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+
+	AEGfxSetTransform(movingObject[2].transformation.m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);

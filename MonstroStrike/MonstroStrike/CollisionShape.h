@@ -20,7 +20,6 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox);
 //Circle vs Circle Collision
 //bool CirclevsCircle(Circle first, Circle second);
 
-
 //Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
 void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor);
 

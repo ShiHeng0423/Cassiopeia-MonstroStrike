@@ -66,6 +66,9 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MapPlatformGenerate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Utils.h">
@@ -242,6 +245,9 @@
     </ClInclude>
     <ClInclude Include="rapidjson\ostreamwrapper.h">
       <Filter>Header Files\RapidJason Header</Filter>
+    </ClInclude>
+    <ClInclude Include="MapPlatformGenerate.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

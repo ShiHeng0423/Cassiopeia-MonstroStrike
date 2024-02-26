@@ -20,26 +20,26 @@ AEVec2 AABBNormalize(AABB firstBox, AABB secondBox)
     overlap.y = fabsf(centerDist.y) - (halfExtents.y + (secondBox.maximum.y - secondBox.minimum.y) * 0.5f);
 
     // Determine the normal direction based on the overlap
-    if (overlap.x > 0 && overlap.y > 0) {
+    if (overlap.x > 0 || overlap.y > 0) {
         //Corner collision detected, check which overlap is more than the other
-        if (overlap.x > overlap.y) //More overlap at X
-        {
-            if (centerDist.x < 0) {
-                result.x = -1.0f;
-            }
-            else {
-                result.x = 1.0f;
-            }
+        if (overlap.x > 0) {
+            // Collision on the left side
+            result.x = -1.0f;
         }
-        else //More overlap at Y 
-        {
-            if (centerDist.y < 0) {
-                result.y = -1.0f;
-            }
-            else {
-                result.y = 1.0f;
-            }
+        else if (overlap.x < 0) {
+            // Collision on the right side
+            result.x = 1.0f;
         }
+
+        if (overlap.y > 0) {
+            // Collision on the bottom
+            result.y = 1.0f;
+        }
+        else if (overlap.y < 0) {
+            // Collision on the top
+            result.y = -1.0f;
+        }
+
     }
     else //No corner collision
     {
