@@ -4,24 +4,24 @@
 #include "EnemyUtils.h"
 #include "TransformMatrix.h"
 #include <iostream>
+#include <cmath> // For abs function
 
 
 
+void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 
-void MoveTowards(Enemy& moving_entity, AEVec2 target_position) {
+	enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
 
-	moving_entity.velocity.x = moving_entity.speed * AEFrameRateControllerGetFrameTime();
-
-	if ((moving_entity.obj.pos.x != target_position.x)) {
-		if (moving_entity.obj.pos.x >= target_position.x) {
-			moving_entity.velocity.x *= -1.0f;
+	if ((enemy.obj.pos.x != target_position.x)) {
+		if (enemy.obj.pos.x >= target_position.x) {
+			enemy.velocity.x *= -1.0f;
 		}
-		if (moving_entity.obj.pos.x <= target_position.x) {
-			moving_entity.velocity.x *= 1.0f;
+		if (enemy.obj.pos.x <= target_position.x) {
+			enemy.velocity.x *= 1.0f;
 
 		}
 	}
-	moving_entity.obj.pos.x += moving_entity.velocity.x;
+	enemy.obj.pos.x += enemy.velocity.x;
 
 }
 
@@ -96,3 +96,22 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 }
+
+void Attack_Charge(Enemy& enemy, int target_position) {
+	enemy.speed = 200.f;
+	enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
+	if (target_position == ENEMY_RIGHT) {
+		enemy.velocity.x *= 1.0f;
+	}
+	if (target_position == ENEMY_LEFT) {
+		enemy.velocity.x *= -1.0f;
+	}
+	enemy.obj.pos.x += enemy.velocity.x;
+}
+
+
+bool areAligned(AEVec2 player_position, AEVec2 enemy_position) {
+	float tolerance = 10.f;
+	return std::abs(player_position.y - enemy_position.y) < tolerance;
+}
+

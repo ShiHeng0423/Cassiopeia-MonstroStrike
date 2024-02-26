@@ -89,8 +89,8 @@ void Level1_Load()
 
 
 	//loading texture only, push back into the vector
-	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
@@ -361,12 +361,26 @@ void Level1_Update()
 //(ENEMY AND BULLETS COLLISION CHECKING)
 //is this efficient? 
 				for (Enemy& enemy : vecEnemy) {
-					if (AABBvsAABB(enemy.collisionBox, grids2D[rows][cols].collisionBox)) {
-						enemy.collisionNormal = AABBNormalize(enemy.collisionBox, grids2D[rows][cols].collisionBox);
-						ResolveVerticalCollision(enemy.collisionBox, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
+
+						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+							&enemy.velocity, &enemy.onFloor);
+
+					}
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(enemy.boxArms, grids2D[rows][cols].collisionBox)) {
+						enemy.isCollision = true;
+						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
+
+						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
 							&enemy.velocity, &enemy.onFloor);
 						enemy.loop_idle = false;
 					}
+
+
 					for ( Bullet& bullet : enemy.bullets) {
 						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
 							bullet.lifetime = 0.f; //makes bullet erase
@@ -423,8 +437,8 @@ void Level1_Draw()
 	for (Enemy& enemy : vecEnemy) {
 		if (enemy.isAlive) {
 			if (enemy.isShooting) {
-				AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
-				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
+				//AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
+				AEGfxTextureSet(enemy.angrytex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 

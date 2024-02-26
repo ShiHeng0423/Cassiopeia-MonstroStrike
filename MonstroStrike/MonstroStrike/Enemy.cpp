@@ -15,8 +15,11 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 	switch (enemy_type) {
 	case ENEMY_JUMPER:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_3.png");
+		enemy.angrytex = AEGfxTextureLoad("Assets/Kronii_Pixel_3.png");
 		break;
 	case ENEMY_CHARGER:
+		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Normal.png");
+		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Angry.png");
 		break;
 	case ENEMY_FLY:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Kronii_Pixel_2.png");
@@ -27,6 +30,8 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/SubaDuck.png");
 		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png");
 		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/BlueCircle.png");
+
+		enemy.angrytex = AEGfxTextureLoad("Assets/SubaDuck.png");
 		break;
 	case ENEMY_BOSS2:
 		break;
@@ -55,6 +60,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.starting_position = location;
 	enemy.waypoint.x = location.x + 200.f;
 	enemy.waypoint.y = 0;
+	enemy.target_position = ENEMY_DEFAULT;
 	enemy.loop_idle = true;
 
 	enemy.enemyCurrent = ENEMY_IDLE;
@@ -62,6 +68,9 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 
 	enemy.isAlive = true;
 	enemy.isShooting = false;
+	enemy.isCollision = false;
+
+	enemy.timePassed = 0;
 
 	//AABB Box init, Collision boxes
 	enemy.onFloor = false;
@@ -70,6 +79,13 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
 	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+
+	AEVec2Set(&enemy.boxArms.maximum, 0.f, 0.f);
+	AEVec2Set(&enemy.boxHeadFeet.maximum, 0.f, 0.f);
+	AEVec2Set(&enemy.collisionNormal, 0.f, 0.f);
+
+
+
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
@@ -83,7 +99,14 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_CHARGER:
-
+		enemy.speed = 80.f;
+		enemy.lineOfSight = 300.f;
+		enemy.shootingRange = 300.f;
+		enemy.fireRate = 5.0f;
+		enemy.timeSinceLastFire = 0;
+		enemy.health = 100;
+		enemy.mass = 100.f;
+		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_FLY:
 		enemy.speed = 80.f;
@@ -114,10 +137,10 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing1.Offset = 100.f;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x, scale.y); //set scale of the image
-		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
-		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.25f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.25f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.25f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.25f;
 		enemy.wing1.fireRate = 5.0f;
 		enemy.wing1.timeSinceLastFire = 0;
 		enemy.wing1.health = 100;
@@ -127,17 +150,16 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing2.Offset = -100.f;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x, scale.y); //set scale of the image
-		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
-		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.25f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.25f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.25f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.25f;
 		enemy.wing2.fireRate = 5.0f;
 		enemy.wing2.timeSinceLastFire = 0;
 		enemy.wing2.health = 100;
 		break;
 	case ENEMY_BOSS2:
 		break;
-
 	default:
 		return;
 	}
@@ -165,7 +187,6 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 
 		it->lifetime--;	//decrease lifetime
 		if (it->lifetime <= 0) {
-
 			it = enemy.bullets.erase(it);
 		}
 		else {
@@ -174,6 +195,8 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	}
 //(update bullet)---------------------------------------------------------------------------------------
 	
+
+
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
@@ -188,6 +211,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		ENEMY_JUMPER_Update(enemy, player);
 		break;
 	case ENEMY_CHARGER:
+		ENEMY_CHARGER_Update(enemy, player);
 		break;
 	case ENEMY_FLY:
 		ENEMY_FLY_Update(enemy, player);
@@ -196,7 +220,6 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		break;
 	case ENEMY_BOSS1:
 		ENEMY_BOSS_Update(enemy, player);
-		std::cout << enemy.velocity.x << " " << enemy.velocity.y << " " << enemy.onFloor << "\n";
 		break;
 	case ENEMY_BOSS2:
 		break;
@@ -282,7 +305,7 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 	case ENEMY_CHASE:
 
 		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_SHOOT;
+			enemy.enemyNext = ENEMY_ATTACK;
 		}
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
@@ -296,14 +319,14 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 		}
 		break;
 
-	case ENEMY_SHOOT:
+	case ENEMY_ATTACK:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
 			if (CanFire(enemy)) {
 				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
 
 			}
-			enemy.enemyNext = ENEMY_SHOOT;
+			enemy.enemyNext = ENEMY_ATTACK;
 		}
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.isShooting = false;
@@ -320,10 +343,20 @@ void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
 	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.25f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.25f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.25f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.25f;
+
+	//Vertical
+	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
+	enemy.boxHeadFeet.minimum.y -= enemy.obj.img.scale.y * 0.25f;
+	enemy.boxHeadFeet.maximum.y += enemy.obj.img.scale.y * 0.25f;
+
+	//Horizontal
+	enemy.boxArms = enemy.collisionBox;
+	enemy.boxArms.minimum.x -= enemy.obj.img.scale.x * 0.25f;
+	enemy.boxArms.maximum.x += enemy.obj.img.scale.x * 0.25f;
 
 }
 
@@ -377,7 +410,7 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 	case ENEMY_CHASE:
 
 		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_SHOOT;
+			enemy.enemyNext = ENEMY_ATTACK;
 		}
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
@@ -392,13 +425,13 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 		}
 		break;
 
-	case ENEMY_SHOOT:
+	case ENEMY_ATTACK:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
 			if (CanFire(enemy)) {
 				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
 			}
-			enemy.enemyNext = ENEMY_SHOOT;
+			enemy.enemyNext = ENEMY_ATTACK;
 		}
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.isShooting = false;
@@ -416,10 +449,20 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-	//std::cout << "Enemy Collision X " << enemy.collisionBox.minimum.x << std::endl;
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.25f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.25f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.25f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.25f;
+
+
+		//Vertical
+	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
+	enemy.boxHeadFeet.minimum.y -= enemy.obj.img.scale.y * 0.25f;
+	enemy.boxHeadFeet.maximum.y += enemy.obj.img.scale.y * 0.25f;
+
+	//Horizontal
+	enemy.boxArms = enemy.collisionBox;
+	enemy.boxArms.minimum.x -= enemy.obj.img.scale.x * 0.25f;
+	enemy.boxArms.maximum.x += enemy.obj.img.scale.x * 0.25f;
 }
 

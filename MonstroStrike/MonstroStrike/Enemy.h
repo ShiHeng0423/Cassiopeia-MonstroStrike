@@ -4,14 +4,18 @@
 #include "CollisionShape.h"
 #include <vector>
 
-
+enum ENEMY_DIR {
+	ENEMY_DEFAULT = 0,
+	ENEMY_LEFT,
+	ENEMY_RIGHT,
+};
 
 enum ENEMY_STATES
 {
 	ENEMY_IDLE = 0,
 	ENEMY_CHASE,
-	ENEMY_SHOOT,
-
+	ENEMY_ATTACK,
+	ENEMY_TRANSITION,
 };
 
 enum ENEMY_TYPES 
@@ -52,9 +56,11 @@ struct EnemyPart {
 
 struct Enemy {
 	Object obj;
+	AEGfxTexture* angrytex;
 
 	AEVec2 starting_position;	//startinglocation whr enemy spawns
 	AEVec2 waypoint;			//waypoints are for enemy idle back n forth points
+	int target_position;		//some enemies need target a specific location
 	bool loop_idle;
 
 	int enemyCurrent;
@@ -63,6 +69,9 @@ struct Enemy {
 	
 	bool isAlive;
 	bool isShooting;
+	bool isCollision;
+
+	f32 timePassed;				//use to "pause" the enemy 
 
 //(stats)----------------------------------------------
 	f32 speed;
@@ -109,6 +118,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
 
 void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player);
+void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player);
 void ENEMY_FLY_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player);
@@ -122,4 +132,8 @@ bool CanFire(Enemy& enemy);
 bool CanPartFire(EnemyPart& part);
 void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
 void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
+
+void Attack_Charge(Enemy& enemy, int target_position);
+bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
+
 //(EnemyUtils)-------------------------------------------------------------------------

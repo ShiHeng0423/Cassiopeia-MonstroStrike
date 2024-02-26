@@ -73,7 +73,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	case ENEMY_CHASE:
 
 		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_SHOOT;
+			enemy.enemyNext = ENEMY_ATTACK;
 		}
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
@@ -87,7 +87,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 		break;
 
-	case ENEMY_SHOOT:
+	case ENEMY_ATTACK:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
 			//if(CanFire(enemy)) {
@@ -105,7 +105,6 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.isShooting = false;
 			enemy.enemyNext = ENEMY_CHASE;
-
 		}
 		break;
 	default:
@@ -121,32 +120,42 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	//for gravity
 	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
-	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
 	//wings collision box
 	if (enemy.wing1.isAlive) {
 		enemy.wing1.obj.pos.x = enemy.obj.pos.x + enemy.wing1.Offset;
 		enemy.wing1.obj.pos.y = enemy.obj.pos.y;
 
-		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
-		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.25f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.25f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.25f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.25f;
 	}
 	if (enemy.wing2.isAlive) {
 
 		enemy.wing2.obj.pos.x = enemy.obj.pos.x + enemy.wing2.Offset;
 		enemy.wing2.obj.pos.y = enemy.obj.pos.y;
 
-		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
-		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.25f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.25f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.25f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.25f;
 	}
-		
+	
+	//main body collision box
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.25f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.25f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.25f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.25f;
+
+	//Vertical
+	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
+	enemy.boxHeadFeet.minimum.y -= enemy.obj.img.scale.y * 0.25f;
+	enemy.boxHeadFeet.maximum.y += enemy.obj.img.scale.y * 0.25f;
+
+	//Horizontal
+	enemy.boxArms = enemy.collisionBox;
+	enemy.boxArms.minimum.x -= enemy.obj.img.scale.x * 0.25f;
+	enemy.boxArms.maximum.x += enemy.obj.img.scale.x * 0.25f;
 
 }
