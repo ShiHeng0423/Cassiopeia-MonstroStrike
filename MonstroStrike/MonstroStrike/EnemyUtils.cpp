@@ -109,7 +109,7 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 }
 
 void Attack_Charge(Enemy& enemy, int target_position) {
-	enemy.speed = 200.f;
+	enemy.speed = 500.f;
 	enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
 	if (target_position == ENEMY_RIGHT) {
 		enemy.velocity.x *= 1.0f;

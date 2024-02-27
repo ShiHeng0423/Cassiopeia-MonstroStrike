@@ -124,7 +124,7 @@ void Level1_Load()
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
 
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -234,7 +234,7 @@ void Level1_Initialize()
 	//looping thru to init all enemy variables
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
 	Enemy_Init({70.f,70.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({70.f,70.f}, { -500.f,-150.f }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({ 70.f,70.f }, { 300.f,250.f }, ENEMY_IDLE, vecEnemy[3]);
 
 }
@@ -299,16 +299,16 @@ void Level1_Update()
 				//Check vertical box (Head + Feet) 
 				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
 					 player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-
+					 //std::cout << "P V \n";
 					 ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						 &player->velocity, &player->onFloor);
+						 &player->velocity, &player->onFloor, &player->gravityForce);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox)) {
 					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor);
+						&player->velocity);
 				}
 //(ENEMY AND BULLETS COLLISION CHECKING)
 //is this efficient? 
@@ -319,7 +319,7 @@ void Level1_Update()
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor);
+							&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
 
 					}
 					//Check horizontal box (Left arm -> Right arm)
@@ -328,7 +328,7 @@ void Level1_Update()
 						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
 
 						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor);
+							&enemy.velocity);
 						enemy.loop_idle = false;
 					}
 

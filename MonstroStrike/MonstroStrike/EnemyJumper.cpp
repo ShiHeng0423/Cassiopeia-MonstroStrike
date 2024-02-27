@@ -14,6 +14,9 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 	{
 		enemy.isAlive = false;
 	}
+	std::cout << "Enemy On Floor: " << enemy.onFloor << std::endl;
+	std::cout << "Slime Enemy vel y: " << enemy.velocity.y << std::endl;
+	std::cout << "Slime Enemy g: " << enemy.gravityForce << std::endl;
 
 	switch (enemy.enemyCurrent)
 	{
@@ -136,6 +139,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 	}
 
 	//for gravity
+
 	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;

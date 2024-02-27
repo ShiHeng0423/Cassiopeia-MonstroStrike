@@ -4,8 +4,6 @@
 #include <AEMath.h>
 #include "Player.h"
 
-#define DEFAULT_PLATFORM_VELOCITY 5.f
-
 enum PlatformTypes
 {
 	PLATFORM_NONE,

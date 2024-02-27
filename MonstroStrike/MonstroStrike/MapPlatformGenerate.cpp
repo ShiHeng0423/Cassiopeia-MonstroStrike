@@ -112,20 +112,12 @@ void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& pla
 
 void PlayerOnPlatform(Platforms& movingObject, Player& player)
 {
-	//Check horizontal box (Left arm -> Right arm)
-	if (AABBvsAABB(player.boxArms, movingObject.collisionBox)) {
-		player.collisionNormal = AABBNormalize(player.boxArms, movingObject.collisionBox);
-
-		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity, &player.onFloor);
-	}
-
 	//Vertical
 	if (AABBvsAABB(player.boxHeadFeet, movingObject.collisionBox)) {
 		player.collisionNormal = AABBNormalize(player.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(player.boxHeadFeet, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity, &player.onFloor);
+			&player.velocity, &player.onFloor, &player.gravityForce);
 
 		if (player.collisionNormal.y == 1) //Player on top
 		{
@@ -133,4 +125,13 @@ void PlayerOnPlatform(Platforms& movingObject, Player& player)
 			player.obj.pos.y += movingObject.velocity.y;
 		}
 	}
+
+	//Check horizontal box (Left arm -> Right arm)
+	if (AABBvsAABB(player.boxArms, movingObject.collisionBox)) {
+		player.collisionNormal = AABBNormalize(player.boxArms, movingObject.collisionBox);
+
+		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
+			&player.velocity);
+	}
+
 }

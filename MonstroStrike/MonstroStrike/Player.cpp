@@ -22,7 +22,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 	player->isFacingRight = isFacingRight;
 	player->lookAheadMutliplier = 50.f;
-	player->onFloor = false; //Set as false first, will be set as true when ground detected
+	player->onFloor = true; //Set as false first, will be set as true when ground detected
 	player->mass = 60.f;
 
 	//Initializing collision box starting position
@@ -119,6 +119,7 @@ void PlayerUpdate(Player& player)
 		std::cout << "Equipped " << armorName << "!" << std::endl;
 	}
 
+	//std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
 	if (AEInputCheckTriggered(AEVK_2))
 	{
 		Player player;
@@ -140,7 +141,15 @@ void PlayerUpdate(Player& player)
 		player.onFloor = false;
 		player.velocity.y = 400.f;
 	}
-	ApplyGravity(&player.velocity, player.mass); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+
+	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	
+	if (player.onFloor)
+	{
+	}
+	std::cout << "Player on floor: " << player.onFloor << std::endl;
+	std::cout << "Player vel y: " << player.velocity.y << std::endl;
+	std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
 	player.obj.pos.y += player.velocity.y * AEFrameRateControllerGetFrameTime();
@@ -153,20 +162,21 @@ void PlayerUpdate(Player& player)
 	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 
 	//Vertical
-	f32 verticalOffset = player.obj.img.scale.y * 0.01f;
+	f32 verticalOffset = player.obj.img.scale.y * 0.025f;
 
 	// Vertical box
 	player.boxHeadFeet = player.collisionBox;
 	player.boxHeadFeet.minimum.y -= verticalOffset;
 	player.boxHeadFeet.maximum.y += verticalOffset;
 
-	f32 horizontalOffset = player.obj.img.scale.x * 0.01f;
+	f32 horizontalOffset = player.obj.img.scale.x * 0.025f;
 
 	// Horizontal box
 	player.boxArms = player.collisionBox;
 	player.boxArms.minimum.x -= horizontalOffset;
 	player.boxArms.maximum.x += horizontalOffset;
 
+	//std::cout << "Collision Normal Y: " << player.collisionNormal.y << std::endl;
 	//Update player weapon hit box
 
 	//Weapon hit box update only

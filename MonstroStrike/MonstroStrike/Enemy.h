@@ -83,6 +83,7 @@ struct Enemy {
 
 	//Gravity affection
 	f32 mass;
+	f32 gravityForce;
 	AEVec2 velocity;			//speed is the scalar of the velocity
 //(stats)----------------------------------------------
 

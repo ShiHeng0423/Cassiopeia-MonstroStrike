@@ -31,6 +31,7 @@ struct Player {
 
 	f32 attackTime;
 	bool burningEffect;
+	f32 gravityForce;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

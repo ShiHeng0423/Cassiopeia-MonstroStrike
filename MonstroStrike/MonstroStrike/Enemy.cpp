@@ -74,7 +74,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.timePassed = 0;
 
 	//AABB Box init, Collision boxes
-	enemy.onFloor = false;
+	enemy.onFloor = true;
 
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
@@ -86,7 +86,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	AEVec2Set(&enemy.collisionNormal, 0.f, 0.f);
 
 
-
+	enemy.gravityForce = 0.f;
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
@@ -201,12 +201,9 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
-
-	if (!enemy.onFloor) {
-		ApplyGravity(&enemy.velocity, enemy.mass);
-	}
-
 	
+	ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce);
+
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		ENEMY_JUMPER_Update(enemy, player);
