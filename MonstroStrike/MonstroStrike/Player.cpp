@@ -155,7 +155,6 @@ void PlayerUpdate(Player& player)
 	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 
 	//Vertical
-	// Define vertical offset based on player size (adjust percentage as needed)
 	f32 verticalOffset = player.obj.img.scale.y * 0.01f;
 
 	// Vertical box
@@ -163,7 +162,6 @@ void PlayerUpdate(Player& player)
 	player.boxHeadFeet.minimum.y -= verticalOffset;
 	player.boxHeadFeet.maximum.y += verticalOffset;
 
-	// Define horizontal offset based on player size (adjust percentage as needed)
 	f32 horizontalOffset = player.obj.img.scale.x * 0.01f;
 
 	// Horizontal box
