@@ -39,11 +39,28 @@ void UpdateWeaponHitBox(struct Player* player, bool playerFacingRight, struct We
 
 void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, struct Player& player)
 {
+    //wings
+    if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) {
+        theEnemy.wing1.health -= playerEquip->damage;
+        std::cout << "Attack landed wing1" << std::endl;
+
+        playerEquip->weaponHIT = true;
+    }
+    if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing2.collisionBox)) {
+        theEnemy.wing2.health -= playerEquip->damage;
+        std::cout << "Attack landed wing2" << std::endl;
+
+        playerEquip->weaponHIT = true;
+    }
+
+
     if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.collisionBox)) //Success
     {
         theEnemy.health -= playerEquip->damage;
         std::cout << "Attack landed" << std::endl;
         std::cout << theEnemy.health << std::endl;
+        std::cout << theEnemy.enemyType << std::endl;
+
         playerEquip->weaponHIT = true;
     }
 }

@@ -70,6 +70,16 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NonPlayableCharacters.cpp">
+    <ClCompile Include="EnemyUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBoss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyCharger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyJumper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -253,6 +263,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NonPlayableCharacters.h">
+    <ClInclude Include="EnemyUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
