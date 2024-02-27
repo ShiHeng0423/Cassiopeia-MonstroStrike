@@ -24,6 +24,7 @@ namespace {
 	AEGfxVertexList* pMeshYellow;
 	AEGfxVertexList* pMeshRed;
 	AEGfxVertexList* pMeshGrey;
+	AEGfxVertexList* pWhiteSquareMesh;
 
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
@@ -82,6 +83,33 @@ void Equip(int index, ButtonGearUI tmp)
 	{
 		player->burningEffect = true;
 	}
+}
+
+AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
+{
+	AEGfxMeshStart();
+
+	AEGfxTriAdd(
+		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f,  // bottom-left: red
+		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
+		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
+
+	AEGfxTriAdd(
+		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
+		0.5f, 0.5f, MeshColor, 1.0f, 0.0f,    // top-right: white
+		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
+
+	return AEGfxMeshEnd();
+}
+
+AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
+{
+	AEGfxMeshStart();
+
+	AEGfxVertexAdd(-0.5f, 0.f, MeshColor, 1.0f, 1.0f);
+	AEGfxVertexAdd(0.5f, 0.f, MeshColor, 1.0f, 1.0f);
+
+	return AEGfxMeshEnd();
 }
 
 void Level1_Load()
@@ -242,11 +270,17 @@ void Level1_Update()
 
 	if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 	{
-		//next = GameStates::Quit;
-		cam->CameraShake();
+		next = GameStates::Quit;
+		//cam->CameraShake();
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
+	{
+		//next = GameStates::Quit;
+		AEVec2 test{ 100.f, 100.f };
+		cam->LookAhead(test);
+	}
+	if (AEInputCheckTriggered(AEVK_1))
 	{
 		//next = GameStates::Quit;
 		AEVec2 test{ 100.f, 100.f };
@@ -463,15 +497,13 @@ void Level1_Draw()
 	}
 
 
-	AEVec2 cam;
-	AEGfxGetCamPosition(&cam.x, &cam.y);
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam.x, cam.y, 0.f, AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam.x, cam.y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800 + hp + cam.x, 450 + cam.y, 0, hp * 2, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800 + hp + cam->GetCameraWorldPoint().x, 450 + cam->GetCameraWorldPoint().y, 0, hp * 2, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	std::string str = std::to_string(hp);
@@ -534,9 +566,4 @@ void Level1_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 
 	delete cam;
-}
-
-void Level1_Unload()
-{
-
 }

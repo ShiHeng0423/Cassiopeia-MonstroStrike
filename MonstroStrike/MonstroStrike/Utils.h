@@ -23,6 +23,3 @@ struct ButtonGearUI {
 	AEVec2 pos;
 	bool isWeapon;
 };
-
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor);
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor);
