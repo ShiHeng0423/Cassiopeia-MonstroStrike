@@ -70,6 +70,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.isAlive = true;
 	enemy.isShooting = false;
 	enemy.isCollision = false;
+	enemy.isFlying = false;
 
 	enemy.timePassed = 0;
 
@@ -85,14 +86,14 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	AEVec2Set(&enemy.boxHeadFeet.maximum, 0.f, 0.f);
 	AEVec2Set(&enemy.collisionNormal, 0.f, 0.f);
 
-
+	AEVec2Set(&enemy.spawnPoint, 0.f, 0.f);
 
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		enemy.speed = 50.f;
 		enemy.lineOfSight = 300.f;
-		enemy.shootingRange = 250;
+		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
@@ -110,10 +111,11 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_FLY:
+		enemy.isFlying = true;
 		enemy.speed = 80.f;
-		enemy.lineOfSight = 300.f;
-		enemy.shootingRange = 300.f;
-		enemy.fireRate = 5.0f;
+		enemy.lineOfSight = 400.f;
+		enemy.shootingRange = 250.f;
+		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
 		enemy.mass = 100.f;
@@ -126,8 +128,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		//main body
 		enemy.speed = 80.f;
 		enemy.lineOfSight = 300.f;
-		enemy.shootingRange = 250;
-		enemy.fireRate = 5.0f;
+		enemy.shootingRange = 250.f;
+		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
 		enemy.mass = 10.f;
@@ -142,7 +144,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
 		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
 		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
-		enemy.wing1.fireRate = 5.0f;
+		enemy.wing1.fireRate = 1.0f;
 		enemy.wing1.timeSinceLastFire = 0;
 		enemy.wing1.health = 100;
 
@@ -155,7 +157,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
 		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
 		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
-		enemy.wing2.fireRate = 5.0f;
+		enemy.wing2.fireRate = 1.0f;
 		enemy.wing2.timeSinceLastFire = 0;
 		enemy.wing2.health = 100;
 		break;
@@ -202,9 +204,9 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 
-
-	ApplyGravity(&enemy.velocity, enemy.mass);
-
+	if (!enemy.isFlying) {
+		ApplyGravity(&enemy.velocity, enemy.mass);
+	}
 
 	
 	switch (enemy.enemyType) {
@@ -231,239 +233,5 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	}
 
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//void ENEMY_JUMPER_Update(Enemy &enemy, struct Player& player)
-//{
-//	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos); 
-//
-//	if (enemy.health <= 0)
-//	{
-//		enemy.isAlive = false;
-//	}
-//
-//	switch (enemy.enemyCurrent)
-//	{
-//	case ENEMY_IDLE:
-//		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//			enemy.enemyNext = ENEMY_CHASE;
-//			enemy.loop_idle = false;
-//		}
-//		else {
-//			enemy.enemyNext = ENEMY_IDLE;
-//	
-//			if (enemy.loop_idle) {
-//				MoveTowards(enemy, enemy.waypoint);
-//
-//				
-//				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-//					enemy.loop_idle = false;
-//				}
-//			}
-//			if ( (enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f) ) {
-//				enemy.loop_idle = true;
-//			}
-//			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-//				
-//				MoveTowards(enemy, enemy.starting_position);
-//
-//			}		
-//		}
-//		break;
-//
-//	case ENEMY_CHASE:
-//
-//		if (distanceFromPlayer <= enemy.shootingRange) {
-//			enemy.enemyNext = ENEMY_ATTACK;
-//		}
-//		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//			enemy.enemyNext = ENEMY_CHASE;
-//			MoveTowards(enemy, player.obj.pos); 
-//
-//
-//		}
-//		else {
-//			enemy.enemyNext = ENEMY_IDLE;
-//			//std::cout << "Going back to IDLE!\n";
-//		}
-//		break;
-//
-//	case ENEMY_ATTACK:
-//		if (distanceFromPlayer <= enemy.shootingRange) {
-//			enemy.isShooting = true;
-//			if (CanFire(enemy)) {
-//				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
-//
-//			}
-//			enemy.enemyNext = ENEMY_ATTACK;
-//		}
-//		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-//			enemy.isShooting = false;
-//
-//			enemy.enemyNext = ENEMY_CHASE;
-//			//std::cout << "Shooting!\n";
-//		}
-//		break;
-//	default:
-//		break;
-//	}
-//
-//	//for gravity
-//	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
-//
-//	enemy.enemyCurrent = enemy.enemyNext;
-//	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.25f;
-//	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.25f;
-//	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.25f;
-//	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.25f;
-//
-//	//Vertical
-//	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
-//	enemy.boxHeadFeet.minimum.y -= enemy.obj.img.scale.y * 0.25f;
-//	enemy.boxHeadFeet.maximum.y += enemy.obj.img.scale.y * 0.25f;
-//
-//	//Horizontal
-//	enemy.boxArms = enemy.collisionBox;
-//	enemy.boxArms.minimum.x -= enemy.obj.img.scale.x * 0.25f;
-//	enemy.boxArms.maximum.x += enemy.obj.img.scale.x * 0.25f;
-//
-//}
-//
-
-
-
-
-
-
-
-
-void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
-{
-
-	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-	if (enemy.health <= 0)
-	{
-		enemy.isAlive = false;
-	}
-
-	switch (enemy.enemyCurrent)
-	{
-	case ENEMY_IDLE:
-		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
-			enemy.loop_idle = false;
-			//std::cout << "HELLO CHASING\n";
-		}
-		else {
-			enemy.enemyNext = ENEMY_IDLE;
-			if (enemy.loop_idle) {
-				MoveTowards(enemy, enemy.waypoint);
-
-				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-					enemy.loop_idle = false;
-				}
-			}
-			if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-				enemy.loop_idle = true;
-			}
-			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-
-				MoveTowards(enemy, enemy.starting_position);
-
-			}
-
-
-		}
-		break;
-
-	case ENEMY_CHASE:
-
-		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_ATTACK;
-		}
-		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
-			MoveTowards(enemy, player.obj.pos);
-
-			//std::cout << "HELLO CHASING HERE!\n";
-
-		}
-		else {
-			enemy.enemyNext = ENEMY_IDLE;
-			//std::cout << "HELLO Going back to IDLE!\n";
-		}
-		break;
-
-	case ENEMY_ATTACK:
-		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.isShooting = true;
-			if (CanFire(enemy)) {
-				SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
-			}
-			enemy.enemyNext = ENEMY_ATTACK;
-		}
-		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.isShooting = false;
-
-			enemy.enemyNext = ENEMY_CHASE;
-			//std::cout << "Shooting!\n";
-		}
-		break;
-	default:
-		break;
-	}
-
-
-	//for gravity
-	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
-
-	enemy.enemyCurrent = enemy.enemyNext;
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-
-
-		//Vertical
-	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
-	enemy.boxHeadFeet.minimum.y -= enemy.obj.img.scale.y * 0.01f;
-	enemy.boxHeadFeet.maximum.y += enemy.obj.img.scale.y * 0.01f;
-
-	//Horizontal
-	enemy.boxArms = enemy.collisionBox;
-	enemy.boxArms.minimum.x -= enemy.obj.img.scale.x * 0.01f;
-	enemy.boxArms.maximum.x += enemy.obj.img.scale.x * 0.01f;
 }
 

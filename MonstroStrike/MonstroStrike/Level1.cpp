@@ -30,8 +30,7 @@ namespace {
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
 
 	Platforms movingObject[3]; //Indicate total number of movingObjects
-	//const int size = 5;	//size so that loops work
-	//Enemy* enemy[size];
+
 	std::vector<Enemy> vecEnemy; //enemy container
 
 	Player* player;
@@ -116,9 +115,9 @@ void Level1_Load()
 {
 
 	//loading texture only, push back into the vector
-	Enemy_Load(ENEMY_CHARGER, vecEnemy);
-	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_BOSS1, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_FLY, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
@@ -235,7 +234,7 @@ void Level1_Initialize()
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
 	Enemy_Init({70.f,70.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
 	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({ 70.f,70.f }, { 300.f,250.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f,70.f }, { 800.f,-150.f }, ENEMY_IDLE, vecEnemy[3]);
 
 }
 
@@ -399,7 +398,7 @@ void Level1_Update()
 
 	//Testing moving platform logic
 
-	UpdatePlatforms(movingObject, 3, *player); //Numbers based on how many moving platforms
+	UpdatePlatforms(movingObject, 3, *player, vecEnemy); //Numbers based on how many moving platforms
 	UpdateNPC();
 }
 

@@ -4,6 +4,7 @@
 #include <AEMath.h>
 #include "Player.h"
 
+
 #define DEFAULT_PLATFORM_VELOCITY 5.f
 
 enum PlatformTypes
@@ -38,6 +39,8 @@ struct Platforms
 
 void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, Platforms& thePlatform); //Add end point and start point afterwards
 
-void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& player);
+void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& player, std::vector<Enemy>& vecEnemy); //add 1 more parameter to take in enemy vec
 
 void PlayerOnPlatform(Platforms& movingObject, Player& player);
+
+void PlatformCollision(Platforms& movingObject, Enemy& enemy); //for enemy

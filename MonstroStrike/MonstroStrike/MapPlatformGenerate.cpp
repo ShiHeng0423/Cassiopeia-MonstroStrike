@@ -75,7 +75,7 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 	}
 }
 
-void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& player)
+void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& player, std::vector<Enemy>& vecEnemy)
 {
 	for (int i = 0; i < numberOfPlatforms; i++)
 	{
@@ -101,6 +101,11 @@ void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& pla
 
 		//Check if player is on the platform
 		PlayerOnPlatform(movingObject[i], player);
+
+		//Check if enemy/bullet is colliding platform
+		for (Enemy& enemy : vecEnemy) {
+			PlatformCollision(movingObject[i], enemy);
+		}
 
 		//Update collision box location
 		movingObject[i].collisionBox.minimum.x = movingObject[i].position.x - movingObject[i].size.x * 0.5f;
@@ -133,4 +138,40 @@ void PlayerOnPlatform(Platforms& movingObject, Player& player)
 			player.obj.pos.y += movingObject.velocity.y;
 		}
 	}
+}
+
+void PlatformCollision(Platforms& movingObject, Enemy& enemy)
+{
+	//Check vertical box (Head + Feet) 
+	if (AABBvsAABB(enemy.boxHeadFeet, movingObject.collisionBox)) {
+
+		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
+
+		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+			&enemy.velocity, &enemy.onFloor);
+
+		if (enemy.collisionNormal.y == 1) //Enemy on top
+		{
+			enemy.obj.pos.x += movingObject.velocity.x;
+			enemy.obj.pos.y += movingObject.velocity.y;
+		}
+
+	}
+	//Check horizontal box (Left arm -> Right arm)
+	if (AABBvsAABB(enemy.boxArms, movingObject.collisionBox)) {
+		enemy.isCollision = true;
+		enemy.collisionNormal = AABBNormalize(enemy.boxArms, movingObject.collisionBox);
+
+		ResolveHorizontalCollision(enemy.boxArms, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+			&enemy.velocity, &enemy.onFloor);
+		enemy.loop_idle = false;
+	}
+
+	for (Bullet& bullet : enemy.bullets) {
+		if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
+			bullet.lifetime = 0.f; //makes bullet erase
+
+		}
+	}
+
 }

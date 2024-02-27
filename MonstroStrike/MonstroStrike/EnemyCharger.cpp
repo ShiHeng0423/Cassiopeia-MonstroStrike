@@ -20,7 +20,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	case ENEMY_IDLE:
 		//std::cout << player.obj.pos.y << " " << enemy.obj.pos.y << "\n";
 		//std::cout << areAligned(player.obj.pos, enemy.obj.pos) << "\n";
-		std::cout << enemy.onFloor << "\n";
+		//std::cout << enemy.onFloor << "\n";
 
 		if (distanceFromPlayer <= enemy.lineOfSight && areAligned(player.obj.pos, enemy.obj.pos)) {
 			enemy.enemyNext = ENEMY_TRANSITION;

@@ -10,22 +10,6 @@
 
 void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 
-	//enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
-
-	//if ((enemy.obj.pos.x != target_position.x)) {
-	//	if (enemy.obj.pos.x >= target_position.x) {
-	//		enemy.velocity.x *= -1.0f;
-	//	}
-	//	if (enemy.obj.pos.x <= target_position.x) {
-	//		enemy.velocity.x *= 1.0f;
-
-	//	}
-	//}
-	//enemy.obj.pos.x += enemy.velocity.x;
-
-
-
-
 	// Calculate the direction towards the target position
 	float direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
 
@@ -34,6 +18,18 @@ void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 
 	// Update the position based on the calculated direction and distance
 	enemy.obj.pos.x += direction * enemy.velocity.x;
+}
+
+void MoveTowardsY(Enemy& enemy, AEVec2 target_position) {
+
+	// Calculate the direction towards the target position
+	float direction = (target_position.y > enemy.obj.pos.y) ? 1.0f : -1.0f;
+
+	// Calculate the distance to move based on speed and elapsed time
+	enemy.velocity.y = enemy.speed * AEFrameRateControllerGetFrameTime();
+
+	// Update the position based on the calculated direction and distance
+	enemy.obj.pos.y += direction * enemy.velocity.y;
 }
 
 
@@ -66,13 +62,13 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 
 	//create a bullet
 	Bullet bullet;
-	bullet.lifetime = 50;													//lifetime
+	bullet.lifetime = 100;													//lifetime
 	bullet.obj.img.pTex = bulletTex;										//image
 	AEVec2Set(&bullet.obj.pos, enemy_position.x, enemy_position.y);			//start position
-	AEVec2Set(&bullet.obj.img.scale, 80.f, 80.f);							//set scale of the image
+	AEVec2Set(&bullet.obj.img.scale, 50.f, 50.f);							//set scale of the image
 
 	//set velocity of bullet
-	bullet.bulletSpeed = 5.f;
+	bullet.bulletSpeed = 2.5f;
 	AEVec2Set(&bullet.bulletVel, direction.x * bullet.bulletSpeed, direction.y * bullet.bulletSpeed);
 
 	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.img.scale.x * 0.5f;

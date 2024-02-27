@@ -4,6 +4,11 @@
 #include "CollisionShape.h"
 #include <vector>
 
+
+
+
+
+
 enum ENEMY_DIR {
 	ENEMY_DEFAULT = 0,
 	ENEMY_LEFT,
@@ -70,6 +75,7 @@ struct Enemy {
 	bool isAlive;
 	bool isShooting;
 	bool isCollision;
+	bool isFlying;
 
 	f32 timePassed;				//use to "pause" the enemy 
 
@@ -97,7 +103,7 @@ struct Enemy {
 	AABB boxArms;
 
 	std::vector<Bullet> bullets;	// Shared vector container for bullets
-
+	AEVec2 spawnPoint;				//point the bullet spawns from
 
 
 	EnemyPart wing1, wing2;
@@ -128,6 +134,7 @@ void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 
 //(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(Enemy& moving_entity, AEVec2 target_position);
+void MoveTowardsY(Enemy& moving_entity, AEVec2 target_position);
 bool CanFire(Enemy& enemy);
 bool CanPartFire(EnemyPart& part);
 void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
