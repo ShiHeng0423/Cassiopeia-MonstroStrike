@@ -13,7 +13,8 @@ struct Object{
 };
 
 struct Button {
-	Sprite img;
+	AEGfxTexture* pTex;
+	AEVec2 scale;
 	AEVec2 pos;
 	void (*Ptr)(void);
 };

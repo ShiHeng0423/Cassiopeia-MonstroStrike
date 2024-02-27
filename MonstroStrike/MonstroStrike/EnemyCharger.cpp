@@ -88,7 +88,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	}
 
 	//for gravity
-	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
+	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	//main body collision box

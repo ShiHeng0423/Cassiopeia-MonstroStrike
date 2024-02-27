@@ -30,7 +30,7 @@ void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 	float direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
 
 	// Calculate the distance to move based on speed and elapsed time
-	enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
+	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
 
 	// Update the position based on the calculated direction and distance
 	enemy.obj.pos.x += direction * enemy.velocity.x;
@@ -110,7 +110,7 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 
 void Attack_Charge(Enemy& enemy, int target_position) {
 	enemy.speed = 200.f;
-	enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
+	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
 	if (target_position == ENEMY_RIGHT) {
 		enemy.velocity.x *= 1.0f;
 	}

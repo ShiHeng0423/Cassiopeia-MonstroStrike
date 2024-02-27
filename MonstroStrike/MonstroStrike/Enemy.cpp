@@ -447,7 +447,7 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 
 
 	//for gravity
-	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
+	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;

@@ -1,4 +1,4 @@
-#include "Level1.h"
+#include "GameState_Level1.h"
 #include "AEEngine.h"
 #include "GameStateManager.h"
 #include "TransformMatrix.h"
@@ -46,7 +46,7 @@ namespace {
 	int gear_equipped = 0;
 
 	float burningEffectDuration = 1.5f;
-	float timer = 0.f;
+	f64 timer = 0.f;
 
 	ButtonGearUI inventoryBackground;
 	ButtonGearUI inventoryButton[25];
@@ -77,7 +77,7 @@ void Equip(int index, ButtonGearUI tmp)
 	{
 		gear_equipped++;
 		if (gear_equipped == 4)
-			hp *= 1.5;
+			hp *= 2;
 	}
 	else
 	{
@@ -197,7 +197,7 @@ void Level1_Initialize()
 	{
 		button.img.pTex = blank;
 		AEVec2Set(&button.img.scale, 60.f, 60.f);
-		AEVec2Set(&button.pos, (index % 5) * 90 - 180, -(index / 5) * 90 + 180);
+		AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f, -(index / 5.f) * 90.f + 180.f);
 		button.isWeapon = false;
 		index++;
 	}
@@ -218,7 +218,7 @@ void Level1_Initialize()
 	{
 		button.img.pTex = blank;
 		AEVec2Set(&button.img.scale, 60.f, 60.f);
-		AEVec2Set(&button.pos, -375.f, -index * 90 + 180);
+		AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 		index++;
 	}
 
@@ -335,7 +335,7 @@ void Level1_Update()
 
 					for ( Bullet& bullet : enemy.bullets) {
 						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
-							bullet.lifetime = 0.f; //makes bullet erase
+							bullet.lifetime = 0; //makes bullet erase
 
 						}
 					}
@@ -380,10 +380,10 @@ void Level1_Update()
 	{
 		if (timer >= burningEffectDuration)
 		{
-			AEVec2 hpLerp;
-			hpLerp.x = hp;
+			AEVec2 hpLerp{ 0,0 };
+			hpLerp.x = (f32)hp;
 			hpLerp.y = 0.f;
-			AEVec2 end;
+			AEVec2 end{ 0,0 };
 			end.x = 0;
 			end.y = 0;
 			AEVec2Lerp(&hpLerp, &hpLerp, &end, 0.01f);
@@ -496,12 +496,12 @@ void Level1_Draw()
 
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800 + hp + cam->GetCameraWorldPoint().x, 450 + cam->GetCameraWorldPoint().y, 0, hp * 2, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + cam->GetCameraWorldPoint().x, 450.f + cam->GetCameraWorldPoint().y, 0, hp * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	std::string str = std::to_string(hp);

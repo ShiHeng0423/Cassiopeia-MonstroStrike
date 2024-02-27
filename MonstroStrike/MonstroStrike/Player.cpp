@@ -49,50 +49,50 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 void PlayerUpdate(Player& player)
 {
 
-	//X-Axis control
-	bool isDashing = false;
-	const f32 dashDuration = 0.2f; 
-	const f32 dashSpeedMultiplier = 20.0f;
-	const f32 dashCooldownTime = 1.0f; 
-	f32 dashCooldown = 0.0f;
+	////X-Axis control
+	//bool isDashing = false;
+	//const f32 dashDuration = 0.2f; 
+	//const f32 dashSpeedMultiplier = 20.0f;
+	//const f32 dashCooldownTime = 1.0f; 
+	//f32 dashCooldown = 0.0f;
 
-	//Just for fun
-	if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
-		//isDashing = true;
-		//dashCooldown = dashCooldownTime;
+	////Just for fun
+	//if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
+	//	//isDashing = true;
+	//	//dashCooldown = dashCooldownTime;
 
-		//// Determine dash direction based on current movement
-		//if (AEInputCheckCurr(AEVK_D)) {
-		//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-		//	player.isFacingRight = true;
-		//}
-		//else if (AEInputCheckCurr(AEVK_A)) {
-		//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-		//	player.isFacingRight = false;
-		//}
-	}
-	else
-	{
+	//	//// Determine dash direction based on current movement
+	//	//if (AEInputCheckCurr(AEVK_D)) {
+	//	//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+	//	//	player.isFacingRight = true;
+	//	//}
+	//	//else if (AEInputCheckCurr(AEVK_A)) {
+	//	//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+	//	//	player.isFacingRight = false;
+	//	//}
+	//}
+	//else
+	//{
 		if (AEInputCheckCurr(AEVK_D)) {
-			player.velocity.x += player.obj.speed.x * AEFrameRateControllerGetFrameTime();
+			player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 			player.isFacingRight = true;
 		}
 		else if (AEInputCheckCurr(AEVK_A)) {
-			player.velocity.x -= player.obj.speed.x * AEFrameRateControllerGetFrameTime();
+			player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 			player.isFacingRight = false;
 		}
-	}
+	//}
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
 
 	// Update dash cooldown
-	if (dashCooldown > 0.0f) {
-		dashCooldown -= AEFrameRateControllerGetFrameTime();
-		if (dashCooldown <= 0.0f) {
-			isDashing = false;
-		}
-	}
+	//if (dashCooldown > 0.0f) {
+	//	dashCooldown -= (f32)AEFrameRateControllerGetFrameTime();
+	//	if (dashCooldown <= 0.0f) {
+	//		isDashing = false;
+	//	}
+	//}
 
 
 	// Calculate the desired location
@@ -143,7 +143,7 @@ void PlayerUpdate(Player& player)
 	ApplyGravity(&player.velocity, player.mass); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 
 	//Player position update
-	player.obj.pos.y += player.velocity.y * AEFrameRateControllerGetFrameTime();
+	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 	player.obj.pos.x += player.velocity.x;
 
 	//Resetting main AABB box...
@@ -174,7 +174,7 @@ void PlayerUpdate(Player& player)
 	{
 		if (player.attackTime > 0)
 		{
-			player.attackTime -= AEFrameRateControllerGetFrameTime();
+			player.attackTime -= (f32)AEFrameRateControllerGetFrameTime();
 			f32 attackProgress = 1.0f - (player.attackTime / 1.0f);
 			UpdateWeaponHitBox(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 		}

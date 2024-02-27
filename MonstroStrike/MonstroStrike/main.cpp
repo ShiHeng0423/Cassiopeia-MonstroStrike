@@ -70,7 +70,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	s8 pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	//2D vector create
 
-	GSM_Initialize(GameStates::MainMenu);
+	GSM_Initialize(GameStates::SplashScreen);
 
 	while (current != GameStates::Quit)
 	{
