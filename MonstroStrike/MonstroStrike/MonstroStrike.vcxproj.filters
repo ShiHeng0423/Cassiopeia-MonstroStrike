@@ -70,6 +70,8 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NonPlayableCharacters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="EnemyUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -263,6 +265,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NonPlayableCharacters.h">
+    <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="EnemyUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
