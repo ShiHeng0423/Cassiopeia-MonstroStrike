@@ -12,6 +12,7 @@ struct Player {
 	bool isFacingRight;
 	bool onFloor; //Added to check entity on floor, hence can jump
 	bool isAttacking;
+	bool isFalling;
 
 	AEVec2 expectedLocation;
 	AEVec2 velocity; //Added for movement - Johny

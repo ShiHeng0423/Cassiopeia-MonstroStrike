@@ -70,6 +70,7 @@ struct Enemy {
 	bool isAlive;
 	bool isShooting;
 	bool isCollision;
+	bool isFalling;
 
 	f32 timePassed;				//use to "pause" the enemy 
 

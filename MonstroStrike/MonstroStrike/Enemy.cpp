@@ -75,6 +75,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 
 	//AABB Box init, Collision boxes
 	enemy.onFloor = true;
+	enemy.isFalling = false;
 
 	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
@@ -202,7 +203,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	
-	ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce);
+	ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:

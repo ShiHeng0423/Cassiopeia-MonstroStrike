@@ -28,7 +28,7 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //	
 //	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
 //}
-void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor, f32* gravityForce)
+void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor, f32* gravityForce, bool* falling)
 {
     f32 penetrationDepth = 0.f;
 
@@ -52,17 +52,8 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
         }
     }
 
-    if (velocity->y < *gravityForce + 0.001f)
-    {
-        *onFloor = true;
-    }
-
-    if (penetrationDepth > 0.f && *onFloor) {
+    if (penetrationDepth > 0.f) {
         velocity->y = 0.f;
-    }
-
-    if (velocity->y < *gravityForce - 0.002f) {
-        *onFloor = false;
     }
 }
 

@@ -34,8 +34,8 @@ struct Platforms
 };
 
 
-void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, Platforms& thePlatform); //Add end point and start point afterwards
+void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, std::vector<struct Platforms>& platformVector);//Add end point and start point afterwards
 
-void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& player);
+void UpdatePlatforms(Player& player, std::vector<struct Platforms>& platformVector);
 
 void PlayerOnPlatform(Platforms& movingObject, Player& player);

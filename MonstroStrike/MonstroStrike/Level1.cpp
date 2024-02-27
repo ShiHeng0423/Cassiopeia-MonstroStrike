@@ -29,7 +29,8 @@ namespace {
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
 
-	Platforms movingObject[3]; //Indicate total number of movingObjects
+	std::vector<struct Platforms> platformVectors;
+
 	//const int size = 5;	//size so that loops work
 	//Enemy* enemy[size];
 	std::vector<Enemy> vecEnemy; //enemy container
@@ -224,9 +225,9 @@ void Level1_Initialize()
 
 	cam = new Camera(player->obj.pos);
 	//Need to place the objects one by one 
-	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, movingObject[0]);
-	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, movingObject[1]);
-	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, movingObject[2]);
+	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);
+	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
+	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
 
 	//Initialize NPCs
 	InitializeNPC();
@@ -301,7 +302,7 @@ void Level1_Update()
 					 player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
 					 //std::cout << "P V \n";
 					 ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						 &player->velocity, &player->onFloor, &player->gravityForce);
+						 &player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)
@@ -319,7 +320,7 @@ void Level1_Update()
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
+							&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 
 					}
 					//Check horizontal box (Left arm -> Right arm)
@@ -396,7 +397,7 @@ void Level1_Update()
 
 	//Testing moving platform logic
 
-	UpdatePlatforms(movingObject, 3, *player); //Numbers based on how many moving platforms
+	UpdatePlatforms(*player, platformVectors); //Numbers based on how many moving platforms
 	UpdateNPC();
 }
 
@@ -434,14 +435,12 @@ void Level1_Draw()
 		}
 	}
 
-	AEGfxSetTransform(movingObject[0].transformation.m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	for (int i = 0; i < platformVectors.size(); i++)
+	{
+		AEGfxSetTransform(platformVectors[i].transformation.m);
+		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
-	AEGfxSetTransform(movingObject[1].transformation.m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
-
-	AEGfxSetTransform(movingObject[2].transformation.m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	}
 
 	DrawNPC(*pWhiteSquareMesh);
 
@@ -550,6 +549,8 @@ void Level1_Free()
 	//Free vectors
 	gameMap.clear();
 	gameMap.resize(0);
+	platformVectors.clear();
+	platformVectors.resize(0);
 
 	FreeNPC();
 }

@@ -23,6 +23,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	player->isFacingRight = isFacingRight;
 	player->lookAheadMutliplier = 50.f;
 	player->onFloor = true; //Set as false first, will be set as true when ground detected
+	player->isFalling = false;
 	player->mass = 60.f;
 
 	//Initializing collision box starting position
@@ -55,6 +56,22 @@ void PlayerUpdate(Player& player)
 	const f32 dashSpeedMultiplier = 20.0f;
 	const f32 dashCooldownTime = 1.0f; 
 	f32 dashCooldown = 0.0f;
+
+	//if (player.velocity.y < player.gravityForce + 0.001f)
+	//{
+	//	std::cout << "TIE\n";
+	//}
+
+	//if (player.velocity.y < player.gravityForce - 0.001f)
+	//{
+
+	//	std::cout << "HI\n";
+	//}
+
+	if (player.isFalling)
+	{
+		std::cout << "FELL\n";
+	}
 
 	//Just for fun
 	if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
@@ -142,13 +159,10 @@ void PlayerUpdate(Player& player)
 		player.velocity.y = 400.f;
 	}
 
-	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 	
-	if (player.onFloor)
-	{
-	}
 	std::cout << "Player on floor: " << player.onFloor << std::endl;
-	std::cout << "Player vel y: " << player.velocity.y << std::endl;
+	std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
 	std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
