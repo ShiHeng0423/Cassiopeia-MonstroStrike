@@ -4,12 +4,13 @@
 #define camYBoundary (10.f)
 #define camFollowupSpeedX (0.05f)
 
-Camera::Camera()
+Camera::Camera(AEVec2 player)
 {
 	AEInputGetCursorPosition(&this->screen_x, &this->screen_y);
 	this->screen_x = this->screen_x - AEGfxGetWindowWidth() * 0.5f;
 	this->screen_y = AEGfxGetWindowHeight() * 0.5f - this->screen_y;
-	AEGfxGetCamPosition(&this->world_coordinate.x, &this->world_coordinate.y);
+	this->world_coordinate = player;
+	AEGfxSetCamPosition(this->world_coordinate.x, this->world_coordinate.y);
 	look_ahead.x = look_ahead.y = 0;
 
 	lookahead = false;

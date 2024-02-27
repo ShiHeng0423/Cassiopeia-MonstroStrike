@@ -222,7 +222,7 @@ void Level1_Initialize()
 		index++;
 	}
 
-	cam = new Camera();
+	cam = new Camera(player->obj.pos);
 	//Need to place the objects one by one 
 	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, movingObject[0]);
 	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, movingObject[1]);
@@ -280,11 +280,9 @@ void Level1_Update()
 		AEVec2 test{ 100.f, 100.f };
 		cam->LookAhead(test);
 	}
-	if (AEInputCheckTriggered(AEVK_1))
+	if (AEInputCheckCurr(AEVK_1))
 	{
-		//next = GameStates::Quit;
-		AEVec2 test{ 100.f, 100.f };
-		cam->LookAhead(test);
+		cam->CameraShake();
 	}
 
 	//For printing the grids every frame
