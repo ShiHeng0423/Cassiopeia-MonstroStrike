@@ -124,7 +124,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	//wings collision box
 	if (enemy.wing1.isAlive) {
 		enemy.wing1.obj.pos.x = enemy.obj.pos.x + enemy.wing1.Offset;
-		enemy.wing1.obj.pos.y = enemy.obj.pos.y;
+		enemy.wing1.obj.pos.y = enemy.obj.pos.y + 10.f;
 
 		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
 		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
@@ -134,7 +134,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	if (enemy.wing2.isAlive) {
 
 		enemy.wing2.obj.pos.x = enemy.obj.pos.x + enemy.wing2.Offset;
-		enemy.wing2.obj.pos.y = enemy.obj.pos.y;
+		enemy.wing2.obj.pos.y = enemy.obj.pos.y + 10.f;
 
 		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
 		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;

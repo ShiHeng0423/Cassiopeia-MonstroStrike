@@ -318,6 +318,7 @@ void Level1_Update()
 
 					//Check vertical box (Head + Feet) 
 					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
@@ -545,8 +546,17 @@ void Level1_Free()
 {
 	//Free the bullet tex
 	AEGfxTextureUnload(bulletTex);
+
+	for (int i = 0; i < vecEnemy.size(); i++)
+	{
+		AEGfxTextureUnload(vecEnemy[i].angrytex);
+		AEGfxTextureUnload(vecEnemy[i].obj.img.pTex);
+
+	}
+
 	//Free Enemy Vector
 	vecEnemy.clear();
+	vecEnemy.resize(0);
 
 
 	//Free vectors

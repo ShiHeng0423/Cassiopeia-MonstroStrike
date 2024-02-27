@@ -138,10 +138,10 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing1.Offset = 100.f;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x, scale.y); //set scale of the image
-		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.25f;
-		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.25f;
-		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.25f;
-		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.25f;
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
 		enemy.wing1.fireRate = 5.0f;
 		enemy.wing1.timeSinceLastFire = 0;
 		enemy.wing1.health = 100;
@@ -151,10 +151,10 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing2.Offset = -100.f;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x, scale.y); //set scale of the image
-		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.25f;
-		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.25f;
-		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.25f;
-		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.25f;
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
 		enemy.wing2.fireRate = 5.0f;
 		enemy.wing2.timeSinceLastFire = 0;
 		enemy.wing2.health = 100;
@@ -202,9 +202,9 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 
-	if (!enemy.onFloor) {
-		ApplyGravity(&enemy.velocity, enemy.mass);
-	}
+
+	ApplyGravity(&enemy.velocity, enemy.mass);
+
 
 	
 	switch (enemy.enemyType) {
