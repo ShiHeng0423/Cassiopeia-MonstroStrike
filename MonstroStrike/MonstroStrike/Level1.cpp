@@ -234,7 +234,7 @@ void Level1_Initialize()
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
 	Enemy_Init({70.f,70.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
 	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({ 70.f,70.f }, { 800.f,-150.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
 
 }
 
@@ -317,7 +317,7 @@ void Level1_Update()
 
 					//Check vertical box (Head + Feet) 
 					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-
+						enemy.isCollision = true;
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
@@ -546,13 +546,7 @@ void Level1_Free()
 	//Free the bullet tex
 	AEGfxTextureUnload(bulletTex);
 
-	for (int i = 0; i < vecEnemy.size(); i++)
-	{
-		AEGfxTextureUnload(vecEnemy[i].angrytex);
-		AEGfxTextureUnload(vecEnemy[i].obj.img.pTex);
-
-	}
-
+	FreeEnemy(vecEnemy);	//loops thru all eney tex and free them.
 	//Free Enemy Vector
 	vecEnemy.clear();
 	vecEnemy.resize(0);

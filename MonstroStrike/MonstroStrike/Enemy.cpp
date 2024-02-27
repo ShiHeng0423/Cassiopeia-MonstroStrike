@@ -47,7 +47,17 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 	vecEnemy.push_back(enemy);
 }
 
+void FreeEnemy(std::vector<Enemy>& vecEnemy) {
+	for (Enemy& enemy : vecEnemy) {
+		AEGfxTextureUnload(enemy.obj.img.pTex);	//default tex
+		AEGfxTextureUnload(enemy.angrytex);		//angry tex
 
+		if (enemy.enemyType == ENEMY_BOSS1) {	//check if need to free wings
+			AEGfxTextureUnload(enemy.wing1.obj.img.pTex);
+			AEGfxTextureUnload(enemy.wing2.obj.img.pTex);
+		}
+	}
+}
 
 
 
@@ -59,6 +69,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	AEVec2Set(&enemy.obj.img.scale, scale.x, scale.y); //set scale of the image
 
 	enemy.starting_position = location;
+	enemy.last_position = location;
 	enemy.waypoint.x = location.x + 200.f;
 	enemy.waypoint.y = 0;
 	enemy.target_position = ENEMY_DEFAULT;
@@ -72,8 +83,9 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.isCollision = false;
 	enemy.isFlying = false;
 
-	enemy.timePassed = 0;
+	enemy.timePassed = 0.f;
 
+	enemy.stuckTimer = -1.f;
 	//AABB Box init, Collision boxes
 	enemy.onFloor = false;
 

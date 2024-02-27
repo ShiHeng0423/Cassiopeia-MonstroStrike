@@ -118,7 +118,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	enemy.enemyCurrent = enemy.enemyNext;
 
 	//for gravity
-	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
+	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 
 	//wings collision box
