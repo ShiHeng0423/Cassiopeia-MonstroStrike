@@ -39,6 +39,7 @@ void ParticleInitialize()
 		
 		allParticles[i].maximumLifeTime = 1.f;
 		allParticles[i].lifeTime = 1.f;
+		allParticles[i].alpha = 1.f;
 
 		allParticles[i].active = false;
 		inactiveParticles.push_back(i); //Add to inactive particles
@@ -79,6 +80,7 @@ void ParticleUpdate()
 			if (allParticles[i].lifeTime > 0.f)
 			{
 				allParticles[i].lifeTime -= AEFrameRateControllerGetFrameTime();
+				allParticles[i].alpha -= AEFrameRateControllerGetFrameTime();
 			}
 			else
 			{
@@ -161,10 +163,12 @@ void ParticlesDraw(AEGfxVertexList& mesh)
 		if (allParticles[i].active)
 		{
 			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxSetTransparency(allParticles[i].alpha);
 			//Draw based on texture index
 			AEGfxTextureSet(particleTextureList[allParticles[i].textureIndex], 0, 0); //Maybe can try particleTextureList[allParticles->particleType]
 			AEGfxSetTransform(allParticles[i].transformation.m);
 			AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+			AEGfxSetTransparency(1.0f);
 		}
 	}
 }
@@ -200,6 +204,7 @@ void ParticlesDeactivate(int index)
 			allParticles[index].transformation = { 0 };
 			allParticles[index].textureIndex = 0;
 			allParticles[index].particleType = PARTICLE_TYPE::TEST;
+			allParticles[index].alpha = 1.f;
 
 			allParticles[index].lifeTime = allParticles[index].maximumLifeTime;
 

@@ -23,7 +23,7 @@ struct Particles
 	f32 maximumLifeTime;
 
 
-	int alpha;
+	f32 alpha;
 	int textureIndex;
 
 	PARTICLE_TYPE particleType;

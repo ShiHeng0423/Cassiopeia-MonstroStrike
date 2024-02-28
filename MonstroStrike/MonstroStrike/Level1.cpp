@@ -501,6 +501,7 @@ void Level1_Draw()
 		}
 	}
 
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     if (player->isAttacking)
 	{
 		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x, player->equippedWeapon.position.y, 0.f, player->equippedWeapon.Scale.x, player->equippedWeapon.Scale.y).m);
@@ -508,7 +509,6 @@ void Level1_Draw()
 	}
 
 
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
