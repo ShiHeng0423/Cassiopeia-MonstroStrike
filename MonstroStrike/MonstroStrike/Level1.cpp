@@ -406,11 +406,11 @@ void Level1_Update()
 
 	if (AEInputCheckTriggered(AEVK_U))
 	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, TEST);
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, TEST);
 	}
 	if (AEInputCheckTriggered(AEVK_H))
 	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, TEST_2);
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, TEST);
 	}
 	ParticleUpdate();
 }

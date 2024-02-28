@@ -16,12 +16,12 @@ struct Particles
 	AEVec2 position;
 	AEVec2 velocity;
 	AEVec2 particleSize;
+	f32 rotate;
 
 	bool active;
 
 	f32 lifeTime;
 	f32 maximumLifeTime;
-
 
 	f32 alpha;
 	int textureIndex;
@@ -43,7 +43,7 @@ void ParticleInitialize();
 
 void ParticleUpdate();
 
-void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, PARTICLE_TYPE particlePurpose);
+void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, PARTICLE_TYPE particlePurpose);
 
 void ParticlesDraw(AEGfxVertexList& mesh);
 

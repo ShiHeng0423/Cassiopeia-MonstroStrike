@@ -16,6 +16,9 @@ void Particles::Update()
 {
 	position.x += velocity.x * AEFrameRateControllerGetFrameTime();
 	position.y += velocity.y * AEFrameRateControllerGetFrameTime();
+
+	//std::cout << "Active Particles: " << GetActiveParticleCount() << std::endl;
+	std::cout << "Particles rotation: " << rotate << std::endl;
 }
 
 void ParticleLoad()
@@ -36,11 +39,12 @@ void ParticleInitialize()
 		allParticles[i].transformation = { 0 };
 		allParticles[i].textureIndex = 0;
 		allParticles[i].particleType = PARTICLE_TYPE::TEST;
-		
+		allParticles[i].rotate = 0.f;
+
 		allParticles[i].maximumLifeTime = 1.f;
 		allParticles[i].lifeTime = 1.f;
 		allParticles[i].alpha = 1.f;
-
+		
 		allParticles[i].active = false;
 		inactiveParticles.push_back(i); //Add to inactive particles
 	}
@@ -66,8 +70,7 @@ void ParticleUpdate()
 			default:
 				break;
 			}
-
-			AEMtx33Rot(&allParticles[i].rotation, 0.f);
+			AEMtx33Rot(&allParticles[i].rotation, allParticles[i].rotate);
 
 			AEMtx33Scale(&allParticles[i].scale, allParticles[i].particleSize.x, allParticles[i].particleSize.y);
 
@@ -81,16 +84,22 @@ void ParticleUpdate()
 			{
 				allParticles[i].lifeTime -= AEFrameRateControllerGetFrameTime();
 				allParticles[i].alpha -= AEFrameRateControllerGetFrameTime();
+				//allParticles[i].rotate += 0.04f; //Just for testing
 			}
 			else
 			{
 				ParticlesDeactivate(i); 
 			}
+
+			if (allParticles[i].alpha <= 0.f)
+			{
+				ParticlesDeactivate(i);
+			}
 		}
 	}
 }
 
-void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, PARTICLE_TYPE particlePurpose)
+void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, PARTICLE_TYPE particlePurpose)
 {
 
 	f32 angle = 0.f;
@@ -111,6 +120,9 @@ void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, PARTICLE_
 		//Initial size
 		allParticles[index].particleSize.x = sizeX;
 		allParticles[index].particleSize.y = sizeY;
+		
+		//Rotation
+		allParticles[index].rotate = initialRadian;
 
 		//Type of particle
 		allParticles[index].particleType = particlePurpose;
@@ -140,13 +152,12 @@ void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, PARTICLE_
 			break;
 		}
 
-		AEMtx33Rot(&allParticles[index].rotation, 0.f);
+		AEMtx33Rot(&allParticles[index].rotation, allParticles[index].rotate);
 
 		AEMtx33Scale(&allParticles[index].scale, allParticles[index].particleSize.x, allParticles[index].particleSize.y);
 
 		AEMtx33Trans(&allParticles[index].translation, allParticles[index].position.x, allParticles[index].position.y);
 
-		allParticles[index].transformation = { 0 };
 		AEMtx33Concat(&allParticles[index].transformation, &allParticles[index].rotation, &allParticles[index].scale);
 		AEMtx33Concat(&allParticles[index].transformation, &allParticles[index].translation, &allParticles[index].transformation);
 
@@ -205,7 +216,7 @@ void ParticlesDeactivate(int index)
 			allParticles[index].textureIndex = 0;
 			allParticles[index].particleType = PARTICLE_TYPE::TEST;
 			allParticles[index].alpha = 1.f;
-
+			allParticles[index].rotate = 0.f;
 			allParticles[index].lifeTime = allParticles[index].maximumLifeTime;
 
 			inactiveParticles.push_back(index);
