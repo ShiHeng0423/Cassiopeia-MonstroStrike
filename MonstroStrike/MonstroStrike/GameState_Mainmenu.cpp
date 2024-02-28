@@ -5,6 +5,14 @@
 
 namespace {
 
+	enum CurrentScene {
+		MainScene,
+		CreditScene,
+		ControlScene,
+		OptionScene,
+		QuitScene
+	};
+
 	enum Interactable {
 		Start,
 		Load,
@@ -15,6 +23,8 @@ namespace {
 	};
 
 	Button interactableButton[6];
+	Button backButton;
+	Button confirmationButtion[2];
 
 	AEGfxTexture* buttonTexture;
 	AEGfxTexture* backgroundTexture;
@@ -33,23 +43,18 @@ namespace {
 	//How To Play - "How to Play" or "Controls"
 	//Options Menu - "Options"
 
-	//Return to Main Menu Option - "Return to Main Menu" or "Exit to Main Menu"
-	// //Restart Game Option - "Restart Game", "Return to Overworld", "New Game", "Exit Level"
-	//How To Play - "How to Play" or "Controls"
-	//Resume Game Option - "Resume Game"
-
-	bool isCreditScene;
-	bool isControlsScene;
-	bool isOptionScene;
-	bool isConfirmQuitScene;
+	s8 currScene;
 }
 
-void NewGameLevel1();
-void LoadSaveLevel();
-void CreditScene();
-void ControlScene();
-void OptionScene();
-void ConfirmQuitScene();
+void GoNewGameLevel1();
+void GoLoadSaveLevel();
+void GoCreditScene();
+void GoControlScene();
+void GoOptionScene();
+void GoConfirmQuitScene();
+void GoQuitGame();
+
+void BackMainMenu();
 
 void Mainmenu_Load()
 {
@@ -85,32 +90,47 @@ void Mainmenu_Initialize()
 		switch (i)
 		{
 		case Interactable::Start:
-			interactableButton[i].Ptr = NewGameLevel1;
+			interactableButton[i].Ptr = GoNewGameLevel1;
 			break;
 		case Interactable::Load:
-			interactableButton[i].Ptr = LoadSaveLevel;
+			interactableButton[i].Ptr = GoLoadSaveLevel;
 			break;
 		case Interactable::Credit:
-			interactableButton[i].Ptr = CreditScene;
+			interactableButton[i].Ptr = GoCreditScene;
 			break;
 		case Interactable::Controls:
-			interactableButton[i].Ptr = ControlScene;
+			interactableButton[i].Ptr = GoControlScene;
 			break;
 		case Interactable::Options:
-			interactableButton[i].Ptr = OptionScene;
+			interactableButton[i].Ptr = GoOptionScene;
 			break;
 		case Interactable::Quit:
-			interactableButton[i].Ptr = ConfirmQuitScene;
+			interactableButton[i].Ptr = GoConfirmQuitScene;
 			break;
 		default:
 			break;
 		}
 	}
 
+	backButton.pTex = buttonTexture;
+	AEVec2Set(&backButton.scale, 250.f, 80.f);
+	AEVec2Set(&backButton.pos, -675.f, -410.f);
+	backButton.Ptr = BackMainMenu;
+
+	confirmationButtion[0].pTex = buttonTexture;
+	AEVec2Set(&confirmationButtion[0].scale, 250.f, 80.f);
+	AEVec2Set(&confirmationButtion[0].pos, 250.f, 0.f);
+	confirmationButtion[0].Ptr = BackMainMenu;
+
+	confirmationButtion[1].pTex = buttonTexture;
+	AEVec2Set(&confirmationButtion[1].scale, 250.f, 80.f);
+	AEVec2Set(&confirmationButtion[1].pos, -250.f, 0.f);
+	confirmationButtion[1].Ptr = GoQuitGame;
+
 	background.pTex = backgroundTexture;
 	background.scale.x = 1600;
 	background.scale.y = 900;
-	isCreditScene = isControlsScene = isOptionScene = isConfirmQuitScene = false;
+	currScene = CurrentScene::MainScene;
 }
 
 void Mainmenu_Update()
@@ -123,10 +143,29 @@ void Mainmenu_Update()
 		mousePos.x = x - AEGfxGetWindowWidth() * 0.5f;
 		mousePos.y = AEGfxGetWindowHeight() * 0.5f - y;
 
-		for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+		switch (currScene)
 		{
-			if (AETestPointToRect(&mousePos, &interactableButton[i].pos, interactableButton[i].scale.x, interactableButton[i].scale.y))
-				interactableButton[i].Ptr();
+		case CurrentScene::MainScene:
+			for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+			{
+				if (AETestPointToRect(&mousePos, &interactableButton[i].pos, interactableButton[i].scale.x, interactableButton[i].scale.y))
+					interactableButton[i].Ptr();
+			}
+			break;
+		case CurrentScene::CreditScene:
+		case CurrentScene::ControlScene:
+		case CurrentScene::OptionScene:
+			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
+				backButton.Ptr();
+			break;
+		case CurrentScene::QuitScene:
+			if (AETestPointToRect(&mousePos, &confirmationButtion[0].pos, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y))
+				confirmationButtion[0].Ptr();
+			if (AETestPointToRect(&mousePos, &confirmationButtion[1].pos, confirmationButtion[1].scale.x, confirmationButtion[1].scale.y))
+				confirmationButtion[1].Ptr();
+			break;
+		default:
+			break;
 		}
 	}
 }
@@ -145,38 +184,85 @@ void Mainmenu_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, background.scale.x, background.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+	switch (currScene)
 	{
-		AEGfxTextureSet(interactableButton[i].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButton[i].pos.x, interactableButton[i].pos.y, 0.f, interactableButton[i].scale.x, interactableButton[i].scale.y).m);
+	case CurrentScene::MainScene:
+	{
+		for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+		{
+			AEGfxTextureSet(interactableButton[i].pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButton[i].pos.x, interactableButton[i].pos.y, 0.f, interactableButton[i].scale.x, interactableButton[i].scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		f32 width, height;
+
+		const char* pText = "Start";
+		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
+
+		const char* pText1 = "Load";
+		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
+
+		const char* pText2 = "Credit";
+		AEGfxGetPrintSize(pFont, pText2, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
+
+		const char* pText3 = "Controls";
+		AEGfxGetPrintSize(pFont, pText3, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
+
+		const char* pText4 = "Options";
+		AEGfxGetPrintSize(pFont, pText4, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
+
+		const char* pText5 = "Quit";
+		AEGfxGetPrintSize(pFont, pText5, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
+	case CurrentScene::CreditScene:
+	case CurrentScene::ControlScene:
+	case CurrentScene::OptionScene:
+	{
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		f32 width, height;
+
+		const char* pText = "Back";
+		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
+	case CurrentScene::QuitScene:
+	{
+		AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[0].pos.x, confirmationButtion[0].pos.y, 0.f, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[1].pos.x, confirmationButtion[1].pos.y, 0.f, confirmationButtion[1].scale.x, confirmationButtion[1].scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		f32 width, height;
+
+		const char* pText = "Yes";
+		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+
+		const char* pText1 = "No";
+		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
+		AEGfxPrint(pFont, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+		break;
+	}
+	default:
+		break;
 	}
 
-	f32 width, height;
 
-	const char* pText = "Start";
-	AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22, 0.5f, 1, 1, 1, 1);
-
-	const char* pText1 = "Load";
-	AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
-
-	const char* pText2 = "Credit";
-	AEGfxGetPrintSize(pFont, pText2, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
-
-	const char* pText3 = "Controls";
-	AEGfxGetPrintSize(pFont, pText3, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
-
-	const char* pText4 = "Options";
-	AEGfxGetPrintSize(pFont, pText4, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
-
-	const char* pText5 = "Quit";
-	AEGfxGetPrintSize(pFont, pText5, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 }
 
 void Mainmenu_Free()
@@ -188,41 +274,46 @@ void Mainmenu_Unload()
 {
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxTextureUnload(buttonTexture);
+	AEGfxTextureUnload(backgroundTexture);
 	AEGfxDestroyFont(pFont);
 }
 
+void BackMainMenu()
+{
+	currScene = CurrentScene::MainScene;
+}
 
-void NewGameLevel1()
+void GoNewGameLevel1()
 {
 	next = GameStates::Area1;
 }
 
-void LoadSaveLevel()
+void GoLoadSaveLevel()
 {
 
 }
 
-void CreditScene()
+void GoCreditScene()
 {
-	isCreditScene = true;
+	currScene = CurrentScene::CreditScene;
 }
 
-void ControlScene()
+void GoControlScene()
 {
-	isControlsScene = true;
+	currScene = CurrentScene::ControlScene;
 }
 
-void OptionScene()
+void GoOptionScene()
 {
-	isOptionScene = true;
+	currScene = CurrentScene::OptionScene;
 }
 
-void ConfirmQuitScene()
+void GoConfirmQuitScene()
 {
-	isConfirmQuitScene = true;
+	currScene = CurrentScene::QuitScene;
 }
 
-void QuitGame()
+void GoQuitGame()
 {
 	next = GameStates::Quit;
 }
