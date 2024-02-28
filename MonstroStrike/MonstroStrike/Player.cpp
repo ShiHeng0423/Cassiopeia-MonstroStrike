@@ -160,10 +160,10 @@ void PlayerUpdate(Player& player)
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
-	
-	std::cout << "Player on floor: " << player.onFloor << std::endl;
-	std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
-	std::cout << "Player gravity force: " << player.gravityForce << std::endl;
+	//
+	//std::cout << "Player on floor: " << player.onFloor << std::endl;
+	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
+	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
 	player.obj.pos.y += player.velocity.y * AEFrameRateControllerGetFrameTime();

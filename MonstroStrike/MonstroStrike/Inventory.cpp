@@ -84,16 +84,16 @@ namespace Inventory
 				newItem.defence = ind_item["defence"].GetInt();
 
 
-				std::cout << newItem.UID << std::endl;
-				std::cout << newItem.ID << std::endl;
-				std::cout << newItem.name << std::endl;
-				std::cout << newItem.description << std::endl;
-				std::cout << newItem.item_type << std::endl;
-				std::cout << "enum"<<newItem.rarity << std::endl;
-				std::cout << newItem.quantity << std::endl;
-				std::cout << newItem.stackable << std::endl;
-				std::cout << newItem.attack << std::endl;
-				std::cout << newItem.defence << std::endl;
+				//std::cout << newItem.UID << std::endl;
+				//std::cout << newItem.ID << std::endl;
+				//std::cout << newItem.name << std::endl;
+				//std::cout << newItem.description << std::endl;
+				//std::cout << newItem.item_type << std::endl;
+				//std::cout << "enum"<<newItem.rarity << std::endl;
+				//std::cout << newItem.quantity << std::endl;
+				//std::cout << newItem.stackable << std::endl;
+				//std::cout << newItem.attack << std::endl;
+				//std::cout << newItem.defence << std::endl;
 
 
 				inventory.push_back(newItem);

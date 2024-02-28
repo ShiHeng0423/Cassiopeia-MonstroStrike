@@ -18,6 +18,8 @@
 #include "MapPlatformGenerate.h"
 #include "NonPlayableCharacters.h"
 
+#include "ParticleSystem.h"
+
 namespace {
 
 	AEGfxVertexList* pLineMesh;
@@ -134,7 +136,8 @@ void Level1_Load()
 		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //Just for checking if the map data is stored properly
 	}
 	
-LoadNPC();
+	LoadNPC();
+	ParticleLoad();
 
 #pragma region Mesh Creations
 	pMeshGrey = GenerateSquareMesh(0xFFa9a9a9);
@@ -238,6 +241,7 @@ void Level1_Initialize()
 	Enemy_Init({70.f,70.f}, { -500.f,-150.f }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({ 70.f,70.f }, { 300.f,250.f }, ENEMY_IDLE, vecEnemy[3]);
 
+	ParticleInitialize();
 }
 
 void Level1_Update()
@@ -399,6 +403,16 @@ void Level1_Update()
 
 	UpdatePlatforms(*player, platformVectors); //Numbers based on how many moving platforms
 	UpdateNPC();
+
+	if (AEInputCheckTriggered(AEVK_U))
+	{
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, TEST);
+	}
+	if (AEInputCheckTriggered(AEVK_H))
+	{
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, TEST_2);
+	}
+	ParticleUpdate();
 }
 
 void Level1_Draw()
@@ -536,6 +550,8 @@ void Level1_Draw()
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 	}
+
+	ParticlesDraw(*pWhiteSquareMesh);
 }
 
 void Level1_Free()
@@ -553,6 +569,7 @@ void Level1_Free()
 	platformVectors.resize(0);
 
 	FreeNPC();
+	ParticlesFree();
 }
 
 void Level1_Unload()
