@@ -177,7 +177,7 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 
 	for (Bullet& bullet : enemy.bullets) {
 		if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
-			bullet.lifetime = 0.f; //makes bullet erase
+			bullet.lifetime = 0; //makes bullet erase
 
 		}
 	}
