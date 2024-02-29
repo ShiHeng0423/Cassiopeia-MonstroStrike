@@ -257,7 +257,7 @@ void PlayerUpdate(Player& player)
 				//std::cout << "Combo state is 1" << std::endl;
 
 				std::cout << "hold" << std::endl;
-				player.attackTime -= AEFrameRateControllerGetFrameTime() * 100.f;
+				player.attackTime -= (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 				player.comboTime = 0.0f; // Reset combo time
@@ -274,7 +274,7 @@ void PlayerUpdate(Player& player)
 
 			//Only happens in 1 frame
 
-			player.attackTime -= AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
+			player.attackTime -= (f32)AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 

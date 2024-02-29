@@ -53,7 +53,7 @@ void SplashScreen_Update()
 {
 	timer -= (f32)AEFrameRateControllerGetFrameTime();
 	if (timer > 0.f)
-		alpha += 1.f / (AEFrameRateControllerGetFrameRate() * 2.f);
+		alpha += 1.f / ((f32)AEFrameRateControllerGetFrameRate() * 2.f);
 	else
 		next = MainMenu;
 

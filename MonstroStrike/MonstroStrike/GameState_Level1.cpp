@@ -579,8 +579,8 @@ void Level1_Update()
 
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
-			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5 - testy;
+			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
 
 			for (ButtonGearUI& button : inventoryButton)
 			{
@@ -608,8 +608,8 @@ void Level1_Update()
 
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
-			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5 - testy;
+			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
 
 			inventoryButton[snap_back].pos = mousePos;
 		}
@@ -628,19 +628,19 @@ void Level1_Update()
 						//Different items overlapping
 						if (index != snap_back)
 						{
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90 - 180,
-							          -(snap_back / 5) * 90 + 180);
+							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
+							          -(snap_back / 5.f) * 90.f + 180.f);
 
 							std::cout << "swap\n";
 							ButtonGearUI tmp = button;
 							button = inventoryButton[snap_back];
 							inventoryButton[snap_back] = tmp;
 
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90 - 180,
-							          -(snap_back / 5) * 90 + 180);
+							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
+							          -(snap_back / 5) * 90.f + 180.f);
 
-							AEVec2Set(&button.pos, (index % 5) * 90 - 180,
-							          -(index / 5) * 90 + 180);
+							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
+							          -(index / 5.f) * 90.f + 180.f);
 
 							snap_back = -1;
 							break;
@@ -651,8 +651,8 @@ void Level1_Update()
 
 				if (snap_back >= 0)
 				{
-					AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90 - 180,
-					          -(snap_back / 5) * 90 + 180);
+					AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
+					          -(snap_back / 5.f) * 90.f + 180.f);
 					snap_back = -1;
 				}
 			}
@@ -668,8 +668,8 @@ void Level1_Update()
 
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
-			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5 - testy;
+			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
 
 			for (ButtonGearUI& button : inventoryButton)
 			{
@@ -835,10 +835,10 @@ void Level1_Draw()
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	std::string str = std::to_string(hp);
-	const char* pText = str.c_str();
+	const char* pTextHP = str.c_str();
 	f32 width, height;
-	AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pText, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
+	AEGfxGetPrintSize(pFont, pTextHP, 0.5f, &width, &height);
+	AEGfxPrint(pFont, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
 
 	//Inventory images
 	if (inventory_open)
@@ -892,8 +892,6 @@ void Level1_Draw()
 			AEGfxSetTransform(ObjectTransformationMatrixSet(PauseMenuButtons[i].pos.x, PauseMenuButtons[i].pos.y, 0.f, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
-
-		f32 width, height;
 
 		const char* pText = "Resume";
 		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);

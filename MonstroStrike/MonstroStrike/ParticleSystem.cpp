@@ -14,8 +14,8 @@ namespace {
 
 void Particles::Update()
 {
-	position.x += velocity.x * AEFrameRateControllerGetFrameTime();
-	position.y += velocity.y * AEFrameRateControllerGetFrameTime();
+	position.x += velocity.x * (f32)AEFrameRateControllerGetFrameTime();
+	position.y += velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	//std::cout << "Active Particles: " << GetActiveParticleCount() << std::endl;
 	std::cout << "Particles rotation: " << rotate << std::endl;
@@ -82,8 +82,8 @@ void ParticleUpdate()
 
 			if (allParticles[i].lifeTime > 0.f)
 			{
-				allParticles[i].lifeTime -= AEFrameRateControllerGetFrameTime();
-				allParticles[i].alpha -= AEFrameRateControllerGetFrameTime();
+				allParticles[i].lifeTime -= (f32)AEFrameRateControllerGetFrameTime();
+				allParticles[i].alpha -= (f32)AEFrameRateControllerGetFrameTime();
 				//allParticles[i].rotate += 0.04f; //Just for testing
 			}
 			else
