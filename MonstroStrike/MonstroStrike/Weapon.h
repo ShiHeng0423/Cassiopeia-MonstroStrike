@@ -22,5 +22,6 @@ struct Weapon {
 };
 
 Weapon createWeapon(const std::string& name, float x, float y);
-void UpdateWeaponHitBox(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32);
+void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32);
+void UpdateWeaponHitBoxHeld (struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32);
 void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, struct Player& player);

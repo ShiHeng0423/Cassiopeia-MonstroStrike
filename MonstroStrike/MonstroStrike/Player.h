@@ -31,6 +31,9 @@ struct Player {
 
 	f32 attackTime;
 	bool burningEffect;
+	int combo_trig;
+	float comboTime;
+	int comboState;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
