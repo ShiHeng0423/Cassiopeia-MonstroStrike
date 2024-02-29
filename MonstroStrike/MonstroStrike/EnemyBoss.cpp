@@ -25,20 +25,9 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.wing2.isAlive = false;
 	}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	if (enemy.wing1.isAlive == false && enemy.wing2.isAlive == false) {
+		enemy.isFlying = false;
+	}
 
 
 
@@ -118,8 +107,9 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	enemy.enemyCurrent = enemy.enemyNext;
 
 	//for gravity
-	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
-
+	if (!enemy.isFlying) {
+		enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
+	}
 
 	//wings collision box
 	if (enemy.wing1.isAlive) {

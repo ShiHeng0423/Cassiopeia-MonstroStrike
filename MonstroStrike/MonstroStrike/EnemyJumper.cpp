@@ -95,17 +95,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 		break;
 	case ENEMY_ATTACK:
 		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
-		//Change to jump attack
-		//Attack_Charge(enemy, enemy.target_position);	//the charge attack
 
-		//if (enemy.isCollision == true) {
-
-		//	enemy.isCollision = false;
-		//	enemy.isShooting = false;	//out of attacking mode
-		//	enemy.speed = 80.f;			//return to normal speed after attack
-		//	enemy.target_position = ENEMY_DEFAULT;
-		//	enemy.enemyNext = ENEMY_IDLE;
-		//}
 
 
 		if (distanceFromPlayer < enemy.lineOfSight) {

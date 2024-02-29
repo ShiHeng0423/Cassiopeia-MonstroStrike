@@ -146,6 +146,5 @@ void isStuck(Enemy& enemy) {
 			enemy.enemyNext = ENEMY_IDLE;
 		}
 	}
-
 }
 

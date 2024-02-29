@@ -9,7 +9,7 @@
 void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-
+	
 	if (enemy.health <= 0)
 	{
 		enemy.isAlive = false;

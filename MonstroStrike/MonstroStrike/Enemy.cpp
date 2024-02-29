@@ -138,6 +138,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		break;
 	case ENEMY_BOSS1:
 		//main body
+		enemy.isFlying = true;
 		enemy.speed = 80.f;
 		enemy.lineOfSight = 300.f;
 		enemy.shootingRange = 250.f;
