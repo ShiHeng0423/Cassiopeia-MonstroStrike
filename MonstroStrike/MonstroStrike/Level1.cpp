@@ -31,7 +31,7 @@ namespace
 	AEGfxVertexList* pWhiteSquareMesh;
 
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
-	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
+	std::vector<std::vector<MapCell>> gameMap; //Map for this level
 
 	std::vector<struct Platforms> platformVectors;
 
@@ -130,7 +130,7 @@ void Level1_Load()
 
 	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMap.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
@@ -672,6 +672,11 @@ void Level1_Draw()
 	}
 
 	ParticlesDraw(*pWhiteSquareMesh);
+
+	if (AEInputCheckTriggered(AEVK_G))
+	{
+		next = MainMenu;
+	}
 }
 
 void Level1_Free()
