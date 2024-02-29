@@ -359,7 +359,7 @@ void Level1_Initialize()
 
 void Level1_Update()
 {
-	std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 
