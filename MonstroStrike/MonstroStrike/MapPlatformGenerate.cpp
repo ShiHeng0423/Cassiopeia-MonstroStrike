@@ -3,8 +3,9 @@
 #include "Physics.h"
 #include <iostream>
 
-void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, Platforms& thePlatform)
+void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, std::vector<struct Platforms>& platformVector)
 {
+	struct Platforms thePlatform;
 	//Moving platform test, success
 	AEVec2Zero(&thePlatform.collisionNormal);
 
@@ -73,64 +74,112 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 	default:
 		break;
 	}
+
+	platformVector.push_back(thePlatform);
 }
 
-void UpdatePlatforms(Platforms* movingObject, int numberOfPlatforms, Player& player)
+void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<struct Platforms>& platformVector)
 {
-	for (int i = 0; i < numberOfPlatforms; i++)
+	for (int i = 0; i < platformVector.size(); i++)
 	{
 		// Update platform position based on velocity
-		AEVec2Add(&movingObject[i].position, &movingObject[i].position, &movingObject[i].velocity);
+		AEVec2Add(&platformVector[i].position, &platformVector[i].position, &platformVector[i].velocity);
 
 
-		AEMtx33Trans(&movingObject[i].translation, movingObject[i].position.x, movingObject[i].position.y);
-		AEMtx33Concat(&movingObject[i].transformation, &movingObject[i].rotation, &movingObject[i].scale);
-		AEMtx33Concat(&movingObject[i].transformation, &movingObject[i].translation, &movingObject[i].transformation);
+		AEMtx33Trans(&platformVector[i].translation, platformVector[i].position.x, platformVector[i].position.y);
+		AEMtx33Concat(&platformVector[i].transformation, &platformVector[i].rotation, &platformVector[i].scale);
+		AEMtx33Concat(&platformVector[i].transformation, &platformVector[i].translation, &platformVector[i].transformation);
 
 		//Loop between the start and end point
-		if (AEVec2Distance(&movingObject[i].position, &movingObject[i].endPoint) <= 1.0f) {
+		if (AEVec2Distance(&platformVector[i].position, &platformVector[i].endPoint) <= 1.0f) {
 			// Swap start and end points
-			AEVec2 temp = movingObject[i].startPoint;
-			movingObject[i].startPoint = movingObject[i].endPoint;
-			movingObject[i].endPoint = temp;
+			AEVec2 temp = platformVector[i].startPoint;
+			platformVector[i].startPoint = platformVector[i].endPoint;
+			platformVector[i].endPoint = temp;
 			// Recalculate velocity direction
-			AEVec2Set(&movingObject[i].velocity, movingObject[i].endPoint.x - movingObject[i].startPoint.x, movingObject[i].endPoint.y - movingObject[i].startPoint.y);
-			AEVec2Normalize(&movingObject[i].velocity, &movingObject[i].velocity);
-			AEVec2Scale(&movingObject[i].velocity, &movingObject[i].velocity, movingObject[i].speed);
+			AEVec2Set(&platformVector[i].velocity, platformVector[i].endPoint.x - platformVector[i].startPoint.x, platformVector[i].endPoint.y - platformVector[i].startPoint.y);
+			AEVec2Normalize(&platformVector[i].velocity, &platformVector[i].velocity);
+			AEVec2Scale(&platformVector[i].velocity, &platformVector[i].velocity, platformVector[i].speed);
 		}
 
 		//Check if player is on the platform
-		PlayerOnPlatform(movingObject[i], player);
+		PlayerOnPlatform(platformVector[i], player);
+
+		//Check if enemy/bullet is colliding platform
+		for (Enemy& enemy : vecEnemy) {
+			PlatformCollision(platformVector[i], enemy);
+		}
 
 		//Update collision box location
-		movingObject[i].collisionBox.minimum.x = movingObject[i].position.x - movingObject[i].size.x * 0.5f;
-		movingObject[i].collisionBox.minimum.y = movingObject[i].position.y - movingObject[i].size.y * 0.5f;
-		movingObject[i].collisionBox.maximum.x = movingObject[i].position.x + movingObject[i].size.x * 0.5f;
-		movingObject[i].collisionBox.maximum.y = movingObject[i].position.y + movingObject[i].size.y * 0.5f;
+		platformVector[i].collisionBox.minimum.x = platformVector[i].position.x - platformVector[i].size.x * 0.5f;
+		platformVector[i].collisionBox.minimum.y = platformVector[i].position.y - platformVector[i].size.y * 0.5f;
+		platformVector[i].collisionBox.maximum.x = platformVector[i].position.x + platformVector[i].size.x * 0.5f;
+		platformVector[i].collisionBox.maximum.y = platformVector[i].position.y + platformVector[i].size.y * 0.5f;
 	}
 }
 
 void PlayerOnPlatform(Platforms& movingObject, Player& player)
 {
-	//Check horizontal box (Left arm -> Right arm)
-	if (AABBvsAABB(player.boxArms, movingObject.collisionBox)) {
-		player.collisionNormal = AABBNormalize(player.boxArms, movingObject.collisionBox);
-
-		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity, &player.onFloor);
-	}
-
+	bool collided = false;
 	//Vertical
 	if (AABBvsAABB(player.boxHeadFeet, movingObject.collisionBox)) {
 		player.collisionNormal = AABBNormalize(player.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(player.boxHeadFeet, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity, &player.onFloor);
+			&player.velocity, &player.onFloor, &player.gravityForce, &player.isFalling);
 
-		if (player.collisionNormal.y == 1) //Player on top
+		collided = true;
+
+	}
+
+	//Check horizontal box (Left arm -> Right arm)
+	if (AABBvsAABB(player.boxArms, movingObject.collisionBox)) {
+		player.collisionNormal = AABBNormalize(player.boxArms, movingObject.collisionBox);
+
+		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
+			&player.velocity);
+		collided = true;
+	}
+
+	if (collided)
+	{
+		player.obj.pos.x += movingObject.velocity.x;
+		player.obj.pos.y += movingObject.velocity.y;
+	}
+}
+
+void PlatformCollision(Platforms& movingObject, Enemy& enemy)
+{
+	//Check vertical box (Head + Feet) 
+	if (AABBvsAABB(enemy.boxHeadFeet, movingObject.collisionBox)) {
+		enemy.isCollision = true;
+		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
+
+		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
+
+		if (enemy.collisionNormal.y == 1) //Enemy on top
 		{
-			player.obj.pos.x += movingObject.velocity.x;
-			player.obj.pos.y += movingObject.velocity.y;
+			enemy.obj.pos.x += movingObject.velocity.x;
+			enemy.obj.pos.y += movingObject.velocity.y;
+		}
+
+	}
+	//Check horizontal box (Left arm -> Right arm)
+	if (AABBvsAABB(enemy.boxArms, movingObject.collisionBox)) {
+		enemy.isCollision = true;
+		enemy.collisionNormal = AABBNormalize(enemy.boxArms, movingObject.collisionBox);
+
+		ResolveHorizontalCollision(enemy.boxArms, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+			&enemy.velocity);
+		enemy.loop_idle = false;
+	}
+
+	for (Bullet& bullet : enemy.bullets) {
+		if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
+			bullet.lifetime = 0.f; //makes bullet erase
+
 		}
 	}
+
 }

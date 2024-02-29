@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -66,6 +66,9 @@
     <ClCompile Include="Enemy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TriggerAttack.cpp">
+          <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -74,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="AudioManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Crafting.cpp">
+          <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MapPlatformGenerate.cpp">
       <Filter>Source Files</Filter>
@@ -94,6 +100,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameState_SplashScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyFly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -273,14 +285,20 @@
     <ClInclude Include="rapidjson\ostreamwrapper.h">
       <Filter>Header Files\RapidJason Header</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="TriggerAttack.h">
+          <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapPlatformGenerate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+        <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapPlatformGenerate.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="Crafting.h">
+          <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NonPlayableCharacters.h">
       <Filter>Header Files</Filter>
@@ -289,6 +307,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameState_SplashScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

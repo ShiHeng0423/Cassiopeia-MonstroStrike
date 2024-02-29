@@ -10,22 +10,6 @@
 
 void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 
-	//enemy.velocity.x = enemy.speed * AEFrameRateControllerGetFrameTime();
-
-	//if ((enemy.obj.pos.x != target_position.x)) {
-	//	if (enemy.obj.pos.x >= target_position.x) {
-	//		enemy.velocity.x *= -1.0f;
-	//	}
-	//	if (enemy.obj.pos.x <= target_position.x) {
-	//		enemy.velocity.x *= 1.0f;
-
-	//	}
-	//}
-	//enemy.obj.pos.x += enemy.velocity.x;
-
-
-
-
 	// Calculate the direction towards the target position
 	float direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
 
@@ -34,6 +18,24 @@ void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 
 	// Update the position based on the calculated direction and distance
 	enemy.obj.pos.x += direction * enemy.velocity.x;
+}
+
+void MoveTowardsFLY(Enemy& enemy, AEVec2 target_position) {
+
+	f32 Offset = 50.f;	//lifts a bit above the ground
+
+	// Calculate the direction towards the target position for both x and y axes
+	float x_direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
+	float y_direction = (target_position.y + Offset > enemy.obj.pos.y) ? 1.0f : -1.0f;
+
+	// Calculate the distance to move based on speed and elapsed time
+	float delta_time = (f32)AEFrameRateControllerGetFrameTime();
+	enemy.velocity.x = enemy.speed * delta_time;
+	enemy.velocity.y = enemy.speed * delta_time;
+
+	// Update the position based on the calculated direction and distance
+	enemy.obj.pos.x += x_direction * enemy.velocity.x;
+	enemy.obj.pos.y += y_direction * enemy.velocity.y;
 }
 
 
@@ -66,13 +68,13 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 
 	//create a bullet
 	Bullet bullet;
-	bullet.lifetime = 50;													//lifetime
+	bullet.lifetime = 100;													//lifetime
 	bullet.obj.img.pTex = bulletTex;										//image
 	AEVec2Set(&bullet.obj.pos, enemy_position.x, enemy_position.y);			//start position
-	AEVec2Set(&bullet.obj.img.scale, 80.f, 80.f);							//set scale of the image
+	AEVec2Set(&bullet.obj.img.scale, 50.f, 50.f);							//set scale of the image
 
 	//set velocity of bullet
-	bullet.bulletSpeed = 5.f;
+	bullet.bulletSpeed = 2.5f;
 	AEVec2Set(&bullet.bulletVel, direction.x * bullet.bulletSpeed, direction.y * bullet.bulletSpeed);
 
 	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.img.scale.x * 0.5f;
@@ -130,3 +132,19 @@ void Jump(Enemy& enemy, f32 value) {
 	enemy.onFloor = false;
 	enemy.velocity.y = value;
 }
+
+
+void isStuck(Enemy& enemy) {
+	//Check distance travelled to see if enemy is stuck
+	f32 distanceTravelled = AEVec2Distance(&enemy.last_position, &enemy.obj.pos);
+	enemy.last_position = enemy.obj.pos;
+	//std::cout << distanceTravelled << "\n";
+	if (distanceTravelled < 0.2f) {
+		if (enemy.stuckTimer < 0) { enemy.stuckTimer = enemy.timePassed; }	//if timer not started start it
+		if (enemy.timePassed > enemy.stuckTimer + 1) {	//if enemy has been stuck for more than 1 sec
+			enemy.isShooting = false;
+			enemy.enemyNext = ENEMY_IDLE;
+		}
+	}
+}
+

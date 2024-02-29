@@ -4,6 +4,11 @@
 #include "CollisionShape.h"
 #include <vector>
 
+
+
+
+
+
 enum ENEMY_DIR {
 	ENEMY_DEFAULT = 0,
 	ENEMY_LEFT,
@@ -59,6 +64,7 @@ struct Enemy {
 	AEGfxTexture* angrytex;
 
 	AEVec2 starting_position;	//startinglocation whr enemy spawns
+	AEVec2 last_position;		//only used by flying enemy
 	AEVec2 waypoint;			//waypoints are for enemy idle back n forth points
 	int target_position;		//some enemies need target a specific location
 	bool loop_idle;
@@ -70,6 +76,8 @@ struct Enemy {
 	bool isAlive;
 	bool isShooting;
 	bool isCollision;
+	bool isFlying;
+	bool isFalling;
 
 	f32 timePassed;				//use to "pause" the enemy 
 
@@ -83,10 +91,11 @@ struct Enemy {
 
 	//Gravity affection
 	f32 mass;
+	f32 gravityForce;
 	AEVec2 velocity;			//speed is the scalar of the velocity
 //(stats)----------------------------------------------
 
-
+	f32 stuckTimer; 
 	bool onFloor; //Added to check entity on floor, hence can jump
 	//Gravity affection
 	AEVec2 collisionNormal; 
@@ -97,7 +106,7 @@ struct Enemy {
 	AABB boxArms;
 
 	std::vector<Bullet> bullets;	// Shared vector container for bullets
-
+	AEVec2 spawnPoint;				//point the bullet spawns from
 
 
 	EnemyPart wing1, wing2;
@@ -108,6 +117,7 @@ struct Enemy {
 
 
 void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
+void FreeEnemy(std::vector<Enemy>& vecEnemy);
 void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
@@ -128,6 +138,7 @@ void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 
 //(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(Enemy& moving_entity, AEVec2 target_position);
+void MoveTowardsFLY(Enemy& moving_entity, AEVec2 target_position);	//only for the flying enemy
 bool CanFire(Enemy& enemy);
 bool CanPartFire(EnemyPart& part);
 void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
@@ -136,4 +147,6 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
 void Attack_Charge(Enemy& enemy, int target_position);
 bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
 void Jump(Enemy& enemy, f32 value);
+void isStuck(Enemy& enemy);
+
 //(EnemyUtils)-------------------------------------------------------------------------

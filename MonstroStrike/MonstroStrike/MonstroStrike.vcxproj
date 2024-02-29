@@ -102,9 +102,11 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="Armor_add.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Crafting.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyBoss.cpp" />
     <ClCompile Include="EnemyCharger.cpp" />
+    <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
     <ClCompile Include="Inventory.cpp" />
@@ -113,6 +115,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="GameState_Level1.cpp" />
     <ClCompile Include="GameState_Mainmenu.cpp" />
     <ClCompile Include="GameState_SplashScreen.cpp" />
+    <ClCompile Include="Level1.cpp" />
+    <ClCompile Include="Mainmenu.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
@@ -122,6 +127,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="TriggerAttack.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -129,6 +135,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="Armor_add.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Crafting.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyUtils.h" />
     <ClInclude Include="GameState_GameLobby.h" />
@@ -138,6 +145,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="GameState_Mainmenu.h" />
     <ClInclude Include="MapPlatformGenerate.h" />
     <ClInclude Include="NonPlayableCharacters.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="rapidjson\allocators.h" />
     <ClInclude Include="rapidjson\cursorstreamwrapper.h" />
@@ -179,6 +187,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
     <ClInclude Include="TransformMatrix.h" />
+    <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="CSVMapLoader.h" />

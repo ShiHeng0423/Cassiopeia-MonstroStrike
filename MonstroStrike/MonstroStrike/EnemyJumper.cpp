@@ -14,6 +14,9 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 	{
 		enemy.isAlive = false;
 	}
+	//std::cout << "Enemy On Floor: " << enemy.onFloor << std::endl;
+	//std::cout << "Slime Enemy vel y: " << enemy.velocity.y << std::endl;
+	//std::cout << "Slime Enemy g: " << enemy.gravityForce << std::endl;
 
 	switch (enemy.enemyCurrent)
 	{
@@ -42,8 +45,6 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 				if (!enemy.onFloor) {
 					MoveTowards(enemy, enemy.waypoint);
 				}
-
-
 
 				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
 					enemy.loop_idle = false;
@@ -95,17 +96,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 		break;
 	case ENEMY_ATTACK:
 		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
-		//Change to jump attack
-		//Attack_Charge(enemy, enemy.target_position);	//the charge attack
 
-		//if (enemy.isCollision == true) {
-
-		//	enemy.isCollision = false;
-		//	enemy.isShooting = false;	//out of attacking mode
-		//	enemy.speed = 80.f;			//return to normal speed after attack
-		//	enemy.target_position = ENEMY_DEFAULT;
-		//	enemy.enemyNext = ENEMY_IDLE;
-		//}
 
 
 		if (distanceFromPlayer < enemy.lineOfSight) {
