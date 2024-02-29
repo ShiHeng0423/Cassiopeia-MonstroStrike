@@ -5,7 +5,7 @@
 
 class Camera {
 public:
-	Camera();
+	Camera(AEVec2);
 	~Camera();
 
 	void UpdatePos(Player);

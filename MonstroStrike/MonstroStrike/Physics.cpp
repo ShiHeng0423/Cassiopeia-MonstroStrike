@@ -1,31 +1,75 @@
 #include "Physics.h"
 
-AEVec2 AABBNormalize(AABB firstBox, AABB secondBox) //AABB only
+AEVec2 AABBNormalize(AABB firstBox, AABB secondBox)
 {
-	AEVec2 result = { 0.f, 0.f };
+    AEVec2 result = { 0.f, 0.f };
 
-	result.x = roundf((firstBox.minimum.x - secondBox.minimum.x) / (secondBox.maximum.x - secondBox.minimum.x));
-	result.y = roundf((firstBox.minimum.y - secondBox.minimum.y) / (secondBox.maximum.y - secondBox.minimum.y));
+    // Distance between 2 AABBs
+    AEVec2 centerDist;
+    centerDist.x = (firstBox.minimum.x + firstBox.maximum.x) * 0.5f - (secondBox.minimum.x + secondBox.maximum.x) * 0.5f;
+    centerDist.y = (firstBox.minimum.y + firstBox.maximum.y) * 0.5f - (secondBox.minimum.y + secondBox.maximum.y) * 0.5f;
 
-	if (result.x > 1.0f)
-	{
-		result.x = 1.0f;
-	}
-	else if (result.x < -1.0f)
-	{
-		result.x = -1.0f;
-	}
+    AEVec2 halfExtents;
+    halfExtents.x = (firstBox.maximum.x - firstBox.minimum.x) * 0.5f;
+    halfExtents.y = (firstBox.maximum.y - firstBox.minimum.y) * 0.5f;
 
-	if (result.y > 1.0f)
-	{
-		result.y = 1.0f;
-	}
-	else if (result.y < -1.0f)
-	{
-		result.y = -1.0f;
-	}
-	return result;
+    //Overlap check
+    AEVec2 overlap;
+    //Use fabsf to get absolute value for float
+    overlap.x = fabsf(centerDist.x) - (halfExtents.x + (secondBox.maximum.x - secondBox.minimum.x) * 0.5f);
+    overlap.y = fabsf(centerDist.y) - (halfExtents.y + (secondBox.maximum.y - secondBox.minimum.y) * 0.5f);
+
+    // Determine the normal direction based on the overlap
+    if (overlap.x > 0 || overlap.y > 0) {
+        //Corner collision detected, check which overlap is more than the other
+        if (overlap.x > 0) {
+            // Collision on the left side
+            result.x = -1.0f;
+        }
+        else if (overlap.x < 0) {
+            // Collision on the right side
+            result.x = 1.0f;
+        }
+
+        if (overlap.y > 0) {
+            // Collision on the bottom
+            result.y = 1.0f;
+        }
+        else if (overlap.y < 0) {
+            // Collision on the top
+            result.y = -1.0f;
+        }
+
+    }
+    else //No corner collision
+    {
+        if (overlap.x > overlap.y) //X overlap is higher than y 
+        {
+            if (centerDist.x < 0) 
+            {
+                result.x = -1.0f;
+            }
+            else 
+            {
+                result.x = 1.0f;
+            }
+        }
+        else //Y overlap is higher than x
+        {
+            if (centerDist.y < 0) 
+            {
+                result.y = -1.0f;
+            }
+            else 
+            {
+                result.y = 1.0f;
+            }
+        }
+    }
+
+    return result; //Return normal value
 }
+
 
 f32 DotProduct(const AEVec2& first, const AEVec2& second)
 {

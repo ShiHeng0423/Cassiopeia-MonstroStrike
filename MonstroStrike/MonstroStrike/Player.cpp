@@ -50,21 +50,50 @@ void PlayerUpdate(Player& player)
 {
 
 	//X-Axis control
-	if (AEInputCheckCurr(AEVK_D))
-	{
-		// Move right
-		player.velocity.x += 20.f * AEFrameRateControllerGetFrameTime();
-		player.isFacingRight = true;
+	bool isDashing = false;
+	const f32 dashDuration = 0.2f; 
+	const f32 dashSpeedMultiplier = 20.0f;
+	const f32 dashCooldownTime = 1.0f; 
+	f32 dashCooldown = 0.0f;
+
+	//Just for fun
+	if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
+		//isDashing = true;
+		//dashCooldown = dashCooldownTime;
+
+		//// Determine dash direction based on current movement
+		//if (AEInputCheckCurr(AEVK_D)) {
+		//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+		//	player.isFacingRight = true;
+		//}
+		//else if (AEInputCheckCurr(AEVK_A)) {
+		//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+		//	player.isFacingRight = false;
+		//}
 	}
-	else if (AEInputCheckCurr(AEVK_A))
+	else
 	{
-		// Move left
-		player.velocity.x -= 20.f * AEFrameRateControllerGetFrameTime();
-		player.isFacingRight = false;
+		if (AEInputCheckCurr(AEVK_D)) {
+			player.velocity.x += player.obj.speed.x * AEFrameRateControllerGetFrameTime();
+			player.isFacingRight = true;
+		}
+		else if (AEInputCheckCurr(AEVK_A)) {
+			player.velocity.x -= player.obj.speed.x * AEFrameRateControllerGetFrameTime();
+			player.isFacingRight = false;
+		}
 	}
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
+
+	// Update dash cooldown
+	if (dashCooldown > 0.0f) {
+		dashCooldown -= AEFrameRateControllerGetFrameTime();
+		if (dashCooldown <= 0.0f) {
+			isDashing = false;
+		}
+	}
+
 
 	// Calculate the desired location
 	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
@@ -118,22 +147,26 @@ void PlayerUpdate(Player& player)
 	player.obj.pos.x += player.velocity.x;
 
 	//Resetting main AABB box...
-	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.25f;
-	player.collisionBox.minimum.y = player.obj.pos.y - player.obj.img.scale.y * 0.25f;
-	player.collisionBox.maximum.x = player.obj.pos.x + player.obj.img.scale.x * 0.25f;
-	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.25f;
-
-	//Making a cross...
+	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.5f;
+	player.collisionBox.minimum.y = player.obj.pos.y - player.obj.img.scale.y * 0.5f;
+	player.collisionBox.maximum.x = player.obj.pos.x + player.obj.img.scale.x * 0.5f;
+	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 
 	//Vertical
-	player.boxHeadFeet = player.collisionBox; // Get original collision box size
-	player.boxHeadFeet.minimum.y -= player.obj.img.scale.y * 0.25f;
-	player.boxHeadFeet.maximum.y += player.obj.img.scale.y * 0.25f;
+	f32 verticalOffset = player.obj.img.scale.y * 0.01f;
 
-	//Horizontal
+	// Vertical box
+	player.boxHeadFeet = player.collisionBox;
+	player.boxHeadFeet.minimum.y -= verticalOffset;
+	player.boxHeadFeet.maximum.y += verticalOffset;
+
+	f32 horizontalOffset = player.obj.img.scale.x * 0.01f;
+
+	// Horizontal box
 	player.boxArms = player.collisionBox;
-	player.boxArms.minimum.x -= player.obj.img.scale.x * 0.25f;
-	player.boxArms.maximum.x += player.obj.img.scale.x * 0.25f;
+	player.boxArms.minimum.x -= horizontalOffset;
+	player.boxArms.maximum.x += horizontalOffset;
+
 	//Update player weapon hit box
 
 	//Weapon hit box update only

@@ -5,8 +5,8 @@
 #include "CollisionShape.h" //Collision checker
 #include "GridTypesList.h"
 
-#define MAP_ROW_SIZE 25
-#define MAP_COLUMN_SIZE 50
+#define MAP_ROW_SIZE 50
+#define MAP_COLUMN_SIZE 98
 
 //Reminder to add name space
 
