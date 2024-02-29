@@ -5,7 +5,11 @@
 #include "Weapon.h"
 #include "TriggerAttack.h"
 #include <iostream>
-
+#include <chrono>
+#include <queue>
+#include <functional>  // for std::function
+#define camXBoundary (250.f)
+#define camFollowupSpeedX (0.05f)
 // Define a clock type for high-resolution time measurement
 using Clock = std::chrono::high_resolution_clock;
 
