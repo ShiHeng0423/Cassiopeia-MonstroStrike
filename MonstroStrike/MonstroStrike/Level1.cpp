@@ -678,6 +678,8 @@ void Level1_Free()
 
 void Level1_Unload()
 {
+	Inventory::SaveInventory();
+
 	//Free meshes
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
@@ -686,9 +688,4 @@ void Level1_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 
 	delete cam;
-}
-
-void Level1_Unload()
-{
-	Inventory::SaveInventory();
 }
