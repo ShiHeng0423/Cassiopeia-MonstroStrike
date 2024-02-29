@@ -86,7 +86,7 @@ namespace Inventory
 	void WriteJsonFile(const std::vector<Item> inventory, const std::string& filepath);
 	void InitInventory();
 	void Load_Inventory();
-	void UpdateInventory(std::vector<Item>& inventory, ButtonGearUI button[]);
+	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 	
 
 

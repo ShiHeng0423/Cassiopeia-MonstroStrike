@@ -391,7 +391,7 @@ void Level1_Update()
 				{
 					if (button.img.pTex != blank)
 					{
-						std::cout << "left triggered\n";
+						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
 						snap_back = index;
 						break;
@@ -673,7 +673,7 @@ void Level1_Draw()
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		for (ButtonGearUI button : *equipmentDisplay)
+		for (ButtonGearUI button : inventoryButton)
 		{
 			AEGfxTextureSet(button.img.pTex, 0, 0);
 			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
@@ -700,8 +700,6 @@ void Level1_Free()
 
 void Level1_Unload()
 {
-	Inventory::SaveInventory();
-
 	//Free meshes
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);

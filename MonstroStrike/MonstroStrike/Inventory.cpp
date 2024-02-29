@@ -89,7 +89,7 @@ namespace Inventory
 
 
 				// std::cout << newItem.UID << std::endl;
-				// std::cout << newItem.ID << std::endl;
+				 std::cout << newItem.ID << std::endl;
 				// std::cout << newItem.name << std::endl;
 				// std::cout << newItem.description << std::endl;
 				// std::cout << newItem.item_type << std::endl;
@@ -186,7 +186,7 @@ namespace Inventory
 	}
 
 	//Update inventory vector every frame
-	void UpdateInventory(std::vector<Item>& inventory, ButtonGearUI button[])
+	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
 		for(SizeType i=0; i<inventory.size(); ++i)
 		{
@@ -206,6 +206,22 @@ namespace Inventory
 	void Item_Equip(Item& item)
 	{
 	}
+
+	//temporary code section
+	// void Equip(int index, ButtonGearUI tmp)
+	// {
+	// 	equipmentDisplay[index].img.pTex = tmp.img.pTex;
+	// 	if (!tmp.isWeapon)
+	// 	{
+	// 		gear_equipped++;
+	// 		if (gear_equipped == 4)
+	// 			hp *= 1.5;
+	// 	}
+	// 	else
+	// 	{
+	// 		player->burningEffect = true;
+	// 	}
+	// }
 
 	void InitInventory()
 	{
