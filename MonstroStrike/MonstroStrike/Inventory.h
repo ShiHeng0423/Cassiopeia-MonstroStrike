@@ -12,6 +12,7 @@
 
 // ---------------------------------------------------------------------------
 // includes
+#pragma once
 #include <crtdbg.h> // To check for memory leaks
 #include <string>
 #include <fstream>
@@ -21,13 +22,39 @@
 #include "Utils.h"
 #include "rapidjson/document.h"
 // ---------------------------------------------------------------------------
-#pragma once
 
+
+struct Item
+{
+	std::string UID;
+	int ID;
+	std::string name;
+	std::string description;
+	int item_type;
+	int rarity;
+	int quantity;
+	bool stackable;
+	int attack;
+	int defence;
+};
+
+
+
+struct ButtonGearUI
+{
+	Sprite img;
+	AEVec2 pos;
+	bool isWeapon;
+	Item Item;
+};
 
 
 
 namespace Inventory
 {
+
+
+
 	enum Item_Type
 	{
 		material = 0,
@@ -53,7 +80,7 @@ namespace Inventory
 
 
 
-	extern std::vector<Inventory::Item> Player_Inventory;
+	extern std::vector<Item> Player_Inventory;
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item> inventory, const std::string& filepath);

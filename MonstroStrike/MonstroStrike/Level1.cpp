@@ -19,6 +19,7 @@
 #include "NonPlayableCharacters.h"
 
 #include "Inventory.h"
+#include "Utils.h"
 
 namespace
 {
@@ -57,6 +58,7 @@ namespace
 	ButtonGearUI equipmentBackground;
 	ButtonGearUI equipmentDisplay[5];
 
+
 	AEGfxTexture* blank;
 	AEGfxTexture* Gear1;
 	AEGfxTexture* Gear2;
@@ -93,14 +95,14 @@ AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
 	AEGfxMeshStart();
 
 	AEGfxTriAdd(
-		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f,  // bottom-left: red
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
+		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f, // bottom-left: red
+		0.5f, -0.5f, MeshColor, 1.0f, 1.0f, // bottom-right: green
+		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f); // top-left: blue
 
 	AEGfxTriAdd(
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		0.5f, 0.5f, MeshColor, 1.0f, 0.0f,    // top-right: white
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
+		0.5f, -0.5f, MeshColor, 1.0f, 1.0f, // bottom-right: green
+		0.5f, 0.5f, MeshColor, 1.0f, 0.0f, // top-right: white
+		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f); // top-left: blue
 
 	return AEGfxMeshEnd();
 }
@@ -117,7 +119,6 @@ AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
 
 void Level1_Load()
 {
-
 	//loading texture only, push back into the vector
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_BOSS1, vecEnemy);
@@ -127,7 +128,7 @@ void Level1_Load()
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
 
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Kronii_Pixel.png", {70.f, 70.f}, {-750.f, -155.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	auto fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -135,8 +136,8 @@ void Level1_Load()
 	{
 		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //Just for checking if the map data is stored properly
 	}
-	
-LoadNPC();
+
+	LoadNPC();
 
 #pragma region Mesh Creations
 	pMeshGrey = GenerateSquareMesh(0xFFa9a9a9);
@@ -234,16 +235,14 @@ void Level1_Initialize()
 	InitializeNPC();
 
 	//looping thru to init all enemy variables
-	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({70.f,70.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({ 70.f,70.f }, { 300.f,250.f }, ENEMY_IDLE, vecEnemy[3]);
-
+	Enemy_Init({70.f, 70.f}, {1200.f, -320.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({70.f, 70.f}, {-500.f, -100.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f, 70.f}, {-500.f, 250.f}, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({70.f, 70.f}, {300.f, 250.f}, ENEMY_IDLE, vecEnemy[3]);
 }
 
 void Level1_Update()
 {
-
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 
@@ -255,16 +254,19 @@ void Level1_Update()
 	//This is set here temporary so that thing actually work, need to move
 	if (player->isAttacking)
 	{
-		for (Enemy& enemy : vecEnemy) {
-			if (enemy.isAlive) {
+		for (Enemy& enemy : vecEnemy)
+		{
+			if (enemy.isAlive)
+			{
 				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
 			}
 		}
-
 	}
 
-	for (Enemy& enemy : vecEnemy) {
-		if (enemy.isAlive) {
+	for (Enemy& enemy : vecEnemy)
+	{
+		if (enemy.isAlive)
+		{
 			Enemy_Update_Choose(enemy, *player);
 		}
 	}
@@ -312,36 +314,41 @@ void Level1_Update()
 				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
 				{
 					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor);
+					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
+					                           &player->collisionNormal, &player->obj.pos,
+					                           &player->velocity, &player->onFloor);
 				}
-//(ENEMY AND BULLETS COLLISION CHECKING)
-//is this efficient? 
-				for (Enemy& enemy : vecEnemy) {
-
+			//(ENEMY AND BULLETS COLLISION CHECKING)
+			//is this efficient? 
+				for (Enemy& enemy : vecEnemy)
+				{
 					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox))
+					{
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
-						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor);
-
+						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox,
+						                         &enemy.collisionNormal, &enemy.obj.pos,
+						                         &enemy.velocity, &enemy.onFloor);
 					}
 					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(enemy.boxArms, grids2D[rows][cols].collisionBox)) {
+					if (AABBvsAABB(enemy.boxArms, grids2D[rows][cols].collisionBox))
+					{
 						enemy.isCollision = true;
 						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
 
-						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor);
+						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox,
+						                           &enemy.collisionNormal, &enemy.obj.pos,
+						                           &enemy.velocity, &enemy.onFloor);
 						enemy.loop_idle = false;
 					}
 
 
-					for ( Bullet& bullet : enemy.bullets) {
-						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
+					for (Bullet& bullet : enemy.bullets)
+					{
+						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox))
+						{
 							bullet.lifetime = 0.f; //makes bullet erase
-
 						}
 					}
 				}
@@ -417,8 +424,10 @@ void Level1_Update()
 			{
 				for (ButtonGearUI& button : inventoryButton)
 				{
-					if (AETestRectToRect(&inventoryButton[snap_back].pos, inventoryButton[snap_back].img.scale.x,
-					                     inventoryButton[snap_back].img.scale.y, &button.pos, button.img.scale.x,
+					if (AETestRectToRect(&inventoryButton[snap_back].pos,
+					                     inventoryButton[snap_back].img.scale.x,
+					                     inventoryButton[snap_back].img.scale.y, &button.pos,
+					                     button.img.scale.x,
 					                     button.img.scale.y))
 					{
 						//Different items overlapping
@@ -555,48 +564,60 @@ void Level1_Draw()
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x,
+	                                                player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
-
-	for (Enemy& enemy : vecEnemy) {
-		if (enemy.isAlive) {
-			if (enemy.isShooting) {
+	for (Enemy& enemy : vecEnemy)
+	{
+		if (enemy.isAlive)
+		{
+			if (enemy.isShooting)
+			{
 				//AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
 				AEGfxTextureSet(enemy.angrytex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
+				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
 			}
-			else {
+			else
+			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
+				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
 
-				if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
+				if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive)
+				{
 					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 
 					AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f,
+					                                                enemy.wing1.obj.img.scale.x,
+					                                                enemy.wing1.obj.img.scale.y).m);
 					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 				}
-				if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
+				if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive)
+				{
 					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 
 					AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f,
+					                                                enemy.wing2.obj.img.scale.x,
+					                                                enemy.wing2.obj.img.scale.y).m);
 					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 				}
 			}
 		}
 	}
 
-    if (player->isAttacking)
+	if (player->isAttacking)
 	{
 		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
 		                                                player->equippedWeapon.position.y, 0.f,
@@ -645,13 +666,14 @@ void Level1_Draw()
 		}
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(equipmentBackground.pos.x + cam->GetCameraWorldPoint().x,
-		                                                equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f,
-		                                                equipmentBackground.img.scale.x,
-		                                                equipmentBackground.img.scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(
+			equipmentBackground.pos.x + cam->GetCameraWorldPoint().x,
+			equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+			equipmentBackground.img.scale.x,
+			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		for (ButtonGearUI button : equipmentDisplay)
+		for (ButtonGearUI button : *equipmentDisplay)
 		{
 			AEGfxTextureSet(button.img.pTex, 0, 0);
 			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
@@ -688,4 +710,7 @@ void Level1_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 
 	delete cam;
+
+
+	Inventory::SaveInventory();
 }

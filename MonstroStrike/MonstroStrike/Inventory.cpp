@@ -13,6 +13,7 @@
 // ---------------------------------------------------------------------------
 // includes
 #include "Inventory.h"
+#include "Utils.h"
 
 #include <algorithm>
 
@@ -33,9 +34,9 @@ using namespace rapidjson;
 namespace Inventory
 {
 	//Global Variable
-	std::vector<Inventory::Item> Player_Inventory;
+	std::vector< Item> Player_Inventory;
 
-	std::vector<Item> ReadJsonFile(const std::string& filepath)
+	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
 		//std::vector<Inventory> inventory = new std::vector<Inventory>[1000];
 		std::vector<Item> inventory;
