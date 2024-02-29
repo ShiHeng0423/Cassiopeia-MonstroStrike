@@ -5,11 +5,6 @@
 #include "Weapon.h"
 #include "TriggerAttack.h"
 #include <iostream>
-#include <chrono>
-#include <queue>
-#include <functional>  // for std::function
-#define camXBoundary (250.f)
-#define camFollowupSpeedX (0.05f)
 
 // Define a clock type for high-resolution time measurement
 using Clock = std::chrono::high_resolution_clock;
@@ -62,7 +57,8 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 	player->isFacingRight = isFacingRight;
 	player->lookAheadMutliplier = 50.f;
-	player->onFloor = false; //Set as false first, will be set as true when ground detected
+	player->onFloor = true; //Set as false first, will be set as true when ground detected
+	player->isFalling = false;
 	player->mass = 60.f;
 
 	//Initializing collision box starting position
@@ -92,21 +88,66 @@ void PlayerUpdate(Player& player)
 {
 
 	//X-Axis control
-	if (AEInputCheckCurr(AEVK_D))
+	bool isDashing = false;
+	const f32 dashDuration = 0.2f; 
+	const f32 dashSpeedMultiplier = 20.0f;
+	const f32 dashCooldownTime = 1.0f; 
+	f32 dashCooldown = 0.0f;
+
+	//if (player.velocity.y < player.gravityForce + 0.001f)
+	//{
+	//	std::cout << "TIE\n";
+	//}
+
+	//if (player.velocity.y < player.gravityForce - 0.001f)
+	//{
+
+	//	std::cout << "HI\n";
+	//}
+
+	if (player.isFalling)
 	{
-		// Move right
-		player.velocity.x += 20.f * AEFrameRateControllerGetFrameTime();
-		player.isFacingRight = true;
+		std::cout << "FELL\n";
 	}
-	else if (AEInputCheckCurr(AEVK_A))
+
+	//Just for fun
+	if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
+		//isDashing = true;
+		//dashCooldown = dashCooldownTime;
+
+		//// Determine dash direction based on current movement
+		//if (AEInputCheckCurr(AEVK_D)) {
+		//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+		//	player.isFacingRight = true;
+		//}
+		//else if (AEInputCheckCurr(AEVK_A)) {
+		//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+		//	player.isFacingRight = false;
+		//}
+	}
+	else
 	{
-		// Move left
-		player.velocity.x -= 20.f * AEFrameRateControllerGetFrameTime();
-		player.isFacingRight = false;
+		if (AEInputCheckCurr(AEVK_D)) {
+			player.velocity.x += player.obj.speed.x * AEFrameRateControllerGetFrameTime();
+			player.isFacingRight = true;
+		}
+		else if (AEInputCheckCurr(AEVK_A)) {
+			player.velocity.x -= player.obj.speed.x * AEFrameRateControllerGetFrameTime();
+			player.isFacingRight = false;
+		}
 	}
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
+
+	// Update dash cooldown
+	if (dashCooldown > 0.0f) {
+		dashCooldown -= AEFrameRateControllerGetFrameTime();
+		if (dashCooldown <= 0.0f) {
+			isDashing = false;
+		}
+	}
+
 
 	// Calculate the desired location
 	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
@@ -132,6 +173,7 @@ void PlayerUpdate(Player& player)
 		std::cout << "Equipped " << armorName << "!" << std::endl;
 	}
 
+	//std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
 	if (AEInputCheckTriggered(AEVK_2))
 	{
 		Player player;
@@ -153,29 +195,39 @@ void PlayerUpdate(Player& player)
 		player.onFloor = false;
 		player.velocity.y = 400.f;
 	}
-	ApplyGravity(&player.velocity, player.mass); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+
+	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	//
+	//std::cout << "Player on floor: " << player.onFloor << std::endl;
+	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
+	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
 	player.obj.pos.y += player.velocity.y * AEFrameRateControllerGetFrameTime();
 	player.obj.pos.x += player.velocity.x;
 
 	//Resetting main AABB box...
-	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.25f;
-	player.collisionBox.minimum.y = player.obj.pos.y - player.obj.img.scale.y * 0.25f;
-	player.collisionBox.maximum.x = player.obj.pos.x + player.obj.img.scale.x * 0.25f;
-	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.25f;
-
-	//Making a cross...
+	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.5f;
+	player.collisionBox.minimum.y = player.obj.pos.y - player.obj.img.scale.y * 0.5f;
+	player.collisionBox.maximum.x = player.obj.pos.x + player.obj.img.scale.x * 0.5f;
+	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 
 	//Vertical
-	player.boxHeadFeet = player.collisionBox; // Get original collision box size
-	player.boxHeadFeet.minimum.y -= player.obj.img.scale.y * 0.25f;
-	player.boxHeadFeet.maximum.y += player.obj.img.scale.y * 0.25f;
+	f32 verticalOffset = player.obj.img.scale.y * 0.025f;
 
-	//Horizontal
+	// Vertical box
+	player.boxHeadFeet = player.collisionBox;
+	player.boxHeadFeet.minimum.y -= verticalOffset;
+	player.boxHeadFeet.maximum.y += verticalOffset;
+
+	f32 horizontalOffset = player.obj.img.scale.x * 0.025f;
+
+	// Horizontal box
 	player.boxArms = player.collisionBox;
-	player.boxArms.minimum.x -= player.obj.img.scale.x * 0.25f;
-	player.boxArms.maximum.x += player.obj.img.scale.x * 0.25f;
+	player.boxArms.minimum.x -= horizontalOffset;
+	player.boxArms.maximum.x += horizontalOffset;
+
+	//std::cout << "Collision Normal Y: " << player.collisionNormal.y << std::endl;
 	//Update player weapon hit box
 
 	//Weapon hit box update only

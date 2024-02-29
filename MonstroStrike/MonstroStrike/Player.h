@@ -12,6 +12,7 @@ struct Player {
 	bool isFacingRight;
 	bool onFloor; //Added to check entity on floor, hence can jump
 	bool isAttacking;
+	bool isFalling;
 
 	AEVec2 expectedLocation;
 	AEVec2 velocity; //Added for movement - Johny
@@ -34,6 +35,7 @@ struct Player {
 	int combo_trig;
 	float comboTime;
 	int comboState;
+	f32 gravityForce;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

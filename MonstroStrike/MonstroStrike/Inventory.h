@@ -14,15 +14,17 @@
 // includes
 #include <crtdbg.h> // To check for memory leaks
 #include <string>
-#include <iostream>
 #include <fstream>
-//#include "json.hpp"
 #include <vector>
 
 #include "AEEngine.h"
+#include "Utils.h"
 #include "rapidjson/document.h"
 // ---------------------------------------------------------------------------
 #pragma once
+
+
+
 
 namespace Inventory
 {
@@ -45,30 +47,26 @@ namespace Inventory
 		unique
 	};
 
+	const int inventory_size = 1000;
+	const int inventory_height = 5;
+	const int inventory_width = 5;
 
-	struct Inventory
-	{
-		std::string UID;
-		int ID;
-		std::string name;
-		std::string description;
-		int item_type;
-		int rarity;
-		int quantity;
-		bool stackable;
-		int attack;
-		int defence;
-	};
 
-	std::vector<Inventory> ReadJsonFile(const std::string& filepath);
-	std::vector<Inventory> SaveToJsonFile(const std::string& filepath, Inventory inventory);
+
+	extern std::vector<Inventory::Item> Player_Inventory;
+
+	std::vector<Item> ReadJsonFile(const std::string& filepath);
+	void WriteJsonFile(const std::vector<Item> inventory, const std::string& filepath);
 	void InitInventory();
 	void Load_Inventory();
-	void UpdateInventory();
+	void UpdateInventory(std::vector<Item>& inventory, ButtonGearUI button[]);
+	
 
-	void Open_Inventory();
 
-	void Item_Pickup();
+	void Item_Pickup(Item& item);
 	void Item_Drop();
-	void Item_Equip();
+	void Item_Equip(Item& item);
+
+
+	void SaveInventory();
 }

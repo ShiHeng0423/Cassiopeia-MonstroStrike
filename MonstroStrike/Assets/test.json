@@ -2,7 +2,7 @@
   "items": [
     {
       "UID": "ahi2bfi2",
-      "ID" :  2132,
+      "ID" :  0,
       "name": "Demon banana",
       "description": "burn",
       "item_type": 2,
@@ -14,7 +14,7 @@
     },
     {
       "UID": "ahi2bfi2",
-      "ID": 2132,
+      "ID": 1,
       "name": "Black banana",
       "description": "burnt",
       "item_type": 2,
@@ -27,7 +27,7 @@
     },
     {
       "UID": "aqad112341ssssss",
-      "ID": 23123,
+      "ID": 2,
       "name": "Merlion saliva",
       "description": "ages like fine wine",
       "item_type": 0,
@@ -41,7 +41,7 @@
     },
     {
       "UID": "ahi2bfi2",
-      "ID": 2132,
+      "ID": 3,
       "name": "angel banana",
       "description": "you can fly",
       "item_type": 2,

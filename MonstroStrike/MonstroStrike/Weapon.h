@@ -11,7 +11,7 @@ struct Position {
 
 struct Weapon {
     std::string name;
-    int damage = 50.f;
+    f32 damage = 50.f;
     Position position;
 
     AABB collisionBox;
