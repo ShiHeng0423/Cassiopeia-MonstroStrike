@@ -18,8 +18,12 @@
 #include "MapPlatformGenerate.h"
 #include "NonPlayableCharacters.h"
 
-namespace {
+#include "ParticleSystem.h"
 
+#include "Inventory.h"
+
+namespace
+{
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
 	AEGfxVertexList* pMeshRed;
@@ -29,7 +33,7 @@ namespace {
 	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap(MAP_ROW_SIZE, std::vector<MapCell>(MAP_COLUMN_SIZE)); //Map for this level
 
-	Platforms movingObject[3]; //Indicate total number of movingObjects
+	std::vector<struct Platforms> platformVectors;
 
 	std::vector<Enemy> vecEnemy; //enemy container
 
@@ -40,6 +44,7 @@ namespace {
 	Camera* cam;
 
 	bool inventory_open = false;
+	int snap_back = -1;
 
 	int hp = 100;
 	int gear_equipped = 0;
@@ -123,16 +128,17 @@ void Level1_Load()
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
 
-	player = PlayerInitialize("Assets/Kronii_Pixel.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { -750.f,-155.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
+	auto fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
 		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //Just for checking if the map data is stored properly
 	}
 	
-LoadNPC();
+	LoadNPC();
+	ParticleLoad();
 
 #pragma region Mesh Creations
 	pMeshGrey = GenerateSquareMesh(0xFFa9a9a9);
@@ -143,7 +149,6 @@ LoadNPC();
 	//Drawing line
 	pLineMesh = GenerateLineMesh(0xFF000000);
 #pragma endregion
-
 }
 
 void Level1_Initialize()
@@ -223,9 +228,9 @@ void Level1_Initialize()
 
 	cam = new Camera(player->obj.pos);
 	//Need to place the objects one by one 
-	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, movingObject[0]);
-	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, movingObject[1]);
-	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, movingObject[2]);
+	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);
+	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
+	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
 
 	//Initialize NPCs
 	InitializeNPC();
@@ -236,6 +241,7 @@ void Level1_Initialize()
 	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({ 70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
 
+	ParticleInitialize();
 }
 
 void Level1_Update()
@@ -265,7 +271,7 @@ void Level1_Update()
 			Enemy_Update_Choose(enemy, *player);
 		}
 	}
-	
+
 
 	if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
 	{
@@ -276,7 +282,7 @@ void Level1_Update()
 	if (AEInputCheckTriggered(AEVK_0))
 	{
 		//next = GameStates::Quit;
-		AEVec2 test{ 100.f, 100.f };
+		AEVec2 test{100.f, 100.f};
 		cam->LookAhead(test);
 	}
 	if (AEInputCheckCurr(AEVK_1))
@@ -298,16 +304,16 @@ void Level1_Update()
 				//Check vertical box (Head + Feet) 
 				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
 					 player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-
 					 ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						 &player->velocity, &player->onFloor);
+						 &player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
 				}
 
-				//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox)) {
+			//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+				{
 					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor);
+						&player->velocity);
 				}
 //(ENEMY AND BULLETS COLLISION CHECKING)
 //is this efficient? 
@@ -319,7 +325,7 @@ void Level1_Update()
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor);
+							&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 
 					}
 					//Check horizontal box (Left arm -> Right arm)
@@ -328,7 +334,7 @@ void Level1_Update()
 						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
 
 						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor);
+							&enemy.velocity);
 						enemy.loop_idle = false;
 					}
 
@@ -355,10 +361,113 @@ void Level1_Update()
 
 	if (inventory_open)
 	{
+		//update item position
+		Inventory::UpdateInventory(Inventory::Player_Inventory, inventoryButton);
+
+		//Hover collision with button && hold left mouse button
+
+
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
+			s32 testx = 0;
+			s32 testy = 0;
+
 			int index = 0;
-			AEVec2 mousePos{ cam->GetCameraWorldPoint().x,cam->GetCameraWorldPoint().y };
+
+			AEInputGetCursorPosition(&testx, &testy);
+			AEVec2 mousePos;
+			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5 - testy;
+
+			for (ButtonGearUI& button : inventoryButton)
+			{
+				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				{
+					if (button.img.pTex != blank)
+					{
+						std::cout << "left triggered\n";
+						//snap origin of img to mouse pos
+						snap_back = index;
+						break;
+					}
+					//button.Ptr();
+				}
+				index++;
+			}
+		}
+
+		if (snap_back >= 0)
+		{
+			s32 testx = 0;
+			s32 testy = 0;
+
+			int index = 0;
+
+			AEInputGetCursorPosition(&testx, &testy);
+			AEVec2 mousePos;
+			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5 - testy;
+
+			inventoryButton[snap_back].pos = mousePos;
+		}
+
+		if (AEInputCheckReleased(AEVK_LBUTTON))
+		{
+			int index = 0;
+			if (snap_back >= 0)
+			{
+				for (ButtonGearUI& button : inventoryButton)
+				{
+					if (AETestRectToRect(&inventoryButton[snap_back].pos, inventoryButton[snap_back].img.scale.x,
+					                     inventoryButton[snap_back].img.scale.y, &button.pos, button.img.scale.x,
+					                     button.img.scale.y))
+					{
+						//Different items overlapping
+						if (index != snap_back)
+						{
+							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90 - 180,
+							          -(snap_back / 5) * 90 + 180);
+
+							std::cout << "swap\n";
+							ButtonGearUI tmp = button;
+							button = inventoryButton[snap_back];
+							inventoryButton[snap_back] = tmp;
+
+							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90 - 180,
+							          -(snap_back / 5) * 90 + 180);
+
+							AEVec2Set(&button.pos, (index % 5) * 90 - 180,
+							          -(index / 5) * 90 + 180);
+
+							snap_back = -1;
+							break;
+						}
+					}
+					index++;
+				}
+
+				if (snap_back >= 0)
+				{
+					AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90 - 180,
+					          -(snap_back / 5) * 90 + 180);
+					snap_back = -1;
+				}
+			}
+		}
+
+
+		if (AEInputCheckTriggered(AEVK_RBUTTON))
+		{
+			int index = 0;
+			s32 testx = 0;
+			s32 testy = 0;
+
+
+			AEInputGetCursorPosition(&testx, &testy);
+			AEVec2 mousePos;
+			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5 - testy;
+
 			for (ButtonGearUI& button : inventoryButton)
 			{
 				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
@@ -396,8 +505,18 @@ void Level1_Update()
 
 	//Testing moving platform logic
 
-	UpdatePlatforms(movingObject, 3, *player, vecEnemy); //Numbers based on how many moving platforms
+	UpdatePlatforms(*player, platformVectors); //Numbers based on how many moving platforms
 	UpdateNPC();
+
+	if (AEInputCheckTriggered(AEVK_U))
+	{
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, TEST);
+	}
+	if (AEInputCheckTriggered(AEVK_H))
+	{
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, TEST);
+	}
+	ParticleUpdate();
 }
 
 void Level1_Draw()
@@ -434,14 +553,12 @@ void Level1_Draw()
 		}
 	}
 
-	AEGfxSetTransform(movingObject[0].transformation.m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	for (int i = 0; i < platformVectors.size(); i++)
+	{
+		AEGfxSetTransform(platformVectors[i].transformation.m);
+		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
-	AEGfxSetTransform(movingObject[1].transformation.m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
-
-	AEGfxSetTransform(movingObject[2].transformation.m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	}
 
 	DrawNPC(*pWhiteSquareMesh);
 
@@ -488,20 +605,27 @@ void Level1_Draw()
 		}
 	}
 
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     if (player->isAttacking)
 	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x, player->equippedWeapon.position.y, 0.f, player->equippedWeapon.Scale.x, player->equippedWeapon.Scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
+		                                                player->equippedWeapon.position.y, 0.f,
+		                                                player->equippedWeapon.Scale.x,
+		                                                player->equippedWeapon.Scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 	}
 
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+	                                                AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
+	                                                0.5f * PI, AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800 + hp + cam->GetCameraWorldPoint().x, 450 + cam->GetCameraWorldPoint().y, 0, hp * 2, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800 + hp + cam->GetCameraWorldPoint().x,
+	                                                450 + cam->GetCameraWorldPoint().y, 0, hp * 2, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	std::string str = std::to_string(hp);
@@ -516,27 +640,38 @@ void Level1_Draw()
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, inventoryBackground.img.scale.x, inventoryBackground.img.scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+		                                                inventoryBackground.img.scale.x,
+		                                                inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		for (ButtonGearUI button : inventoryButton)
 		{
 			AEGfxTextureSet(button.img.pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x, button.pos.y + cam->GetCameraWorldPoint().y, 0.f, button.img.scale.x, button.img.scale.y).m);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
+			                                                button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+			                                                button.img.scale.x, button.img.scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(equipmentBackground.pos.x + cam->GetCameraWorldPoint().x, equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f, equipmentBackground.img.scale.x, equipmentBackground.img.scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(equipmentBackground.pos.x + cam->GetCameraWorldPoint().x,
+		                                                equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+		                                                equipmentBackground.img.scale.x,
+		                                                equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		for (ButtonGearUI button : equipmentDisplay)
 		{
 			AEGfxTextureSet(button.img.pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x, button.pos.y + cam->GetCameraWorldPoint().y, 0.f, button.img.scale.x, button.img.scale.y).m);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
+			                                                button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+			                                                button.img.scale.x, button.img.scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 	}
+
+	ParticlesDraw(*pWhiteSquareMesh);
 }
 
 void Level1_Free()
@@ -549,16 +684,20 @@ void Level1_Free()
 	vecEnemy.clear();
 	vecEnemy.resize(0);
 
-
 	//Free vectors
 	gameMap.clear();
 	gameMap.resize(0);
+	platformVectors.clear();
+	platformVectors.resize(0);
 
 	FreeNPC();
+	ParticlesFree();
 }
 
 void Level1_Unload()
 {
+	Inventory::SaveInventory();
+
 	//Free meshes
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);

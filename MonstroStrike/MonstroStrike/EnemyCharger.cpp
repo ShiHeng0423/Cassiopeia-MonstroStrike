@@ -14,6 +14,8 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	{
 		enemy.isAlive = false;
 	}
+	//std::cout << "Enemy On Floor: " << enemy.onFloor << std::endl;
+	//std::cout << "Charger Enemy vel y: " << enemy.velocity.y << std::endl;
 
 	switch (enemy.enemyCurrent)
 	{

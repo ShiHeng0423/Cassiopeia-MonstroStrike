@@ -14,6 +14,9 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 	{
 		enemy.isAlive = false;
 	}
+	//std::cout << "Enemy On Floor: " << enemy.onFloor << std::endl;
+	//std::cout << "Slime Enemy vel y: " << enemy.velocity.y << std::endl;
+	//std::cout << "Slime Enemy g: " << enemy.gravityForce << std::endl;
 
 	switch (enemy.enemyCurrent)
 	{
@@ -42,8 +45,6 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player)
 				if (!enemy.onFloor) {
 					MoveTowards(enemy, enemy.waypoint);
 				}
-
-
 
 				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
 					enemy.loop_idle = false;
