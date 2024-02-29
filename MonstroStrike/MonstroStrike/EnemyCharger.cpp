@@ -9,17 +9,20 @@
 void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-
+	
 	if (enemy.health <= 0)
 	{
 		enemy.isAlive = false;
 	}
+	//std::cout << "Enemy On Floor: " << enemy.onFloor << std::endl;
+	//std::cout << "Charger Enemy vel y: " << enemy.velocity.y << std::endl;
 
 	switch (enemy.enemyCurrent)
 	{
 	case ENEMY_IDLE:
 		//std::cout << player.obj.pos.y << " " << enemy.obj.pos.y << "\n";
 		//std::cout << areAligned(player.obj.pos, enemy.obj.pos) << "\n";
+		//std::cout << enemy.onFloor << "\n";
 
 		if (distanceFromPlayer <= enemy.lineOfSight && areAligned(player.obj.pos, enemy.obj.pos)) {
 			enemy.enemyNext = ENEMY_TRANSITION;
@@ -88,7 +91,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	}
 
 	//for gravity
-	enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
+	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
 	//main body collision box
@@ -108,4 +111,8 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	enemy.boxArms = enemy.collisionBox;
 	enemy.boxArms.minimum.x -= horizontalOffset;
 	enemy.boxArms.maximum.x += horizontalOffset;
+
+
+
+
 }

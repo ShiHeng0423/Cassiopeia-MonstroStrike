@@ -13,7 +13,7 @@ AudioManager::AudioManager()
 
 	// Plays 'bouken' audio in the "bgm" audio group with
 	// 50% volume, 200% pitch, looped infinitely.
-
+	this->bgmVolume = this->sfxVolume = 0;
 }
 AudioManager::~AudioManager()
 {
@@ -39,11 +39,11 @@ void AudioManager::PlayAudio(bool isBGM, Audio_List audioName)
 	}
 }
 
-void AudioManager::SetSFXVolume()
+void AudioManager::SetSFXVolume(f32 vol)
 {
-
+	this->sfxVolume = vol;
 }
-void AudioManager::SetBGMVolume()
+void AudioManager::SetBGMVolume(f32 vol)
 {
-
+	this->bgmVolume = vol;
 }

@@ -28,7 +28,7 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //	
 //	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
 //}
-void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
+void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor, f32* gravityForce, bool* falling)
 {
     f32 penetrationDepth = 0.f;
 
@@ -39,15 +39,16 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
             f32 dampingFactor = 0.3f;
             penetrationDepth *= dampingFactor;
             position->y += penetrationDepth;
-            *onFloor = true;
         }
     }
     else if (collisionNormal->y == -1) // Colliding from top
     {
         penetrationDepth = firstBoxHeadFeet.maximum.y - second.minimum.y;
         if (penetrationDepth > 0) {
-            f32 dampingFactor = 0.3f;
-            position->y -= penetrationDepth * dampingFactor;
+            f32 dampingFactor = 1.f;
+            penetrationDepth *= dampingFactor;
+            position->y -= penetrationDepth;
+            velocity->y = 0.f;
         }
     }
 
@@ -56,7 +57,7 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
     }
 }
 
-void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor)
+void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity)
 {
     f32 penetrationDepth = 0.f;
 

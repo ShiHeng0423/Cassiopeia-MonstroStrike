@@ -76,11 +76,19 @@ f32 DotProduct(const AEVec2& first, const AEVec2& second)
 	return first.x * second.x + first.y * second.y;
 }
 
-void ApplyGravity(AEVec2 *velocity, f32 mass)
+void ApplyGravity(AEVec2 *velocity, f32 mass, bool* onFloor, f32* gForce, bool* startedFalling)
 {
 	AEVec2 gravityForce;
 	AEVec2 gravity = { 0.f, -9.81f }; //The acceleration aka gravity
 	AEVec2Scale(&gravityForce, &gravity, mass); //Force = Mass x Acceleration
 	AEVec2Scale(velocity, velocity, 0.98f); //Dampen, maybe add terminal velocity if needed to
-	velocity->y += gravityForce.y * AEFrameRateControllerGetFrameTime();
+    *gForce = velocity->y;
+    if (*gForce == 0.f) {
+        *onFloor = true;
+    }
+    else
+    {
+        *onFloor = false;
+    }
+	velocity->y += gravityForce.y * (f32)AEFrameRateControllerGetFrameTime();
 }

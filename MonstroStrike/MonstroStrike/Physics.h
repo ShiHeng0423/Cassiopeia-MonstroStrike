@@ -9,5 +9,5 @@ AEVec2 AABBNormalize(AABB firstBox, AABB secondBox);
 
 f32 DotProduct(const AEVec2& first, const AEVec2& second);
 
-void ApplyGravity(AEVec2* velocity, f32 mass);
+void ApplyGravity(AEVec2* velocity, f32 mass, bool* onFloor, f32* gForce, bool* isFalling);
 #endif // PHYSICS_H
