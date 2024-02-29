@@ -957,6 +957,8 @@ void Level1_Draw()
 
 void Level1_Free()
 {
+	//Free the bullet tex
+	AEGfxTextureUnload(bulletTex);
 
 	FreeEnemy(vecEnemy);	//loops thru all eney tex and free them.
 	//Free Enemy Vector
@@ -979,33 +981,12 @@ void Level1_Unload()
 {
 	Inventory::SaveInventory();
 
-	AEGfxTextureUnload(background);
-	AEGfxTextureUnload(HealthBorder);
-	AEGfxTextureUnload(PauseMenuBackground);
-	AEGfxTextureUnload(ButtonFrame);
-	AEGfxTextureUnload(bulletTex);
-
-	AEGfxTextureUnload(blank);
-	AEGfxTextureUnload(Gear1);
-	AEGfxTextureUnload(Gear2);
-	AEGfxTextureUnload(weapon3);
-	AEGfxTextureUnload(Gear4);
-	AEGfxTextureUnload(Gear5);
-
-	AEGfxTextureUnload(inventoryBackground.img.pTex);
-	AEGfxTextureUnload(equipmentBackground.img.pTex);
-	AEGfxTextureUnload(player->obj.img.pTex);
-
-
-	AEGfxDestroyFont(pFont);
-
+	//Free meshes
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pLineMesh);
-	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
-	delete player;
 	delete cam;
 }

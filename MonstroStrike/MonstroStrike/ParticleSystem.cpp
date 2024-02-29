@@ -192,7 +192,6 @@ void ParticlesFree()
 	}
 
 	particleTextureList.clear();
-	inactiveParticles.clear();
 }
 
 void ParticlesAddTexture(const char* fileName)
