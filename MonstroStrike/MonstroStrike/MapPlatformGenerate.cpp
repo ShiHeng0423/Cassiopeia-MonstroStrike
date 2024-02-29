@@ -78,7 +78,7 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 	platformVector.push_back(thePlatform);
 }
 
-void UpdatePlatforms(Player& player, std::vector<struct Platforms>& platformVector)
+void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<struct Platforms>& platformVector)
 {
 	for (int i = 0; i < platformVector.size(); i++)
 	{
@@ -107,7 +107,7 @@ void UpdatePlatforms(Player& player, std::vector<struct Platforms>& platformVect
 
 		//Check if enemy/bullet is colliding platform
 		for (Enemy& enemy : vecEnemy) {
-			PlatformCollision(movingObject[i], enemy);
+			PlatformCollision(platformVector[i], enemy);
 		}
 
 		//Update collision box location
@@ -152,11 +152,11 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 {
 	//Check vertical box (Head + Feet) 
 	if (AABBvsAABB(enemy.boxHeadFeet, movingObject.collisionBox)) {
-
+		enemy.isCollision = true;
 		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-			&enemy.velocity, &enemy.onFloor);
+			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 
 		if (enemy.collisionNormal.y == 1) //Enemy on top
 		{
@@ -171,7 +171,7 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 		enemy.collisionNormal = AABBNormalize(enemy.boxArms, movingObject.collisionBox);
 
 		ResolveHorizontalCollision(enemy.boxArms, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-			&enemy.velocity, &enemy.onFloor);
+			&enemy.velocity);
 		enemy.loop_idle = false;
 	}
 

@@ -36,8 +36,8 @@ struct Platforms
 
 void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, std::vector<struct Platforms>& platformVector);//Add end point and start point afterwards
 
-void UpdatePlatforms(Player& player, std::vector<struct Platforms>& platformVector);
+void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<struct Platforms>& platformVector);
 
 void PlayerOnPlatform(Platforms& movingObject, Player& player);
 
-void PlatformCollision(Platforms& movingObject, Enemy& enemy); //for enemy
+void PlatformCollision(Platforms& movingObject, Enemy& enemy);

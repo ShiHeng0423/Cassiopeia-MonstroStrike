@@ -221,11 +221,11 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 
 	if (!enemy.isFlying) {
-		ApplyGravity(&enemy.velocity, enemy.mass);
+		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 	}
 
 	
-	ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
+
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:

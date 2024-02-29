@@ -246,7 +246,7 @@ void Level1_Initialize()
 
 void Level1_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	std::cout << AEFrameRateControllerGetFrameRate() << "\n";
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 
@@ -505,7 +505,7 @@ void Level1_Update()
 
 	//Testing moving platform logic
 
-	UpdatePlatforms(*player, platformVectors); //Numbers based on how many moving platforms
+	UpdatePlatforms(*player, vecEnemy, platformVectors); //Numbers based on how many moving platforms
 	UpdateNPC();
 
 	if (AEInputCheckTriggered(AEVK_U))
