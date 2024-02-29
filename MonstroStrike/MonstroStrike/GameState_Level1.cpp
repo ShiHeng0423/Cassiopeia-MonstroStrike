@@ -53,6 +53,7 @@ namespace {
 
 	enum CurrentScene {
 		MainScene,
+		PauseScene,
 		ControlScene,
 		QuitScene
 	};
@@ -75,6 +76,8 @@ namespace {
 	Button PauseMenuButtons[4];
 	Button QuitToMainmenu[2];
 	Button BackButton;
+
+	Sprite_V2 pauseMenuBackground;
 
 	int currScene;
 
@@ -152,12 +155,13 @@ AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
 
 #pragma region PauseMenu
 
-void ResumeGame() {}
-void ReturnLobby() {}
-void OpenControls() {}
-void QuitMainmenu() {}
-void QuitConfirmation() {}
-void BackPauseMenu() {}
+void ResumeGame() { currScene = CurrentScene::MainScene; }
+void ReturnLobby() { /* go back to village aka safe spot */ }
+void OpenControls() { currScene = CurrentScene::ControlScene; }
+void QuitMainmenu() { next = GameStates::SplashScreen; }
+void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
+void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
+
 #pragma endregion PauseMenu
 
 void Level1_Load()
@@ -210,7 +214,7 @@ void Level1_Load()
 	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 
 #pragma region PauseMenu
-	PauseMenuBackground = AEGfxTextureLoad("Assets/UI_Sprite/Panel/panel-001.png");
+	PauseMenuBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
 	ButtonFrame = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 #pragma endregion PauseMenu
 }
@@ -301,7 +305,7 @@ void Level1_Initialize()
 	{
 		PauseMenuButtons[i].pTex = ButtonFrame;
 		AEVec2Set(&PauseMenuButtons[i].scale, 250.f, 80.f);
-		AEVec2Set(&PauseMenuButtons[i].pos, 0.f, 100.f - 100.f * i);
+		AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
 
 		switch (i)
 		{
@@ -324,20 +328,25 @@ void Level1_Initialize()
 
 	QuitToMainmenu[0].pTex = ButtonFrame;
 	AEVec2Set(&QuitToMainmenu[0].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[0].pos, 250.f, 0.f);
+	AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
 	QuitToMainmenu[0].Ptr = BackPauseMenu;
 
 	QuitToMainmenu[1].pTex = ButtonFrame;
 	AEVec2Set(&QuitToMainmenu[1].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[1].pos, -250.f, 0.f);
+	AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
 	QuitToMainmenu[1].Ptr = QuitMainmenu;
 
 	BackButton.pTex = ButtonFrame;
 	AEVec2Set(&BackButton.scale, 250.f, 80.f);
-	AEVec2Set(&BackButton.pos, 250.f, 0.f);
+	AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
 	BackButton.Ptr = BackPauseMenu;
 
 	currScene = CurrentScene::MainScene;
+
+	pauseMenuBackground.pTex = PauseMenuBackground;
+	pauseMenuBackground.scale.x = 1000.f;
+	pauseMenuBackground.scale.y = 500.f;
+	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
 #pragma endregion PauseMenu
 }
 
@@ -350,12 +359,76 @@ void Level1_Update()
 
 	if (AEInputCheckTriggered(AEVK_LBUTTON))
 	{
-		player->isAttacking = true;
+		//player->isAttacking = true;
+		s32 x, y;
+		AEInputGetCursorPosition(&x, &y);
+		AEVec2 mousePos{ 0,0 };
+		mousePos.x = x - AEGfxGetWindowWidth() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - y;
+
+		switch (currScene)
+		{
+		case CurrentScene::PauseScene:
+		{
+			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
+			{
+				AEVec2 translateOrigin = PauseMenuButtons[i].pos;
+				translateOrigin.x -= cam->GetCameraWorldPoint().x;
+				translateOrigin.y -= cam->GetCameraWorldPoint().y;
+				if (AETestPointToRect(&mousePos, &translateOrigin, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y))
+					PauseMenuButtons[i].Ptr();
+			}
+			break;
+		}
+		case CurrentScene::ControlScene:
+		{
+			AEVec2 translateOrigin = BackButton.pos;
+			translateOrigin.x -= cam->GetCameraWorldPoint().x;
+			translateOrigin.y -= cam->GetCameraWorldPoint().y;
+			if (AETestPointToRect(&mousePos, &translateOrigin, BackButton.scale.x, BackButton.scale.y))
+				BackButton.Ptr();
+			break;
+		}
+		case CurrentScene::QuitScene:
+		{
+			AEVec2 translateOrigin = QuitToMainmenu[0].pos;
+			translateOrigin.x -= cam->GetCameraWorldPoint().x;
+			translateOrigin.y -= cam->GetCameraWorldPoint().y;
+			if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y))
+				QuitToMainmenu[0].Ptr();
+
+			translateOrigin = QuitToMainmenu[1].pos;
+			translateOrigin.x -= cam->GetCameraWorldPoint().x;
+			translateOrigin.y -= cam->GetCameraWorldPoint().y;
+			if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y))
+				QuitToMainmenu[1].Ptr();
+			break;
+		}
+		default:
+			break;
+		}
 	}
 
 	if (AEInputCheckTriggered(AEVK_ESCAPE))
 	{
+		if (currScene == CurrentScene::MainScene)
+		{
+			//rmb to freeze game update
+			currScene = CurrentScene::PauseScene;
 
+			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
+				AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
+
+			AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+			AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+
+			AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+		}
+		else
+		{
+			//unfreeze the game
+			currScene = CurrentScene::MainScene;
+		}
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -656,8 +729,12 @@ void Level1_Draw()
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	switch (currScene)
 	{
-	case CurrentScene::MainScene:
+	case CurrentScene::PauseScene:
 	{
+		AEGfxTextureSet(PauseMenuBackground, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.x, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.pos.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		
 		for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
 		{
 			AEGfxTextureSet(PauseMenuButtons[i].pTex, 0, 0);
@@ -667,19 +744,19 @@ void Level1_Draw()
 
 		f32 width, height;
 
-		const char* pText = "Start";
+		const char* pText = "Resume";
 		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
 		AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
-		const char* pText1 = "Load";
+		const char* pText1 = "Back To Village";
 		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
 		AEGfxPrint(pFont, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
 
-		const char* pText2 = "Credit";
+		const char* pText2 = "Controls";
 		AEGfxGetPrintSize(pFont, pText2, 0.5f, &width, &height);
 		AEGfxPrint(pFont, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
 
-		const char* pText3 = "Controls";
+		const char* pText3 = "Quit to Main menu";
 		AEGfxGetPrintSize(pFont, pText3, 0.5f, &width, &height);
 		AEGfxPrint(pFont, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
 		break;
@@ -694,7 +771,7 @@ void Level1_Draw()
 
 		const char* pText = "Back";
 		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		AEGfxPrint(pFont, pText, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 		break;
 	}
 	case CurrentScene::QuitScene:
@@ -736,6 +813,8 @@ void Level1_Free()
 	gameMap.resize(0);
 
 	FreeNPC();
+
+	AEGfxSetCamPosition(0.f, 0.f);
 }
 
 void Level1_Unload()

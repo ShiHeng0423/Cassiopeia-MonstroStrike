@@ -6,6 +6,12 @@ struct Sprite {
 	AEVec2 scale;
 };
 
+struct Sprite_V2 {
+	AEGfxTexture* pTex;
+	AEVec2 scale;
+	AEVec2 pos;
+};
+
 struct Object{
 	AEVec2 pos;
 	AEVec2 speed;
