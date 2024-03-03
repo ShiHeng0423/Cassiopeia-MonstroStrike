@@ -10,6 +10,7 @@
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+
 	AEVec2 Spawnloc;
 
 //health check
@@ -31,35 +32,52 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	}
 
 	if (AEInputCheckCurr(AEVK_M)) {
-		enemy.isFlying = false;
+		enemy.health--;
+	}
+
+	if (AEInputCheckCurr(AEVK_L)) {
+		enemy.wing1.isAlive = false;
+		enemy.wing2.isAlive = false;
 	}
 
 
 	switch (enemy.enemyCurrent)
 	{
 	case ENEMY_IDLE:
-		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
-			enemy.loop_idle = false;
+		if (enemy.health != 100) {
+			enemy.timePassed = 0.f;
+			enemy.enemyNext = ENEMY_TRANSITION;
+
+		}
+		//else {
+		//	enemy.enemyNext = ENEMY_IDLE;
+
+		//	//if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
+		//	//	MoveTowards(enemy, enemy.starting_position);
+		//	//}
+		//}
+		break;
+
+
+	case ENEMY_TRANSITION:
+		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
+		enemy.wing1.isAlive = true;
+		enemy.wing2.isAlive = true;
+		enemy.isFlying = true;
+		Spawnloc = enemy.starting_position;
+		if (enemy.obj.pos.y <= Spawnloc.y) {
+			MoveTowardsFLY(enemy, Spawnloc);
+			enemy.timePassed = 0.0f;
 		}
 		else {
-			enemy.enemyNext = ENEMY_IDLE;
-			//long condition to stop jittering
-			//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
-			if (enemy.loop_idle) {
-				MoveTowards(enemy, enemy.waypoint);
 
-				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-					enemy.loop_idle = false;
-				}
-			}
-			if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-				enemy.loop_idle = true;
-			}
-			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-				MoveTowards(enemy, enemy.starting_position);
+			if (enemy.timePassed >= 1.0f) {
+				enemy.timePassed = 0.0f;
+				enemy.isShooting = true;
+				enemy.enemyNext = ENEMY_ATTACK;
 			}
 		}
+
 		break;
 
 	case ENEMY_CHASE:
@@ -74,9 +92,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 
 
 		}
-		else {
-			enemy.enemyNext = ENEMY_IDLE;
-		}
+
 		break;
 
 	case ENEMY_ATTACK:
@@ -87,20 +103,19 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 
 
 			if(CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
-				Spawnloc.x = enemy.wing1.obj.pos.x + 75.f;
-				Spawnloc.y = enemy.wing1.obj.pos.y - 50.f;
+				Spawnloc.x = enemy.wing1.obj.pos.x;
+				Spawnloc.y = enemy.wing1.obj.pos.y;
 				SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
 
 			}
 			if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
-				Spawnloc.x = enemy.wing2.obj.pos.x - 75.f;
-				Spawnloc.y = enemy.wing2.obj.pos.y - 50.f;
+				Spawnloc.x = enemy.wing2.obj.pos.x;
+				Spawnloc.y = enemy.wing2.obj.pos.y;
 				SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
 			}
 		}
 
 		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.isShooting = false;
 			enemy.enemyNext = ENEMY_CHASE;
 		}
 		break;
