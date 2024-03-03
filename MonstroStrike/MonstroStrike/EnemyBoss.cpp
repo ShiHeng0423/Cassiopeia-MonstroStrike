@@ -10,6 +10,7 @@
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	AEVec2 Spawnloc;
 
 //health check
 	if (enemy.health <= 0)
@@ -29,7 +30,9 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.isFlying = false;
 	}
 
-
+	if (AEInputCheckCurr(AEVK_M)) {
+		enemy.isFlying = false;
+	}
 
 
 	switch (enemy.enemyCurrent)
@@ -79,15 +82,20 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	case ENEMY_ATTACK:
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.isShooting = true;
-			//if(CanFire(enemy)) {
-			//	SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
-			//}
-			if(CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {;
-				SpawnBullet(enemy.wing1.obj.pos, player.obj.pos, enemy.bullets);
+
+
+
+
+			if(CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
+				Spawnloc.x = enemy.wing1.obj.pos.x + 75.f;
+				Spawnloc.y = enemy.wing1.obj.pos.y - 50.f;
+				SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
 
 			}
 			if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
-				SpawnBullet(enemy.wing2.obj.pos, player.obj.pos, enemy.bullets);
+				Spawnloc.x = enemy.wing2.obj.pos.x - 75.f;
+				Spawnloc.y = enemy.wing2.obj.pos.y - 50.f;
+				SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
 			}
 		}
 

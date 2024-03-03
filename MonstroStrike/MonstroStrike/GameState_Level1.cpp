@@ -349,11 +349,13 @@ void Level1_Initialize()
 	pauseMenuBackground.scale.y = 500.f;
 	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
 #pragma endregion PauseMenu
+
+#pragma region Enemy
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({70.f,70.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({200.f,200.f}, {-500.f,-100.f}, ENEMY_IDLE, vecEnemy[1]);
 	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({ 70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
-
+#pragma endregion Enemy
 	ParticleInitialize();
 }
 
@@ -774,8 +776,34 @@ void Level1_Draw()
 
 	for (Enemy& enemy : vecEnemy) {
 		if (enemy.isAlive) {
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
+				if (enemy.isShooting){ 
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f); 
+				}
+				else {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+
+				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
+				if (enemy.isShooting) {
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+				}
+				else {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
 			if (enemy.isShooting) {
-				//AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);//this line makes enemy go red when shooting
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxTextureSet(enemy.angrytex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -784,29 +812,18 @@ void Level1_Draw()
 			}
 			else {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
 				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
 
-				if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-					AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
-					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-				}
-				if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-					AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-					AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
-					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-				}
 			}
 		}
 	}
+
+
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     if (player->isAttacking)

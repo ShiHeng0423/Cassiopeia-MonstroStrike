@@ -28,11 +28,11 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 	case ENEMY_PASSIVE:
 		break;
 	case ENEMY_BOSS1:
-		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/SubaDuck.png");
-		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/BlueCircle.png");
-		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/RedCircle.png");
+		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
+		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
+		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
+		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_left.png");
 
-		enemy.angrytex = AEGfxTextureLoad("Assets/SubaDuck.png");
 		break;
 	case ENEMY_BOSS2:
 		break;
@@ -153,7 +153,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 
 		//wing1
 		enemy.wing1.isAlive = true;
-		enemy.wing1.Offset = 100.f;
+		enemy.wing1.Offset = 0.f;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x, scale.y); //set scale of the image
 		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
@@ -166,7 +166,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 
 		//wing2
 		enemy.wing2.isAlive = true;
-		enemy.wing2.Offset = -100.f;
+		enemy.wing2.Offset = 0.f;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
 		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x, scale.y); //set scale of the image
 		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
