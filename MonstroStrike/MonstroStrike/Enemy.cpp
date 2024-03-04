@@ -29,14 +29,14 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 		break;
 	case ENEMY_BOSS1:
 
-		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-		enemy.angrytex = AEGfxTextureLoad("Assets/border.png");
+		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
+		//enemy.angrytex = AEGfxTextureLoad("Assets/border.png");
 		//enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
 		//enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
 
 
-		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
-		//enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
+		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
+		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
 		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
 		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_left.png");
 
@@ -151,7 +151,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.isFlying = true;
 		enemy.speed = 80.f;
 		enemy.lineOfSight = 1000.f;
-		enemy.shootingRange = 250.f;
+		enemy.shootingRange = 500.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;

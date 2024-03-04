@@ -6,11 +6,9 @@
 #include <iostream>
 
 
-
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-
 	AEVec2 Spawnloc;
 
 //health check
@@ -49,16 +47,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 			enemy.enemyNext = ENEMY_TRANSITION;
 
 		}
-		//else {
-		//	enemy.enemyNext = ENEMY_IDLE;
-
-		//	//if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-		//	//	MoveTowards(enemy, enemy.starting_position);
-		//	//}
-		//}
 		break;
-
-
 	case ENEMY_TRANSITION:
 		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 		enemy.wing1.isAlive = true;
@@ -66,6 +55,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.isFlying = true;
 		Spawnloc = enemy.starting_position;
 		if (enemy.obj.pos.y <= Spawnloc.y) {
+			enemy.speed =  120.f;
 			MoveTowardsFLY(enemy, Spawnloc);
 			enemy.timePassed = 0.0f;
 		}
@@ -74,53 +64,70 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 			if (enemy.timePassed >= 1.0f) {
 				enemy.timePassed = 0.0f;
 				enemy.isShooting = true;
+				enemy.speed = 80.f;
 				enemy.enemyNext = ENEMY_ATTACK;
 			}
 		}
-
 		break;
 
-	case ENEMY_CHASE:
+	//case ENEMY_CHASE:
 
-		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_ATTACK;
-		}
-		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
-			MoveTowards(enemy, player.obj.pos);
+	//	if (distanceFromPlayer <= enemy.shootingRange) {
+	//		enemy.enemyNext = ENEMY_ATTACK;
+	//	}
+	//	else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
+	//		enemy.enemyNext = ENEMY_CHASE;
+	//		MoveTowards(enemy, player.obj.pos);
 
 
 
-		}
+	//	}
 
-		break;
+	//	break;
 
 	case ENEMY_ATTACK:
-		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.isShooting = true;
+		if (enemy.wing1.isAlive && enemy.wing2.isAlive) {
 
+			static int loopCounter = 0;	//each wing to shoot 20 bullets, then swap wing
 
-
-
-			if(CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
-				Spawnloc.x = enemy.wing1.obj.pos.x;
-				Spawnloc.y = enemy.wing1.obj.pos.y;
-				SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
-
+			if (loopCounter < 20) {
+				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
+					Spawnloc.x = enemy.wing1.obj.pos.x;
+					Spawnloc.y = enemy.wing1.obj.pos.y;
+					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					loopCounter++;
+				}
 			}
-			if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
-				Spawnloc.x = enemy.wing2.obj.pos.x;
-				Spawnloc.y = enemy.wing2.obj.pos.y;
-				SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+			else {
+				if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
+					Spawnloc.x = enemy.wing2.obj.pos.x;
+					Spawnloc.y = enemy.wing2.obj.pos.y;
+					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					loopCounter++;
+				}
+			}
+
+			if (loopCounter == 40) {
+				loopCounter = 0;
 			}
 		}
 
-		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
+		else {
+			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
+			if (enemy.timePassed >= 0.5f) {
+				enemy.timePassed = 0.0f;
+				if (enemy.onFloor) {
+					Jump(enemy, 500.f);
+				}
+			}
+			if (!enemy.onFloor) {
+				MoveTowards(enemy, player.obj.pos);
+			}
 		}
+
+
 		break;
-	default:
-		break;
+
 	}
 
 
