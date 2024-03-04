@@ -50,7 +50,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		GSM_Update();
 		fpLoad();
 		fpInitialize();
-		Inventory::Load_Inventory();
 
 		// Game Loop
 		while (current == next)

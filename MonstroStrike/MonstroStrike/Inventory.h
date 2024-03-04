@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "AEEngine.h"
+#include "Player.h"
 #include "Utils.h"
 #include "rapidjson/document.h"
 // ---------------------------------------------------------------------------
@@ -52,8 +53,9 @@ struct ButtonGearUI
 
 namespace Inventory
 {
-
-
+	extern std::vector< Item> Player_Inventory;
+	extern std::vector<Item> allItems; //list of all items in game
+	extern ButtonGearUI equipmentDisplay[5];
 
 	enum Item_Type
 	{
@@ -80,7 +82,7 @@ namespace Inventory
 
 
 
-	extern std::vector<Item> Player_Inventory;
+	//extern std::vector<Item> Player_Inventory;
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item> inventory, const std::string& filepath);
@@ -88,11 +90,11 @@ namespace Inventory
 	void Load_Inventory();
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 	
-
+	Item getItemById(int id);
 
 	void Item_Pickup(Item& item);
 	void Item_Drop();
-	void Item_Equip(Item& item);
+	void Equip(int index, ButtonGearUI item, Player& player);
 
 
 	void SaveInventory();

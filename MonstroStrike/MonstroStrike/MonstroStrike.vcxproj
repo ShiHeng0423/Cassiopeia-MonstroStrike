@@ -109,6 +109,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
+    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameState_GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
@@ -141,6 +142,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
     <ClInclude Include="GameState_Mainmenu.h" />
+    <ClInclude Include="ImageManager.h" />
     <ClInclude Include="MapPlatformGenerate.h" />
     <ClInclude Include="NonPlayableCharacters.h" />
     <ClInclude Include="ParticleSystem.h" />
@@ -198,7 +200,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <None Include="..\Assets\GameMap.csv" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.json" />
+    <None Include="..\Assets\player_inventory.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

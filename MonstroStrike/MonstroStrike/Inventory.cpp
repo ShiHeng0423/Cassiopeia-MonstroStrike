@@ -35,6 +35,8 @@ namespace Inventory
 {
 	//Global Variable
 	std::vector< Item> Player_Inventory;
+	std::vector<Item> allItems; //list of all items in game
+	ButtonGearUI equipmentDisplay[5];
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -180,8 +182,7 @@ namespace Inventory
 
 	void Load_Inventory()
 	{
-		Player_Inventory = ReadJsonFile("Assets/test.json");
-		//WriteJsonFile(Player_Inventory, "Assets/test.json");
+		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
 		
 	}
 
@@ -195,6 +196,19 @@ namespace Inventory
 		}
 	}
 
+
+	// Function to get an item by its ID
+	Item getItemById(int id) {
+		// Iterate through all items to find the one with the matching ID
+		for (const Item& item : allItems) {
+			if (item.ID == id) {
+				return item;
+			}
+		}
+		// Return a default item if the ID is not found
+		return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,1, true, 1,1};
+	}
+
 	void Item_Pickup(Item& item)
 	{
 	}
@@ -203,8 +217,47 @@ namespace Inventory
 	{
 	}
 
-	void Item_Equip(Item& item)
+	void Equip(int index, ButtonGearUI item, Player& player)
 	{
+		//ButtonGearUI has properties like img, isWeapon, etc.
+		//equipmentDisplay is an array or vector representing equipped items
+
+		// Check if the item is available in the player's inventory
+		if (index >= 0 && index < 25)
+		{
+			// Equip the item if it's available
+			equipmentDisplay[index].img.pTex = item.img.pTex;
+
+			// Remove the item from the inventory (assuming it's consumed when equipped)
+			// @TODO implement more sophisticated logic here
+			if (Player_Inventory[index].quantity > 0)
+			{
+				Player_Inventory[index].quantity--;
+
+				// Perform actions based on the type of item equipped
+				if (item.Item.item_type == food || item.Item.item_type == potion)
+				{
+					// For non-weapon items
+					// Adjust player attributes or perform other actions
+					// Example: Increase player's health if certain conditions are met
+					std::cout << "Consumed " << item.Item.name << std::endl;
+
+				}
+				else
+				{
+					// For weapon items
+					// Perform actions specific to weapon equipment
+					// Example: Apply a burning effect to the player
+					std::cout << "Weapon\n";
+				}
+			}
+		}
+		else
+		{
+			// Handle invalid index (out of range)
+			// Example: Display an error message or log a warning
+			std::cerr << "Error: Invalid inventory index\n";
+		}
 	}
 
 	//temporary code section
@@ -229,6 +282,6 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(Player_Inventory, "Assets/test.json");
+		WriteJsonFile(Player_Inventory, "Assets/player_inventory.json");
 	}
 }
