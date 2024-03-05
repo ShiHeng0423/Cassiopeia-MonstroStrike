@@ -111,6 +111,9 @@ namespace
 	AEGfxTexture* Gear5;
 
 	//Button inventoryBackground;
+
+	AEVec2 playerBoundaryMin;
+	AEVec2 playerBoundaryMax;
 }
 
 AEGfxTexture* bulletTex = nullptr;
@@ -182,7 +185,7 @@ void Level1_Load()
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
 
-	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0.f,0.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0.f,-0.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -362,6 +365,12 @@ void Level1_Initialize()
 	ParticleInitialize();	//Initialize NPCs
 	InitializeNPC();
 	cam = new Camera(player->obj.pos);
+
+
+
+	AEVec2Set(&playerBoundaryMin, player->obj.pos.x - player->obj.img.scale.x * 0.5f, player->obj.pos.y - player->obj.img.scale.y * 0.5f);
+	AEVec2Set(&playerBoundaryMax, player->obj.pos.x + player->obj.img.scale.x * 0.5f, player->obj.pos.y + player->obj.img.scale.y * 0.5f);
+
 }
 
 void Level1_Update()
@@ -495,63 +504,84 @@ void Level1_Update()
 
 #pragma region GridSystem
 
-	int playerIndexX = (int)(player->obj.pos.x / grids2D[0][0].size.x) + (int)((AEGfxGetWindowWidth() / grids2D[0][0].size.x) / 2);
-	int playerIndexY = (int)(player->obj.pos.y / grids2D[0][0].size.y) + (int)((AEGfxGetWindowWidth() / grids2D[0][0].size.x) / 2);
+	AEVec2Set(&playerBoundaryMin, player->obj.pos.x - player->obj.img.scale.x * 0.5f, player->obj.pos.y - player->obj.img.scale.y * 0.5f);
+	AEVec2Set(&playerBoundaryMax, player->obj.pos.x + player->obj.img.scale.x * 0.5f, player->obj.pos.y + player->obj.img.scale.y * 0.5f);
 
-	playerIndexX -= 1;
-	if (AABBvsAABB(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND) {
-		player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox);
-		ResolveVerticalCollision(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-			&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+	int playerGridMinX = (playerBoundaryMin.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
+	int playerGridMinY = (AEGfxGetWindowHeight() / 2.f - playerBoundaryMax.y) / grids2D[0][0].size.x;
+	int playerGridMaxX = (playerBoundaryMax.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
+	int playerGridMaxY = (AEGfxGetWindowHeight() / 2.f - playerBoundaryMin.y) / grids2D[0][0].size.x;
+
+	for (s16 i = playerGridMinY; i <= playerGridMaxY; i++)
+	{
+		for (s16 j = playerGridMinX; j <= playerGridMaxX; j++)
+		{
+			if (grids2D[i][j].typeOfGrid == NORMAL_GROUND)
+			{
+				if (i == playerGridMinY && player->velocity.y > 0.f) // top
+				{
+					player->obj.pos.y = grids2D[i + 1][j].position.y - grids2D[0][0].size.x * 0.5f;
+					player->velocity.y = 0.f;
+					player->onFloor = true;
+					playerGridMaxY += 1;
+					break;
+				}
+				else if (i == playerGridMaxY && player->velocity.y < 0.f) //bot
+				{
+					player->obj.pos.y = grids2D[i - 1][j].position.y + grids2D[0][0].size.x * 0.5f;
+					player->velocity.y = 0.f;
+					playerGridMaxY -= 1;
+					break;
+				}
+				if (j == playerGridMinX && player->velocity.x < 0.f) // left
+				{
+					player->obj.pos.x = grids2D[i][j + 1].position.x + grids2D[0][0].size.x * 0.5f;
+					player->velocity.x = 0.f;
+					playerGridMaxX += 1;
+					break;
+				}
+				else if (j == playerGridMaxX && player->velocity.x > 0.f) //right
+				{
+					player->obj.pos.x = grids2D[i][j - 1].position.x - grids2D[0][0].size.x * 0.5f;
+					player->velocity.x = 0.f;
+					playerGridMaxX -= 1;
+					break;
+				}
+			}
+		}
 	}
+		//std::cout << "\nNew system" << std::endl;
+	//int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (grids2D[0][0].size.x));
 
-	playerIndexX += 1;
-	if (AABBvsAABB(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND) {
-		player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox);
-		ResolveVerticalCollision(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-			&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-	}
-
-	playerIndexX += 1;
-	if (AABBvsAABB(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND) {
-		player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox);
-		ResolveVerticalCollision(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-			&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-	}
-
-	playerIndexX += 1;
-	if (AABBvsAABB(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND) {
-		player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox);
-		ResolveVerticalCollision(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-			&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-	}
-
-	////Check horizontal box (Left arm -> Right arm)
-	//playerIndexX -= 2;
-	//if (AABBvsAABB(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
+	//for (int i = 0; i < (int)(player->obj.img.scale.x * 2 / grids2D[0][0].size.x); i++)
 	//{
-	//	player->collisionNormal = AABBNormalize(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox);
-	//	ResolveHorizontalCollision(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-	//		&player->velocity);
+	//	int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (grids2D[0][0].size.x));
+	//	for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / grids2D[0][0].size.x); j++)
+	//	{
+	//		if (grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
+	//		{
+	//			if (AABBvsAABB(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox)) {
+	//				player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox);
+	//				ResolveVerticalCollision(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+	//					&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+
+	//				std::cout << playerIndexY << "," << playerIndexX << std::endl;
+	//			}
+
+	//			if (AABBvsAABB(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox))
+	//			{
+	//				player->collisionNormal = AABBNormalize(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox);
+	//				ResolveHorizontalCollision(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+	//					&player->velocity);
+
+	//				std::cout << playerIndexY << "," << playerIndexX << std::endl;
+	//			}
+	//		}
+	//		playerIndexX += 1;
+	//	}
+	//	playerIndexY += 1;
 	//}
-
-	//playerIndexX += 1;
-	//if (AABBvsAABB(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
-	//{
-	//	player->collisionNormal = AABBNormalize(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox);
-	//	ResolveHorizontalCollision(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-	//		&player->velocity);
-	//}
-
-	//playerIndexX += 1;
-	//if (AABBvsAABB(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox) && grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
-	//{
-	//	player->collisionNormal = AABBNormalize(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox);
-	//	ResolveHorizontalCollision(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-	//		&player->velocity);
-	//}
-
-
+	
 	//For printing the grids every frame
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
@@ -560,33 +590,6 @@ void Level1_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
-
-				//Collision check
-				//Resolve + Vertical Collision only for entity x (wall or ground)
-				//Check vertical box (Head + Feet) 
-				//if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-				//	player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-				//	ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-				//		&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-
-				//	std::cout << rows << "," << cols << std::endl;
-				//	std::cout << playerIndexY << "," << playerIndexX - 1 << std::endl;
-				//	std::cout << playerIndexY << "," << playerIndexX << std::endl;
-				//	std::cout << playerIndexY << "," << playerIndexX + 1 << std::endl;
-				//}
-
-				//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-				{
-					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity);
-
-					std::cout << rows << "," << cols << std::endl;
-					std::cout << playerIndexY << "," << player->obj.pos.x / grids2D[0][0].size.x << std::endl;
-					std::cout << std::endl;
-				}
-
 				//(ENEMY AND BULLETS COLLISION CHECKING)
 				//is this efficient? 
 				for (Enemy& enemy : vecEnemy) {

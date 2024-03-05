@@ -106,8 +106,8 @@ void InitializeGrid(Grids2D& theGrids)
     AEMtx33Rot(&theGrids.rotation, 0);
 
     //Positioning the grid
-    theGrids.position.x = -AEGfxGetWindowWidth() * 0.5f + theGrids.size.x * (theGrids.colIndex - 0.5f);
-    theGrids.position.y = AEGfxGetWindowHeight() * 0.5f - theGrids.size.x * (theGrids.rowIndex - 0.5f);
+    theGrids.position.x = -AEGfxGetWindowWidth() * 0.5f + theGrids.size.x * (theGrids.colIndex + 0.5f);
+    theGrids.position.y = AEGfxGetWindowHeight() * 0.5f - theGrids.size.x * (theGrids.rowIndex + 0.5f);
 
     AEMtx33Trans(&theGrids.translation, theGrids.position.x, theGrids.position.y);
 
