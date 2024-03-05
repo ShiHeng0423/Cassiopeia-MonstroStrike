@@ -39,6 +39,7 @@ void MoveTowardsFLY(Enemy& enemy, AEVec2 target_position) {
 }
 
 
+
 bool CanFire(Enemy& enemy) {
 
 	if (enemy.timeSinceLastFire >= 1.0f / enemy.fireRate) {
@@ -110,8 +111,8 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 	}
 }
 
-void Attack_Charge(Enemy& enemy, int target_position) {
-	enemy.speed = 200.f;
+void Attack_Charge(Enemy& enemy, int target_position, f32 speed) {
+	enemy.speed = speed;
 	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
 	if (target_position == ENEMY_RIGHT) {
 		enemy.velocity.x *= 1.0f;
@@ -122,6 +123,19 @@ void Attack_Charge(Enemy& enemy, int target_position) {
 	enemy.obj.pos.x += enemy.velocity.x;
 }
 
+void Attack_Charge_w_Reverse(Enemy& enemy, int target_position, f32 speed, f32 reverse_offset) {
+	reverse_offset *= (enemy.target_position == ENEMY_LEFT) ? 1.0f : -1.0f;
+
+	enemy.speed = speed;
+	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
+	if (target_position == ENEMY_RIGHT) {
+		enemy.velocity.x *= 1.0f;
+	}
+	if (target_position == ENEMY_LEFT) {
+		enemy.velocity.x *= -1.0f;
+	}
+	enemy.obj.pos.x += enemy.velocity.x;
+}
 
 bool areAligned(AEVec2 player_position, AEVec2 enemy_position) {
 	float tolerance = 10.f;

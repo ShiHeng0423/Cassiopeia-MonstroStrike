@@ -70,27 +70,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 		break;
 
-	//case ENEMY_CHASE:
-
-	//	if (distanceFromPlayer <= enemy.shootingRange) {
-	//		enemy.enemyNext = ENEMY_ATTACK;
-	//	}
-	//	else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-	//		enemy.enemyNext = ENEMY_CHASE;
-	//		MoveTowards(enemy, player.obj.pos);
-
-
-
-	//	}
-
-	//	break;
-
 	case ENEMY_ATTACK:
 		if (enemy.wing1.isAlive && enemy.wing2.isAlive) {
 
-			static int loopCounter = 0;	//each wing to shoot 20 bullets, then swap wing
+			static int loopCounter = 0;	//each wing to shoot n bullets, then swap wing
 
-			if (loopCounter < 20) {
+			if (loopCounter < 20) {	//20bullets
 				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
 					Spawnloc.x = enemy.wing1.obj.pos.x;
 					Spawnloc.y = enemy.wing1.obj.pos.y;
@@ -113,15 +98,58 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 
 		else {
+			static bool isCharging = false;
+
 			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
-			if (enemy.timePassed >= 0.5f) {
-				enemy.timePassed = 0.0f;
-				if (enemy.onFloor) {
-					Jump(enemy, 500.f);
+
+			//locking on which direction to dash
+			if (enemy.target_position == ENEMY_DEFAULT) {
+				if (enemy.obj.pos.x >= player.obj.pos.x) {
+					enemy.target_position = ENEMY_LEFT;
+				}
+				else {
+					enemy.target_position = ENEMY_RIGHT;
 				}
 			}
-			if (!enemy.onFloor) {
-				MoveTowards(enemy, player.obj.pos);
+
+			//check is dashing
+			if (isCharging) {
+				std::cout << "still dashing\n";
+				Attack_Charge(enemy, enemy.target_position, 400.f);
+				if (enemy.timePassed >= 0.5f) {
+					enemy.timePassed = 0.0f;
+					enemy.speed = 80.f;
+					enemy.target_position = ENEMY_DEFAULT;
+					isCharging = false;
+				}
+			}
+			else {
+				if (enemy.timePassed >= 2.f) {
+					enemy.timePassed = 0.0f;
+					if (enemy.onFloor) {
+						switch (rand() % 2) {	//randomize is seeded 
+						case 0:
+							std::cout << "Jump\n";
+							Jump(enemy, 500.f);
+							break;
+						case 1:
+							std::cout << "dash\n";
+							enemy.waypoint = { enemy.obj.pos.x, enemy.obj.pos.y };
+							//if (enemy.target_position == ENEMY_LEFT) {
+							//	offsetVal *= 1.f;
+							//}
+							//else {
+							//	offsetVal *= -1.f;
+							//}
+							Attack_Charge_w_Reverse(enemy, enemy.target_position, 400.f, 40.f);
+							isCharging = true;
+							break;
+						}
+					}
+				}
+				if (!enemy.onFloor) {
+					MoveTowards(enemy, player.obj.pos);
+				}
 			}
 		}
 
@@ -163,7 +191,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	}
 	
 	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;	//changing this to 0.25 will make the bullet glitch
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
 	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
