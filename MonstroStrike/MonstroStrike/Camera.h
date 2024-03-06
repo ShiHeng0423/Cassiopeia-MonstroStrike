@@ -8,7 +8,7 @@ public:
 	Camera(AEVec2);
 	~Camera();
 
-	void UpdatePos(Player);
+	void UpdatePos(Player, f32, f32, f32, f32);
 	void CameraShake();
 	void LookAhead(AEVec2);
 

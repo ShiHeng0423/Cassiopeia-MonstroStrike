@@ -118,6 +118,11 @@ namespace
 
 AEGfxTexture* bulletTex = nullptr;
 
+int playerGridMinX;
+int playerGridMinY;
+int playerGridMaxX;
+int playerGridMaxY;
+
 
 //temporary code section
 void Equip(int index, ButtonGearUI tmp)
@@ -185,7 +190,7 @@ void Level1_Load()
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
 
-	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0.f,-0.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0,-100 }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
@@ -229,6 +234,7 @@ void Level1_Load()
 
 	LoadNPC();
 	ParticleLoad();
+
 }
 
 void Level1_Initialize()
@@ -365,12 +371,6 @@ void Level1_Initialize()
 	ParticleInitialize();	//Initialize NPCs
 	InitializeNPC();
 	cam = new Camera(player->obj.pos);
-
-
-
-	AEVec2Set(&playerBoundaryMin, player->obj.pos.x - player->obj.img.scale.x * 0.5f, player->obj.pos.y - player->obj.img.scale.y * 0.5f);
-	AEVec2Set(&playerBoundaryMax, player->obj.pos.x + player->obj.img.scale.x * 0.5f, player->obj.pos.y + player->obj.img.scale.y * 0.5f);
-
 }
 
 void Level1_Update()
@@ -467,7 +467,6 @@ void Level1_Update()
 
 	if (currScene == MainScene && !inventory_open)
 		PlayerUpdate(*player);
-
 	if (AEInputCheckTriggered(AEVK_I))
 	{
 		inventory_open = !inventory_open;
@@ -496,38 +495,9 @@ void Level1_Update()
 
 #pragma endregion
 
-#pragma region GridSystem
-	int prevCollisionGridMinX = (player->prevcollisionBox.minimum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
-	int currCollisionGridMinX = (player->collisionBox.minimum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
-	int prevCollisionGridMinY = (AEGfxGetWindowHeight() / 2.f - player->prevcollisionBox.maximum.y) / grids2D[0][0].size.x;
-	int currCollisionGridMinY = (AEGfxGetWindowHeight() / 2.f - player->collisionBox.maximum.y) / grids2D[0][0].size.x;
-	int prevCollisionGridMaxX = (player->prevcollisionBox.maximum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
-	int currCollisionGridMaxX = (player->collisionBox.maximum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
-	int prevCollisionGridMaxY = (AEGfxGetWindowHeight() / 2.f - player->prevcollisionBox.minimum.y) / grids2D[0][0].size.x;
-	int currCollisionGridMaxY = (AEGfxGetWindowHeight() / 2.f - player->collisionBox.minimum.y) / grids2D[0][0].size.x;
-
-	int playerGridMinX = min(prevCollisionGridMinX, currCollisionGridMinX);
-	int playerGridMinY = min(prevCollisionGridMinY, currCollisionGridMinY);
-	int playerGridMaxX = max(prevCollisionGridMaxX, currCollisionGridMaxX);
-	int playerGridMaxY = max(prevCollisionGridMaxY, currCollisionGridMaxY);
-
-	for (s16 i = playerGridMinY; i <= playerGridMaxY; i++)
-	{
-		for (s16 j = playerGridMinX; j <= playerGridMaxX; j++)
-		{
-			if (grids2D[i][j].typeOfGrid == NORMAL_GROUND)
-			{
-				f32 collisionTime = 0;
-				AEVec2 velZero{ 0,0 };
-				if (DynamicCollision(grids2D[i][j].collisionBox, velZero,player->prevcollisionBox,player->velocity,player->collisionNormal,collisionTime))
-				{
-					//update player pos
-					//update collision box
-				}
-			}
-		}
-	}
 	
+
+#pragma region GridSystem
 	//For printing the grids every frame
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
@@ -536,6 +506,24 @@ void Level1_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
+
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+				}
+
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity);
+				}
+
 				//(ENEMY AND BULLETS COLLISION CHECKING)
 				//is this efficient? 
 				for (Enemy& enemy : vecEnemy) {
@@ -585,7 +573,7 @@ void Level1_Update()
 
 		//Hover collision with button && hold left mouse button
 
-
+		int snap_back = 0;
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
 			s32 testx = 0;
@@ -751,7 +739,7 @@ void Level1_Update()
 
 #pragma region CameraUpdate
 
-	cam->UpdatePos(*player);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][97].collisionBox.maximum.x, grids2D[49][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
 
@@ -848,6 +836,18 @@ void Level1_Draw()
 
 #pragma endregion
 
+	//AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
+	//for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+	//{
+	//	for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+	//	{
+	//		AEGfxSetTransform(grids2D[rows][cols].transformation.m);
+	//		if (cols >= playerGridMinX && cols <= playerGridMaxX && rows >= playerGridMinY && rows <= playerGridMaxY)
+	//			AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	//	}
+	//}
+
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 #pragma region Player_Render
@@ -857,6 +857,7 @@ void Level1_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
 	if (player->isAttacking)
 	{
 		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
@@ -1017,9 +1018,12 @@ void Level1_Draw()
 
 #pragma endregion
 
+
+
 #pragma region Center_Line_Render
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);

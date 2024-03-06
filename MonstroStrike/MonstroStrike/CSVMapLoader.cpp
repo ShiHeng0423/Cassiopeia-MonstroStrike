@@ -81,16 +81,16 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
 
 void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols)
 {
-    //std::cout << "In Printer: " << std::endl;
+    std::cout << "In Printer: " << std::endl;
 
-    //for (int i = 0; i < rows; i++)
-    //{
-    //    for (int j = 0; j < cols; j++)
-    //    {
-    //        std::cout << map[i][j].symbol << ' ';
-    //    }
-    //    std::cout << std::endl;
-    //}
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+            std::cout << map[i][j].symbol << ' ';
+        }
+        std::cout << std::endl;
+    }
 }
 
 //This is for printing the map

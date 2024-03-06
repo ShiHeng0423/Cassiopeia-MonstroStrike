@@ -86,6 +86,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 	player->burningEffect = false;
 	return player;
+
 }
 
 void PlayerUpdate(Player& player)
@@ -132,17 +133,17 @@ void PlayerUpdate(Player& player)
 	//else
 	//{
 		if (AEInputCheckCurr(AEVK_D)) {
-			player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+			player.velocity.x += player.obj.speed.x;
 			player.isFacingRight = true;
 		}
 		else if (AEInputCheckCurr(AEVK_A)) {
-			player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+			player.velocity.x -= player.obj.speed.x;
 			player.isFacingRight = false;
 		}
 	//}
 
 	// Apply velocity constraints
-	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
+	player.velocity.x = AEClamp(player.velocity.x, -400.f, 400.f);
 
 	// Update dash cooldown
 	//if (dashCooldown > 0.0f) {
@@ -154,7 +155,7 @@ void PlayerUpdate(Player& player)
 
 
 	// Calculate the desired location
-	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
+	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier *AEFrameRateControllerGetFrameTime() , 0.f};
 	AEVec2Add(&player.expectedLocation, &player.obj.pos, &desiredLocation);
 
 	//For friction
@@ -211,7 +212,7 @@ void PlayerUpdate(Player& player)
 	player.prevPos = player.obj.pos;
 	player.prevcollisionBox = player.collisionBox;
 	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
-	player.obj.pos.x += player.velocity.x;
+	player.obj.pos.x += player.velocity.x * (f32)AEFrameRateControllerGetFrameTime();
 
 	//Resetting main AABB box...
 	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.5f;

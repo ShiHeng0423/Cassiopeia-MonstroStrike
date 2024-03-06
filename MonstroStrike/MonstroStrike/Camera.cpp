@@ -24,7 +24,7 @@ Camera::Camera(AEVec2 player)
 	lookback_timer = 0.f;
 }
 
-void Camera::UpdatePos(Player player)
+void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gameMinHeight,f32 gameMaxHeight)
 {
 	s32 cursor_x = 0;
 	s32 cursor_y = 0;
@@ -102,6 +102,27 @@ void Camera::UpdatePos(Player player)
 		}
 		AEGfxSetCamPosition(this->world_coordinate.x, this->world_coordinate.y);
 	}
+
+	f32 tmpx,tmpy;
+	AEGfxGetCamPosition(&tmpx, &tmpy);
+	if (tmpx - AEGfxGetWindowWidth() * 0.5f < gameMinWidth)
+	{
+		tmpx = gameMinWidth + AEGfxGetWindowWidth() * 0.5f;
+	}
+	else if (tmpx + AEGfxGetWindowWidth() * 0.5f > gameMaxWidth)
+	{
+		tmpx = gameMaxWidth - AEGfxGetWindowWidth() * 0.5f;
+	}
+	if (tmpy + AEGfxGetWindowHeight() * 0.5f > gameMaxHeight)
+	{
+		tmpy = gameMaxHeight - AEGfxGetWindowHeight() * 0.5f;
+	}
+	else if (tmpy - AEGfxGetWindowHeight() * 0.5f < gameMinHeight)
+	{
+		tmpy = gameMinHeight + AEGfxGetWindowHeight() * 0.5f;
+	}
+
+	AEGfxSetCamPosition(tmpx, tmpy);
 }
 
 void Camera::LookAhead(AEVec2 Loc)

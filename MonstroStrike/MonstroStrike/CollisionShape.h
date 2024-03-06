@@ -27,6 +27,5 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
 void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity);
 
 
-bool DynamicCollision(AABB grid, AEVec2 vel1, AABB others, AEVec2 vel2, AEVec2& collisionNormal, f32 collisionTime);
-
-void ResolveCollision(AEVec2& position, AEVec2 collisionNormal);
+bool DynamicCollisionX(AABB grid, AEVec2 vel1, AABB others, AEVec2 vel2, AEVec2& collisionNormal, f32 collisionTime);
+bool DynamicCollisionY(AABB grid, AEVec2 vel1, AABB others, AEVec2 vel2, AEVec2& collisionNormal, f32 collisionTime);
