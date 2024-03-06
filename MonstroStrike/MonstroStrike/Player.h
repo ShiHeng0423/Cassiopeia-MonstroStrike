@@ -8,6 +8,7 @@
 
 struct Player {
 	Object obj;
+	AEVec2 prevPos;
 
 	bool isFacingRight;
 	bool onFloor; //Added to check entity on floor, hence can jump
@@ -26,6 +27,7 @@ struct Player {
 	f32 mass;
 	
 	//Collision boxes
+	AABB prevcollisionBox;
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;

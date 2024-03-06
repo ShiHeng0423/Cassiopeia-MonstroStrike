@@ -486,12 +486,6 @@ void Level1_Update()
 
 #pragma endregion
 
-#pragma region CameraUpdate
-
-	cam->UpdatePos(*player);
-
-#pragma endregion
-
 #pragma region EnemySystem
 
 	for (Enemy& enemy : vecEnemy) {
@@ -503,14 +497,19 @@ void Level1_Update()
 #pragma endregion
 
 #pragma region GridSystem
+	int prevCollisionGridMinX = (player->prevcollisionBox.minimum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
+	int currCollisionGridMinX = (player->collisionBox.minimum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
+	int prevCollisionGridMinY = (AEGfxGetWindowHeight() / 2.f - player->prevcollisionBox.maximum.y) / grids2D[0][0].size.x;
+	int currCollisionGridMinY = (AEGfxGetWindowHeight() / 2.f - player->collisionBox.maximum.y) / grids2D[0][0].size.x;
+	int prevCollisionGridMaxX = (player->prevcollisionBox.maximum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
+	int currCollisionGridMaxX = (player->collisionBox.maximum.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
+	int prevCollisionGridMaxY = (AEGfxGetWindowHeight() / 2.f - player->prevcollisionBox.minimum.y) / grids2D[0][0].size.x;
+	int currCollisionGridMaxY = (AEGfxGetWindowHeight() / 2.f - player->collisionBox.minimum.y) / grids2D[0][0].size.x;
 
-	AEVec2Set(&playerBoundaryMin, player->obj.pos.x - player->obj.img.scale.x * 0.5f, player->obj.pos.y - player->obj.img.scale.y * 0.5f);
-	AEVec2Set(&playerBoundaryMax, player->obj.pos.x + player->obj.img.scale.x * 0.5f, player->obj.pos.y + player->obj.img.scale.y * 0.5f);
-
-	int playerGridMinX = (playerBoundaryMin.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
-	int playerGridMinY = (AEGfxGetWindowHeight() / 2.f - playerBoundaryMax.y) / grids2D[0][0].size.x;
-	int playerGridMaxX = (playerBoundaryMax.x + AEGfxGetWindowWidth() / 2.f) / grids2D[0][0].size.x;
-	int playerGridMaxY = (AEGfxGetWindowHeight() / 2.f - playerBoundaryMin.y) / grids2D[0][0].size.x;
+	int playerGridMinX = min(prevCollisionGridMinX, currCollisionGridMinX);
+	int playerGridMinY = min(prevCollisionGridMinY, currCollisionGridMinY);
+	int playerGridMaxX = max(prevCollisionGridMaxX, currCollisionGridMaxX);
+	int playerGridMaxY = max(prevCollisionGridMaxY, currCollisionGridMaxY);
 
 	for (s16 i = playerGridMinY; i <= playerGridMaxY; i++)
 	{
@@ -518,69 +517,16 @@ void Level1_Update()
 		{
 			if (grids2D[i][j].typeOfGrid == NORMAL_GROUND)
 			{
-				if (i == playerGridMinY && player->velocity.y > 0.f) // top
+				f32 collisionTime = 0;
+				AEVec2 velZero{ 0,0 };
+				if (DynamicCollision(grids2D[i][j].collisionBox, velZero,player->prevcollisionBox,player->velocity,player->collisionNormal,collisionTime))
 				{
-					player->obj.pos.y = grids2D[i + 1][j].position.y - grids2D[0][0].size.x * 0.5f;
-					player->velocity.y = 0.f;
-					player->onFloor = true;
-					playerGridMaxY += 1;
-					break;
-				}
-				else if (i == playerGridMaxY && player->velocity.y < 0.f) //bot
-				{
-					player->obj.pos.y = grids2D[i - 1][j].position.y + grids2D[0][0].size.x * 0.5f;
-					player->velocity.y = 0.f;
-					playerGridMaxY -= 1;
-					break;
-				}
-				if (j == playerGridMinX && player->velocity.x < 0.f) // left
-				{
-					player->obj.pos.x = grids2D[i][j + 1].position.x + grids2D[0][0].size.x * 0.5f;
-					player->velocity.x = 0.f;
-					playerGridMaxX += 1;
-					break;
-				}
-				else if (j == playerGridMaxX && player->velocity.x > 0.f) //right
-				{
-					player->obj.pos.x = grids2D[i][j - 1].position.x - grids2D[0][0].size.x * 0.5f;
-					player->velocity.x = 0.f;
-					playerGridMaxX -= 1;
-					break;
+					//update player pos
+					//update collision box
 				}
 			}
 		}
 	}
-		//std::cout << "\nNew system" << std::endl;
-	//int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (grids2D[0][0].size.x));
-
-	//for (int i = 0; i < (int)(player->obj.img.scale.x * 2 / grids2D[0][0].size.x); i++)
-	//{
-	//	int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (grids2D[0][0].size.x));
-	//	for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / grids2D[0][0].size.x); j++)
-	//	{
-	//		if (grids2D[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
-	//		{
-	//			if (AABBvsAABB(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox)) {
-	//				player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox);
-	//				ResolveVerticalCollision(player->boxHeadFeet, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-	//					&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-
-	//				std::cout << playerIndexY << "," << playerIndexX << std::endl;
-	//			}
-
-	//			if (AABBvsAABB(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox))
-	//			{
-	//				player->collisionNormal = AABBNormalize(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox);
-	//				ResolveHorizontalCollision(player->boxArms, grids2D[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-	//					&player->velocity);
-
-	//				std::cout << playerIndexY << "," << playerIndexX << std::endl;
-	//			}
-	//		}
-	//		playerIndexX += 1;
-	//	}
-	//	playerIndexY += 1;
-	//}
 	
 	//For printing the grids every frame
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
@@ -800,6 +746,12 @@ void Level1_Update()
 		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, TEST);
 	}
 	ParticleUpdate();
+
+#pragma endregion
+
+#pragma region CameraUpdate
+
+	cam->UpdatePos(*player);
 
 #pragma endregion
 

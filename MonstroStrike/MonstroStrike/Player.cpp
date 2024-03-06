@@ -207,6 +207,9 @@ void PlayerUpdate(Player& player)
 	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
+
+	player.prevPos = player.obj.pos;
+	player.prevcollisionBox = player.collisionBox;
 	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 	player.obj.pos.x += player.velocity.x;
 

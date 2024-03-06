@@ -25,3 +25,8 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
 
 //Entity box head, second item / grid's collision box, collisionNormal, entity position, entity velocity, bool CanJump from entity
 void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity);
+
+
+bool DynamicCollision(AABB grid, AEVec2 vel1, AABB others, AEVec2 vel2, AEVec2& collisionNormal, f32 collisionTime);
+
+void ResolveCollision(AEVec2& position, AEVec2 collisionNormal);

@@ -87,3 +87,156 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
     }
 
 }
+
+bool DynamicCollision(AABB grid, AEVec2 vel1, AABB others, AEVec2 vel2, AEVec2& collisionNormal, f32 collisionTime)
+{
+	AEVec2Set(&collisionNormal, 1, 0);
+	AEVec2Set(&collisionNormal, 0, 1);
+	AEVec2Set(&collisionNormal, 0, -1);
+	if (others.minimum.x > grid.maximum.x || grid.maximum.y < others.minimum.y ||
+		grid.minimum.x > others.maximum.x || others.maximum.y < grid.minimum.y)
+	{
+		// assign tFirst to 0 and tLast to the frame time
+		float tFirst = 0, tLast = (float)(AEFrameRateControllerGetFrameTime());
+
+		//calculate the relative velocity based on the two game object velocity
+		AEVec2 relVelocity;
+		AEVec2Set(&relVelocity, vel2.x - vel1.x, vel2.y - vel1.y);
+
+		//checking on one dimension(x - axis).
+
+		//others move leftwards while grid remains static
+		if (relVelocity.x < 0)
+		{
+			//case 1 (others on left grid on right - no collision)
+			if (grid.minimum.x > others.maximum.x)
+				return 0;
+			//case 4 (others on right grid on left - collision)
+			if (grid.maximum.x < others.minimum.x)
+			{
+				float tFirstX = (grid.maximum.x - others.minimum.x) / relVelocity.x;
+				//get the maximumimum tFirst value for first time of collision
+				if (tFirst < tFirstX)
+				{
+					tFirst = tFirstX;
+					AEVec2Set(&collisionNormal, -1, 0);
+				}
+			}
+			if (grid.minimum.x < others.maximum.x)
+			{
+				float tLastX = (grid.minimum.x - others.maximum.x) / relVelocity.x;
+				//get the minimumimum tLast value for the time of exiting collision
+				tLast = min(tLast, tLastX);
+			}
+		}
+		//others move rightwards while grid remains static
+		else if (relVelocity.x > 0)
+		{
+			//case2 (others on left grid on right - collision)
+			if (grid.minimum.x > others.maximum.x)
+			{
+				float tFirstX = (grid.minimum.x - others.maximum.x) / relVelocity.x;
+				//get the maximumimum tFirst value for first time of collision
+				if (tFirst < tFirstX)
+				{
+					tFirst = tFirstX;
+					AEVec2Set(&collisionNormal, 1, 0);
+				}
+			}
+			if (grid.maximum.x > others.minimum.x)
+			{
+				float tLastX = (grid.maximum.x - others.minimum.x) / relVelocity.x;
+				//get the minimumimum tLast value for the time of exiting collision
+				tLast = min(tLast, tLastX);
+			}
+			//case 3 (others on right grid on left - no collision)
+			if (grid.maximum.x < others.minimum.x)
+				return 0;
+		}
+		else
+		{
+			//case 5 (others is moving parallel to the y-axis)
+			if (grid.maximum.x < others.minimum.x)
+				return 0;
+			else if (grid.minimum.x > others.maximum.x)
+				return 0;
+		}
+		//case 6 (no intersection when tFirst is more than tLast)
+		if (tFirst > tLast)
+		{
+			//no collision
+			AEVec2Set(&collisionNormal, 0, 0);
+			return 0;
+		}
+
+		//checking on one dimension(y - axis).
+
+		//others move downwards while grid remains static
+		if (relVelocity.y < 0)
+		{
+			//case 1 (others on below grid on above - no collision)
+			if (grid.minimum.y > others.maximum.y)
+				return 0;
+			//case 4 (others on above grid on below - collision)
+			if (grid.maximum.y < others.minimum.y)
+			{
+				float tFirstY = (grid.maximum.y - others.minimum.y) / relVelocity.y;
+				//get the maximumimum tFirst value for first time of collision
+				if (tFirst < tFirstY)
+				{
+					tFirst = tFirstY;
+					AEVec2Set(&collisionNormal, 0, -1);
+				}
+			}
+			if (grid.minimum.y < others.maximum.y)
+			{
+				float tLastY = (grid.minimum.y - others.maximum.y) / relVelocity.y;
+				//get the minimumimum tLast value for the time of exiting collision
+				tLast = min(tLast, tLastY);
+			}
+		}
+
+		//others move upwards while grid remains static
+		else if (relVelocity.y > 0)
+		{
+			//case2 (others on below grid on above - collision)
+			if (grid.minimum.y > others.maximum.y)
+			{
+				float tFirstY = (grid.minimum.y - others.maximum.y) / relVelocity.y;
+				//get the maximumimum tFirst value for first time of collision
+				if (tFirst < tFirstY)
+				{
+					tFirst = tFirstY;
+					AEVec2Set(&collisionNormal, 0, 1);
+				}
+			}
+			if (grid.maximum.y > others.minimum.y)
+			{
+				float tLastY = (grid.maximum.y - others.minimum.y) / relVelocity.y;
+				//get the minimumimum tLast value for the time of exiting collision
+				tLast = min(tLast, tLastY);
+			}
+			//case 3 (others on above grid on below - no collision)
+			if (grid.maximum.y < others.minimum.y)
+				return 0;
+		}
+		else
+		{
+			//case 5 (others is moving parallel to the x-axis)
+			if (grid.maximum.y < others.minimum.y)
+				return 0;
+			else if (grid.minimum.y > others.maximum.y)
+				return 0;
+		}
+
+		//case 6 (no intersection when tFirst is more than tLast)
+		if (tFirst > tLast)
+		{
+			AEVec2Set(&collisionNormal, 0, 0);
+			return 0;
+		}
+		//assign the calculated first time of collision to firstTimeOfCollision to return the value
+		collisionTime = tFirst;
+	}
+	return 1;
+}
