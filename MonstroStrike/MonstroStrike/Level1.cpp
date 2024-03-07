@@ -246,7 +246,7 @@ void Level1_Initialize()
 
 void Level1_Update()
 {
-	std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	/*std::cout << AEFrameRateControllerGetFrameRate() << "\n";*/
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 
@@ -260,7 +260,7 @@ void Level1_Update()
 	{
 		for (Enemy& enemy : vecEnemy) {
 			if (enemy.isAlive) {
-				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
+				CheckWeaponCollision(player->equippedWeapon, enemy, *player);
 			}
 		}
 
@@ -608,10 +608,10 @@ void Level1_Draw()
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     if (player->isAttacking)
 	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
-		                                                player->equippedWeapon.position.y, 0.f,
-		                                                player->equippedWeapon.Scale.x,
-		                                                player->equippedWeapon.Scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon->position.x,
+		                                                player->equippedWeapon->position.y, 0.f,
+		                                                player->equippedWeapon->Scale.x,
+		                                                player->equippedWeapon->Scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 	}
 
