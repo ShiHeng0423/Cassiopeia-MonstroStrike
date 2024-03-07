@@ -26,15 +26,16 @@
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/ostreamwrapper.h"
 #include "rapidjson/writer.h"
+#include <fstream>
 
 using namespace rapidjson;
 
-
+std::vector<Item> Player_Inventory;
 
 namespace Inventory
 {
 	//Global Variable
-	std::vector< Item> Player_Inventory;
+	
 	std::vector<Item> allItems; //list of all items in game
 	ButtonGearUI equipmentDisplay[5];
 
@@ -72,7 +73,7 @@ namespace Inventory
 
 			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
-				std::cout << loc << std::endl;
+				//std::cout << loc << std::endl;
 
 				const Value& ind_item = items[loc];
 
@@ -86,17 +87,18 @@ namespace Inventory
 				newItem.rarity = ind_item["rarity"].GetInt();
 				newItem.quantity = ind_item["quantity"].GetInt();
 				newItem.stackable = ind_item["stackable"].GetBool();
+				newItem.health = ind_item["health"].GetInt();
 				newItem.attack = ind_item["attack"].GetInt();
 				newItem.defence = ind_item["defence"].GetInt();
 
 
 				// std::cout << newItem.UID << std::endl;
-				 std::cout << newItem.ID << std::endl;
-				// std::cout << newItem.name << std::endl;
+				 std::cout << "ID: " << newItem.ID << std::endl;
+				 std::cout << newItem.name << std::endl;
 				// std::cout << newItem.description << std::endl;
 				// std::cout << newItem.item_type << std::endl;
 				// std::cout << "enum" << newItem.rarity << std::endl;
-				// std::cout << newItem.quantity << std::endl;
+				 std::cout << "Quantity: "<<newItem.quantity << std::endl;
 				// std::cout << newItem.stackable << std::endl;
 				// std::cout << newItem.attack << std::endl;
 				// std::cout << newItem.defence << std::endl;
@@ -115,11 +117,13 @@ namespace Inventory
 	}
 
 
-	void WriteJsonFile(const std::vector<Item> inventory, const std::string& filepath)
+	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath)
 	{
 		std::cout << "start writing JSON" << std::endl;
 
 		 Document json;
+		// d.Parse(rapidjson::json);
+		
 		 json.SetObject();
 
 		Value items(kArrayType);
@@ -142,6 +146,7 @@ namespace Inventory
 			ind_item.AddMember("rarity", item.rarity, json.GetAllocator());
 			ind_item.AddMember("quantity", item.quantity, json.GetAllocator());
 			ind_item.AddMember("stackable", item.stackable, json.GetAllocator());
+			ind_item.AddMember("health", item.health, json.GetAllocator());
 			ind_item.AddMember("attack", item.attack, json.GetAllocator());
 			ind_item.AddMember("defence", item.defence, json.GetAllocator());
 
@@ -150,9 +155,10 @@ namespace Inventory
 			std::cout << item.name << std::endl;
 			std::cout << item.description << std::endl;
 			std::cout << item.item_type << std::endl;
-			std::cout << "enum" << item.rarity << std::endl;
+			std::cout << "enum " << item.rarity << std::endl;
 			std::cout << item.quantity << std::endl;
 			std::cout << item.stackable << std::endl;
+			std::cout << item.health << std::endl;
 			std::cout << item.attack << std::endl;
 			std::cout << item.defence << std::endl;
 
@@ -161,10 +167,12 @@ namespace Inventory
 
 		json.AddMember("items", items, json.GetAllocator());
 
+
+
 		StringBuffer buffer;
 		Writer<StringBuffer> writer(buffer);
 		json.Accept(writer);
-
+		
 		std::ofstream ofs(filepath);
 		if (ofs.is_open())
 		{
@@ -180,11 +188,7 @@ namespace Inventory
 
 
 
-	void Load_Inventory()
-	{
-		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
-		
-	}
+
 
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
@@ -195,6 +199,16 @@ namespace Inventory
 			
 		}
 	}
+
+
+		void SwapInventory(Item& lhs, Item& rhs)
+		{
+			Item tmp = lhs;
+			lhs = rhs;
+			rhs = tmp;
+
+		}
+	
 
 
 	// Function to get an item by its ID
@@ -217,22 +231,74 @@ namespace Inventory
 	{
 	}
 
-	void Equip(int index, ButtonGearUI item, Player& player)
+	//Function to apply the effect of a consumable item on the player
+	void applyItemEffect(Player& player, const Item& item)
+	{
+		// Check if the item is a consumable (food or potion)
+		if (item.item_type == Item_Type::food || item.item_type == Item_Type::potion)
+		{
+			// Apply the effect of the item on the player
+
+			// player.max_health += static_cast<f32> (item.health);
+			// player.attack += static_cast<f32> (item.attack);
+			// player.defence += static_cast<f32> (item.defence);
+			//
+			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
+			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
+			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
+
+		}
+		else
+		{
+			std::cerr << "Error: Cannot apply effect. Item is not a consumable." << std::endl;
+		}
+	}
+
+
+	// Function to update the player's stats after equipping or unequipping items
+	void updatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
+	{
+		// Reset player's stats to base values
+		// player.hp = player.maxHp;
+		// player.attack = 0;
+		// player.defence = 0;
+
+		// Iterate through equipped items and update player's stats accordingly
+		for (const auto& item : equippedItems)
+		{
+			// Update player's attack based on equipped weapon(s)
+			if (item.item_type == Item_Type::weapon)
+			{
+				//player.attack += item.attack;
+			}
+			// Update player's defence based on equipped armor(s)
+			else if (item.item_type == Item_Type::amour)
+			{
+				//player.health += item.health;
+				//player.defence += item.defence;
+			}
+			// Apply other effects of equipped items as needed
+			// For example: increase player's maxHp, mana, agility, etc.
+		}
+	}
+
+
+	void Equip(int index, ButtonGearUI& item, Player& player)
 	{
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
 
+		const int MAX_INVENTORY_SIZE = 25;
+		const int MAX_EQUIPPED_ITEMS = 5;
+
 		// Check if the item is available in the player's inventory
-		if (index >= 0 && index < 25)
+		if (index >= 0 && index < MAX_INVENTORY_SIZE)
 		{
-			// Equip the item if it's available
-			equipmentDisplay[index].img.pTex = item.img.pTex;
+
+	
 
 			// Remove the item from the inventory (assuming it's consumed when equipped)
 			// @TODO implement more sophisticated logic here
-			if (Player_Inventory[index].quantity > 0)
-			{
-				Player_Inventory[index].quantity--;
 
 				// Perform actions based on the type of item equipped
 				if (item.Item.item_type == food || item.Item.item_type == potion)
@@ -240,17 +306,36 @@ namespace Inventory
 					// For non-weapon items
 					// Adjust player attributes or perform other actions
 					// Example: Increase player's health if certain conditions are met
-					std::cout << "Consumed " << item.Item.name << std::endl;
+					
+					if (Player_Inventory[index].quantity > 0)
+					{
+						
+						std::cout << "Consumed " << item.Item.name << std::endl;
+
+						// Apply item effect
+						applyItemEffect(player, item.Item);
+			
+						// Example: Reduce the quantity of the consumed item
+						//Player_Inventory[index].quantity -= 1;
+						Player_Inventory[index].quantity--;
+						std::cout << "Quantity of " << Player_Inventory[index].name << " reduced to " << Player_Inventory[index].quantity << std::endl;
+					}
 
 				}
-				else
+				else if(item.Item.item_type == weapon || item.Item.item_type == amour)
 				{
 					// For weapon items
-					// Perform actions specific to weapon equipment
-					// Example: Apply a burning effect to the player
-					std::cout << "Weapon\n";
+					// Assign weapon or amour to gear slot
+					// if (player.equipment.size() < MAX_EQUIPPED_ITEMS)
+					// {
+					// 	player.equipment.push_back(item.Item);
+						std::cout << "Equipped " << item.Item.name << std::endl;
+					//
+					// 	// Remove previous item effect and apply new item effect
+					// 	// updatePlayerStats(player);
+					// }
 				}
-			}
+			
 		}
 		else
 		{
@@ -260,21 +345,11 @@ namespace Inventory
 		}
 	}
 
-	//temporary code section
-	// void Equip(int index, ButtonGearUI tmp)
-	// {
-	// 	equipmentDisplay[index].img.pTex = tmp.img.pTex;
-	// 	if (!tmp.isWeapon)
-	// 	{
-	// 		gear_equipped++;
-	// 		if (gear_equipped == 4)
-	// 			hp *= 1.5;
-	// 	}
-	// 	else
-	// 	{
-	// 		player->burningEffect = true;
-	// 	}
-	// }
+	void Load_Inventory()
+	{
+		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
+
+	}
 
 	void InitInventory()
 	{
@@ -282,6 +357,6 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(Player_Inventory, "Assets/player_inventory.json");
+		WriteJsonFile(Player_Inventory, "./Assets/saved_player_inventory.json");
 	}
 }

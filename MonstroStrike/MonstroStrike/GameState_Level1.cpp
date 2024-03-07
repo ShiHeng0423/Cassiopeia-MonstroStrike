@@ -46,7 +46,8 @@ namespace
 
 	s8 pFont;
 
-	std::vector<Item> Player_Inventory;
+
+	AEGfxTexture* Gear[];
 
 #pragma region UserInterface
 	//User Health
@@ -206,12 +207,14 @@ void Level1_Load()
 
 	inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
-	Gear1 = AEGfxTextureLoad("Assets/item_.png");
-	Gear2 = AEGfxTextureLoad("Assets/item_helmet.png");
-	weapon3 = AEGfxTextureLoad("Assets/item_sword.png");
-	Gear4 = AEGfxTextureLoad("Assets/tile_archColumns.png");
-	Gear5 = AEGfxTextureLoad("Assets/tile_archHalf.png");
+
+	Gear[0] = AEGfxTextureLoad("Assets/item_.png");
+	Gear[1] = AEGfxTextureLoad("Assets/item_helmet.png");
+	Gear[2] = AEGfxTextureLoad("Assets/item_sword.png");
+	Gear[4] = AEGfxTextureLoad("Assets/tile_archColumns.png");
+	Gear[5] = AEGfxTextureLoad("Assets/tile_archHalf.png");
 	blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
+
 
 	equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
@@ -279,15 +282,12 @@ void Level1_Initialize()
 		button.img.pTex = blank;
 		AEVec2Set(&button.img.scale, 60.f, 60.f);
 		AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f, -(index / 5) * 90.f + 180.f);
+
+		inventoryButton[index].img.pTex = Gear[index];
+
 		button.isWeapon = false;
 		index++;
 	}
-	inventoryButton[0].img.pTex = Gear1;
-	inventoryButton[1].img.pTex = Gear2;
-	inventoryButton[2].img.pTex = weapon3;
-	inventoryButton[2].isWeapon = true;
-	inventoryButton[3].img.pTex = Gear4;
-	inventoryButton[4].img.pTex = Gear5;
 
 
 	AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
@@ -296,7 +296,7 @@ void Level1_Initialize()
 	index = 0;
 	for (ButtonGearUI& button : equipmentDisplay)
 	{
-		button.img.pTex = blank;
+		button.img.pTex = Gear[index];
 		AEVec2Set(&button.img.scale, 60.f, 60.f);
 		AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 		index++;
@@ -599,7 +599,7 @@ void Level1_Update()
 	if (inventory_open)
 	{
 		//update item position
-		Inventory::UpdateInventory(Inventory::Player_Inventory, inventoryButton);
+		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
 
 		//Hover collision with button && hold left mouse button
 
@@ -672,6 +672,8 @@ void Level1_Update()
 							button = inventoryButton[snap_back];
 							inventoryButton[snap_back] = tmp;
 
+							Inventory::SwapInventory(Player_Inventory[index], Player_Inventory[snap_back]);
+							// Inventory::UpdateInventory(Player_Inventory, inventoryButton);
 							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
 							          -(snap_back / 5) * 90.f + 180.f);
 
@@ -714,7 +716,10 @@ void Level1_Update()
 					if (button.img.pTex != blank)
 					{
 						Inventory::Equip(index, button, *player);
-						button.img.pTex = blank;
+						if (button.Item.quantity == 0)
+						{
+							button.img.pTex = blank;
+						}
 						break;
 					}
 					//button.Ptr();
