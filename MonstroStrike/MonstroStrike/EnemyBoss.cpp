@@ -6,10 +6,10 @@
 #include <iostream>
 
 
-
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	AEVec2 Spawnloc;
 
 //health check
 	if (enemy.health <= 0)
@@ -29,75 +29,105 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.isFlying = false;
 	}
 
+	if (AEInputCheckCurr(AEVK_M)) {
+		enemy.health--;
+	}
 
+	if (AEInputCheckCurr(AEVK_L)) {
+		enemy.wing1.isAlive = false;
+		enemy.wing2.isAlive = false;
+	}
 
 
 	switch (enemy.enemyCurrent)
 	{
 	case ENEMY_IDLE:
-		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
-			enemy.loop_idle = false;
+		if (enemy.health != 100) {
+			enemy.timePassed = 0.f;
+			enemy.enemyNext = ENEMY_TRANSITION;
+
+		}
+		break;
+	case ENEMY_TRANSITION:
+		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
+		enemy.wing1.isAlive = true;
+		enemy.wing2.isAlive = true;
+		enemy.isFlying = true;
+		Spawnloc = enemy.starting_position;
+		if (enemy.obj.pos.y <= Spawnloc.y) {
+			enemy.speed =  120.f;
+			MoveTowardsFLY(enemy, Spawnloc);
+			enemy.timePassed = 0.0f;
 		}
 		else {
-			enemy.enemyNext = ENEMY_IDLE;
-			//long condition to stop jittering
-			//loop_idle is a bool that works as a checker to start the "patrolling mode" for enemy, instead of standing still idling
-			if (enemy.loop_idle) {
-				MoveTowards(enemy, enemy.waypoint);
 
-				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-					enemy.loop_idle = false;
-				}
-			}
-			if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-				enemy.loop_idle = true;
-			}
-			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-				MoveTowards(enemy, enemy.starting_position);
+			if (enemy.timePassed >= 1.0f) {
+				enemy.timePassed = 0.0f;
+				enemy.isShooting = true;
+				enemy.speed = 80.f;
+				enemy.enemyNext = ENEMY_ATTACK;
 			}
 		}
 		break;
 
-	case ENEMY_CHASE:
+	//case ENEMY_CHASE:
 
-		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_ATTACK;
-		}
-		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.enemyNext = ENEMY_CHASE;
-			MoveTowards(enemy, player.obj.pos);
+	//	if (distanceFromPlayer <= enemy.shootingRange) {
+	//		enemy.enemyNext = ENEMY_ATTACK;
+	//	}
+	//	else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
+	//		enemy.enemyNext = ENEMY_CHASE;
+	//		MoveTowards(enemy, player.obj.pos);
 
 
 
-		}
-		else {
-			enemy.enemyNext = ENEMY_IDLE;
-		}
-		break;
+	//	}
+
+	//	break;
 
 	case ENEMY_ATTACK:
-		if (distanceFromPlayer <= enemy.shootingRange) {
-			enemy.isShooting = true;
-			//if(CanFire(enemy)) {
-			//	SpawnBullet(enemy.obj.pos, player.obj.pos, enemy.bullets);
-			//}
-			if(CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {;
-				SpawnBullet(enemy.wing1.obj.pos, player.obj.pos, enemy.bullets);
+		if (enemy.wing1.isAlive && enemy.wing2.isAlive) {
 
+			static int loopCounter = 0;	//each wing to shoot 20 bullets, then swap wing
+
+			if (loopCounter < 20) {
+				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
+					Spawnloc.x = enemy.wing1.obj.pos.x;
+					Spawnloc.y = enemy.wing1.obj.pos.y;
+					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					loopCounter++;
+				}
 			}
-			if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
-				SpawnBullet(enemy.wing2.obj.pos, player.obj.pos, enemy.bullets);
+			else {
+				if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
+					Spawnloc.x = enemy.wing2.obj.pos.x;
+					Spawnloc.y = enemy.wing2.obj.pos.y;
+					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					loopCounter++;
+				}
+			}
+
+			if (loopCounter == 40) {
+				loopCounter = 0;
 			}
 		}
 
-		if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-			enemy.isShooting = false;
-			enemy.enemyNext = ENEMY_CHASE;
+		else {
+			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
+			if (enemy.timePassed >= 0.5f) {
+				enemy.timePassed = 0.0f;
+				if (enemy.onFloor) {
+					Jump(enemy, 500.f);
+				}
+			}
+			if (!enemy.onFloor) {
+				MoveTowards(enemy, player.obj.pos);
+			}
 		}
+
+
 		break;
-	default:
-		break;
+
 	}
 
 
