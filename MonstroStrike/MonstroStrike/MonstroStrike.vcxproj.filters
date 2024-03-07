@@ -27,10 +27,10 @@
     <ClCompile Include="GameStateManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level1.cpp">
+    <ClCompile Include="GameState_Level1.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameLobby.cpp">
+    <ClCompile Include="GameState_GameLobby.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
@@ -39,7 +39,7 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Mainmenu.cpp">
+    <ClCompile Include="GameState_Mainmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TransformMatrix.cpp">
@@ -67,7 +67,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TriggerAttack.cpp">
-          <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
@@ -79,7 +79,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Crafting.cpp">
-          <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MapPlatformGenerate.cpp">
       <Filter>Source Files</Filter>
@@ -99,10 +99,16 @@
     <ClCompile Include="EnemyJumper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameState_SplashScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="EnemyFly.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ImageManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -113,13 +119,13 @@
     <ClInclude Include="Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level1.h">
+    <ClInclude Include="GameState_Level1.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameStateManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameLobby.h">
+    <ClInclude Include="GameState_GameLobby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -134,7 +140,7 @@
     <ClInclude Include="Weapon.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Mainmenu.h">
+    <ClInclude Include="GameState_Mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CSVMapLoader.h">
@@ -154,7 +160,7 @@
     <None Include="..\Assets\GameMap.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="test.json">
+    <None Include="..\Assets\player_inventory.json">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -283,19 +289,19 @@
       <Filter>Header Files\RapidJason Header</Filter>
     </ClInclude>
     <ClInclude Include="TriggerAttack.h">
-          <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MapPlatformGenerate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-        <ClInclude Include="Camera.h">
+    <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Crafting.h">
-          <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NonPlayableCharacters.h">
       <Filter>Header Files</Filter>
@@ -303,7 +309,13 @@
     <ClInclude Include="EnemyUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameState_SplashScreen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="ParticleSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ImageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

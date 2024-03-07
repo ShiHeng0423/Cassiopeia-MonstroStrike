@@ -27,12 +27,9 @@ Number of cols
 
 \return Result of successful map load
 */
-bool MapLoader(const char *csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols) {
-    
-    std::cout << csvFilePath << std::endl;
-    std::ifstream file(csvFilePath, std::ios::in);
+bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols) {
 
-    std::cout << "In Loader: " << std::endl;
+    std::ifstream file(csvFilePath, std::ios::in);
 
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << csvFilePath << std::endl;
@@ -47,22 +44,33 @@ bool MapLoader(const char *csvFilePath, std::vector<std::vector<MapCell>>& map, 
         }
 
         std::istringstream lineStream(line);
+        std::vector<MapCell> rowCells; // Temporary vector for the current row
 
         int col = 0;
-        while (col < cols)
+        char cellValue;
+        while (lineStream >> cellValue && col < cols)
         {
-            char cellValue;
-
-            while (lineStream >> cellValue)
+            if (cellValue != ',')
             {
-                if (cellValue != ',')
-                {
-                    map[row][col].symbol = cellValue - '0';
-                    col++;
-                }
+                MapCell cell;
+                cell.symbol = cellValue - '0';
+                rowCells.push_back(cell); // Push the current cell into the row vector
+                col++;
             }
         }
+
+        // Ensure that the row vector has enough cells (if cols > number of cells in the row)
+        while (col < cols)
+        {
+            MapCell cell;
+            cell.symbol = 0; // Default value for missing cells
+            rowCells.push_back(cell);
+            col++;
+        }
+
+        map.push_back(rowCells); // Push the row vector into the map
     }
+
     file.close();
     return true;
 }

@@ -2,13 +2,14 @@
   "items": [
     {
       "UID": "ahi2bfi2",
-      "ID" :  0,
+      "ID": 0,
       "name": "Demon banana",
       "description": "burn",
       "item_type": 2,
       "rarity": 4,
       "quantity": 1,
       "stackable": false,
+      "health": 420,
       "attack": 69,
       "defence": 96
     },
@@ -21,23 +22,22 @@
       "rarity": 4,
       "quantity": 1,
       "stackable": false,
+      "health": 420,
       "attack": 69,
       "defence": 96
-
     },
     {
       "UID": "aqad112341ssssss",
       "ID": 2,
       "name": "Merlion saliva",
       "description": "ages like fine wine",
-      "item_type": 0,
+      "item_type": 5,
       "rarity": 4,
-      "quantity": 1,
+      "quantity": 10,
       "stackable": true,
+      "health": 420,
       "attack": 69,
       "defence": 96
-
-
     },
     {
       "UID": "ahi2bfi2",
@@ -48,8 +48,22 @@
       "rarity": 4,
       "quantity": 1,
       "stackable": false,
+      "health": 420,
       "attack": 69,
       "defence": 96
+    },
+    {
+      "UID": "asfag",
+      "ID": 4,
+      "name": "small banana",
+      "description": "ripe",
+      "item_type": 4,
+      "rarity": 4,
+      "quantity": 1,
+      "stackable": true,
+      "health": 420,
+      "attack": 0,
+      "defence": 1
     }
   ]
 }

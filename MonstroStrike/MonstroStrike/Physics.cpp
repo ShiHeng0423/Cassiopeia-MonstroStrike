@@ -90,5 +90,5 @@ void ApplyGravity(AEVec2 *velocity, f32 mass, bool* onFloor, f32* gForce, bool* 
     {
         *onFloor = false;
     }
-	velocity->y += gravityForce.y * AEFrameRateControllerGetFrameTime();
+	velocity->y += gravityForce.y * (f32)AEFrameRateControllerGetFrameTime();
 }
