@@ -98,11 +98,11 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 
 		else {
-			static bool isChoosing = true;
+			//static bool isChoosing = true;
 
-			static bool isCharging = false;
-			static bool isReversing = false;
-			static bool isJumping = false;
+			//static bool isCharging = false;
+			//static bool isReversing = false;
+			//static bool isJumping = false;
 
 			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 
@@ -116,59 +116,15 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				}
 			}
 
-
-
-
-			// Reversing logic
-			if (isReversing) {
-				//std::cout << "Reversing\n";
-				MoveTowards(enemy, enemy.waypoint);
-				if (reachedPos(enemy, enemy.waypoint)) {
-					isReversing = false; // Done with reverse
-					isCharging = true; // Start charging
-					enemy.speed = 200.f;
-				}
-			}
-
-			// Charging logic
-			if (isCharging) {
-				//std::cout << "Charging\n";
-				Attack_Charge(enemy, enemy.target_position, 400.f);
-				if (enemy.timePassed >= 1.f) {
-					enemy.timePassed = 0.0f;
-					enemy.speed = 80.f;
-					enemy.target_position = ENEMY_DEFAULT;
-					isCharging = false; // Done with charging
-					isChoosing = true; // Set isChoosing to true to prepare for the next action
-				}
-			}
-
-			// Jumping logic
-			if (isJumping) {
-				if (enemy.timePassed >= 0.5f) {
-					enemy.timePassed = 0.0f;
-					if (enemy.onFloor) {
-						Jump(enemy, 500.f);
-						isJumping = false;
-						isChoosing = true;
-					}
-				}
-			}
-
-			if (!enemy.onFloor) {
-				MoveTowards(enemy, player.obj.pos);
-			}
-
-			// Choosing attack logic
-			if (isChoosing) {
-				//std::cout << "Choosing next attack\n";
+			switch (enemy.attackState) {
+			case ENEMY_ATTACK_CHOOSING:
 
 				if (enemy.timePassed >= 2.f) {
 					enemy.timePassed = 0.0f;
 					switch (rand() % 2) {	//randomize is seeded 
 					case 0:
 						enemy.timePassed = 0.f;
-						isJumping = true;
+						enemy.attackState = ENEMY_ATTACK_JUMP;
 						break;
 					case 1:
 
@@ -180,85 +136,49 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 						else if (enemy.target_position == ENEMY_RIGHT) {
 							enemy.waypoint.x -= 30.f;	//go left
 						}
-						isChoosing = false;
-						isReversing = true;
+						enemy.attackState = ENEMY_ATTACK_REVERSE;
 						enemy.speed = 120.f;
 
 						break;
 					}
-					isChoosing = false; // Reset isChoosing after choosing attack
 
 				}
+				break;
+			case ENEMY_ATTACK_CHARGE:
+
+				Attack_Charge(enemy, enemy.target_position, 400.f);
+				if (enemy.timePassed >= 1.5f) {
+					enemy.timePassed = 0.0f;
+					enemy.speed = 80.f;
+					enemy.target_position = ENEMY_DEFAULT;
+					enemy.attackState = ENEMY_ATTACK_CHOOSING;
+				}
+				break;
+			case ENEMY_ATTACK_JUMP:
+
+				if (enemy.timePassed >= 0.5f) {
+					enemy.timePassed = 0.0f;
+					if (enemy.onFloor) {
+						Jump(enemy, 500.f);
+						enemy.attackState = ENEMY_ATTACK_CHOOSING;
+					}
+				}
+				break;
+			case ENEMY_ATTACK_REVERSE:
+
+				MoveTowards(enemy, enemy.waypoint);
+				if (reachedPos(enemy, enemy.waypoint)) {
+					enemy.attackState = ENEMY_ATTACK_CHARGE;
+					enemy.speed = 200.f;
+				}
+				break;
+			}//switch end
+
+
+
+			if (!enemy.onFloor) { //for the jumping
+				MoveTowards(enemy, player.obj.pos);
 			}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-			//CHAT GPT FAILED
-			//// Locking on which direction to dash
-			//if (enemy.target_position == ENEMY_DEFAULT) {
-			//	enemy.target_position = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
-			//}
-
-			//// Jumping logic
-			//if (!isChoosing && enemy.onFloor && enemy.timePassed >= 2.f) {
-			//	switch (rand() % 2) {
-			//	case 0:
-			//		Jump(enemy, 500.f);
-			//		break;
-			//	case 1:
-			//		enemy.waypoint = enemy.obj.pos;
-			//		enemy.waypoint.x += (enemy.target_position == ENEMY_LEFT) ? 30.f : -30.f;
-			//		isReversing = true;
-			//		enemy.speed = 100.f;
-			//		break;
-			//	}
-			//	isChoosing = true;
-			//	enemy.timePassed = 0.f;
-			//}
-
-			//// Action logic
-			//if (isReversing) {
-			//	MoveTowards(enemy, enemy.waypoint);
-			//	if (reachedPos(enemy, enemy.waypoint)) {
-			//		isReversing = false;
-			//		isCharging = true;
-			//		enemy.speed = 200.f;
-			//	}
-			//}
-			//else if (isCharging) {
-			//	Attack_Charge(enemy, enemy.target_position, 400.f);
-			//	if (enemy.timePassed >= 1.f) {
-			//		enemy.timePassed = 0.0f;
-			//		enemy.speed = 80.f;
-			//		enemy.target_position = ENEMY_DEFAULT;
-			//		isCharging = false;
-			//	}
-			//}
-
-			//// Move towards player if not on floor
-			//if (!enemy.onFloor) {
-			//	MoveTowards(enemy, player.obj.pos);
-			//}
-
-
-
-
-
-
-
-
 
 
 		}

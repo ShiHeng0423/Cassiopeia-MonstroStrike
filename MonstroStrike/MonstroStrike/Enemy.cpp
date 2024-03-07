@@ -85,6 +85,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.enemyCurrent = ENEMY_IDLE;
 	enemy.enemyNext = ENEMY_IDLE;
 
+	enemy.attackState = ENEMY_ATTACK_DEFAULT;
+
 	enemy.isAlive = true;
 	enemy.isShooting = false;
 	enemy.isCollision = false;
@@ -148,6 +150,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		break;
 	case ENEMY_BOSS1:
 		//main body
+		enemy.attackState = ENEMY_ATTACK_CHOOSING;
 		enemy.isFlying = true;
 		enemy.speed = 80.f;
 		enemy.lineOfSight = 1000.f;

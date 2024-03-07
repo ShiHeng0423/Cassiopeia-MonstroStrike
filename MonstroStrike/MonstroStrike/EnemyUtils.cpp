@@ -95,20 +95,6 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
-	if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-
-		AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	}
-	if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-
-		AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	}
 }
 
 void Attack_Charge(Enemy& enemy, int target_position, f32 speed) {

@@ -800,31 +800,31 @@ void Level1_Draw()
 			}
 
 
-			//if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-			//	if (enemy.isShooting) {
-			//		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-			//	}
-			//	else {
-			//		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-			//	}
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
+				if (enemy.isShooting) {
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+				}
+				else {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				}
 
 
-			//	AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-			//	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
-			//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			//}
-			//if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-			//	if (enemy.isShooting) {
-			//		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-			//	}
-			//	else {
-			//		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-			//	}
+				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
+				if (enemy.isShooting) {
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+				}
+				else {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				}
 
-			//	AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-			//	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
-			//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			//}
+				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
 		}
 	}
 

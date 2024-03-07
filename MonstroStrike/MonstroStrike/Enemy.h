@@ -24,11 +24,12 @@ enum ENEMY_STATES
 };
 
 enum ENEMY_ATTACK_STATE {
-	ENEMY_ATTACK_DEFAULT,
+
+	ENEMY_ATTACK_DEFAULT = 0,
 	ENEMY_ATTACK_CHARGE,
 	ENEMY_ATTACK_JUMP,
 	ENEMY_ATTACK_REVERSE,
-	ENEYM_ATTACK_CHOOSING,
+	ENEMY_ATTACK_CHOOSING,
 };
 
 enum ENEMY_TYPES 
@@ -82,6 +83,8 @@ struct Enemy {
 	int enemyCurrent;
 	int enemyNext;
 	int enemyType;
+	
+	int attackState;
 	
 	bool isAlive;
 	bool isShooting;
