@@ -309,7 +309,7 @@ void GameLobby_Initialize()
 void GameLobby_Update()
 {
 	PlayerUpdate(*player);
-	cam->UpdatePos(*player);
+	cam->UpdatePos(*player,0,0,0,0);
 
 	if (AEInputCheckTriggered(AEVK_9))
 	{
