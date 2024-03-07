@@ -23,6 +23,14 @@ enum ENEMY_STATES
 	ENEMY_TRANSITION,
 };
 
+enum ENEMY_ATTACK_STATE {
+	ENEMY_ATTACK_DEFAULT,
+	ENEMY_ATTACK_CHARGE,
+	ENEMY_ATTACK_JUMP,
+	ENEMY_ATTACK_REVERSE,
+	ENEYM_ATTACK_CHOOSING,
+};
+
 enum ENEMY_TYPES 
 {
 	ENEMY_JUMPER = 0,
@@ -149,5 +157,5 @@ void Attack_Charge_w_Reverse(Enemy& enemy, int target_position, f32 speed, f32 r
 bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
 void Jump(Enemy& enemy, f32 value);
 void isStuck(Enemy& enemy);
-
+bool reachedPos(Enemy& enemy, AEVec2 waypoint);
 //(EnemyUtils)-------------------------------------------------------------------------
