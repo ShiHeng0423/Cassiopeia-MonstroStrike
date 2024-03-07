@@ -42,7 +42,6 @@ struct Grids2D {
 	GRID_TYPES typeOfGrid;
 
 	AABB collisionBox; //Rectangle collision box
-
 };
 
 bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols);

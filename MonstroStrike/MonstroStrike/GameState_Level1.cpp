@@ -137,7 +137,6 @@ void Level1_Load()
 
 	equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 	
-	LoadNPC();
 	ParticleLoad();
 
 #pragma region Mesh Creations
@@ -230,10 +229,6 @@ void Level1_Initialize()
 	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
 	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
 
-	//Initialize NPCs
-	InitializeNPC();
-
-	//looping thru to init all enemy variables
 
 #pragma region PauseMenu
 
@@ -647,7 +642,6 @@ void Level1_Update()
 	//Testing moving platform logic
 
 	UpdatePlatforms(*player, vecEnemy, platformVectors); //Numbers based on how many moving platforms
-	UpdateNPC();
 
 	if (AEInputCheckTriggered(AEVK_U))
 	{
@@ -701,13 +695,63 @@ void Level1_Draw()
 
 	}
 
-	DrawNPC(*pWhiteSquareMesh);
-
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+	for (Enemy& enemy : vecEnemy) {
+		if (enemy.isAlive) {
+
+
+			if (enemy.isShooting) {
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+				AEGfxTextureSet(enemy.angrytex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
+			}
+			else {
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
+
+			}
+
+
+			//if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
+			//	if (enemy.isShooting) {
+			//		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+			//	}
+			//	else {
+			//		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+			//	}
+
+
+			//	AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
+			//	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+			//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			//}
+			//if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
+			//	if (enemy.isShooting) {
+			//		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+			//	}
+			//	else {
+			//		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+			//	}
+
+			//	AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
+			//	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+			//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			//}
+		}
+	}
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     if (player->isAttacking)
@@ -869,8 +913,6 @@ void Level1_Free()
 	gameMap.resize(0);
 	platformVectors.clear();
 	platformVectors.resize(0);
-
-	FreeNPC();
 
 	AEGfxSetCamPosition(0.f, 0.f);
 	ParticlesFree();

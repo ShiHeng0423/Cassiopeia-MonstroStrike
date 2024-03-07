@@ -1,7 +1,7 @@
 #pragma once
 #include <AEEngine.h>
 #include "CollisionShape.h"
-
+#include <vector>
 enum TYPE_NPCS {
 	NPC_NONE = 0,
 	NPC_BLACKSMITH_A,
@@ -31,7 +31,7 @@ struct NON_PLAYABLE_CHARACTERS
 //NPC 1 -> Black Smith, NPC 2 -> Black Smith B, NPC 3 ->Quest giver
 
 void LoadNPC(); //Load textures, now only spawn at lobby level so don't need indicate which level i guess
-void InitializeNPC(); //Initialize positions etc
+void InitializeNPC(std::vector<AEVec2> allocatedPositions); //Initialize positions etc
 void UpdateNPC(); //Update
 void FreeNPC(); //Free textures
 void DrawNPC(AEGfxVertexList& mesh);
