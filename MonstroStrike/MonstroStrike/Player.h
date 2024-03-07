@@ -21,7 +21,7 @@ struct Player {
 
 	Armor equippedArmor;
 
-	Weapon *equippedWeapon;
+	Weapon equippedWeapon;
 	//Gravity affection
 	f32 mass;
 	
