@@ -4,7 +4,9 @@ enum GameStates {
 	MainMenu,
 	GameLobby,
 	Area1,
-	Quit
+	Quit,
+
+	GAMESTATE_NONE
 };
 
 

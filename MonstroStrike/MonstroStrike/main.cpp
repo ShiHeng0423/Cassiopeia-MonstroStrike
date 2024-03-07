@@ -21,6 +21,7 @@
 #include "Physics.h"
 #include "GameStateManager.h"
 #include "Inventory.h"
+#include "MapTransition.h"
 // ---------------------------------------------------------------------------
 // main
 
@@ -44,6 +45,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//AESysReset();
 
 	GSM_Initialize(GameStates::MainMenu);
+
+	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
 
 	while (current != GameStates::Quit)
 	{
@@ -69,6 +72,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		current = next;
 	}
 
+	MapTransitionUnload();//Unload Map Transition image here
+	
 	// free the system
 	AESysExit();
 }
