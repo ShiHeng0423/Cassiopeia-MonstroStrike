@@ -1,4 +1,4 @@
-#include "GameState_GameLobby.h"
+#include "GameLobby.h"
 
 void GameLobby_Load()
 {

@@ -19,24 +19,22 @@
 #pragma once
 
 #include "AEEngine.h"
-#include "Inventory.h"
 #include "Utils.h"
 #include "rapidjson/document.h"
-
 
 struct Recipe
 {
 	int id;
 	std::string name;
-	std::vector<Item> requirement;
+	std::vector<Inventory::Item> requirement;
 	std::vector<int> qty;
-	Item product;
+	Inventory::Item product;
 };
 
 
 namespace Crafting
 {
-	std::vector<Recipe> ReadRecipes(const std::string filepath);
-	bool can_craft(const Recipe recipe, const std::vector<Item> Inventory);
-	void craft_item(std::vector<Item>& Inventory);
+	std::ifstream ReadRecipes(const std::string filepath);
+	bool craftable(const Recipe recipe, const std::vector<Inventory::Item> Inventory);
+	void craft_item(std::vector<Inventory::Item>& Inventory);
 }

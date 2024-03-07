@@ -6,11 +6,7 @@
 
 Camera::Camera(AEVec2 player)
 {
-	s32 cursor_x = 0;
-	s32 cursor_y = 0;
-	AEInputGetCursorPosition(&cursor_x, &cursor_y);
-	this->screen_x = cursor_x - AEGfxGetWindowWidth() * 0.5f;
-	this->screen_y = AEGfxGetWindowHeight() * 0.5f - cursor_x;
+	AEInputGetCursorPosition(&this->screen_x, &this->screen_y);
 	this->screen_x = this->screen_x - AEGfxGetWindowWidth() * 0.5f;
 	this->screen_y = AEGfxGetWindowHeight() * 0.5f - this->screen_y;
 	this->world_coordinate = player;
@@ -26,11 +22,9 @@ Camera::Camera(AEVec2 player)
 
 void Camera::UpdatePos(Player player)
 {
-	s32 cursor_x = 0;
-	s32 cursor_y = 0;
-	AEInputGetCursorPosition(&cursor_x, &cursor_y);
-	this->screen_x = cursor_x - AEGfxGetWindowWidth() * 0.5f;
-	this->screen_y = AEGfxGetWindowHeight() * 0.5f - cursor_x;
+	AEInputGetCursorPosition(&this->screen_x, &this->screen_y);
+	this->screen_x = this->screen_x - AEGfxGetWindowWidth() * 0.5f;
+	this->screen_y = AEGfxGetWindowHeight() * 0.5f - this->screen_y;
 
 	if (lookahead)
 	{
@@ -120,17 +114,17 @@ Camera::~Camera() {
 
 }
 
-f32 Camera::GetCameraScreenX() const
+s32 Camera::GetCameraScreenX()
 {
 	return this->screen_x;
 }
 
-f32 Camera::GetCameraScreenY() const 
+s32 Camera::GetCameraScreenY()
 {
 	return this->screen_y;
 }
 
-AEVec2 Camera::GetCameraWorldPoint() const
+AEVec2 Camera::GetCameraWorldPoint()
 {
 	return this->world_coordinate;
 }

@@ -15,8 +15,8 @@ public:
 	~AudioManager();
 
 	void PlayAudio(bool isBGM, Audio_List audioName);
-	void SetSFXVolume(f32 vol);
-	void SetBGMVolume(f32 vol);
+	void SetSFXVolume();
+	void SetBGMVolume();
 
 private:
 	f32 sfxVolume;

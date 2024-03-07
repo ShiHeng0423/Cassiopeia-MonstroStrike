@@ -175,12 +175,10 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 		enemy.loop_idle = false;
 	}
 
-	if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1) {
-		for (Bullet& bullet : enemy.bullets) {
-			if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
-				bullet.lifetime = 0; //makes bullet erase
+	for (Bullet& bullet : enemy.bullets) {
+		if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
+			bullet.lifetime = 0.f; //makes bullet erase
 
-			}
 		}
 	}
 

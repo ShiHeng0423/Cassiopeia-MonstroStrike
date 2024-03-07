@@ -1,8 +1,7 @@
 #include "GameStateManager.h"
-#include "GameState_Level1.h"
-#include "GameState_GameLobby.h"
-#include "GameState_Mainmenu.h"
-#include "GameState_SplashScreen.h"
+#include "Level1.h"
+#include "GameLobby.h"
+#include "Mainmenu.h"
 
 int current = 0, previous = 0, next = 0;
 
@@ -17,21 +16,13 @@ void GSM_Update()
 {
 	switch (current)
 	{
-	case SplashScreen:
-		fpLoad = SplashScreen_Load;
-		fpInitialize = SplashScreen_Initialize;
-		fpUpdate = SplashScreen_Update;
-		fpDraw = SplashScreen_Draw;
-		fpFree = SplashScreen_Free;
-		fpUnload = SplashScreen_Unload;
-		break;
 	case MainMenu:
-		fpLoad = Mainmenu_Load;
-		fpInitialize = Mainmenu_Initialize;
-		fpUpdate = Mainmenu_Update;
-		fpDraw = Mainmenu_Draw;
-		fpFree = Mainmenu_Free;
-		fpUnload = Mainmenu_Unload;
+		fpLoad = Menu_Load;
+		fpInitialize = Menu_Initialize;
+		fpUpdate = Menu_Update;
+		fpDraw = Menu_Draw;
+		fpFree = Menu_Free;
+		fpUnload = Menu_Unload;
 		break;
 	case GameLobby:
 		fpLoad = GameLobby_Load;
