@@ -88,7 +88,7 @@ namespace
 
 #pragma endregion PauseMenu
 
-	bool inventory_open = false;
+	bool inventory_open;
 	int snap_back = -1;
 
 	int hp = 100;
@@ -328,6 +328,7 @@ void Level1_Initialize()
 
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
+	inventory_open = false;
 	int index = 0;
 	for (ButtonGearUI& button : inventoryButton)
 	{
@@ -386,20 +387,22 @@ void Level1_Update()
 
 	if (AEInputCheckTriggered(AEVK_ESCAPE))
 	{
+		f32 x, y;
+		AEGfxGetCamPosition(&x, &y);
 		if (currScene == CurrentScene::MainScene)
 		{
 			//rmb to freeze game update
 			currScene = CurrentScene::PauseScene;
 
 			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-				AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
+				AEVec2Set(&PauseMenuButtons[i].pos, x, y - 100.f * i + 100.f);
 
-			AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-			AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+			AEVec2Set(&QuitToMainmenu[0].pos, 250.f + x, y);
+			AEVec2Set(&QuitToMainmenu[1].pos, -250.f + x, y);
 
-			AEVec2Set(&BackButton.pos, 280.f + cam->GetCameraWorldPoint().x,-180.f+ cam->GetCameraWorldPoint().y);
+			AEVec2Set(&BackButton.pos, 280.f + x,-180.f+ y);
 
-			AEVec2Set(&pauseMenuBackground.pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+			AEVec2Set(&pauseMenuBackground.pos, x, y);
 		}
 		else
 		{
@@ -412,11 +415,13 @@ void Level1_Update()
 	{
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
-			s32 x, y;
-			AEInputGetCursorPosition(&x, &y);
+			s32 cx,cy;
+			AEInputGetCursorPosition(&cx, &cy);
 			AEVec2 mousePos{ 0,0 };
-			mousePos.x = x - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - y;
+			mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
+			f32 x, y;
+			AEGfxGetCamPosition(&x, &y);
 			switch (currScene)
 			{
 			case CurrentScene::PauseScene:
@@ -424,8 +429,8 @@ void Level1_Update()
 				for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
 				{
 					AEVec2 translateOrigin = PauseMenuButtons[i].pos;
-					translateOrigin.x -= cam->GetCameraWorldPoint().x;
-					translateOrigin.y -= cam->GetCameraWorldPoint().y;
+					translateOrigin.x -= x;
+					translateOrigin.y -= y;
 					if (AETestPointToRect(&mousePos, &translateOrigin, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y))
 						PauseMenuButtons[i].Ptr();
 				}
@@ -434,8 +439,8 @@ void Level1_Update()
 			case CurrentScene::ControlScene:
 			{
 				AEVec2 translateOrigin = BackButton.pos;
-				translateOrigin.x -= cam->GetCameraWorldPoint().x;
-				translateOrigin.y -= cam->GetCameraWorldPoint().y;
+				translateOrigin.x -= x;
+				translateOrigin.y -= y;
 				if (AETestPointToRect(&mousePos, &translateOrigin, BackButton.scale.x, BackButton.scale.y))
 					BackButton.Ptr();
 				break;
@@ -443,13 +448,14 @@ void Level1_Update()
 			case CurrentScene::QuitScene:
 			{
 				AEVec2 translateOrigin = QuitToMainmenu[0].pos;
-				translateOrigin.x -= cam->GetCameraWorldPoint().x;
-				translateOrigin.y -= cam->GetCameraWorldPoint().y;
+				translateOrigin.x -= x;
+				translateOrigin.y -= y;
 				if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y))
 					QuitToMainmenu[0].Ptr();
 				translateOrigin = QuitToMainmenu[1].pos;
-				translateOrigin.x -= cam->GetCameraWorldPoint().x;
-				translateOrigin.y -= cam->GetCameraWorldPoint().y;
+				AEGfxGetCamPosition(&x, &y);
+				translateOrigin.x -= x;
+				translateOrigin.y -= y;
 				if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y))
 					QuitToMainmenu[1].Ptr();
 				break;
@@ -871,12 +877,15 @@ void Level1_Draw()
 
 #pragma region Game_UI_Render
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + cam->GetCameraWorldPoint().x, 450.f + cam->GetCameraWorldPoint().y, 0, hp * 2.f, 80.f).m);
+	f32 x, y;
+	AEGfxGetCamPosition(&x, &y);
+
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + cam->GetCameraWorldPoint().x, 450.f + cam->GetCameraWorldPoint().y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp +x, 450.f + y, 0, hp * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);

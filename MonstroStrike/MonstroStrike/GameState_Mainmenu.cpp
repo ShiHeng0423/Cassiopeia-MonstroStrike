@@ -22,7 +22,16 @@ namespace {
 		Quit
 	};
 
-	Button interactableButton[6];
+	//Main menu buttons
+	Button interactableButtonMainMenu[6];
+
+	//Option button
+	Sprite_V2 optionbackground;
+	Sprite_V2 optionSoundBar[2];
+	Sprite_V2 optionBackgroundBar[2];
+	Button interactableButtonOption[4];
+
+
 	Button backButton;
 	Button confirmationButtion[2];
 
@@ -56,6 +65,11 @@ void GoQuitGame();
 
 void BackMainMenu();
 
+//void IncreaseSfxVolume();
+//void IncreaseBgmVolume();
+//void DecreaseSfxVolume();
+//void DecreaseBgmVolume();
+
 void Mainmenu_Load()
 {
 	pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
@@ -81,36 +95,68 @@ void Mainmenu_Load()
 
 void Mainmenu_Initialize()
 {
-	for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+	for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 	{
-		interactableButton[i].pTex = buttonTexture;
-		AEVec2Set(&interactableButton[i].scale, 250.f, 80.f);
-		AEVec2Set(&interactableButton[i].pos, 0.f, 100.f - 100.f * i);
+		interactableButtonMainMenu[i].pTex = buttonTexture;
+		AEVec2Set(&interactableButtonMainMenu[i].scale, 250.f, 80.f);
+		AEVec2Set(&interactableButtonMainMenu[i].pos, 0.f, 100.f - 100.f * i);
 
 		switch (i)
 		{
 		case Interactable::Start:
-			interactableButton[i].Ptr = GoNewGameLevel1;
+			interactableButtonMainMenu[i].Ptr = GoNewGameLevel1;
 			break;
 		case Interactable::Load:
-			interactableButton[i].Ptr = GoLoadSaveLevel;
+			interactableButtonMainMenu[i].Ptr = GoLoadSaveLevel;
 			break;
 		case Interactable::Credit:
-			interactableButton[i].Ptr = GoCreditScene;
+			interactableButtonMainMenu[i].Ptr = GoCreditScene;
 			break;
 		case Interactable::Controls:
-			interactableButton[i].Ptr = GoControlScene;
+			interactableButtonMainMenu[i].Ptr = GoControlScene;
 			break;
 		case Interactable::Options:
-			interactableButton[i].Ptr = GoOptionScene;
+			interactableButtonMainMenu[i].Ptr = GoOptionScene;
 			break;
 		case Interactable::Quit:
-			interactableButton[i].Ptr = GoConfirmQuitScene;
+			interactableButtonMainMenu[i].Ptr = GoConfirmQuitScene;
 			break;
 		default:
 			break;
 		}
 	}
+
+	AEVec2Set(&interactableButtonOption[0].pos, 0, 0);
+	AEVec2Set(&interactableButtonOption[0].scale, 50, 50);
+	//interactableButtonOption[0].Ptr = DecreaseBgmVolume;
+	//interactableButtonOption[0].pTex = DecreaseBgmVolume;
+
+	AEVec2Set(&interactableButtonOption[1].pos, 200, 0);
+	AEVec2Set(&interactableButtonOption[1].scale, 50, 50);
+	//interactableButtonOption[1].Ptr = IncreaseBgmVolume;
+	//interactableButtonOption[1].pTex = DecreaseBgmVolume;
+
+	AEVec2Set(&interactableButtonOption[2].pos, 0, -100);
+	AEVec2Set(&interactableButtonOption[2].scale, 50, 50);
+	//interactableButtonOption[0].Ptr = DecreaseSfxVolume;
+
+	AEVec2Set(&interactableButtonOption[3].pos, 200, -100);
+	AEVec2Set(&interactableButtonOption[3].scale, 50, 50);
+	//interactableButtonOption[0].Ptr = IncreaseSfxVolume;
+
+	AEVec2Set(&optionSoundBar[0].pos, 100, 0); // bar 1
+	AEVec2Set(&optionSoundBar[0].scale, 100, 50);
+
+	AEVec2Set(&optionSoundBar[1].pos, 100, -100); // bar 2
+	AEVec2Set(&optionSoundBar[1].scale, 100, 50);
+
+	AEVec2Set(&optionBackgroundBar[0].pos, 100, 0); // bar 1
+	AEVec2Set(&optionBackgroundBar[0].scale, 100, 50);
+
+	AEVec2Set(&optionBackgroundBar[1].pos, 100, -100); // bar 2
+	AEVec2Set(&optionBackgroundBar[1].scale, 100, 50);
+
+	optionbackground;
 
 	backButton.pTex = buttonTexture;
 	AEVec2Set(&backButton.scale, 250.f, 80.f);
@@ -130,6 +176,7 @@ void Mainmenu_Initialize()
 	background.pTex = backgroundTexture;
 	background.scale.x = 1600;
 	background.scale.y = 900;
+
 	currScene = CurrentScene::MainScene;
 }
 
@@ -146,10 +193,10 @@ void Mainmenu_Update()
 		switch (currScene)
 		{
 		case CurrentScene::MainScene:
-			for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+			for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 			{
-				if (AETestPointToRect(&mousePos, &interactableButton[i].pos, interactableButton[i].scale.x, interactableButton[i].scale.y))
-					interactableButton[i].Ptr();
+				if (AETestPointToRect(&mousePos, &interactableButtonMainMenu[i].pos, interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y))
+					interactableButtonMainMenu[i].Ptr();
 			}
 			break;
 		case CurrentScene::CreditScene:
@@ -188,10 +235,10 @@ void Mainmenu_Draw()
 	{
 	case CurrentScene::MainScene:
 	{
-		for (size_t i = 0; i < sizeof(interactableButton) / sizeof(interactableButton[0]); i++)
+		for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 		{
-			AEGfxTextureSet(interactableButton[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButton[i].pos.x, interactableButton[i].pos.y, 0.f, interactableButton[i].scale.x, interactableButton[i].scale.y).m);
+			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButtonMainMenu[i].pos.x, interactableButtonMainMenu[i].pos.y, 0.f, interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
