@@ -15,7 +15,8 @@ using Clock = std::chrono::high_resolution_clock;
 // Store the time point of the last input
 auto lastInputTime = Clock::now();
 auto currentTime = Clock::now();
-auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
+auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0;
+// Convert to seconds
 
 constexpr f32 comboWindowDuration = 1.0f;
 constexpr f32 PRESS_THRESHOLD = 0.5f;
@@ -46,8 +47,7 @@ auto comboTime = Clock::now();
 //
 //#pragma endregion
 
-
-Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
+Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	//for every anima in the con_anima
 	//if there is an anima in the con_anima
@@ -82,7 +82,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	//
 	player->attackTime = 1.f;
 	player->isAttacking = false;
-	player->combo_trig= 0;
+	player->combo_trig = 0;
 	player->comboTime = 0.0f;
 	player->comboState = 0;
 	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
@@ -92,19 +92,26 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	//// change the hitbox
 	//AEVec2Set(&player->equippedWeapon->Scale, 30.f, 20.f);
 	player->burningEffect = false;
+
+
+	//Player Stats
+	f32 max_health = 500.f;
+	f32 curr_health = max_health;
+	f32 attack = 100.f;
+	f32 defence = 50.f;
+
 	return player;
 }
 
 
 void PlayerUpdate(Player& player)
 {
-
-	//X-Axis control
-	bool isDashing = false;
-	const f32 dashDuration = 0.2f; 
-	const f32 dashSpeedMultiplier = 20.0f;
-	const f32 dashCooldownTime = 1.0f; 
-	f32 dashCooldown = 0.0f;
+	////X-Axis control
+	//bool isDashing = false;
+	//const f32 dashDuration = 0.2f; 
+	//const f32 dashSpeedMultiplier = 20.0f;
+	//const f32 dashCooldownTime = 1.0f; 
+	//f32 dashCooldown = 0.0f;
 
 	//if (player.velocity.y < player.gravityForce + 0.001f)
 	//{
@@ -117,52 +124,55 @@ void PlayerUpdate(Player& player)
 	//	std::cout << "HI\n";
 	//}
 
+
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
 	}
 
 	//Just for fun
-	if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
-		//isDashing = true;
-		//dashCooldown = dashCooldownTime;
+	//if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
+	//isDashing = true;
+	//dashCooldown = dashCooldownTime;
 
-		//// Determine dash direction based on current movement
-		//if (AEInputCheckCurr(AEVK_D)) {
-		//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-		//	player.isFacingRight = true;
-		//}
-		//else if (AEInputCheckCurr(AEVK_A)) {
-		//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-		//	player.isFacingRight = false;
-		//}
-	}
-	else
+	//	//// Determine dash direction based on current movement
+	//	//if (AEInputCheckCurr(AEVK_D)) {
+	//	//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+	//	//	player.isFacingRight = true;
+	//	//}
+	//	//else if (AEInputCheckCurr(AEVK_A)) {
+	//	//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
+	//	//	player.isFacingRight = false;
+	//	//}
+	//}
+	//else
+	//{
+	if (AEInputCheckCurr(AEVK_D))
 	{
-		if (AEInputCheckCurr(AEVK_D)) {
-			player.velocity.x += player.obj.speed.x * AEFrameRateControllerGetFrameTime();
-			player.isFacingRight = true;
-		}
-		else if (AEInputCheckCurr(AEVK_A)) {
-			player.velocity.x -= player.obj.speed.x * AEFrameRateControllerGetFrameTime();
-			player.isFacingRight = false;
-		}
+		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+		player.isFacingRight = true;
 	}
+	else if (AEInputCheckCurr(AEVK_A))
+	{
+		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+		player.isFacingRight = false;
+	}
+	//}
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
 
 	// Update dash cooldown
-	if (dashCooldown > 0.0f) {
-		dashCooldown -= AEFrameRateControllerGetFrameTime();
-		if (dashCooldown <= 0.0f) {
-			isDashing = false;
-		}
-	}
+	//if (dashCooldown > 0.0f) {
+	//	dashCooldown -= (f32)AEFrameRateControllerGetFrameTime();
+	//	if (dashCooldown <= 0.0f) {
+	//		isDashing = false;
+	//	}
+	//}
 
 
 	// Calculate the desired location
-	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
+	AEVec2 desiredLocation{player.velocity.x * player.lookAheadMutliplier, 0.f};
 	AEVec2Add(&player.expectedLocation, &player.obj.pos, &desiredLocation);
 
 	//For friction
@@ -170,7 +180,7 @@ void PlayerUpdate(Player& player)
 	{
 		player.velocity.x *= 0.85f; //Friction application
 	}
-	
+
 	//Start of armor equip
 	if (AEInputCheckTriggered(AEVK_1))
 	{
@@ -208,14 +218,15 @@ void PlayerUpdate(Player& player)
 		player.velocity.y = 400.f;
 	}
 
-	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling);
+	//Velocity passed in must be modifiable, mass can be adjusted if needed to
 	//
 	//std::cout << "Player on floor: " << player.onFloor << std::endl;
 	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
 	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
-	player.obj.pos.y += player.velocity.y * AEFrameRateControllerGetFrameTime();
+	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 	player.obj.pos.x += player.velocity.x;
 
 	//Resetting main AABB box...
@@ -274,7 +285,8 @@ void PlayerUpdate(Player& player)
 	}
 	if (if_there_is_undealt_trigger_input)
 	{
-		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
+		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
+			1000.0; // Convert to seconds
 		if (elapsedTime >= PRESS_THRESHOLD && !is_released)
 		{
 			if (player.comboState == 2) //held
@@ -389,7 +401,6 @@ void PlayerUpdate(Player& player)
 		//		player.comboState = 0;   // Reset combo state
 
 
-
 		//	}
 		//	else
 		//	{
@@ -420,13 +431,13 @@ void PlayerUpdate(Player& player)
 	//150.f refers to the cam boundary;
 	if ((player.expectedLocation.x > cam.x + camXBoundary) && player.isFacingRight)
 	{
-		AEVec2 desiredCamLocation{ cam.x + camXBoundary,0.f };
+		AEVec2 desiredCamLocation{cam.x + camXBoundary, 0.f};
 		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
 		AEGfxSetCamPosition(desiredCamLocation.x - camXBoundary, cam.y);
 	}
 	else if ((player.expectedLocation.x < cam.x - camXBoundary) && !player.isFacingRight)
 	{
-		AEVec2 desiredCamLocation{ cam.x - camXBoundary,0.f };
+		AEVec2 desiredCamLocation{cam.x - camXBoundary, 0.f};
 		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
 		AEGfxSetCamPosition(desiredCamLocation.x + camXBoundary, cam.y);
 	}
