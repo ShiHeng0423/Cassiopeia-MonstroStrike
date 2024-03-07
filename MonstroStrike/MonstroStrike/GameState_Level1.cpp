@@ -1,26 +1,4 @@
-#include "GameState_Level1.h"
-#include "AEEngine.h"
-#include "GameStateManager.h"
-#include "TransformMatrix.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "EnemyUtils.h"
-#include <iostream>
-
-#include "CSVMapLoader.h"
-#include "GridTypesList.h"
-#include "Physics.h"
-#include "CollisionShape.h" //For Vertical + Horizontal collision
-#include <string>
-#include "Camera.h"
-#include <vector>
-
-#include "MapPlatformGenerate.h"
-#include "NonPlayableCharacters.h"
-
-#include "ParticleSystem.h"
-
-#include "Inventory.h"
+#include "LevelHeaders.h"
 
 namespace
 {
@@ -360,18 +338,63 @@ void Level1_Initialize()
 
 #pragma endregion
 
+#pragma region PauseMenu
+
+	for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
+	{
+		PauseMenuButtons[i].pTex = ButtonFrame;
+		AEVec2Set(&PauseMenuButtons[i].scale, 250.f, 80.f);
+		AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
+
+		switch (i)
+		{
+		case Interactable::Resume:
+			PauseMenuButtons[i].Ptr = ResumeGame;
+			break;
+		case Interactable::Return:
+			PauseMenuButtons[i].Ptr = ReturnLobby;
+			break;
+		case Interactable::Controls:
+			PauseMenuButtons[i].Ptr = OpenControls;
+			break;
+		case Interactable::Quit:
+			PauseMenuButtons[i].Ptr = QuitConfirmation;
+			break;
+		default:
+			break;
+		}
+	}
+
+	QuitToMainmenu[0].pTex = ButtonFrame;
+	AEVec2Set(&QuitToMainmenu[0].scale, 250.f, 80.f);
+	AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+	QuitToMainmenu[0].Ptr = BackPauseMenu;
+
+	QuitToMainmenu[1].pTex = ButtonFrame;
+	AEVec2Set(&QuitToMainmenu[1].scale, 250.f, 80.f);
+	AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+	QuitToMainmenu[1].Ptr = QuitMainmenu;
+
+	BackButton.pTex = ButtonFrame;
+	AEVec2Set(&BackButton.scale, 250.f, 80.f);
+	AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+	BackButton.Ptr = BackPauseMenu;
+
+	currScene = CurrentScene::MainScene;
+
+	pauseMenuBackground.pTex = PauseMenuBackground;
+	pauseMenuBackground.scale.x = 1000.f;
+	pauseMenuBackground.scale.y = 500.f;
+	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
+#pragma endregion PauseMenu
+
 #pragma region Enemy
-
-	Enemy_Init({ 70.f,70.f }, { 1200.f,-320.f }, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({ 70.f,70.f }, { -500.f,-100.f }, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({ 70.f,70.f }, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({100.f,100.f}, {500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f,70.f}, { -500.f,250.f }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({ 70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
-
-#pragma endregion
-
-	ParticleInitialize();	//Initialize NPCs
-	InitializeNPC();
-	cam = new Camera(player->obj.pos);
+#pragma endregion Enemy
+	ParticleInitialize();
 }
 
 void Level1_Update()
@@ -553,13 +576,14 @@ void Level1_Update()
 						enemy.loop_idle = false;
 					}
 
-
-					for (Bullet& bullet : enemy.bullets) {
-						if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
-							bullet.lifetime = 0; //makes bullet erase
-
+					if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1) {
+						for (Bullet& bullet : enemy.bullets) {
+							if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
+								bullet.lifetime = 0; //makes bullet erase
+							}
 						}
 					}
+
 				}
 
 				break;
