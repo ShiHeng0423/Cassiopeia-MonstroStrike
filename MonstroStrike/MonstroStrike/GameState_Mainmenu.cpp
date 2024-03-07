@@ -285,7 +285,7 @@ void BackMainMenu()
 
 void GoNewGameLevel1()
 {
-	next = GameStates::Area1;
+	next = GameStates::GameLobby;
 }
 
 void GoLoadSaveLevel()

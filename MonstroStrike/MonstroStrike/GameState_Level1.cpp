@@ -1,26 +1,4 @@
-#include "GameState_Level1.h"
-#include "AEEngine.h"
-#include "GameStateManager.h"
-#include "TransformMatrix.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "EnemyUtils.h"
-#include <iostream>
-
-#include "CSVMapLoader.h"
-#include "GridTypesList.h"
-#include "Physics.h"
-#include "CollisionShape.h" //For Vertical + Horizontal collision
-#include <string>
-#include "Camera.h"
-#include <vector>
-
-#include "MapPlatformGenerate.h"
-#include "NonPlayableCharacters.h"
-
-#include "ParticleSystem.h"
-
-#include "Inventory.h"
+#include "LevelHeaders.h"
 
 namespace
 {
@@ -113,60 +91,17 @@ namespace
 
 AEGfxTexture* bulletTex = nullptr;
 
-
-//temporary code section
-void Equip(int index, ButtonGearUI tmp)
-{
-	equipmentDisplay[index].img.pTex = tmp.img.pTex;
-	if (!tmp.isWeapon)
-	{
-		gear_equipped++;
-		if (gear_equipped == 4)
-			hp *= 2;
-	}
-	else
-	{
-		player->burningEffect = true;
-	}
-}
-
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxTriAdd(
-		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f,  // bottom-left: red
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	AEGfxTriAdd(
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		0.5f, 0.5f, MeshColor, 1.0f, 0.0f,    // top-right: white
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	return AEGfxMeshEnd();
-}
-
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxVertexAdd(-0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-	AEGfxVertexAdd(0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-
-	return AEGfxMeshEnd();
-}
-
-#pragma region PauseMenu
-
-void ResumeGame() { currScene = CurrentScene::MainScene; }
-void ReturnLobby() { /* go back to village aka safe spot */ }
-void OpenControls() { currScene = CurrentScene::ControlScene; }
-void QuitMainmenu() { next = GameStates::SplashScreen; }
-void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
-void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
-
-#pragma endregion PauseMenu
+//
+//#pragma region PauseMenu
+//
+//void ResumeGame() { currScene = CurrentScene::MainScene; }
+//void ReturnLobby() { /* go back to village aka safe spot */ }
+//void OpenControls() { currScene = CurrentScene::ControlScene; }
+//void QuitMainmenu() { next = GameStates::SplashScreen; }
+//void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
+//void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
+//
+//#pragma endregion PauseMenu
 
 void Level1_Load()
 {
@@ -772,62 +707,6 @@ void Level1_Draw()
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-
-
-	for (Enemy& enemy : vecEnemy) {
-		if (enemy.isAlive) {
-
-
-			if (enemy.isShooting) {
-				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-				AEGfxTextureSet(enemy.angrytex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
-			}
-			else {
-				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
-
-			}
-
-
-			//if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-			//	if (enemy.isShooting) {
-			//		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-			//	}
-			//	else {
-			//		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-			//	}
-
-
-			//	AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-			//	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
-			//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			//}
-			//if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-			//	if (enemy.isShooting) {
-			//		AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-			//	}
-			//	else {
-			//		AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-			//	}
-
-			//	AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-			//	AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
-			//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			//}
-		}
-	}
-
 
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);

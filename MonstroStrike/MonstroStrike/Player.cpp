@@ -142,7 +142,7 @@ void PlayerUpdate(Player& player)
 	//}
 
 	// Apply velocity constraints
-	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
+	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
 
 	// Update dash cooldown
 	//if (dashCooldown > 0.0f) {
@@ -197,7 +197,7 @@ void PlayerUpdate(Player& player)
 	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
 	{
 		player.onFloor = false;
-		player.velocity.y = 400.f;
+		player.velocity.y = 700.f;
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
