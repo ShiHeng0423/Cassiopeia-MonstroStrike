@@ -67,7 +67,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TriggerAttack.cpp">
-      <Filter>Source Files</Filter>
+          <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
@@ -79,7 +79,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Crafting.cpp">
-      <Filter>Source Files</Filter>
+          <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MapPlatformGenerate.cpp">
       <Filter>Source Files</Filter>
@@ -158,9 +158,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="test.json">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Assets\GameMap_Lobby.csv">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -289,19 +286,19 @@
       <Filter>Header Files\RapidJason Header</Filter>
     </ClInclude>
     <ClInclude Include="TriggerAttack.h">
-      <Filter>Header Files</Filter>
+          <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MapPlatformGenerate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+        <ClInclude Include="Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Crafting.h">
-      <Filter>Header Files</Filter>
+          <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NonPlayableCharacters.h">
       <Filter>Header Files</Filter>
@@ -313,9 +310,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LevelHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

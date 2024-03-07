@@ -60,8 +60,6 @@ struct EnemyPart {
 
 
 struct Enemy {
-
-	EnemyPart wing1, wing2;
 	Object obj;
 	AEGfxTexture* angrytex;
 
@@ -110,6 +108,8 @@ struct Enemy {
 	std::vector<Bullet> bullets;	// Shared vector container for bullets
 	AEVec2 spawnPoint;				//point the bullet spawns from
 
+
+	EnemyPart wing1, wing2;
 };
 
 

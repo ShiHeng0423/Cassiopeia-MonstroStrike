@@ -143,7 +143,7 @@ void PlayerUpdate(Player& player)
 	//}
 
 	// Apply velocity constraints
-	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
+	player.velocity.x = AEClamp(player.velocity.x, -400.f, 400.f);
 
 	// Update dash cooldown
 	//if (dashCooldown > 0.0f) {
@@ -198,7 +198,7 @@ void PlayerUpdate(Player& player)
 	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
 	{
 		player.onFloor = false;
-		player.velocity.y = 700.f;
+		player.velocity.y = 400.f;
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
@@ -212,7 +212,7 @@ void PlayerUpdate(Player& player)
 	player.prevPos = player.obj.pos;
 	player.prevcollisionBox = player.collisionBox;
 	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
-	player.obj.pos.x += player.velocity.x;
+	player.obj.pos.x += player.velocity.x * (f32)AEFrameRateControllerGetFrameTime();
 
 	//Resetting main AABB box...
 	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.5f;

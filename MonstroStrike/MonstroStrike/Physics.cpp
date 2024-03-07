@@ -79,7 +79,7 @@ f32 DotProduct(const AEVec2& first, const AEVec2& second)
 void ApplyGravity(AEVec2 *velocity, f32 mass, bool* onFloor, f32* gForce, bool* startedFalling)
 {
 	AEVec2 gravityForce;
-	AEVec2 gravity = { 0.f, -20.81f }; //The acceleration aka gravity
+	AEVec2 gravity = { 0.f, -9.81f }; //The acceleration aka gravity
 	AEVec2Scale(&gravityForce, &gravity, mass); //Force = Mass x Acceleration
 	AEVec2Scale(velocity, velocity, 0.98f); //Dampen, maybe add terminal velocity if needed to
     *gForce = velocity->y;
