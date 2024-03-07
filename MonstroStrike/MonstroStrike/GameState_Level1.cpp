@@ -489,7 +489,7 @@ void Level1_Update()
 		{
 			if (enemy.isAlive)
 			{
-				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
+				CheckWeaponCollision(player->equippedWeapon, enemy, *player);
 			}
 		}
 	}
@@ -876,10 +876,10 @@ void Level1_Draw()
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	if (player->isAttacking)
 	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
-		                                                player->equippedWeapon.position.y, 0.f,
-		                                                player->equippedWeapon.Scale.x,
-		                                                player->equippedWeapon.Scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon->position.x,
+		                                                player->equippedWeapon->position.y, 0.f,
+		                                                player->equippedWeapon->Scale.x,
+		                                                player->equippedWeapon->Scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 	}
 
