@@ -116,11 +116,6 @@ void PlayerUpdate(Player& player)
 	//	std::cout << "HI\n";
 	//}
 
-	//Player Stats
-	f32 max_health = 500.f;
-	f32 curr_health = max_health;
-	f32 attack = 100.f;
-	f32 defence = 50.f;
 
 	if (player.isFalling)
 	{
