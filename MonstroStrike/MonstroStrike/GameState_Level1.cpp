@@ -101,61 +101,6 @@ int playerGridMinY;
 int playerGridMaxX;
 int playerGridMaxY;
 
-
-//temporary code section
-void Equip(int index, ButtonGearUI tmp)
-{
-	equipmentDisplay[index].img.pTex = tmp.img.pTex;
-	if (!tmp.isWeapon)
-	{
-		gear_equipped++;
-		if (gear_equipped == 4)
-			hp *= 2;
-	}
-	else
-	{
-		player->burningEffect = true;
-	}
-}
-
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxTriAdd(
-		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f,  // bottom-left: red
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	AEGfxTriAdd(
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		0.5f, 0.5f, MeshColor, 1.0f, 0.0f,    // top-right: white
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	return AEGfxMeshEnd();
-}
-
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxVertexAdd(-0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-	AEGfxVertexAdd(0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-
-	return AEGfxMeshEnd();
-}
-
-#pragma region PauseMenu
-
-void ResumeGame() { currScene = CurrentScene::MainScene; }
-void ReturnLobby() { /* go back to village aka safe spot */ }
-void OpenControls() { currScene = CurrentScene::ControlScene; }
-void QuitMainmenu() { next = GameStates::SplashScreen; }
-void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
-void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
-
-#pragma endregion PauseMenu
-
 void Level1_Load()
 {
 
@@ -255,6 +200,8 @@ void Level1_Initialize()
 	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
 	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
 #pragma endregion
+
+	cam = new Camera(player->obj.pos);
 
 #pragma region PauseMenu
 
