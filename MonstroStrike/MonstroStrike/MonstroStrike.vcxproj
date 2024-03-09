@@ -117,6 +117,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="GameState_SplashScreen.cpp" />
     <ClCompile Include="MapTransition.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="TextPrinting.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
@@ -187,6 +188,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\uri.h" />
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
+    <ClInclude Include="TextPrinting.h" />
     <ClInclude Include="TransformMatrix.h" />
     <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />

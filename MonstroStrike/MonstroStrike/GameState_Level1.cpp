@@ -1,4 +1,5 @@
 #include "LevelHeaders.h"
+#include "MapTransition.h"
 
 namespace
 {
@@ -286,14 +287,16 @@ void Level1_Initialize()
 	Enemy_Init({70.f,70.f}, { -500.f,player->obj.pos.y }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
 #pragma endregion Enemy
+	
 	ParticleInitialize();
+	MapTransitionInit(player->obj.pos);
 }
 
 void Level1_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
+	MapTransitionUpdate(player->obj.pos);
 
 #pragma region PlayerButton
 
@@ -897,6 +900,8 @@ void Level1_Draw()
 	{
 		next = MainMenu;
 	}
+
+	MapTransitionDraw();
 }
 
 void Level1_Free()

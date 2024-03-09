@@ -1,5 +1,5 @@
 #include "LevelHeaders.h"
-
+#include "MapTransition.h"
 namespace {
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
@@ -140,7 +140,7 @@ void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
 
 void GameLobby_Load()
 {
-	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,0.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 	//Load map
@@ -186,6 +186,8 @@ void GameLobby_Load()
 
 void GameLobby_Initialize()
 {
+	MapTransitionInit(player->obj.pos);
+
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
@@ -279,9 +281,6 @@ void GameLobby_Initialize()
 
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
-
-	//looping thru to init all enemy variables
-
 #pragma region PauseMenu
 
 	for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
@@ -333,17 +332,13 @@ void GameLobby_Initialize()
 #pragma endregion PauseMenu
 
 	ParticleInitialize();
+
 }
 
 void GameLobby_Update()
 {
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
-
-	if (AEInputCheckTriggered(AEVK_9))
-	{
-		next = GameStates::Area1;
-	}
 
 	if (AEInputCheckTriggered(AEVK_LBUTTON))
 	{
@@ -452,7 +447,11 @@ void GameLobby_Update()
 			case MAP_TRANSITION_GRID:
 				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
 				{
-					next = GameStates::Area1;
+					std::cout << "Collided\n";
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
+					}
 				}
 				break;
 			case EMPTY:
@@ -593,6 +592,7 @@ void GameLobby_Update()
 
 	UpdateNPC();
 	ParticleUpdate();
+	MapTransitionUpdate(player->obj.pos);
 }
 
 void GameLobby_Draw()
@@ -768,8 +768,10 @@ void GameLobby_Draw()
 
 	if (AEInputCheckTriggered(AEVK_G))
 	{
-		next = MainMenu;
+		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::Area1); //Play the newly set animation here
 	}
+
+	MapTransitionDraw();
 }
 
 void GameLobby_Free()

@@ -105,18 +105,10 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			enemy.enemyNext = ENEMY_CHASE;
 
 		}
-
-
-
 		break;
 	default:
 		break;
 	}
-
-
-
-
-
 
 	//for gravity
 	//enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
