@@ -30,11 +30,12 @@ void MoveTowardsFLY(Enemy& enemy, AEVec2 target_position) {
 
 	// Calculate the distance to move based on speed and elapsed time
 	float delta_time = (f32)AEFrameRateControllerGetFrameTime();
-	enemy.velocity.x = enemy.speed * delta_time;
-	enemy.velocity.y = enemy.speed * delta_time;
+	if (enemy.enemyCurrent != ENEMY_TRANSITION) {
+		enemy.velocity.x = enemy.speed * delta_time;
+		enemy.obj.pos.x += x_direction * enemy.velocity.x;
+	} 
 
-	// Update the position based on the calculated direction and distance
-	enemy.obj.pos.x += x_direction * enemy.velocity.x;
+	enemy.velocity.y = enemy.speed * delta_time;
 	enemy.obj.pos.y += y_direction * enemy.velocity.y;
 }
 
