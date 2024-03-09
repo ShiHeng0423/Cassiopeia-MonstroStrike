@@ -60,7 +60,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			// Informing the system about the loop's start
 			AESysFrameStart();
-
 			fpUpdate();
 			fpDraw();
 

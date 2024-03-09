@@ -337,6 +337,7 @@ void GameLobby_Initialize()
 
 void GameLobby_Update()
 {
+
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 

@@ -113,7 +113,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		enemy.speed = 50.f;
-		enemy.lineOfSight = 300.f;
+		enemy.lineOfSight = 500.f;
 		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;

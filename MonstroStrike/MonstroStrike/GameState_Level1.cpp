@@ -89,19 +89,20 @@ namespace
 	//Button inventoryBackground;
 }
 
+
 AEGfxTexture* bulletTex = nullptr;
 
-//
-//#pragma region PauseMenu
-//
+
+#pragma region PauseMenu
+
 //void ResumeGame() { currScene = CurrentScene::MainScene; }
 //void ReturnLobby() { /* go back to village aka safe spot */ }
 //void OpenControls() { currScene = CurrentScene::ControlScene; }
 //void QuitMainmenu() { next = GameStates::SplashScreen; }
 //void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
 //void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
-//
-//#pragma endregion PauseMenu
+
+#pragma endregion PauseMenu
 
 void Level1_Load()
 {
@@ -296,6 +297,8 @@ void Level1_Update()
 	if (AEFrameRateControllerGetFrameRate() < 59.f) {
 		std::cout << AEFrameRateControllerGetFrameRate() << "\n";
 	}
+
+
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 
@@ -412,22 +415,25 @@ void Level1_Update()
 	}
 
 
-	// if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
-	// {
-	// 	next = GameStates::Quit;
-	// 	//cam->CameraShake();
-	// }
+	 //if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
+	 //{
+	 //	next = GameStates::Quit;
+	 //	//cam->CameraShake();
+	 //}
 
-	// if (AEInputCheckTriggered(AEVK_0))
-	// {
-	// 	//next = GameStates::Quit;
-	// 	AEVec2 test{100.f, 100.f};
-	// 	cam->LookAhead(test);
-	// }
-	// if (AEInputCheckCurr(AEVK_1))
-	// {
-	// 	cam->CameraShake();
-	// }
+	 //if (AEInputCheckTriggered(AEVK_0))
+	 //{
+	 //	//next = GameStates::Quit;
+	 //	AEVec2 test{100.f, 100.f};
+	 //	cam->LookAhead(test);
+	 //}
+	 //if (AEInputCheckCurr(AEVK_1))
+	 //{
+	 //	cam->CameraShake();
+	 //}
+
+
+
 
 	//For printing the grids every frame
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
