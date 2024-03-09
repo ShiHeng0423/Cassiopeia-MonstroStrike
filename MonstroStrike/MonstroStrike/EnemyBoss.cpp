@@ -70,27 +70,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 		break;
 
-	//case ENEMY_CHASE:
-
-	//	if (distanceFromPlayer <= enemy.shootingRange) {
-	//		enemy.enemyNext = ENEMY_ATTACK;
-	//	}
-	//	else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-	//		enemy.enemyNext = ENEMY_CHASE;
-	//		MoveTowards(enemy, player.obj.pos);
-
-
-
-	//	}
-
-	//	break;
-
 	case ENEMY_ATTACK:
 		if (enemy.wing1.isAlive && enemy.wing2.isAlive) {
 
-			static int loopCounter = 0;	//each wing to shoot 20 bullets, then swap wing
+			static int loopCounter = 0;	//each wing to shoot n bullets, then swap wing
 
-			if (loopCounter < 20) {
+			if (loopCounter < 20) {	//20bullets
 				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
 					Spawnloc.x = enemy.wing1.obj.pos.x;
 					Spawnloc.y = enemy.wing1.obj.pos.y;
@@ -113,16 +98,89 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 
 		else {
+			//static bool isChoosing = true;
+
+			//static bool isCharging = false;
+			//static bool isReversing = false;
+			//static bool isJumping = false;
+
 			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
-			if (enemy.timePassed >= 0.5f) {
-				enemy.timePassed = 0.0f;
-				if (enemy.onFloor) {
-					Jump(enemy, 500.f);
+
+			//locking on which direction to dash
+			if (enemy.target_position == ENEMY_DEFAULT) {
+				if (enemy.obj.pos.x >= player.obj.pos.x) {
+					enemy.target_position = ENEMY_LEFT;
+				}
+				else {
+					enemy.target_position = ENEMY_RIGHT;
 				}
 			}
-			if (!enemy.onFloor) {
+
+			switch (enemy.attackState) {
+			case ENEMY_ATTACK_CHOOSING:
+
+				if (enemy.timePassed >= 2.f) {
+					enemy.timePassed = 0.0f;
+					switch (rand() % 2) {	//randomize is seeded 
+					case 0:
+						enemy.timePassed = 0.f;
+						enemy.attackState = ENEMY_ATTACK_JUMP;
+						break;
+					case 1:
+
+						//set way point
+						enemy.waypoint = { enemy.obj.pos.x, enemy.obj.pos.y };
+						if (enemy.target_position == ENEMY_LEFT) {
+							enemy.waypoint.x += 30.f;	//go right
+						}
+						else if (enemy.target_position == ENEMY_RIGHT) {
+							enemy.waypoint.x -= 30.f;	//go left
+						}
+						enemy.attackState = ENEMY_ATTACK_REVERSE;
+						enemy.speed = 120.f;
+
+						break;
+					}
+
+				}
+				break;
+			case ENEMY_ATTACK_CHARGE:
+
+				Attack_Charge(enemy, enemy.target_position, 400.f);
+				if (enemy.timePassed >= 1.5f) {
+					enemy.timePassed = 0.0f;
+					enemy.speed = 80.f;
+					enemy.target_position = ENEMY_DEFAULT;
+					enemy.attackState = ENEMY_ATTACK_CHOOSING;
+				}
+				break;
+			case ENEMY_ATTACK_JUMP:
+
+				if (enemy.timePassed >= 0.5f) {
+					enemy.timePassed = 0.0f;
+					if (enemy.onFloor) {
+						Jump(enemy, 500.f);
+						enemy.attackState = ENEMY_ATTACK_CHOOSING;
+					}
+				}
+				break;
+			case ENEMY_ATTACK_REVERSE:
+
+				MoveTowards(enemy, enemy.waypoint);
+				if (reachedPos(enemy, enemy.waypoint)) {
+					enemy.attackState = ENEMY_ATTACK_CHARGE;
+					enemy.speed = 200.f;
+				}
+				break;
+			}//switch end
+
+
+
+			if (!enemy.onFloor) { //for the jumping
 				MoveTowards(enemy, player.obj.pos);
 			}
+
+
 		}
 
 
@@ -163,7 +221,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	}
 	
 	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;	//changing this to 0.25 will make the bullet glitch
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
 	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;

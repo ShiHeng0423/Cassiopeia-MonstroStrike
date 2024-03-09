@@ -53,12 +53,12 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 		break;
 	case ENEMY_TRANSITION:
 
-		//Lock on
-		if (enemy.target_position == ENEMY_DEFAULT) {	//finding which direction to charge towards
+		// Lock on
+		if (enemy.target_position == ENEMY_DEFAULT) {
 			if (enemy.obj.pos.x >= player.obj.pos.x) {
 				enemy.target_position = ENEMY_LEFT;
 			}
-			if (enemy.obj.pos.x <= player.obj.pos.x) {
+			else {
 				enemy.target_position = ENEMY_RIGHT;
 			}
 		}
@@ -75,7 +75,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 
 		break;
 	case ENEMY_ATTACK: 
-		Attack_Charge(enemy, enemy.target_position);	//the charge attack
+		Attack_Charge(enemy, enemy.target_position, 200.f);	//the charge attack
 
 		if (enemy.isCollision == true) {
 
