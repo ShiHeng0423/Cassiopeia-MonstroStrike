@@ -85,6 +85,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.enemyCurrent = ENEMY_IDLE;
 	enemy.enemyNext = ENEMY_IDLE;
 
+	enemy.attackState = ENEMY_ATTACK_DEFAULT;
+
 	enemy.isAlive = true;
 	enemy.isShooting = false;
 	enemy.isCollision = false;
@@ -96,11 +98,6 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	//AABB Box init, Collision boxes
 	enemy.onFloor = true;
 	enemy.isFalling = false;
-
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
 	AEVec2Set(&enemy.boxArms.maximum, 0.f, 0.f);
 	AEVec2Set(&enemy.boxHeadFeet.maximum, 0.f, 0.f);
@@ -148,6 +145,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		break;
 	case ENEMY_BOSS1:
 		//main body
+		enemy.attackState = ENEMY_ATTACK_CHOOSING;
 		enemy.isFlying = true;
 		enemy.speed = 80.f;
 		enemy.lineOfSight = 1000.f;
@@ -155,14 +153,14 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
-		enemy.mass = 80.f;
+		enemy.mass = 150.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 
 		//wing1
 		enemy.wing1.isAlive = false;
 		enemy.wing1.Offset = 70.f;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x, scale.y); //set scale of the image
+		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x + 30.f, scale.y + 30.f); //set scale of the image
 		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
 		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
 		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
@@ -175,7 +173,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing2.isAlive = false;
 		enemy.wing2.Offset = -70.f;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x, scale.y); //set scale of the image
+		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x + 30.f, scale.y + 30.f); //set scale of the image
 		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
 		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
 		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
@@ -251,11 +249,28 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		break;
 	case ENEMY_BOSS2:
 		break;
-
 	default:
 		break;
-
 	}
+
+
+	//main body collision box
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+
+	f32 verticalOffset = enemy.obj.img.scale.y * 0.02f;
+	//Vertical
+	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
+	enemy.boxHeadFeet.minimum.y -= verticalOffset;
+	enemy.boxHeadFeet.maximum.y += verticalOffset;
+
+	f32 horizontalOffset = enemy.obj.img.scale.x * 0.02f;
+	//Horizontal
+	enemy.boxArms = enemy.collisionBox;
+	enemy.boxArms.minimum.x -= horizontalOffset;
+	enemy.boxArms.maximum.x += horizontalOffset;
 
 
 }

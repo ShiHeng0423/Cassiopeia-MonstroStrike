@@ -23,6 +23,15 @@ enum ENEMY_STATES
 	ENEMY_TRANSITION,
 };
 
+enum ENEMY_ATTACK_STATE {
+
+	ENEMY_ATTACK_DEFAULT = 0,
+	ENEMY_ATTACK_CHARGE,
+	ENEMY_ATTACK_JUMP,
+	ENEMY_ATTACK_REVERSE,
+	ENEMY_ATTACK_CHOOSING,
+};
+
 enum ENEMY_TYPES 
 {
 	ENEMY_JUMPER = 0,
@@ -74,6 +83,8 @@ struct Enemy {
 	int enemyCurrent;
 	int enemyNext;
 	int enemyType;
+	
+	int attackState;
 	
 	bool isAlive;
 	bool isShooting;
@@ -131,22 +142,6 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player);
 void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player);
 void ENEMY_FLY_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 
 
 
-//(EnemyUtils)-------------------------------------------------------------------------
-void MoveTowards(Enemy& moving_entity, AEVec2 target_position);
-void MoveTowardsFLY(Enemy& moving_entity, AEVec2 target_position);	//only for the flying enemy
-bool CanFire(Enemy& enemy);
-bool CanPartFire(EnemyPart& part);
-void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
-void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
-
-void Attack_Charge(Enemy& enemy, int target_position);
-bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
-void Jump(Enemy& enemy, f32 value);
-void isStuck(Enemy& enemy);
-
-//(EnemyUtils)-------------------------------------------------------------------------

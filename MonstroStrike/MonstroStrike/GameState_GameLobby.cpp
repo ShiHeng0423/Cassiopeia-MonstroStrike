@@ -9,6 +9,8 @@ namespace {
 
 	Grids2D grids2D[MAP_ROW_LOBBY_SIZE][MAP_COLUMN_LOBBY_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap; //Map for this level
+	std::vector<AEVec2> NPCPositions;
+
 
 	Player* player;
 
@@ -197,6 +199,21 @@ void GameLobby_Initialize()
 			case 1:
 				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
 				break;
+			case 9:
+				grids2D[rows][cols].typeOfGrid = NONE;
+				break;
+			case 10:
+				grids2D[rows][cols].typeOfGrid = NPC_BLACKSMITH_A_POS;
+				break;
+			case 11:
+				grids2D[rows][cols].typeOfGrid = NPC_BLACKSMITH_B_POS;
+				break;
+			case 12:
+				grids2D[rows][cols].typeOfGrid = NPC_QUEST_GIVER_POS;
+				break;
+			case 98:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
+				break;
 			default:
 				grids2D[rows][cols].typeOfGrid = NONE;
 				break;
@@ -213,6 +230,18 @@ void GameLobby_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
+
+			switch (gameMap[rows][cols].symbol)
+			{
+			//These are all NPCS
+			case 10:
+			case 11:
+			case 12:
+				NPCPositions.push_back(grids2D[rows][cols].position);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 
@@ -249,7 +278,7 @@ void GameLobby_Initialize()
 	cam = new Camera(player->obj.pos);
 
 	//Initialize NPCs
-	InitializeNPC();
+	InitializeNPC(NPCPositions);
 
 	//looping thru to init all enemy variables
 
@@ -418,6 +447,12 @@ void GameLobby_Update()
 					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity);
+				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
+				{
+					next = GameStates::Area1;
 				}
 				break;
 			case EMPTY:
@@ -742,7 +777,7 @@ void GameLobby_Free()
 
 	gameMap.clear();
 	gameMap.resize(0);
-
+	NPCPositions.clear();
 	FreeNPC();
 
 	AEGfxSetCamPosition(0.f, 0.f);
