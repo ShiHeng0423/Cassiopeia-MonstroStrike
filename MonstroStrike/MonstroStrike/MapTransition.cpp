@@ -18,7 +18,7 @@ namespace {
 
 void MapTransitionLoad() {
 
-	transitionImage = AEGfxTextureLoad("Assets/TransitionImage.png");
+	//transitionImage = AEGfxTextureLoad("Assets/TransitionImage.png");
 }
 
 void MapTransitionInit() //Call when enter a new level
@@ -160,5 +160,5 @@ void MapTransitionDraw(AEGfxVertexList* pMesh) //Always the last layer so that i
 
 void MapTransitionUnload()
 {
-	AEGfxTextureUnload(transitionImage);
+	//AEGfxTextureUnload(transitionImage);
 }
