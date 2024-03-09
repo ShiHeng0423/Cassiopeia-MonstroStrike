@@ -282,7 +282,7 @@ void Level1_Initialize()
 
 #pragma region Enemy
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({100.f,100.f}, {1500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f,70.f}, {1500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
 	Enemy_Init({70.f,70.f}, { -500.f,player->obj.pos.y }, ENEMY_IDLE, vecEnemy[2]);
 	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
 #pragma endregion Enemy

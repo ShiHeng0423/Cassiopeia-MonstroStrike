@@ -157,7 +157,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				if (enemy.timePassed >= 0.5f) {
 					enemy.timePassed = 0.0f;
 					if (enemy.onFloor) {
-						Jump(enemy, 1000.f);
+						Jump(enemy, 1200.f);
 						enemy.attackState = ENEMY_ATTACK_CHOOSING;
 					}
 				}
