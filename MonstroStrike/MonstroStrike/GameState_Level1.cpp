@@ -1,26 +1,4 @@
-#include "GameState_Level1.h"
-#include "AEEngine.h"
-#include "GameStateManager.h"
-#include "TransformMatrix.h"
-#include "Player.h"
-#include "Enemy.h"
-#include "EnemyUtils.h"
-#include <iostream>
-
-#include "CSVMapLoader.h"
-#include "GridTypesList.h"
-#include "Physics.h"
-#include "CollisionShape.h" //For Vertical + Horizontal collision
-#include <string>
-#include "Camera.h"
-#include <vector>
-
-#include "MapPlatformGenerate.h"
-#include "NonPlayableCharacters.h"
-
-#include "ParticleSystem.h"
-
-#include "Inventory.h"
+#include "LevelHeaders.h"
 
 namespace
 {
@@ -113,60 +91,17 @@ namespace
 
 AEGfxTexture* bulletTex = nullptr;
 
-
-//temporary code section
-void Equip(int index, ButtonGearUI tmp)
-{
-	equipmentDisplay[index].img.pTex = tmp.img.pTex;
-	if (!tmp.isWeapon)
-	{
-		gear_equipped++;
-		if (gear_equipped == 4)
-			hp *= 2;
-	}
-	else
-	{
-		player->burningEffect = true;
-	}
-}
-
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxTriAdd(
-		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f,  // bottom-left: red
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	AEGfxTriAdd(
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		0.5f, 0.5f, MeshColor, 1.0f, 0.0f,    // top-right: white
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	return AEGfxMeshEnd();
-}
-
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxVertexAdd(-0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-	AEGfxVertexAdd(0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-
-	return AEGfxMeshEnd();
-}
-
-#pragma region PauseMenu
-
-void ResumeGame() { currScene = CurrentScene::MainScene; }
-void ReturnLobby() { /* go back to village aka safe spot */ }
-void OpenControls() { currScene = CurrentScene::ControlScene; }
-void QuitMainmenu() { next = GameStates::SplashScreen; }
-void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
-void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
-
-#pragma endregion PauseMenu
+//
+//#pragma region PauseMenu
+//
+//void ResumeGame() { currScene = CurrentScene::MainScene; }
+//void ReturnLobby() { /* go back to village aka safe spot */ }
+//void OpenControls() { currScene = CurrentScene::ControlScene; }
+//void QuitMainmenu() { next = GameStates::SplashScreen; }
+//void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
+//void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
+//
+//#pragma endregion PauseMenu
 
 void Level1_Load()
 {
@@ -202,7 +137,6 @@ void Level1_Load()
 
 	equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 	
-	LoadNPC();
 	ParticleLoad();
 
 #pragma region Mesh Creations
@@ -295,10 +229,6 @@ void Level1_Initialize()
 	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
 	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
 
-	//Initialize NPCs
-	InitializeNPC();
-
-	//looping thru to init all enemy variables
 
 #pragma region PauseMenu
 
@@ -352,9 +282,9 @@ void Level1_Initialize()
 
 #pragma region Enemy
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({70.f,70.f}, {1500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f,70.f}, { -500.f, -100.f }, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({ 70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({100.f,100.f}, {1500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f,70.f}, { -500.f,player->obj.pos.y }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
 #pragma endregion Enemy
 	ParticleInitialize();
 }
@@ -526,7 +456,6 @@ void Level1_Update()
 
 					//Check vertical box (Head + Feet) 
 					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-						enemy.isCollision = true;
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
@@ -712,7 +641,6 @@ void Level1_Update()
 	//Testing moving platform logic
 
 	UpdatePlatforms(*player, vecEnemy, platformVectors); //Numbers based on how many moving platforms
-	UpdateNPC();
 
 	if (AEInputCheckTriggered(AEVK_U))
 	{
@@ -766,14 +694,10 @@ void Level1_Draw()
 
 	}
 
-	DrawNPC(*pWhiteSquareMesh);
-
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x, player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-
 
 	for (Enemy& enemy : vecEnemy) {
 		if (enemy.isAlive) {
@@ -827,8 +751,6 @@ void Level1_Draw()
 			}
 		}
 	}
-
-
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     if (player->isAttacking)
@@ -990,8 +912,6 @@ void Level1_Free()
 	gameMap.resize(0);
 	platformVectors.clear();
 	platformVectors.resize(0);
-
-	FreeNPC();
 
 	AEGfxSetCamPosition(0.f, 0.f);
 	ParticlesFree();

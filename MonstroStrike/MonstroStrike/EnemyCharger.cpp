@@ -64,8 +64,6 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 			}
 		}
 
-
-
 		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 		enemy.isShooting = true;
 
@@ -95,25 +93,4 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
-	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;	//changing this to 0.25 will make the bullet glitch
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-
-	f32 verticalOffset = enemy.obj.img.scale.y * 0.01f;
-	//Vertical
-	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
-	enemy.boxHeadFeet.minimum.y -= verticalOffset;
-	enemy.boxHeadFeet.maximum.y += verticalOffset;
-
-	f32 horizontalOffset = enemy.obj.img.scale.x * 0.01f;
-	//Horizontal
-	enemy.boxArms = enemy.collisionBox;
-	enemy.boxArms.minimum.x -= horizontalOffset;
-	enemy.boxArms.maximum.x += horizontalOffset;
-
-
-
-
 }

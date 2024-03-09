@@ -115,6 +115,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="GameState_Level1.cpp" />
     <ClCompile Include="GameState_Mainmenu.cpp" />
     <ClCompile Include="GameState_SplashScreen.cpp" />
+    <ClCompile Include="MapTransition.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="MapPlatformGenerate.cpp" />
@@ -141,7 +142,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
     <ClInclude Include="GameState_Mainmenu.h" />
+    <ClInclude Include="LevelHeaders.h" />
     <ClInclude Include="MapPlatformGenerate.h" />
+    <ClInclude Include="MapTransition.h" />
     <ClInclude Include="NonPlayableCharacters.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="Player.h" />
@@ -198,6 +201,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <None Include="..\Assets\GameMap.csv" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Assets\GameMap_Lobby.csv" />
     <None Include="test.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

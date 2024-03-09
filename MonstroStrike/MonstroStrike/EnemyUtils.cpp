@@ -59,7 +59,6 @@ bool CanPartFire(EnemyPart& part) {
 	return false;
 }
 
-
 void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& vecbullets) {
 	//dir vec from enemy to player
 	AEVec2 direction;
@@ -73,7 +72,7 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 	bullet.lifetime = 100;													//lifetime
 	bullet.obj.img.pTex = bulletTex;										//image
 	AEVec2Set(&bullet.obj.pos, enemy_position.x, enemy_position.y);			//start position
-	AEVec2Set(&bullet.obj.img.scale, 50.f, 50.f);							//set scale of the image
+	AEVec2Set(&bullet.obj.img.scale, 25.f, 25.f);							//set scale of the image
 
 	//set velocity of bullet
 	bullet.bulletSpeed = 2.5f;
@@ -86,8 +85,6 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 
 	// Push the bullet into the vector
 	vecbullets.push_back(bullet);
-
-
 }
 
 void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
@@ -108,22 +105,8 @@ void Attack_Charge(Enemy& enemy, int target_position, f32 speed) {
 		enemy.velocity.x *= -1.0f;
 	}
 	enemy.obj.pos.x += enemy.velocity.x;
+
 }
-
-void Attack_Charge_w_Reverse(Enemy& enemy, int target_position, f32 speed, f32 reverse_offset) {
-	reverse_offset *= (enemy.target_position == ENEMY_LEFT) ? 1.0f : -1.0f;
-
-	enemy.speed = speed;
-	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
-	if (target_position == ENEMY_RIGHT) {
-		enemy.velocity.x *= 1.0f;
-	}
-	if (target_position == ENEMY_LEFT) {
-		enemy.velocity.x *= -1.0f;
-	}
-	enemy.obj.pos.x += enemy.velocity.x;
-}
-
 bool areAligned(AEVec2 player_position, AEVec2 enemy_position) {
 	float tolerance = 10.f;
 	return std::abs(player_position.y - enemy_position.y) < tolerance;

@@ -99,11 +99,6 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.onFloor = true;
 	enemy.isFalling = false;
 
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-
 	AEVec2Set(&enemy.boxArms.maximum, 0.f, 0.f);
 	AEVec2Set(&enemy.boxHeadFeet.maximum, 0.f, 0.f);
 	AEVec2Set(&enemy.collisionNormal, 0.f, 0.f);
@@ -254,11 +249,28 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		break;
 	case ENEMY_BOSS2:
 		break;
-
 	default:
 		break;
-
 	}
+
+
+	//main body collision box
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+
+	f32 verticalOffset = enemy.obj.img.scale.y * 0.02f;
+	//Vertical
+	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
+	enemy.boxHeadFeet.minimum.y -= verticalOffset;
+	enemy.boxHeadFeet.maximum.y += verticalOffset;
+
+	f32 horizontalOffset = enemy.obj.img.scale.x * 0.02f;
+	//Horizontal
+	enemy.boxArms = enemy.collisionBox;
+	enemy.boxArms.minimum.x -= horizontalOffset;
+	enemy.boxArms.maximum.x += horizontalOffset;
 
 
 }

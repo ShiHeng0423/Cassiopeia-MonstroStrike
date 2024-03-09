@@ -103,7 +103,7 @@ void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<s
 		}
 
 		//Check if player is on the platform
-		PlayerOnPlatform(platformVector[i], player);
+		PlatformCollision(platformVector[i], player);
 
 		//Check if enemy/bullet is colliding platform
 		for (Enemy& enemy : vecEnemy) {
@@ -118,7 +118,7 @@ void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<s
 	}
 }
 
-void PlayerOnPlatform(Platforms& movingObject, Player& player)
+void PlatformCollision(Platforms& movingObject, Player& player)
 {
 	bool collided = false;
 	//Vertical
@@ -158,11 +158,8 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
 			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 
-		if (enemy.collisionNormal.y == 1) //Enemy on top
-		{
-			enemy.obj.pos.x += movingObject.velocity.x;
-			enemy.obj.pos.y += movingObject.velocity.y;
-		}
+		enemy.obj.pos.x += movingObject.velocity.x;
+		enemy.obj.pos.y += movingObject.velocity.y;
 
 	}
 	//Check horizontal box (Left arm -> Right arm)
@@ -173,13 +170,13 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 		ResolveHorizontalCollision(enemy.boxArms, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
 			&enemy.velocity);
 		enemy.loop_idle = false;
+
 	}
 
 	if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1) {
 		for (Bullet& bullet : enemy.bullets) {
 			if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
 				bullet.lifetime = 0; //makes bullet erase
-
 			}
 		}
 	}
