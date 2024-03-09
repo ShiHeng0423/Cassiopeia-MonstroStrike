@@ -152,7 +152,7 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 {
 	//Check vertical box (Head + Feet) 
 	if (AABBvsAABB(enemy.boxHeadFeet, movingObject.collisionBox)) {
-		enemy.isCollision = true;
+
 		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,

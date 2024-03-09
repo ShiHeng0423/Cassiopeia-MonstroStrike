@@ -91,6 +91,8 @@ struct Enemy {
 	bool isCollision;
 	bool isFlying;
 	bool isFalling;
+	bool isCollidedWithPlayer;
+	bool isRecoil;
 
 	f32 timePassed;				//use to "pause" the enemy 
 

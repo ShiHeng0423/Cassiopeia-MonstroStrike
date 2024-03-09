@@ -110,6 +110,7 @@ void Level1_Load()
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_FLY, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
@@ -281,17 +282,20 @@ void Level1_Initialize()
 #pragma endregion PauseMenu
 
 #pragma region Enemy
-	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({70.f,70.f}, { 1500.f,-80.f }, ENEMY_IDLE, vecEnemy[0]);
 	Enemy_Init({70.f,70.f}, {1500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f,70.f}, { -500.f,player->obj.pos.y }, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({70.f,70.f}, { -500.f, -80.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f,70.f }, { -300.f, -80.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[4]);
 #pragma endregion Enemy
 	ParticleInitialize();
 }
 
 void Level1_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	if (AEFrameRateControllerGetFrameRate() < 59.f) {
+		std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	}
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 

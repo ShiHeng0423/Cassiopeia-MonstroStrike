@@ -139,3 +139,4 @@ bool reachedPos(Enemy& enemy, AEVec2 waypoint) {
 		return false;
 	}
 }
+

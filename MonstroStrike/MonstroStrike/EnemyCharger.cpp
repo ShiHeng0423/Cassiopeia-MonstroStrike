@@ -10,87 +10,95 @@
 void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
+
+	// Check collision with player
+	enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.collisionBox);
 	
 	if (enemy.health <= 0)
 	{
 		enemy.isAlive = false;
 	}
-	//std::cout << "Enemy On Floor: " << enemy.onFloor << std::endl;
-	//std::cout << "Charger Enemy vel y: " << enemy.velocity.y << std::endl;
 
-	switch (enemy.enemyCurrent)
-	{
-	case ENEMY_IDLE:
-		//std::cout << player.obj.pos.y << " " << enemy.obj.pos.y << "\n";
-		//std::cout << areAligned(player.obj.pos, enemy.obj.pos) << "\n";
-		//std::cout << enemy.onFloor << "\n";
-
-		if (distanceFromPlayer <= enemy.lineOfSight && areAligned(player.obj.pos, enemy.obj.pos)) {
-			enemy.enemyNext = ENEMY_TRANSITION;
-			enemy.isCollision = false;
-			enemy.timePassed = 0.0f;
-			enemy.loop_idle = false;
+	// Handle collision with player
+	if (enemy.isCollidedWithPlayer) {
+		if (enemy.target_position == ENEMY_LEFT) {
+			enemy.waypoint.x = enemy.obj.pos.x + 100.f; // Move right
 		}
-		else {
-			enemy.enemyNext = ENEMY_IDLE;
-
-			if (enemy.loop_idle) {
-				MoveTowards(enemy, enemy.waypoint);
-
-
-				if ((enemy.obj.pos.x >= enemy.waypoint.x - 2.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 2.0f)) {
-					enemy.loop_idle = false;
-				}
-			}
-			if ((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) {
-				enemy.loop_idle = true;
-			}
-			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-
-				MoveTowards(enemy, enemy.starting_position);
-
-			}
+		else if (enemy.target_position == ENEMY_RIGHT) {
+			enemy.waypoint.x = enemy.obj.pos.x - 100.f; // Move left
 		}
-		break;
-	case ENEMY_TRANSITION:
+		enemy.speed = 120.f;
+		enemy.isRecoil = true;
+	}
 
-		// Lock on
-		if (enemy.target_position == ENEMY_DEFAULT) {
-			if (enemy.obj.pos.x >= player.obj.pos.x) {
-				enemy.target_position = ENEMY_LEFT;
+	// If the enemy is in recoil state, move towards the waypoint until reached or collision occurs
+	if (enemy.isRecoil) {
+		MoveTowards(enemy, enemy.waypoint);
+		if (reachedPos(enemy, enemy.waypoint) || enemy.isCollision) {
+			enemy.enemyCurrent = ENEMY_IDLE;
+			enemy.speed = 80.f;
+			enemy.isRecoil = false;
+		}
+	}
+	else {
+		// Based on enemy's current state, perform appropriate actions
+		switch (enemy.enemyCurrent) {
+		case ENEMY_IDLE:
+			// Check if player is within line of sight and aligned with enemy
+			if (distanceFromPlayer <= enemy.lineOfSight && areAligned(player.obj.pos, enemy.obj.pos)) {
+				enemy.enemyNext = ENEMY_TRANSITION;
+				enemy.isCollision = false;
+				enemy.timePassed = 0.0f;
 			}
 			else {
-				enemy.target_position = ENEMY_RIGHT;
+				// If there's a collision, update target position and perform charge attack
+				if (enemy.isCollision) {
+					enemy.isCollision = false;
+					enemy.target_position = (enemy.target_position == ENEMY_LEFT) ? ENEMY_RIGHT : ENEMY_LEFT;
+				}
+				Attack_Charge(enemy, enemy.target_position, 80.f);
 			}
-		}
-
-		enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
-		enemy.isShooting = true;
-
-		if (enemy.timePassed >= 1.0f) {
-			enemy.timePassed = 0.0f;
-			enemy.enemyNext = ENEMY_ATTACK;
-		}
-
-		break;
-	case ENEMY_ATTACK: 
-		Attack_Charge(enemy, enemy.target_position, 200.f);	//the charge attack
-
-		if (enemy.isCollision == true) {
-
+			break;
+		case ENEMY_TRANSITION:
+			// Lock on to player's position
+			if (enemy.target_position == ENEMY_DEFAULT) {
+				enemy.target_position = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
+			}
+			enemy.isShooting = true;
 			enemy.isCollision = false;
-			enemy.isShooting = false;	//out of attacking mode
-			enemy.speed = 80.f;			//return to normal speed after attack
-			enemy.target_position = ENEMY_DEFAULT;
-			enemy.enemyNext = ENEMY_IDLE;
+			if (enemy.timePassed >= 1.0f) {
+				enemy.timePassed = 0.0f;
+				enemy.enemyNext = ENEMY_ATTACK;
+			}
+			break;
+		case ENEMY_ATTACK:
+			// Perform charge attack
+			Attack_Charge(enemy, enemy.target_position, 200.f);
+			if (enemy.isCollision) {
+				// Reset enemy state after collision
+				enemy.isCollision = false;
+				enemy.isShooting = false;
+				enemy.target_position = ENEMY_DEFAULT;
+				enemy.timePassed = 0.0f;
+				enemy.speed = 80.f;
+				enemy.enemyNext = ENEMY_IDLE;
+			}
+			break;
+		default:
+			break;
 		}
-		break;
-	default:
-		break;
 	}
+
+
+
+
 
 	//for gravity
 	enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	enemy.enemyCurrent = enemy.enemyNext;
 }
+
+
+

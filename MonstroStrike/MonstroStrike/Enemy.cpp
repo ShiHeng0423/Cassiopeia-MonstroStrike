@@ -91,6 +91,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.isShooting = false;
 	enemy.isCollision = false;
 	enemy.isFlying = false;
+	enemy.isCollidedWithPlayer = false;
+	enemy.isRecoil = false;
 
 	enemy.timePassed = 0.f;
 
@@ -116,7 +118,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
-		enemy.mass = 80.f;
+		enemy.mass = 50.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_CHARGER:
@@ -260,7 +262,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
-	f32 verticalOffset = enemy.obj.img.scale.y * 0.02f;
+	f32 verticalOffset = enemy.obj.img.scale.y * 0.05f;
 	//Vertical
 	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
 	enemy.boxHeadFeet.minimum.y -= verticalOffset;
