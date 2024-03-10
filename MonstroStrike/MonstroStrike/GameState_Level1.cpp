@@ -219,11 +219,11 @@ void Level1_Update()
 
 #pragma endregion
 
-	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene)
+	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
 		return;
 
 #pragma region PlayerUpdate
-	if (currScene == MainScene && !inventory_open)
+	if (currScene == MAIN_SCENE && !inventory_open)
 		PlayerUpdate(*player);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
