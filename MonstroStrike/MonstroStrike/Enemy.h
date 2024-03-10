@@ -142,23 +142,6 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player);
 void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player);
 void ENEMY_FLY_Update(Enemy& enemy, struct Player& player);
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
 
 
 
-//(EnemyUtils)-------------------------------------------------------------------------
-void MoveTowards(Enemy& moving_entity, AEVec2 target_position);
-void MoveTowardsFLY(Enemy& moving_entity, AEVec2 target_position);	//only for the flying enemy
-bool CanFire(Enemy& enemy);
-bool CanPartFire(EnemyPart& part);
-void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
-void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
-
-void Attack_Charge(Enemy& enemy, int target_position, f32 speed);
-void Attack_Charge_w_Reverse(Enemy& enemy, int target_position, f32 speed, f32 reverse_offset);
-bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
-void Jump(Enemy& enemy, f32 value);
-void isStuck(Enemy& enemy);
-bool reachedPos(Enemy& enemy, AEVec2 waypoint);
-//(EnemyUtils)-------------------------------------------------------------------------

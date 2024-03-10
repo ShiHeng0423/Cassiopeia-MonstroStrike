@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "EnemyUtils.h"
 #include "Player.h"
 #include "AEEngine.h"
 #include "Physics.h"
@@ -11,6 +12,7 @@
 void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	static f32 timePassed = 0;	//for up and down cos
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();	//time.time
 	//std::cout << enemy.isCollision << "\n";
 	if (enemy.isCollision) {
@@ -35,7 +37,6 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
 			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-
 				MoveTowardsFLY(enemy, enemy.starting_position);
 				isStuck(enemy);
 			}
@@ -110,8 +111,10 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 		break;
 	}
 
-	//for gravity
-	//enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
+	//makes enemy fluctuate up and down
+	timePassed += (f32)AEFrameRateControllerGetFrameTime();
+	f32 verticalMovement = 0.5f *cos(timePassed * (2 * PI / 0.5f));
+	enemy.obj.pos.y += enemy.velocity.y * verticalMovement;
 
 	enemy.enemyCurrent = enemy.enemyNext;
 }

@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "EnemyUtils.h"
 #include "Player.h"
 #include "AEEngine.h"
 #include "Physics.h"

@@ -1,6 +1,8 @@
 #include "Enemy.h"
+#include "EnemyUtils.h"
 #include "Player.h"
 #include "AEEngine.h"
+
 
 
 #include <iostream>
@@ -9,6 +11,7 @@
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	static f32 timePassed = 0;	//for up and down cos
 	AEVec2 Spawnloc;
 
 //health check
@@ -98,12 +101,6 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 
 		else {
-			//static bool isChoosing = true;
-
-			//static bool isCharging = false;
-			//static bool isReversing = false;
-			//static bool isJumping = false;
-
 			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 
 			//locking on which direction to dash
@@ -145,8 +142,9 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				}
 				break;
 			case ENEMY_ATTACK_CHARGE:
-				Attack_Charge(enemy, enemy.target_position, 400.f);
-				if (enemy.timePassed >= 1.5f) {
+
+				Attack_Charge(enemy, enemy.target_position, 600.f);
+				if (enemy.timePassed >= 1.f) {
 					enemy.timePassed = 0.0f;
 					enemy.speed = 80.f;
 
@@ -159,7 +157,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				if (enemy.timePassed >= 0.5f) {
 					enemy.timePassed = 0.0f;
 					if (enemy.onFloor) {
-						Jump(enemy, 500.f);
+						Jump(enemy, 1200.f);
 						enemy.attackState = ENEMY_ATTACK_CHOOSING;
 					}
 				}
@@ -169,7 +167,6 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				MoveTowards(enemy, enemy.waypoint);
 				if (reachedPos(enemy, enemy.waypoint)) {
 					enemy.attackState = ENEMY_ATTACK_CHARGE;
-					enemy.speed = 200.f;
 				}
 				break;
 			}//switch end
@@ -197,6 +194,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	//for gravity
 	if (!enemy.isFlying) {
 		enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
+	}
+	else {
+		//makes enemy fluctuate up and down
+		timePassed += (f32)AEFrameRateControllerGetFrameTime();
+		f32 verticalMovement = 0.5f * cos(timePassed * (2 * PI / 0.5f));
+		enemy.obj.pos.y += enemy.velocity.y * verticalMovement;
 	}
 
 	//wings collision box
