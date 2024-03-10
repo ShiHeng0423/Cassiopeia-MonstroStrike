@@ -274,13 +274,13 @@ void GameLobby_Update()
 				}
 				break;
 			case MAP_TRANSITION_GRID:
-				//if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
-				//{
-				//	if (!transitionalImageOBJ.active)
-				//	{
-				//		transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
-				//	}
-				//}
+				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
+				{
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
+					}
+				}
 				break;
 			case EMPTY:
 				break;
