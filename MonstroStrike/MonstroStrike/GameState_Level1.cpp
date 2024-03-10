@@ -221,8 +221,10 @@ void Level1_Update()
 	menu->Update(cam);
 
 #pragma endregion
+
 	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene)
 		return;
+
 #pragma region PlayerUpdate
 	if (currScene == MainScene && !inventory_open)
 		PlayerUpdate(*player);
