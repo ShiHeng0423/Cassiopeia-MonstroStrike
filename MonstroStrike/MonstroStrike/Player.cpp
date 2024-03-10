@@ -22,8 +22,8 @@ constexpr f32 comboWindowDuration = 1.0f;
 constexpr f32 PRESS_THRESHOLD = 0.5f;
 //Attack hold and atack release
 
-bool if_there_is_undealt_trigger_input = false; // identifier
-bool is_released = true;
+bool undealtTriggerInput = false; // identifier
+bool isReleased = true;
 bool if_first_input = false;
 
 
@@ -82,7 +82,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 	//
 	player->attackTime = 1.f;
 	player->isAttacking = false;
-	player->combo_trig = 0;
+	player->comboTrig = 0;
 	player->comboTime = 0.0f;
 	player->comboState = 0;
 	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
@@ -95,8 +95,8 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 
 
 	//Player Stats
-	f32 max_health = 500.f;
-	f32 curr_health = max_health;
+	f32 maxHealth = 500.f;
+	f32 currHealth = maxHealth;
 	f32 attack = 100.f;
 	f32 defence = 50.f;
 
@@ -220,17 +220,17 @@ void PlayerUpdate(Player& player)
 	if (AEInputCheckTriggered(AEVK_LBUTTON))
 	{
 		triggeredTime = Clock::now();
-		if_there_is_undealt_trigger_input = true;
-		is_released = false;
+		undealtTriggerInput = true;
+		isReleased = false;
 		if_first_input = true;
 	
 	}
 	if (AEInputCheckReleased(AEVK_LBUTTON))
 	{
-		is_released = true;
+		isReleased = true;
 	}
 	//reset
-	if (!if_there_is_undealt_trigger_input)
+	if (!undealtTriggerInput)
 	{
 		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0; // Convert to seconds
 		if (elapsedTime > comboWindowDuration)
@@ -243,11 +243,11 @@ void PlayerUpdate(Player& player)
 		}
 
 	}
-	if (if_there_is_undealt_trigger_input)
+	if (undealtTriggerInput)
 	{
 		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
 			1000.0; // Convert to seconds
-		if (elapsedTime >= PRESS_THRESHOLD && !is_released)
+		if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
 		{
 			if (player.comboState == 2) //held
 			{
@@ -260,10 +260,10 @@ void PlayerUpdate(Player& player)
 				
 			}
 			comboTime = Clock::now();
-			if_there_is_undealt_trigger_input = false;
+			undealtTriggerInput = false;
 
 		}
-		if (elapsedTime < PRESS_THRESHOLD && is_released) //Trigger (Here is flag for initialization)
+		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 		{
 
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
@@ -287,7 +287,7 @@ void PlayerUpdate(Player& player)
 
 			}
 			comboTime = Clock::now();
-			if_there_is_undealt_trigger_input = false;
+			undealtTriggerInput = false;
 
 
 		}

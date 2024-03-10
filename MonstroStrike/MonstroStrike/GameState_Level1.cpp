@@ -92,7 +92,7 @@ void Level1_Load()
 	}
 
 	//Inventory assets
-	Inventory::Load_Inventory();
+	Inventory::LoadInventory();
 
 	inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 

@@ -285,7 +285,7 @@ namespace Inventory
 		}
 
 		// Function to get an item by its ID
-		Item getItemById(int id) {
+		Item GetItemById(int id) {
 			// Iterate through all items to find the one with the matching ID
 			for (const Item& item : allItems) {
 				if (item.ID == id) {
@@ -297,16 +297,16 @@ namespace Inventory
 		}
 
 
-	void Item_Pickup(Item& item)
+	void ItemPickup(Item& item)
 	{
 	}
 
-	void Item_Drop()
+	void ItemDrop()
 	{
 	}
 
 	//Function to apply the effect of a consumable item on the player
-	void applyItemEffect(Player& player, const Item& item)
+	void ApplyItemEffect(Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
 		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
@@ -330,7 +330,7 @@ namespace Inventory
 
 
 	// Function to update the player's stats after equipping or unequipping items
-	void updatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
+	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
 	{
 		// Reset player's stats to base values
 		// player.hp = player.maxHp;
@@ -383,7 +383,7 @@ namespace Inventory
 						std::cout << "Consumed " << item.Item.name << std::endl;
 
 						// Apply item effect
-						applyItemEffect(player, item.Item);
+						ApplyItemEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
 						Player_Inventory[index].quantity -= 1;
@@ -507,7 +507,7 @@ namespace Inventory
 		}
 	}
 
-	void Load_Inventory()
+	void LoadInventory()
 	{
 		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
 

@@ -24,12 +24,12 @@ std::vector<Recipe> ReadRecipes(const std::string& filename)
 			while (iss >> itemId >> itemQty)
 			{
 				//to get an item from all item list
-				Item item = Inventory::getItemById(itemId);
+				Item item = Inventory::GetItemById(itemId);
 				recipe.requirement.push_back(item);
 				recipe.qty.push_back(itemQty);
 			}
 			// Assuming you have a function to get an item from its ID
-			recipe.product = Inventory::getItemById(recipe.id);
+			recipe.product = Inventory::GetItemById(recipe.id);
 			recipes.push_back(recipe);
 		}
 		file.close();
