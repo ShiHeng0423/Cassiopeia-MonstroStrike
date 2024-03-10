@@ -34,12 +34,12 @@ void GSM_Update()
 		fpUnload = Mainmenu_Unload;
 		break;
 	case GAME_LOBBY:
-		fpLoad = GameLobby_Load;
-		fpInitialize = GameLobby_Initialize;
-		fpUpdate = GameLobby_Update;
-		fpDraw = GameLobby_Draw;
-		fpFree = GameLobby_Free;
-		fpUnload = GameLobby_Unload;
+		fpLoad = Lobby_Load;
+		fpInitialize = Lobby_Initialize;
+		fpUpdate = Lobby_Update;
+		fpDraw = Lobby_Draw;
+		fpFree = Lobby_Free;
+		fpUnload = Lobby_Unload;
 		break;
 	case AREA1:
 		fpLoad = Level1_Load;

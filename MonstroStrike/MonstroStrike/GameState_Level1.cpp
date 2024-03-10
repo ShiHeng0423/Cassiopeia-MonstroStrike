@@ -219,11 +219,11 @@ void Level1_Update()
 
 #pragma endregion
 
-	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene)
+	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
 		return;
 
 #pragma region PlayerUpdate
-	if (currScene == MainScene && !inventory_open)
+	if (currScene == MAIN_SCENE && !inventory_open)
 		PlayerUpdate(*player);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
@@ -550,11 +550,11 @@ void Level1_Update()
 
 	if (AEInputCheckTriggered(AEVK_U))
 	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, TEST);
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, ParticleType::TEST);
 	}
 	if (AEInputCheckTriggered(AEVK_H))
 	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, TEST);
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, ParticleType::TEST);
 	}
 	ParticleUpdate();
 

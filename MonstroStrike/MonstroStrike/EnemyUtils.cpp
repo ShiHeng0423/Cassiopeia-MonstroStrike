@@ -59,10 +59,10 @@ bool CanPartFire(EnemyPart& part) {
 	return false;
 }
 
-void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& vecbullets) {
+void SpawnBullet(AEVec2& enemyPosition, AEVec2& playerPosition, std::vector<Bullet>& vecbullets) {
 	//dir vec from enemy to player
 	AEVec2 direction;
-	AEVec2Sub(&direction, &player_position, &enemy_position); //player - enemy
+	AEVec2Sub(&direction, &playerPosition, &enemyPosition); //player - enemy
 
 	//normalize direction of bullet
 	AEVec2Normalize(&direction, &direction);
@@ -71,7 +71,7 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 	Bullet bullet;
 	bullet.lifetime = 100;													//lifetime
 	bullet.obj.img.pTex = bulletTex;										//image
-	AEVec2Set(&bullet.obj.pos, enemy_position.x, enemy_position.y);			//start position
+	AEVec2Set(&bullet.obj.pos, enemyPosition.x, enemyPosition.y);			//start position
 	AEVec2Set(&bullet.obj.img.scale, 25.f, 25.f);							//set scale of the image
 
 	//set velocity of bullet
@@ -107,9 +107,9 @@ void Attack_Charge(Enemy& enemy, s8 targetPosition, f32 speed) {
 	enemy.obj.pos.x += enemy.velocity.x;
 
 }
-bool areAligned(AEVec2 player_position, AEVec2 enemy_position) {
+bool areAligned(AEVec2 playerPosition, AEVec2 enemyPosition) {
 	float tolerance = 10.f;
-	return std::abs(player_position.y - enemy_position.y) < tolerance;
+	return std::abs(playerPosition.y - enemyPosition.y) < tolerance;
 }
 
 void Jump(Enemy& enemy, f32 value) {

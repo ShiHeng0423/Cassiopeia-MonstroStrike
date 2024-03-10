@@ -437,7 +437,7 @@ void BackMainMenu()
 
 void GoNewGameLevel1()
 {
-	next = GameStates::GameLobby;
+	next = GameStates::GAME_LOBBY;
 }
 
 void GoLoadSaveLevel()
@@ -467,5 +467,5 @@ void GoConfirmQuitScene()
 
 void GoQuitGame()
 {
-	next = GameStates::Quit;
+	next = GameStates::QUIT;
 }
