@@ -33,7 +33,7 @@
 using namespace rapidjson;
 
 std::vector<Item> playerInventory;
-int Player_Inventory_Count;
+int playerInventoryCount;
 Player* playerReference = nullptr;
 Item equippedArmour[4];
 Item equippedWeapon;
@@ -257,11 +257,11 @@ namespace Inventory
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
-		Player_Inventory_Count = 0;
+		playerInventoryCount = 0;
 		for(size_t i=0; i<inventory.size(); ++i)
 		{
 			button[i].Item = inventory[i];
-			Player_Inventory_Count++;
+			playerInventoryCount++;
 			
 		}
 		if(inventory.size()<25)

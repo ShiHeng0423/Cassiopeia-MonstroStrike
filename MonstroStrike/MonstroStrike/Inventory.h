@@ -119,8 +119,8 @@ namespace Inventory
 
 	Item GetItemById(int id);
 
-	void Item_Pickup(Item& item);
-	void Item_Drop();
+	void ItemPickUp(Item& item);
+	void ItemDrop();
 
 
 	void EquipToBody(Item obj);

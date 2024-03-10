@@ -430,7 +430,7 @@ void Level1_Update()
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5.f) * 90.f + 180.f);
 
-							std::cout << "swap\n";
+							//std::cout << "swap\n";
 							ButtonGearUI tmp = button;
 							button = inventoryButton[snapBack];
 							inventoryButton[snapBack] = tmp;

@@ -4,9 +4,9 @@
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
 
 namespace {
-	struct NON_PLAYABLE_CHARACTERS npcs[3];
+	struct NonPlayableCharacters npcs[3];
 
-	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NON_PLAYABLE_CHARACTERS& npc, TYPE_NPCS npcType);
+	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
 }
 
 void LoadNPC()
@@ -85,7 +85,7 @@ void FreeNPC()
 	}
 }
 namespace {
-	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NON_PLAYABLE_CHARACTERS& npc, TYPE_NPCS npcType)
+	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType)
 	{
 		npc.rotation = { 0 };
 		AEMtx33Rot(&npc.rotation, 0.f);

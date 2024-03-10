@@ -33,5 +33,5 @@ struct Button
 };
 
 
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor);
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor);
+AEGfxVertexList* GenerateSquareMesh(u32 meshColor);
+AEGfxVertexList* GenerateLineMesh(u32 meshColor);

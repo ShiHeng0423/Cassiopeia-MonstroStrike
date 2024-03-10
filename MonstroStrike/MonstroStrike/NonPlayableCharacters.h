@@ -2,14 +2,14 @@
 #include <AEEngine.h>
 #include "CollisionShape.h"
 #include <vector>
-enum TYPE_NPCS {
+enum NpcTypes {
 	NPC_NONE = 0,
 	NPC_BLACKSMITH_A,
 	NPC_BLACKSMITH_B,
 	NPC_QUEST_GIVER
 };
 
-struct NON_PLAYABLE_CHARACTERS
+struct NonPlayableCharacters
 {
 	AEVec2 position;
 	AEVec2 size;
@@ -24,7 +24,7 @@ struct NON_PLAYABLE_CHARACTERS
 	AEGfxTexture* pTexPortrait;
 	AEGfxTexture* pTexSprite;
 
-	TYPE_NPCS typeOfNPC;
+	NpcTypes typeOfNPC;
 };
 
 //Now just generalize 3 NPCs first...

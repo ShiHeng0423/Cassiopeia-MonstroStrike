@@ -39,7 +39,7 @@ struct Grids2D {
 
 	f32 mass;
 
-	GRID_TYPES typeOfGrid;
+	GridTypes typeOfGrid;
 
 	AABB collisionBox; //Rectangle collision box
 };
