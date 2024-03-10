@@ -20,8 +20,7 @@ namespace
 	AEGfxTexture* background;
 
 	Camera* cam;
-
-	s8 pFont;
+	PauseMenu_Manager* menu;
 
 #pragma region UserInterface
 	//User Health
@@ -29,42 +28,6 @@ namespace
 	AEGfxTexture* HealthBorder;
 	
 #pragma endregion UserInterface
-
-#pragma region PauseMenu
-
-	enum CurrentScene {
-		MainScene,
-		PauseScene,
-		ControlScene,
-		QuitScene,
-		InventoryScene,
-		NPCScene
-	};
-
-	enum Interactable {
-		Resume,
-		Return,
-		Controls,
-		Quit
-	};
-
-	AEGfxTexture* PauseMenuBackground;
-	AEGfxTexture* ButtonFrame;
-
-	//Return to Main Menu Option - "Return to Main Menu" or "Exit to Main Menu"
-	// //Restart Game Option - "Restart Game", "Return to Overworld", "New Game", "Exit Level"
-	//How To Play - "How to Play" or "Controls"
-	//Resume Game Option - "Resume Game"
-
-	Button PauseMenuButtons[4];
-	Button QuitToMainmenu[2];
-	Button BackButton;
-
-	Sprite_V2 pauseMenuBackground;
-
-	int currScene;
-
-#pragma endregion PauseMenu
 
 	bool inventory_open;
 	int snap_back = -1;
@@ -122,8 +85,6 @@ void Level1_Load()
 		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE); //Just for checking if the map data is stored properly
 	}
 
-	pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
-
 	inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
 	Gear1 = AEGfxTextureLoad("Assets/item_.png");
@@ -148,16 +109,9 @@ void Level1_Load()
 	//Drawing line
 	pLineMesh = GenerateLineMesh(0xFF000000);
 #pragma endregion
-
-
-#pragma region PauseMenu
-	PauseMenuBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
-	ButtonFrame = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
-#pragma endregion
-
-	LoadNPC();
 	ParticleLoad();
-
+	
+	menu = new PauseMenu_Manager();
 }
 
 void Level1_Initialize()
@@ -203,52 +157,6 @@ void Level1_Initialize()
 
 	cam = new Camera(player->obj.pos);
 
-#pragma region PauseMenu
-
-	for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-	{
-		PauseMenuButtons[i].pTex = ButtonFrame;
-		AEVec2Set(&PauseMenuButtons[i].scale, 250.f, 80.f);
-
-		switch (i)
-		{
-		case Interactable::Resume:
-			PauseMenuButtons[i].Ptr = ResumeGame;
-			break;
-		case Interactable::Return:
-			PauseMenuButtons[i].Ptr = ReturnLobby;
-			break;
-		case Interactable::Controls:
-			PauseMenuButtons[i].Ptr = OpenControls;
-			break;
-		case Interactable::Quit:
-			PauseMenuButtons[i].Ptr = QuitConfirmation;
-			break;
-		default:
-			break;
-		}
-	}
-
-	QuitToMainmenu[0].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[0].scale, 250.f, 80.f);
-	QuitToMainmenu[0].Ptr = BackPauseMenu;
-
-	QuitToMainmenu[1].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[1].scale, 250.f, 80.f);
-	QuitToMainmenu[1].Ptr = QuitMainmenu;
-
-	BackButton.pTex = ButtonFrame;
-	AEVec2Set(&BackButton.scale, 250.f, 80.f);
-	BackButton.Ptr = BackPauseMenu;
-
-	currScene = CurrentScene::MainScene;
-
-	pauseMenuBackground.pTex = PauseMenuBackground;
-	pauseMenuBackground.scale.x = 1000.f;
-	pauseMenuBackground.scale.y = 500.f;
-
-#pragma endregion
-
 #pragma region Inventory_UI
 
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
@@ -285,55 +193,7 @@ void Level1_Initialize()
 
 #pragma endregion
 
-#pragma region PauseMenu
-
-	for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-	{
-		PauseMenuButtons[i].pTex = ButtonFrame;
-		AEVec2Set(&PauseMenuButtons[i].scale, 250.f, 80.f);
-		AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
-
-		switch (i)
-		{
-		case Interactable::Resume:
-			PauseMenuButtons[i].Ptr = ResumeGame;
-			break;
-		case Interactable::Return:
-			PauseMenuButtons[i].Ptr = ReturnLobby;
-			break;
-		case Interactable::Controls:
-			PauseMenuButtons[i].Ptr = OpenControls;
-			break;
-		case Interactable::Quit:
-			PauseMenuButtons[i].Ptr = QuitConfirmation;
-			break;
-		default:
-			break;
-		}
-	}
-
-	QuitToMainmenu[0].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[0].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	QuitToMainmenu[0].Ptr = BackPauseMenu;
-
-	QuitToMainmenu[1].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[1].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	QuitToMainmenu[1].Ptr = QuitMainmenu;
-
-	BackButton.pTex = ButtonFrame;
-	AEVec2Set(&BackButton.scale, 250.f, 80.f);
-	AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	BackButton.Ptr = BackPauseMenu;
-
-	currScene = CurrentScene::MainScene;
-
-	pauseMenuBackground.pTex = PauseMenuBackground;
-	pauseMenuBackground.scale.x = 1000.f;
-	pauseMenuBackground.scale.y = 500.f;
-	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
-#pragma endregion PauseMenu
+	menu->Init(cam);
 
 #pragma region Enemy
 	Enemy_Init({70.f,70.f}, {1200.f,-320.f}, ENEMY_IDLE, vecEnemy[0]);
@@ -348,99 +208,14 @@ void Level1_Update()
 {
 	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
 
-	if (0 == AESysDoesWindowExist())
-	{
-		next = GameStates::Quit;
-	}
-
 #pragma region PauseMenuTrigger
 
-	if (AEInputCheckTriggered(AEVK_ESCAPE))
-	{
-		f32 x, y;
-		AEGfxGetCamPosition(&x, &y);
-		if (currScene == CurrentScene::MainScene)
-		{
-			//rmb to freeze game update
-			currScene = CurrentScene::PauseScene;
-
-			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-				AEVec2Set(&PauseMenuButtons[i].pos, x, y - 100.f * i + 100.f);
-
-			AEVec2Set(&QuitToMainmenu[0].pos, 250.f + x, y);
-			AEVec2Set(&QuitToMainmenu[1].pos, -250.f + x, y);
-
-			AEVec2Set(&BackButton.pos, 280.f + x,-180.f+ y);
-
-			AEVec2Set(&pauseMenuBackground.pos, x, y);
-		}
-		else
-		{
-			//unfreeze the game
-			currScene = CurrentScene::MainScene;
-		}
-	}
-
-	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene )
-	{
-		if (AEInputCheckTriggered(AEVK_LBUTTON))
-		{
-			s32 cx,cy;
-			AEInputGetCursorPosition(&cx, &cy);
-			AEVec2 mousePos{ 0,0 };
-			mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
-			f32 x, y;
-			AEGfxGetCamPosition(&x, &y);
-			switch (currScene)
-			{
-			case CurrentScene::PauseScene:
-			{
-				for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-				{
-					AEVec2 translateOrigin = PauseMenuButtons[i].pos;
-					translateOrigin.x -= x;
-					translateOrigin.y -= y;
-					if (AETestPointToRect(&mousePos, &translateOrigin, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y))
-						PauseMenuButtons[i].Ptr();
-				}
-				break;
-			}
-			case CurrentScene::ControlScene:
-			{
-				AEVec2 translateOrigin = BackButton.pos;
-				translateOrigin.x -= x;
-				translateOrigin.y -= y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, BackButton.scale.x, BackButton.scale.y))
-					BackButton.Ptr();
-				break;
-			}
-			case CurrentScene::QuitScene:
-			{
-				AEVec2 translateOrigin = QuitToMainmenu[0].pos;
-				translateOrigin.x -= x;
-				translateOrigin.y -= y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y))
-					QuitToMainmenu[0].Ptr();
-				translateOrigin = QuitToMainmenu[1].pos;
-				AEGfxGetCamPosition(&x, &y);
-				translateOrigin.x -= x;
-				translateOrigin.y -= y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y))
-					QuitToMainmenu[1].Ptr();
-				break;
-			}
-			default:
-				break;
-			}
-		}
-		return;
-	}
+	menu->Update(cam);
 
 #pragma endregion
-
+	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene)
+		return;
 #pragma region PlayerUpdate
-
 	if (currScene == MainScene && !inventory_open)
 		PlayerUpdate(*player);
 	if (AEInputCheckTriggered(AEVK_I))
@@ -475,9 +250,9 @@ void Level1_Update()
 
 #pragma region GridSystem
 	//For printing the grids every frame
-	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
 		{
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
@@ -499,39 +274,15 @@ void Level1_Update()
 					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity);
 				}
-
-				//(ENEMY AND BULLETS COLLISION CHECKING)
-				//is this efficient? 
-				for (Enemy& enemy : vecEnemy) {
-
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
-
-						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
-
-					}
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(enemy.boxArms, grids2D[rows][cols].collisionBox)) {
-						enemy.isCollision = true;
-						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
-
-						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity);
-						enemy.loop_idle = false;
-					}
-
-					if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1) {
-						for (Bullet& bullet : enemy.bullets) {
-							if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox)) {
-								bullet.lifetime = 0; //makes bullet erase
-							}
-						}
-					}
-
-				}
-
+				break;
+			case MAP_TRANSITION_GRID:
+				//if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
+				//{
+				//	if (!transitionalImageOBJ.active)
+				//	{
+				//		transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
+				//	}
+				//}
 				break;
 			case EMPTY:
 				break;
@@ -850,8 +601,8 @@ void Level1_Draw()
 	std::string str = std::to_string(hp);
 	const char* pTextHP = str.c_str();
 	f32 width, height;
-	AEGfxGetPrintSize(pFont, pTextHP, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
+	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
+	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
 
 #pragma endregion
 
@@ -895,89 +646,9 @@ void Level1_Draw()
 	}
 #pragma endregion
 
+	menu->Render();
+
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-
-#pragma region Pause_Menu_Render
-
-	switch (currScene)
-	{
-	case CurrentScene::PauseScene:
-	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-		{
-			AEGfxTextureSet(PauseMenuButtons[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(PauseMenuButtons[i].pos.x, PauseMenuButtons[i].pos.y, 0.f, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y).m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		}
-
-		const char* pText = "Resume";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
-
-		const char* pText1 = "Back To Village";
-		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
-
-		const char* pText2 = "Controls";
-		AEGfxGetPrintSize(pFont, pText2, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
-
-		const char* pText3 = "Quit to Main menu";
-		AEGfxGetPrintSize(pFont, pText3, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	case CurrentScene::ControlScene:
-	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(BackButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(BackButton.pos.x, BackButton.pos.y, 0.f, BackButton.scale.x, BackButton.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
-
-		const char* pText = "Back";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 + 0.35f, -height / 2-0.4f, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	case CurrentScene::QuitScene:
-	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(QuitToMainmenu[0].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(QuitToMainmenu[0].pos.x, QuitToMainmenu[0].pos.y, 0.f, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(QuitToMainmenu[1].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(QuitToMainmenu[1].pos.x, QuitToMainmenu[1].pos.y, 0.f, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
-
-		const char* pText = "Yes";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-
-		const char* pText1 = "No";
-		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	default:
-		break;
-	}
-
-#pragma endregion
 
 #pragma region Particle_Render
 
@@ -1023,8 +694,6 @@ void Level1_Unload()
 
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
-	AEGfxTextureUnload(PauseMenuBackground);
-	AEGfxTextureUnload(ButtonFrame);
 	AEGfxTextureUnload(bulletTex);
 
 	AEGfxTextureUnload(blank);
@@ -1038,9 +707,6 @@ void Level1_Unload()
 	AEGfxTextureUnload(equipmentBackground.img.pTex);
 	AEGfxTextureUnload(player->obj.img.pTex);
 
-
-	AEGfxDestroyFont(pFont);
-
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -1050,4 +716,5 @@ void Level1_Unload()
 
 	delete player;
 	delete cam;
+	delete menu;
 }

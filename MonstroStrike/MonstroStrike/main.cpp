@@ -22,8 +22,11 @@
 #include "GameStateManager.h"
 #include "Inventory.h"
 #include "MapTransition.h"
+#include "main.h"
 // ---------------------------------------------------------------------------
 // main
+
+s8 fontID;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -45,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//AESysReset();
 
 	GSM_Initialize(GameStates::MainMenu);
-
+	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
 
 	while (current != GameStates::Quit)
@@ -64,6 +67,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			fpUpdate();
 			fpDraw();
 
+			if (0 == AESysDoesWindowExist())
+				next = GameStates::Quit;
+
 			// Informing the system about the loop's end
 			AESysFrameEnd();
 		}
@@ -73,7 +79,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	MapTransitionUnload();//Unload Map Transition image here
-	
+	AEGfxDestroyFont(fontID);
 	// free the system
 	AESysExit();
 }

@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "TransformMatrix.h"
 #include "GameStateManager.h"
+#include "main.h"
 
 namespace {
 
@@ -30,6 +31,8 @@ namespace {
 	Sprite_V2 optionSoundBar[2];
 	Sprite_V2 optionBackgroundBar[2];
 	Button interactableButtonOption[4];
+	AEGfxTexture* audioUp;
+	AEGfxTexture* audioDown;
 
 
 	Button backButton;
@@ -37,12 +40,11 @@ namespace {
 
 	AEGfxTexture* buttonTexture;
 	AEGfxTexture* backgroundTexture;
+	AEGfxTexture* boxBackground;
 
 	AEGfxVertexList* pWhiteSquareMesh;
 
 	Sprite background;
-
-	s8 pFont;
 
 	//menu buttons
 	//Start Game Option - "Start Game" or "New Game" (if multiple files and saved data)
@@ -65,16 +67,28 @@ void GoQuitGame();
 
 void BackMainMenu();
 
-//void IncreaseSfxVolume();
-//void IncreaseBgmVolume();
-//void DecreaseSfxVolume();
-//void DecreaseBgmVolume();
+void IncreaseSfxVolume() {
+
+}
+void IncreaseBgmVolume()
+{
+
+}
+void DecreaseSfxVolume()
+{
+}
+void DecreaseBgmVolume()
+{
+
+}
 
 void Mainmenu_Load()
 {
-	pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	buttonTexture = AEGfxTextureLoad("Assets/panel_brown.png");
 	backgroundTexture = AEGfxTextureLoad("Assets/1.jpg");
+	boxBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
+	audioUp = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_right.png");
+	audioDown = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_left.png");
 
 	AEGfxMeshStart();
 
@@ -126,37 +140,41 @@ void Mainmenu_Initialize()
 		}
 	}
 
-	AEVec2Set(&interactableButtonOption[0].pos, 0, 0);
+	AEVec2Set(&interactableButtonOption[0].pos, -200, 0);
 	AEVec2Set(&interactableButtonOption[0].scale, 50, 50);
-	//interactableButtonOption[0].Ptr = DecreaseBgmVolume;
-	//interactableButtonOption[0].pTex = DecreaseBgmVolume;
+	interactableButtonOption[0].Ptr = DecreaseBgmVolume;
+	interactableButtonOption[0].pTex = audioDown;
 
 	AEVec2Set(&interactableButtonOption[1].pos, 200, 0);
 	AEVec2Set(&interactableButtonOption[1].scale, 50, 50);
-	//interactableButtonOption[1].Ptr = IncreaseBgmVolume;
-	//interactableButtonOption[1].pTex = DecreaseBgmVolume;
+	interactableButtonOption[1].Ptr = IncreaseBgmVolume;
+	interactableButtonOption[1].pTex = audioUp;
 
-	AEVec2Set(&interactableButtonOption[2].pos, 0, -100);
+	AEVec2Set(&interactableButtonOption[2].pos, -200, -100);
 	AEVec2Set(&interactableButtonOption[2].scale, 50, 50);
-	//interactableButtonOption[0].Ptr = DecreaseSfxVolume;
+	interactableButtonOption[2].Ptr = DecreaseSfxVolume;
+	interactableButtonOption[2].pTex = audioDown;
 
 	AEVec2Set(&interactableButtonOption[3].pos, 200, -100);
 	AEVec2Set(&interactableButtonOption[3].scale, 50, 50);
-	//interactableButtonOption[0].Ptr = IncreaseSfxVolume;
+	interactableButtonOption[3].Ptr = IncreaseSfxVolume;
+	interactableButtonOption[3].pTex = audioUp;
 
-	AEVec2Set(&optionSoundBar[0].pos, 100, 0); // bar 1
-	AEVec2Set(&optionSoundBar[0].scale, 100, 50);
+	AEVec2Set(&optionSoundBar[0].pos, 0, 0); // bar 1
+	AEVec2Set(&optionSoundBar[0].scale, 250, 50);
 
-	AEVec2Set(&optionSoundBar[1].pos, 100, -100); // bar 2
-	AEVec2Set(&optionSoundBar[1].scale, 100, 50);
+	AEVec2Set(&optionSoundBar[1].pos, 0, -100); // bar 2
+	AEVec2Set(&optionSoundBar[1].scale, 250, 50);
 
-	AEVec2Set(&optionBackgroundBar[0].pos, 100, 0); // bar 1
-	AEVec2Set(&optionBackgroundBar[0].scale, 100, 50);
+	AEVec2Set(&optionBackgroundBar[0].pos, 0, 0); // bar 1
+	AEVec2Set(&optionBackgroundBar[0].scale, 250, 50);
 
-	AEVec2Set(&optionBackgroundBar[1].pos, 100, -100); // bar 2
-	AEVec2Set(&optionBackgroundBar[1].scale, 100, 50);
+	AEVec2Set(&optionBackgroundBar[1].pos, 0, -100); // bar 2
+	AEVec2Set(&optionBackgroundBar[1].scale, 250, 50);
 
-	optionbackground;
+	optionbackground.pTex = boxBackground;
+	optionbackground.scale.x = 1000.f;
+	optionbackground.scale.y = 500.f;
 
 	backButton.pTex = buttonTexture;
 	AEVec2Set(&backButton.scale, 250.f, 80.f);
@@ -245,43 +263,70 @@ void Mainmenu_Draw()
 		f32 width, height;
 
 		const char* pText = "Start";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText1 = "Load";
-		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
 
 		const char* pText2 = "Credit";
-		AEGfxGetPrintSize(pFont, pText2, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText3 = "Controls";
-		AEGfxGetPrintSize(pFont, pText3, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText4 = "Options";
-		AEGfxGetPrintSize(pFont, pText4, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText5 = "Quit";
-		AEGfxGetPrintSize(pFont, pText5, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
 	case CurrentScene::CreditScene:
 	case CurrentScene::ControlScene:
 	case CurrentScene::OptionScene:
 	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(optionbackground.pos.x, optionbackground.pos.y, 0.f, optionbackground.scale.x, optionbackground.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+		for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
+		{
+			AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButtonOption[i].pos.x, interactableButtonOption[i].pos.y, 0.f, interactableButtonOption[i].scale.x, interactableButtonOption[i].scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
 		AEGfxTextureSet(backButton.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+		for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
+		{
+			AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(optionSoundBar[i].pos.x, optionSoundBar[i].pos.y, 0.f, optionSoundBar[i].scale.x, optionSoundBar[i].scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		//for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
+		//{
+		//	AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+		//	AEGfxSetTransform(ObjectTransformationMatrixSet(optionBackgroundBar[i].pos.x, optionBackgroundBar[i].pos.y, 0.f, optionBackgroundBar[i].scale.x, optionBackgroundBar[i].scale.y).m);
+		//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		//}
+
 		f32 width, height;
 
 		const char* pText = "Back";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
 	case CurrentScene::QuitScene:
@@ -297,19 +342,17 @@ void Mainmenu_Draw()
 		f32 width, height;
 
 		const char* pText = "Yes";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 
 		const char* pText1 = "No";
-		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 		break;
 	}
 	default:
 		break;
 	}
-
-
 }
 
 void Mainmenu_Free()
@@ -322,7 +365,6 @@ void Mainmenu_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxTextureUnload(buttonTexture);
 	AEGfxTextureUnload(backgroundTexture);
-	AEGfxDestroyFont(pFont);
 }
 
 void BackMainMenu()
@@ -332,7 +374,7 @@ void BackMainMenu()
 
 void GoNewGameLevel1()
 {
-	next = GameStates::Area1;
+	next = GameStates::GameLobby;
 }
 
 void GoLoadSaveLevel()
