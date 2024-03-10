@@ -469,7 +469,7 @@ void GameLobby_Update()
 	if (inventory_open)
 	{
 		//update item position
-		Inventory::UpdateInventory(Inventory::Player_Inventory, inventoryButton);
+		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
 
 		//Hover collision with button && hold left mouse button
 

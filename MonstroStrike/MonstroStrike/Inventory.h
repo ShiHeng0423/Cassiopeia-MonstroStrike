@@ -27,36 +27,52 @@
 
 enum Item_Type
 {
-	material = 0,
-	recipe,
+	it_none = 0,
+	material,
 	weapon,
-	amour,
+	armour,
 	food,
-	potion
+	potion,
+	recipe
 };
 
 enum Rarity
 {
-	common = 0,
+	ir_none = 0,
+	common,
 	rare,
 	epic,
 	legendary,
 	unique
 };
 
+enum Armour_Location
+{
+	al_none = 0,
+	head,
+	body,
+	pants,
+	boots
+};
+
 struct Item
 {
+
 	std::string UID;
 	int ID;
 	std::string name;
 	std::string description;
-	int item_type;
-	int rarity;
+
+	Item_Type item_type;
+	Rarity rarity;
+	Armour_Location armour_loc;
+
 	int quantity;
 	bool stackable;
 	int health;
 	int attack;
 	int defence;
+	
 };
 
 
@@ -70,6 +86,13 @@ struct ButtonGearUI
 };
 
 extern std::vector< Item> Player_Inventory;
+extern int Player_Inventory_Count;
+
+extern AEGfxTexture* Gear[25];
+
+extern Player* playerReference;
+extern Item equippedArmour[4];
+extern Item equippedWeapon;
 
 namespace Inventory
 {
@@ -100,10 +123,13 @@ namespace Inventory
 	void Item_Drop();
 
 
-
+	void EquipToBody(Item obj);
 	void applyItemEffect(Player& player, const Item& item);
-	void Equip(int index, ButtonGearUI& item, Player& player);
+	void UseItem(int index, ButtonGearUI& item, Player& player);
 	
 
 	void SaveInventory();
+
 }
+
+void Equip(int index, ButtonGearUI tmp);

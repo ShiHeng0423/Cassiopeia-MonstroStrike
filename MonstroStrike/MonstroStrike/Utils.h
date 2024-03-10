@@ -44,5 +44,3 @@ void OpenControls();
 void QuitMainmenu();
 void QuitConfirmation();
 void BackPauseMenu();
-
-void Equip(int index, ButtonGearUI tmp);

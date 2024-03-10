@@ -203,7 +203,11 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap.csv" />
+    </ItemGroup>
+    <ItemGroup>
     <None Include="..\Assets\player_inventory.json" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\Assets\GameMap_Lobby.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
