@@ -95,6 +95,7 @@ void GameLobby_Load()
 	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
+
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
 	{
@@ -205,6 +206,7 @@ void GameLobby_Initialize()
 		button.isWeapon = false;
 		index++;
 	}
+
 	inventoryButton[0].img.pTex = Gear1;
 	inventoryButton[1].img.pTex = Gear2;
 	inventoryButton[2].img.pTex = weapon3;
@@ -240,7 +242,7 @@ void GameLobby_Update()
 
 	if (AEInputCheckTriggered(AEVK_9))
 	{
-		next = GameStates::Area1;
+		next = GameStates::AREA1;
 	}
 
 	menu->Update(cam);
@@ -281,10 +283,10 @@ void GameLobby_Update()
 			case MAP_TRANSITION_GRID:
 				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
 				{
-					//std::cout << "Collided\n";
+					//std::cout << "Collided\n";MainMenu_Song
 					if (!transitionalImageOBJ.active)
 					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
 					}
 				}
 				break;
@@ -404,9 +406,9 @@ void GameLobby_Update()
 
 							if (Player_Inventory.size() <= index)
 							{
-								int oldsize = Player_Inventory.size();
+								size_t oldsize = Player_Inventory.size();
 								Player_Inventory.resize(index + 1);
-								for (int x = oldsize; x < Player_Inventory.size(); x++)
+								for (size_t x = oldsize; x < Player_Inventory.size(); x++)
 								{
 									Player_Inventory[x].ID = -9999;
 								}
@@ -625,7 +627,7 @@ void GameLobby_Draw()
 
 	if (AEInputCheckTriggered(AEVK_G))
 	{
-		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::Area1); //Play the newly set animation here
+		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::AREA1); //Play the newly set animation here
 	}
 
 	MapTransitionDraw();
@@ -667,6 +669,8 @@ void GameLobby_Unload()
 	AEGfxMeshFree(pLineMesh);
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
+
+	delete player->equippedWeapon;
 
 	delete player;
 	delete cam;

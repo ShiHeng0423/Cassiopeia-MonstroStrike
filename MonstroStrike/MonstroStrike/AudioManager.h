@@ -3,9 +3,9 @@
 
 enum Audio_List
 {
-	MainMenu_Song,
-	Attack_Slash_SFX,
-	Total_Audio
+	MAINMENU_SONG,
+	ATTACK_SLASH_SFX,
+	TOTAL_AUDIO
 };
 
 class AudioManager
@@ -28,7 +28,7 @@ private:
 	f32 sfxVolume;
 	f32 bgmVolume;
 
-	AEAudio audio[Total_Audio];
+	AEAudio audio[TOTAL_AUDIO];
 
 	AEAudioGroup sfxGroup;
 	AEAudioGroup bgmGroup;

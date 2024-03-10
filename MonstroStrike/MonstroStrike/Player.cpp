@@ -144,7 +144,7 @@ void PlayerUpdate(Player& player)
 	{
 		Player player;
 		Armor armor;
-		armor.armorType = Armor::Type::First;
+		armor.armorType = Armor::Type::FIRST;
 		armor.leather.defense = 20;
 
 		player.equippedArmor = armor;
@@ -158,7 +158,7 @@ void PlayerUpdate(Player& player)
 	{
 		Player player;
 		Armor armor;
-		armor.armorType = Armor::Type::Second;
+		armor.armorType = Armor::Type::SECOND;
 		armor.leather.defense = 50;
 
 		player.equippedArmor = armor;
@@ -274,7 +274,7 @@ void PlayerUpdate(Player& player)
 			{
 
 				player.comboState++;
-				player.comboTime += elapsedTime;
+				player.comboTime += (float)elapsedTime;
 
 			}
 

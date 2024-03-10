@@ -4,8 +4,8 @@ AudioManager::AudioManager()
 {
 	// Loads a sound from a file named 'bouken.mp3' in the 'Assets' folder
 	// and assign it to 'bouken'.
-	audio[MainMenu_Song] = AEAudioLoadMusic("Assets/bouken.mp3");
-	audio[Attack_Slash_SFX] = AEAudioLoadMusic("Assets/bouken.mp3");
+	audio[MAINMENU_SONG] = AEAudioLoadMusic("Assets/bouken.mp3");
+	audio[ATTACK_SLASH_SFX] = AEAudioLoadMusic("Assets/bouken.mp3");
 
 	// Creates an audio group named 'bgm'
 	bgmGroup = AEAudioCreateGroup();
@@ -19,8 +19,8 @@ AudioManager::AudioManager()
 AudioManager::~AudioManager()
 {
 	// Release our audios.
-	AEAudioUnloadAudio(audio[MainMenu_Song]);
-	AEAudioUnloadAudio(audio[Attack_Slash_SFX]);
+	AEAudioUnloadAudio(audio[MAINMENU_SONG]);
+	AEAudioUnloadAudio(audio[ATTACK_SLASH_SFX]);
 
 	// Release our audio groups.
 	AEAudioUnloadAudioGroup(bgmGroup);

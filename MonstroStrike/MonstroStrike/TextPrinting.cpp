@@ -8,7 +8,7 @@ void PrintTextOverTime(const char* pText, f32 printDelay, f32 xPos, f32 yPos, f3
     PrintedCharacter printedChar;
     printedChar.position = { xPos, yPos };
 
-    *printTimer += AEFrameRateControllerGetFrameTime(); // Update the timer
+    *printTimer += (f32)AEFrameRateControllerGetFrameTime(); // Update the timer
     static int currentIndex = 0;
 
     if (*printTimer >= printDelay && pText[currentIndex] != '\0')

@@ -232,7 +232,7 @@ int GetActiveParticleCount()
 	return activeCount;
 }
 
-int GetInactiveParticleCount()
+size_t GetInactiveParticleCount()
 {
 	return inactiveParticles.size();
 }

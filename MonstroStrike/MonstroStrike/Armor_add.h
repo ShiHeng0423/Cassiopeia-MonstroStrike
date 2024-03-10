@@ -2,8 +2,8 @@
 #include "Player.h"
 struct Armor {
     enum class Type {
-        First,
-        Second
+        FIRST,
+        SECOND
     };
 
 

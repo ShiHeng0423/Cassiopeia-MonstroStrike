@@ -69,6 +69,8 @@ void FreeEnemy(std::vector<Enemy>& vecEnemy) {
 
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
+	UNREFERENCED_PARAMETER(startingState);
+
 	//Initializing Enemy struct variables
 	AEVec2Set(&enemy.obj.pos, location.x, location.y); //set starting location
 	AEVec2Set(&enemy.obj.img.scale, scale.x, scale.y); //set scale of the image

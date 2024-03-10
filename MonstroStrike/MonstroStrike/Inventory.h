@@ -27,32 +27,32 @@
 
 enum Item_Type
 {
-	it_none = 0,
-	material,
-	weapon,
-	armour,
-	food,
-	potion,
-	recipe
+	IT_NONE = 0,
+	MATERIAL,
+	WEAPON,
+	ARMOUR,
+	FOOD,
+	POTION,
+	RECIPE
 };
 
 enum Rarity
 {
-	ir_none = 0,
-	common,
-	rare,
-	epic,
-	legendary,
-	unique
+	IR_NONE = 0,
+	COMMON,
+	RARE,
+	EPIC,
+	LEGENDARY,
+	UNIQUE
 };
 
 enum Armour_Location
 {
-	al_none = 0,
-	head,
-	body,
-	pants,
-	boots
+	AL_NONE = 0,
+	HEAD,
+	BODY,
+	PANTS,
+	BOOTS
 };
 
 struct Item

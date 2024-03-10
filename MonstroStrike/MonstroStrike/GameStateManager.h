@@ -1,10 +1,10 @@
 #pragma once
 enum GameStates {
-	SplashScreen = 0,
-	MainMenu,
-	GameLobby,
-	Area1,
-	Quit,
+	SPLASHSCREEN = 0,
+	MAINMENU,
+	GAME_LOBBY,
+	AREA1,
+	QUIT,
 
 	GAMESTATE_NONE
 };

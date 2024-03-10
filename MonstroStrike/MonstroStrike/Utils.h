@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-
 #include "AEEngine.h"
 
 //#include "Inventory.h"
@@ -36,5 +35,3 @@ struct Button
 
 AEGfxVertexList* GenerateSquareMesh(u32 MeshColor);
 AEGfxVertexList* GenerateLineMesh(u32 MeshColor);
-
-//

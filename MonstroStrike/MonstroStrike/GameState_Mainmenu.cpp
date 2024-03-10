@@ -230,7 +230,7 @@ void Mainmenu_Initialize()
 
 	currScene = CurrentScene::MainScene;
 
-	audioManager->PlayAudio(true, Audio_List::MainMenu_Song);
+	audioManager->PlayAudio(true, Audio_List::MAINMENU_SONG);
 }
 
 void Mainmenu_Update()
@@ -422,6 +422,7 @@ void Mainmenu_Free()
 void Mainmenu_Unload()
 {
 	AEGfxMeshFree(pWhiteSquareMesh);
+	AEGfxMeshFree(pBlackSquareMesh);
 	AEGfxTextureUnload(buttonTexture);
 	AEGfxTextureUnload(backgroundTexture);
 	AEGfxTextureUnload(boxBackground);

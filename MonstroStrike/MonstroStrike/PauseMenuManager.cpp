@@ -23,12 +23,12 @@ namespace {
 
 int currScene = 0;
 
-void ResumeGame() { currScene = CurrentScene::MainScene; }
-void ReturnLobby() { next = GameStates::GameLobby; }
-void OpenControls() { currScene = CurrentScene::ControlScene; }
-void QuitMainmenu() { next = GameStates::SplashScreen; }
-void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
-void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
+void ResumeGame() { currScene = CurrentScene::MAIN_SCENE; }
+void ReturnLobby() { next = GameStates::GAME_LOBBY; }
+void OpenControls() { currScene = CurrentScene::CONTROL_SCENE; }
+void QuitMainmenu() { next = GameStates::SPLASHSCREEN; }
+void QuitConfirmation() { currScene = CurrentScene::QUIT_SCENE; }
+void BackPauseMenu() { currScene = CurrentScene::PAUSE_SCENE; }
 
 PauseMenu_Manager::PauseMenu_Manager()
 {
@@ -67,16 +67,16 @@ void PauseMenu_Manager::Init(Camera* cam)
 
 		switch (i)
 		{
-		case Interactable::Resume:
+		case Interactable::RESUME:
 			PauseMenuButtons[i].Ptr = ResumeGame;
 			break;
-		case Interactable::Return:
+		case Interactable::RETURN:
 			PauseMenuButtons[i].Ptr = ReturnLobby;
 			break;
-		case Interactable::Controls:
+		case Interactable::CONTROLS:
 			PauseMenuButtons[i].Ptr = OpenControls;
 			break;
-		case Interactable::GoMainMenu:
+		case Interactable::GO_MAINMENU:
 			PauseMenuButtons[i].Ptr = QuitConfirmation;
 			break;
 		default:
@@ -99,7 +99,7 @@ void PauseMenu_Manager::Init(Camera* cam)
 	AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
 	BackButton.Ptr = BackPauseMenu;
 
-	currScene = CurrentScene::MainScene;
+	currScene = CurrentScene::MAIN_SCENE;
 
 	pauseMenuBackground.pTex = PauseMenuBackground;
 	pauseMenuBackground.scale.x = 1000.f;
@@ -113,10 +113,10 @@ void PauseMenu_Manager::Update(Camera* cam)
 	{
 		f32 x, y;
 		AEGfxGetCamPosition(&x, &y);
-		if (currScene == CurrentScene::MainScene)
+		if (currScene == CurrentScene::MAIN_SCENE)
 		{
 			//rmb to freeze game update
-			currScene = CurrentScene::PauseScene;
+			currScene = CurrentScene::PAUSE_SCENE;
 
 			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
 				AEVec2Set(&PauseMenuButtons[i].pos, x, y - 100.f * i + 100.f);
@@ -131,11 +131,11 @@ void PauseMenu_Manager::Update(Camera* cam)
 		else
 		{
 			//unfreeze the game
-			currScene = CurrentScene::MainScene;
+			currScene = CurrentScene::MAIN_SCENE;
 		}
 	}
 
-	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene)
+	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
 	{
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
@@ -148,7 +148,7 @@ void PauseMenu_Manager::Update(Camera* cam)
 			AEGfxGetCamPosition(&x, &y);
 			switch (currScene)
 			{
-			case CurrentScene::PauseScene:
+			case CurrentScene::PAUSE_SCENE:
 			{
 				for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
 				{
@@ -160,7 +160,7 @@ void PauseMenu_Manager::Update(Camera* cam)
 				}
 				break;
 			}
-			case CurrentScene::ControlScene:
+			case CurrentScene::CONTROL_SCENE:
 			{
 				AEVec2 translateOrigin = BackButton.pos;
 				translateOrigin.x -= x;
@@ -169,7 +169,7 @@ void PauseMenu_Manager::Update(Camera* cam)
 					BackButton.Ptr();
 				break;
 			}
-			case CurrentScene::QuitScene:
+			case CurrentScene::QUIT_SCENE:
 			{
 				AEVec2 translateOrigin = QuitToMainmenu[0].pos;
 				translateOrigin.x -= x;
@@ -200,7 +200,7 @@ void PauseMenu_Manager::Render()
 
 	switch (currScene)
 	{
-	case CurrentScene::PauseScene:
+	case CurrentScene::PAUSE_SCENE:
 	{
 		AEGfxTextureSet(PauseMenuBackground, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
@@ -229,7 +229,7 @@ void PauseMenu_Manager::Render()
 		AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
-	case CurrentScene::ControlScene:
+	case CurrentScene::CONTROL_SCENE:
 	{
 		AEGfxTextureSet(PauseMenuBackground, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
@@ -246,7 +246,7 @@ void PauseMenu_Manager::Render()
 		AEGfxPrint(fontID, pText, -width / 2 + 0.35f, -height / 2 -0.4f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
-	case CurrentScene::QuitScene:
+	case CurrentScene::QUIT_SCENE:
 	{
 		AEGfxTextureSet(PauseMenuBackground, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);

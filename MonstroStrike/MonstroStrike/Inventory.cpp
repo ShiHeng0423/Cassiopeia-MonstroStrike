@@ -293,7 +293,7 @@ namespace Inventory
 				}
 			}
 			// Return a default item if the ID is not found
-			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,al_none, true, 1,1 };
+			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,AL_NONE, true, 1,1 };
 		}
 
 
@@ -309,7 +309,7 @@ namespace Inventory
 	void applyItemEffect(Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
-		if (item.item_type == Item_Type::food || item.item_type == Item_Type::potion)
+		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
 		{
 			// Apply the effect of the item on the player
 
@@ -341,12 +341,12 @@ namespace Inventory
 		for (const auto& item : equippedItems)
 		{
 			// Update player's attack based on equipped weapon(s)
-			if (item.item_type == Item_Type::weapon)
+			if (item.item_type == Item_Type::WEAPON)
 			{
 				//player.attack += item.attack;
 			}
 			// Update player's defence based on equipped armor(s)
-			else if (item.item_type == Item_Type::armour)
+			else if (item.item_type == Item_Type::ARMOUR)
 			{
 				//player.health += item.health;
 				//player.defence += item.defence;
@@ -371,7 +371,7 @@ namespace Inventory
 			// @TODO implement more sophisticated logic here
 
 				// Perform actions based on the type of item equipped
-				if (item.Item.item_type == food || item.Item.item_type == potion)
+				if (item.Item.item_type == FOOD || item.Item.item_type == POTION)
 				{
 					// For non-weapon items
 					// Adjust player attributes or perform other actions
@@ -394,7 +394,7 @@ namespace Inventory
 					}
 
 				}
-				else if(item.Item.item_type == weapon || item.Item.item_type == armour)
+				else if(item.Item.item_type == WEAPON || item.Item.item_type == ARMOUR)
 				{
 					// For weapon items
 					// Assign weapon or armour to gear slot
@@ -429,7 +429,7 @@ namespace Inventory
 	{
 		switch (obj.item_type)
 		{
-		case weapon:
+		case WEAPON:
 		{
 			
 			std::cout << "hi" << std::endl;
@@ -442,7 +442,7 @@ namespace Inventory
 				}
 				equippedWeapon = obj;
 				equipmentDisplay[2].Item = equippedWeapon;
-				playerReference->equippedWeapon->damage = obj.attack;
+				playerReference->equippedWeapon->damage = (f32)obj.attack;
 
 				for (auto& inventory : Player_Inventory)
 				{
@@ -457,24 +457,24 @@ namespace Inventory
 			
 		}
 			break;
-		case armour:
+		case ARMOUR:
 
 			switch (obj.armour_loc)
 			{
-		case head:
+		case HEAD:
 			equippedArmour[0] = obj;
 			equipmentDisplay[0].Item = equippedWeapon;
 			//playerReference->equippedArmor.defence = obj.defence;
 			break;
-		case body:
+		case BODY:
 			equippedArmour[1] = obj;
 			equipmentDisplay[1].Item = equippedWeapon;
 			break;
-		case pants:
+		case PANTS:
 			equippedArmour[2] = obj;
 			equipmentDisplay[3].Item = equippedWeapon;
 			break;
-		case boots:
+		case BOOTS:
 			equippedArmour[3] = obj;
 			equipmentDisplay[4].Item = equippedWeapon;
 			break;

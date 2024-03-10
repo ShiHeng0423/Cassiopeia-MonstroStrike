@@ -48,12 +48,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//// reset the system modules
 	//AESysReset();
 
-	GSM_Initialize(GameStates::MainMenu);
+	GSM_Initialize(GameStates::SPLASHSCREEN);
 	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
 	audioManager = new AudioManager();
 
-	while (current != GameStates::Quit)
+	while (current != GameStates::QUIT)
 	{
 		GSM_Update();
 		fpLoad();
@@ -69,7 +69,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			MapTransitionDraw();
 
 			if (0 == AESysDoesWindowExist())
-				next = GameStates::Quit;
+				next = GameStates::QUIT;
 
 			// Informing the system about the loop's end
 			AESysFrameEnd();

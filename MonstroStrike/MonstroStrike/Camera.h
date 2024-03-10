@@ -16,16 +16,16 @@ public:
 
 	AEVec2 GetCameraWorldPoint() const;
 private:
-	bool lookahead;
-	bool lookback;
+	bool lookAhead;
+	bool lookBack;
 	bool cameraOnHold;
 
-	f64 shake_timer;
-	f64 lookback_timer;
+	f64 shake_Timer;
+	f64 lookback_Timer;
 	
-	f32 screen_x;
-	f32 screen_y;
+	f32 screen_X;
+	f32 screen_Y;
 
-	AEVec2 world_coordinate;
-	AEVec2 look_ahead;
+	AEVec2 world_Coordinate;
+	AEVec2 look_Ahead;
 };

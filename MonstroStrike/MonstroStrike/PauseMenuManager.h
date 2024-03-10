@@ -2,17 +2,17 @@
 #include "Camera.h"
 
 enum CurrentScene {
-	MainScene,
-	PauseScene,
-	ControlScene,
-	QuitScene
+	MAIN_SCENE,
+	PAUSE_SCENE,
+	CONTROL_SCENE,
+	QUIT_SCENE
 };
 
 enum Interactable {
-	Resume,
-	Return,
-	Controls,
-	GoMainMenu
+	RESUME,
+	RETURN,
+	CONTROLS,
+	GO_MAINMENU
 };
 
 void ResumeGame();

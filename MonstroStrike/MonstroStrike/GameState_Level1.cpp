@@ -109,10 +109,6 @@ void Level1_Load()
 
 	blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
-	LoadNPC();
-
-	
-
 	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 
 #pragma region Mesh Creations
@@ -125,6 +121,7 @@ void Level1_Load()
 	//Drawing line
 	pLineMesh = GenerateLineMesh(0xFF000000);
 #pragma endregion
+
 	ParticleLoad();
 	
 	menu = new PauseMenu_Manager();
@@ -132,6 +129,7 @@ void Level1_Load()
 
 void Level1_Initialize()
 {
+
 #pragma region Grid_Loading
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
@@ -196,8 +194,6 @@ void Level1_Initialize()
 
 #pragma endregion
 
-	menu->Init(cam);
-
 #pragma region Enemy
 	Enemy_Init({70.f,70.f}, { 1800.f,-80.f }, ENEMY_IDLE, vecEnemy[0]);
 	Enemy_Init({ 70.f,70.f }, { 1850.f,-80.f }, ENEMY_IDLE, vecEnemy[1]);
@@ -207,6 +203,7 @@ void Level1_Initialize()
 	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[5]);
 #pragma endregion Enemy
 	
+	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit(player->obj.pos);
 }
@@ -450,9 +447,9 @@ void Level1_Update()
 
 							if (Player_Inventory.size() <= index)
 							{
-								int oldsize = Player_Inventory.size();
+								size_t oldsize = Player_Inventory.size();
 								Player_Inventory.resize(index + 1);
-								for (int x = oldsize; x < Player_Inventory.size(); x++)
+								for (size_t x = oldsize; x < Player_Inventory.size(); x++)
 								{
 									Player_Inventory[x].ID = -9999;
 								}
@@ -858,6 +855,7 @@ void Level1_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
+	delete player->equippedWeapon;
 	delete player;
 	delete cam;
 	delete menu;

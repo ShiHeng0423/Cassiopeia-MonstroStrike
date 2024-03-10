@@ -55,4 +55,4 @@ void ParticlesDeactivate(int index);
 
 int GetActiveParticleCount();
 
-int GetInactiveParticleCount();
+size_t GetInactiveParticleCount();

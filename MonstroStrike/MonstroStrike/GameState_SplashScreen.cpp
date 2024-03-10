@@ -55,7 +55,7 @@ void SplashScreen_Update()
 	if (timer > 0.f)
 		alpha += 1.f / ((f32)AEFrameRateControllerGetFrameRate() * 2.f);
 	else
-		next = MainMenu;
+		next = MAINMENU;
 
 	alpha = AEClamp(alpha, 0.f, 1.0f);
 }
