@@ -38,6 +38,3 @@ AEGfxVertexList* GenerateSquareMesh(u32 MeshColor);
 AEGfxVertexList* GenerateLineMesh(u32 MeshColor);
 
 //
-
-
-void Equip(int index, ButtonGearUI tmp);

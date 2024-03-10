@@ -107,47 +107,12 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 
 void PlayerUpdate(Player& player)
 {
-	////X-Axis control
-	//bool isDashing = false;
-	//const f32 dashDuration = 0.2f; 
-	//const f32 dashSpeedMultiplier = 20.0f;
-	//const f32 dashCooldownTime = 1.0f; 
-	//f32 dashCooldown = 0.0f;
-
-	//if (player.velocity.y < player.gravityForce + 0.001f)
-	//{
-	//	std::cout << "TIE\n";
-	//}
-
-	//if (player.velocity.y < player.gravityForce - 0.001f)
-	//{
-
-	//	std::cout << "HI\n";
-	//}
-
 
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
 	}
 
-	//Just for fun
-	//if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
-	//isDashing = true;
-	//dashCooldown = dashCooldownTime;
-
-	//	//// Determine dash direction based on current movement
-	//	//if (AEInputCheckCurr(AEVK_D)) {
-	//	//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-	//	//	player.isFacingRight = true;
-	//	//}
-	//	//else if (AEInputCheckCurr(AEVK_A)) {
-	//	//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-	//	//	player.isFacingRight = false;
-	//	//}
-	//}
-	//else
-	//{
 	if (AEInputCheckCurr(AEVK_D))
 	{
 		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
@@ -162,14 +127,6 @@ void PlayerUpdate(Player& player)
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
-
-	// Update dash cooldown
-	//if (dashCooldown > 0.0f) {
-	//	dashCooldown -= (f32)AEFrameRateControllerGetFrameTime();
-	//	if (dashCooldown <= 0.0f) {
-	//		isDashing = false;
-	//	}
-	//}
 
 
 	// Calculate the desired location

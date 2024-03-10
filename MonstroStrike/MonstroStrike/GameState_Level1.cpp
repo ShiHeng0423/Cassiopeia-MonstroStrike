@@ -268,33 +268,35 @@ void Level1_Update()
 
 #pragma region GridSystem
 	//For printing the grids every frame
-	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
 		{
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
-
-				//Collision check
-				//Resolve + Vertical Collision only for entity x (wall or ground)
-				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
+				if (!inventory_open)
 				{
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
-					                         &player->collisionNormal, &player->obj.pos,
-					                         &player->velocity, &player->onFloor, &player->gravityForce,
-					                         &player->isFalling);
-				}
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
+							&player->collisionNormal, &player->obj.pos,
+							&player->velocity, &player->onFloor, &player->gravityForce,
+							&player->isFalling);
+					}
 
-				//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-				{
-					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
-					                           &player->collisionNormal, &player->obj.pos,
-					                           &player->velocity);
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
+							&player->collisionNormal, &player->obj.pos,
+							&player->velocity);
+					}
 				}
 //(ENEMY AND BULLETS COLLISION CHECKING)
 				for (Enemy& enemy : vecEnemy) {
@@ -376,7 +378,6 @@ void Level1_Update()
 		}
 		//Hover collision with button && hold left mouse button
 
-		int snap_back = 0;
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
 			s32 testx = 0;
@@ -715,8 +716,11 @@ void Level1_Draw()
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
+		f32 x, y;
+		AEGfxGetCamPosition(&x, &y);
+
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(x,y, 0.f,
 			inventoryBackground.img.scale.x,
 			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -724,8 +728,8 @@ void Level1_Draw()
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
-			equipmentBackground.pos.x + cam->GetCameraWorldPoint().x,
-			equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+			equipmentBackground.pos.x + x,
+			equipmentBackground.pos.y +y, 0.f,
 			equipmentBackground.img.scale.x,
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -735,8 +739,8 @@ void Level1_Draw()
 			if (button.Item.ID < 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				                                                button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x +x,
+				                                                button.pos.y +y, 0.f,
 				                                                button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
@@ -748,8 +752,8 @@ void Level1_Draw()
 			if (button.Item.ID >= 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				                                                button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
 				                                                button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
@@ -760,8 +764,8 @@ void Level1_Draw()
 			if (button.Item.ID < 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				                                                button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
 				                                                button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
@@ -772,8 +776,8 @@ void Level1_Draw()
 			if (button.Item.ID >= 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				                                                button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
 				                                                button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}

@@ -335,6 +335,18 @@ void Mainmenu_Draw()
 	}
 	case CurrentScene::CreditScene:
 	case CurrentScene::ControlScene:
+	{
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		f32 width, height;
+
+		const char* pText = "Back";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
 	case CurrentScene::OptionScene:
 	{
 		AEGfxTextureSet(optionbackground.pTex, 0, 0);

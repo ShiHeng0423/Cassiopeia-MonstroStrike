@@ -258,22 +258,24 @@ void GameLobby_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
-
-				//Collision check
-				//Resolve + Vertical Collision only for entity x (wall or ground)
-				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-				}
-
-				//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+				if (!inventory_open)
 				{
-					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity);
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+							&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+					}
+
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+							&player->velocity);
+					}
 				}
 				break;
 			case MAP_TRANSITION_GRID:
@@ -301,9 +303,36 @@ void GameLobby_Update()
 	{
 		//update item position
 		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
+		int index = 0;
 
+		for (ButtonGearUI& button : inventoryButton)
+		{
+			button.img.pTex = blank;
+			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f, -(index / 5) * 90.f + 180.f);
+
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				if (button.Item.quantity <= 0)
+				{
+					Item blank;
+					blank.ID = -9999;
+					button.Item = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
+			}
+
+			//button.isWeapon = false;
+			index++;
+		}
 		//Hover collision with button && hold left mouse button
-
 
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
@@ -323,7 +352,7 @@ void GameLobby_Update()
 				{
 					if (button.img.pTex != blank)
 					{
-						std::cout << "left triggered\n";
+						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
 						snap_back = index;
 						break;
@@ -356,8 +385,10 @@ void GameLobby_Update()
 			{
 				for (ButtonGearUI& button : inventoryButton)
 				{
-					if (AETestRectToRect(&inventoryButton[snap_back].pos, inventoryButton[snap_back].img.scale.x,
-						inventoryButton[snap_back].img.scale.y, &button.pos, button.img.scale.x,
+					if (AETestRectToRect(&inventoryButton[snap_back].pos,
+						inventoryButton[snap_back].img.scale.x,
+						inventoryButton[snap_back].img.scale.y, &button.pos,
+						button.img.scale.x,
 						button.img.scale.y))
 					{
 						//Different items overlapping
@@ -371,6 +402,16 @@ void GameLobby_Update()
 							button = inventoryButton[snap_back];
 							inventoryButton[snap_back] = tmp;
 
+							if (Player_Inventory.size() <= index)
+							{
+								int oldsize = Player_Inventory.size();
+								Player_Inventory.resize(index + 1);
+								for (int x = oldsize; x < Player_Inventory.size(); x++)
+								{
+									Player_Inventory[x].ID = -9999;
+								}
+							}
+							Inventory::SwapInventory(Player_Inventory[index], Player_Inventory[snap_back]);
 							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
 								-(snap_back / 5) * 90.f + 180.f);
 
@@ -393,6 +434,7 @@ void GameLobby_Update()
 			}
 		}
 
+
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
 			int index = 0;
@@ -400,6 +442,7 @@ void GameLobby_Update()
 			s32 testy = 0;
 
 
+			index = 0;
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
 			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
@@ -411,12 +454,24 @@ void GameLobby_Update()
 				{
 					if (button.img.pTex != blank)
 					{
-						Equip(index, button);
-						button.img.pTex = blank;
+						Inventory::UseItem(index, button, *player);
+						if (button.Item.quantity == 0)
+						{
+							button.img.pTex = blank;
+						}
 						break;
 					}
-					//button.Ptr();
 				}
+
+				index++;
+			}
+
+			index = 0;
+			for (ButtonGearUI& button : Inventory::equipmentDisplay)
+			{
+				button.img.pTex = Gear[button.Item.ID];
+				AEVec2Set(&button.img.scale, 60.f, 60.f);
+				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 				index++;
 			}
 		}
@@ -497,35 +552,71 @@ void GameLobby_Draw()
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
+		f32 x, y;
+		AEGfxGetCamPosition(&x, &y);
+
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
 			inventoryBackground.img.scale.x,
 			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		for (ButtonGearUI button : inventoryButton)
-		{
-			AEGfxTextureSet(button.img.pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
-				button.img.scale.x, button.img.scale.y).m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		}
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(equipmentBackground.pos.x + cam->GetCameraWorldPoint().x,
-			equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(
+			equipmentBackground.pos.x + x,
+			equipmentBackground.pos.y + y, 0.f,
 			equipmentBackground.img.scale.x,
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		for (ButtonGearUI button : equipmentDisplay)
+		for (ButtonGearUI button : inventoryButton)
 		{
-			AEGfxTextureSet(button.img.pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
-				button.img.scale.x, button.img.scale.y).m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
 		}
 	}
 
