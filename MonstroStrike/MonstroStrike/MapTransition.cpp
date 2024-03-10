@@ -74,7 +74,7 @@ void MapTransitionInit(AEVec2 playerPos) //Call when enter a new level
 
 void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, GameStates nextLevel) //To call when exiting a level
 {
-	std::cout << "Play Animation\n";
+	//std::cout << "Play Animation\n";
 
 	transitionDir = directionToPlay;
 	transitionalImageOBJ.active = true;
@@ -88,7 +88,7 @@ void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image i
 	//Either that or get just outside camera view *Recommended
 	if (!transitionalImageOBJ.active)
 	{
-		std::cout << "Inactive obj\n";
+		//std::cout << "Inactive obj\n";
 		return;
 	}
 
@@ -161,7 +161,7 @@ void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image i
 		break;
 	case TRANSITION_UPDATE:
 
-		std::cout << AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) << std::endl;
+		//std::cout << AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) << std::endl;
 		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 5.f)
 		{
 			//std::cout << transitionalImageOBJ.position.x <<  " " << transitionalImageOBJ.position.y << std::endl;

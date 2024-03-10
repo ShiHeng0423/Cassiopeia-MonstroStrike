@@ -448,7 +448,7 @@ void GameLobby_Update()
 			case MAP_TRANSITION_GRID:
 				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
 				{
-					std::cout << "Collided\n";
+					//std::cout << "Collided\n";
 					if (!transitionalImageOBJ.active)
 					{
 						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
