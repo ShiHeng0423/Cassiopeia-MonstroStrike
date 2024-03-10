@@ -52,6 +52,8 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
         playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
         playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
 
+
+        std::cout << playerEquip->damage << std::endl;
         //player->isAttacking = false; //If player is attacking render the hitbox
         playerEquip->weaponHIT = false;  
 
@@ -84,7 +86,7 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
         ////playerEquip->weaponHIT = false;  // Reset the hit state for each combo
         ///*std::cout << "Exiting Input Check - Combo State1: " << player->comboState << ", Combo Time1: " << player->comboTime << std::endl;*/
 
-
+        
 
     }
     else if(player->comboState == 1)
@@ -111,6 +113,7 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
         playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
         playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
 
+        std::cout << playerEquip->damage << std::endl;
         //player->isAttacking = false;
         playerEquip->weaponHIT = false;
 
@@ -169,6 +172,7 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
         playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
         playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
 
+        std::cout << playerEquip->damage << std::endl;
         /*player->isAttacking = false;*/
         playerEquip->weaponHIT = false;
 
@@ -226,6 +230,8 @@ void UpdateWeaponHitBoxHeld(struct Player* player, bool playerFacingRight, struc
         playerEquip->position.x = player->obj.pos.x;
         playerEquip->position.y = player->obj.pos.y;
 
+        playerEquip->damage = 100;
+
         // change the hitbox
         f32 hit = playerFacingRight ?  // change the hitbox
             playerEquip->position.x = player->obj.pos.x + 20.0f : playerEquip->position.x = player->obj.pos.x - 20.0f;
@@ -243,8 +249,11 @@ void UpdateWeaponHitBoxHeld(struct Player* player, bool playerFacingRight, struc
         playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
         playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
 
+        std::cout << playerEquip->damage<<std::endl;
         player->isAttacking = false;
         playerEquip->weaponHIT = false;
+        playerEquip->damage = 20;
+        std::cout << playerEquip->damage << std::endl;
 
         //std::cout << "Entering Input Check - Combo StateHeld: " << player->comboState << ", Combo TimeHeld: " << player->comboTime << std::endl;
         //
