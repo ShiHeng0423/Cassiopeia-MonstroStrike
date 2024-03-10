@@ -148,7 +148,7 @@ void Level1_Load()
 	Gear[3] = AEGfxTextureLoad("Assets/items/tile_archColumns.png");
 	Gear[4] = AEGfxTextureLoad("Assets/items/item_sword.png");
 	Gear[5] = AEGfxTextureLoad("Assets/items/item_helmet.png");
-	Gear[6] = AEGfxTextureLoad("Assets/items/item_sword.png");
+	Gear[6] = AEGfxTextureLoad("Assets/items/item_angel_sword.png");
 	Gear[7] = AEGfxTextureLoad("Assets/items/item_.png");
 
 	blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
