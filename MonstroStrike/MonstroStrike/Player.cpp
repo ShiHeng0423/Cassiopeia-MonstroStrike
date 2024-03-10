@@ -269,12 +269,11 @@ void PlayerUpdate(Player& player)
 		is_released = true;
 	}
 	//reset
-	if (!if_there_is_undealt_trigger_input/* && player.comboState > 0*/)
+	if (!if_there_is_undealt_trigger_input)
 	{
 		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0; // Convert to seconds
 		if (elapsedTime > comboWindowDuration)
 		{
-			std::cout << "resetting combo" << std::endl;
 			player.isAttacking = false;
 			player.equippedWeapon->weaponHIT = false;
 			player.comboTime = 0.0f; // Reset combo time
@@ -292,7 +291,6 @@ void PlayerUpdate(Player& player)
 			if (player.comboState == 2) //held
 			{
 		
-				std::cout << "hold" << std::endl;
 				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
 				player.isAttacking = true;
@@ -316,17 +314,14 @@ void PlayerUpdate(Player& player)
 
 				player.comboState++;
 				player.comboTime += elapsedTime;
-				std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-				std::cout << "combo attack " + player.comboState << std::endl;
+
 			}
 
 			else
 			{
-				std::cout << "Combo reset!" << std::endl;
+			
 				player.comboState = 0;
 				player.comboTime = 0.0f;
-				std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-	
 
 
 			}

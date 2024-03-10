@@ -53,7 +53,6 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
         playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
 
 
-        std::cout << playerEquip->damage << std::endl;
         //player->isAttacking = false; //If player is attacking render the hitbox
         playerEquip->weaponHIT = false;  
 
@@ -113,7 +112,6 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
         playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
         playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
 
-        std::cout << playerEquip->damage << std::endl;
         //player->isAttacking = false;
         playerEquip->weaponHIT = false;
 
@@ -217,7 +215,6 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
 
     }
 
-    std::cout << "Combo: " << player->comboState << std::endl;
 
   }
 

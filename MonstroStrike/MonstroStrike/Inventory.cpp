@@ -442,7 +442,7 @@ namespace Inventory
 				}
 				equippedWeapon = obj;
 				equipmentDisplay[2].Item = equippedWeapon;
-				playerReference->equippedWeapon.damage = obj.attack;
+				playerReference->equippedWeapon->damage = obj.attack;
 
 				for (auto& inventory : Player_Inventory)
 				{
