@@ -32,29 +32,20 @@ namespace
 #pragma endregion UserInterface
 
 	bool inventory_open;
-	int snap_back = -1;
+	s16 snap_back = -1;
 
-	int hp = 100;
-	int gear_equipped = 0;
+	s16 hp = 100;
+	s16 gear_equipped = 0;
 
-	float burningEffectDuration = 1.5f;
+	f32 burningEffectDuration = 1.5f;
 	f64 timer = 0.f;
 
 	ButtonGearUI inventoryBackground;
 	ButtonGearUI inventoryButton[25];
 
 	ButtonGearUI equipmentBackground;
-	//ButtonGearUI equipmentDisplay[5];
-
 
 	AEGfxTexture* blank;
-	// AEGfxTexture* Gear1;
-	// AEGfxTexture* Gear2;
-	// AEGfxTexture* weapon3;
-	// AEGfxTexture* Gear4;
-	// AEGfxTexture* Gear5;
-
-	//Button inventoryBackground;
 
 	AEVec2 playerBoundaryMin;
 	AEVec2 playerBoundaryMax;
@@ -63,10 +54,10 @@ namespace
 
 AEGfxTexture* bulletTex = nullptr;
 
-int playerGridMinX;
-int playerGridMinY;
-int playerGridMaxX;
-int playerGridMaxY;
+s16 playerGridMinX;
+s16 playerGridMinY;
+s16 playerGridMaxX;
+s16 playerGridMaxY;
 
 void Level1_Load()
 {
@@ -80,11 +71,10 @@ void Level1_Load()
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
-
 	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0,-100 }, { 40.f,0.f }, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMap.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
@@ -176,7 +166,7 @@ void Level1_Initialize()
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
 	inventory_open = false;
-	int index = 0;
+	s16 index = 0;
 	//Display inventory
 
 
@@ -219,11 +209,11 @@ void Level1_Update()
 
 #pragma endregion
 
-	if (currScene == CurrentScene::PauseScene || currScene == CurrentScene::ControlScene || currScene == CurrentScene::QuitScene)
+	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
 		return;
 
 #pragma region PlayerUpdate
-	if (currScene == MainScene && !inventory_open)
+	if (currScene == MAIN_SCENE && !inventory_open)
 		PlayerUpdate(*player);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
@@ -345,7 +335,7 @@ void Level1_Update()
 	{
 		//update item position
 		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
-		int index = 0;
+		s16 index = 0;
 
 
 		for (ButtonGearUI& button : inventoryButton)
@@ -382,7 +372,7 @@ void Level1_Update()
 			s32 testx = 0;
 			s32 testy = 0;
 
-			int index = 0;
+			s16 index = 0;
 
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
@@ -411,7 +401,7 @@ void Level1_Update()
 			s32 testx = 0;
 			s32 testy = 0;
 
-			int index = 0;
+			s16 index = 0;
 
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
@@ -423,7 +413,7 @@ void Level1_Update()
 
 		if (AEInputCheckReleased(AEVK_LBUTTON))
 		{
-			int index = 0;
+			s16 index = 0;
 			if (snap_back >= 0)
 			{
 				for (ButtonGearUI& button : inventoryButton)
@@ -480,7 +470,7 @@ void Level1_Update()
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
-			int index = 0;
+			s16 index = 0;
 			s32 testx = 0;
 			s32 testy = 0;
 
@@ -604,7 +594,7 @@ void Level1_Draw()
 		}
 	}
 
-	for (int i = 0; i < platformVectors.size(); i++)
+	for (s16 i = 0; i < platformVectors.size(); i++)
 	{
 		AEGfxSetTransform(platformVectors[i].transformation.m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
@@ -838,7 +828,7 @@ void Level1_Unload()
 	AEGfxTextureUnload(blank);
 
 
-	for (int i = 0; i < 8; ++i)
+	for (s16 i = 0; i < 8; ++i)
 	{
 		AEGfxTextureUnload(Gear[i]);
 	}
