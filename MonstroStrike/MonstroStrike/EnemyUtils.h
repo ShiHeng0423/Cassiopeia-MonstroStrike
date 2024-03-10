@@ -19,10 +19,10 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
 
 void Attack_Charge(Enemy& enemy, s8 targetPosition, f32 speed);
-bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
+bool AreAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
 void Jump(Enemy& enemy, f32 value);
-void isStuck(Enemy& enemy);
-bool reachedPos(Enemy& enemy, AEVec2 wayPoint);
+void IsStuck(Enemy& enemy);
+bool ReachedPos(Enemy& enemy, AEVec2 wayPoint);
 //(EnemyUtils)-------------------------------------------------------------------------
 
 
