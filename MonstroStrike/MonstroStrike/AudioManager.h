@@ -3,8 +3,8 @@
 
 enum Audio_List
 {
-	MainMenu,
-	Attack_Slash,
+	MainMenu_Song,
+	Attack_Slash_SFX,
 	Total_Audio
 };
 
@@ -15,8 +15,14 @@ public:
 	~AudioManager();
 
 	void PlayAudio(bool isBGM, Audio_List audioName);
-	void SetSFXVolume(f32 vol);
-	void SetBGMVolume(f32 vol);
+
+	f32 GetSFXVolume();
+	f32 GetBGMVolume();
+
+	void IncreaseSFXVolume();
+	void DecreaseSFXVolume();
+	void IncreaseBGMVolume();
+	void DecreaseBGMVolume();
 
 private:
 	f32 sfxVolume;

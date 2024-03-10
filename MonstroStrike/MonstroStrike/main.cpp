@@ -27,6 +27,7 @@
 // main
 
 s8 fontID;
+AudioManager* audioManager;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -50,6 +51,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GSM_Initialize(GameStates::MainMenu);
 	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
+	audioManager = new AudioManager();
 
 	while (current != GameStates::Quit)
 	{
@@ -80,6 +82,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	MapTransitionUnload();//Unload Map Transition image here
 	AEGfxDestroyFont(fontID);
+	delete audioManager;
 	// free the system
 	AESysExit();
 }

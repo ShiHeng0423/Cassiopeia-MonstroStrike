@@ -43,6 +43,7 @@ namespace {
 	AEGfxTexture* boxBackground;
 
 	AEGfxVertexList* pWhiteSquareMesh;
+	AEGfxVertexList* pBlackSquareMesh;
 
 	Sprite background;
 
@@ -67,19 +68,33 @@ void GoQuitGame();
 
 void BackMainMenu();
 
-void IncreaseSfxVolume() {
-
+void IncreaseSfxVolume()
+{
+	audioManager->IncreaseSFXVolume();
+	f32 maths = 0 - 250 * (1.f - audioManager->GetSFXVolume() * 2.f);
+	AEVec2Set(&optionSoundBar[1].pos, 0 - 250 * (0.5f - audioManager->GetSFXVolume()), -100); // bar 2
+	AEVec2Set(&optionSoundBar[1].scale, 250 * audioManager->GetSFXVolume() * 2.f, 50);
 }
+
 void IncreaseBgmVolume()
 {
-
+	audioManager->IncreaseBGMVolume();
+	AEVec2Set(&optionSoundBar[0].pos, 0 - 250 * (0.5f - audioManager->GetBGMVolume()), 0); // bar 1
+	AEVec2Set(&optionSoundBar[0].scale, 250 * audioManager->GetBGMVolume() * 2.f, 50);
 }
+
 void DecreaseSfxVolume()
 {
+	audioManager->DecreaseSFXVolume();
+	AEVec2Set(&optionSoundBar[1].pos, 0 - 250 * (0.5f - audioManager->GetSFXVolume()), -100); // bar 2
+	AEVec2Set(&optionSoundBar[1].scale, 250 * audioManager->GetSFXVolume() * 2.f, 50);
 }
+
 void DecreaseBgmVolume()
 {
-
+	audioManager->DecreaseBGMVolume();
+	AEVec2Set(&optionSoundBar[0].pos, 0 - 250 * (0.5f - audioManager->GetBGMVolume()), 0); // bar 1
+	AEVec2Set(&optionSoundBar[0].scale, 250 * audioManager->GetBGMVolume() * 2.f, 50);
 }
 
 void Mainmenu_Load()
@@ -104,6 +119,21 @@ void Mainmenu_Load()
 
 	// Saving the mesh (list of triangles) in pMesh
 	pWhiteSquareMesh = AEGfxMeshEnd();
+
+	AEGfxMeshStart();
+
+	AEGfxTriAdd(
+		-0.5f, -0.5f, 0xFF000000, 0.0f, 1.0f,
+		0.5f, -0.5f, 0xFF000000, 1.0f, 1.0f,
+		-0.5f, 0.5f, 0xFF000000, 0.0f, 0.0f);
+
+	AEGfxTriAdd(
+		0.5f, -0.5f, 0xFF000000, 1.0f, 1.0f,
+		0.5f, 0.5f, 0xFF000000, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0xFF000000, 0.0f, 0.0f);
+
+	// Saving the mesh (list of triangles) in pMesh
+	pBlackSquareMesh = AEGfxMeshEnd();
 
 }
 
@@ -196,6 +226,8 @@ void Mainmenu_Initialize()
 	background.scale.y = 900;
 
 	currScene = CurrentScene::MainScene;
+
+	audioManager->PlayAudio(true, Audio_List::MainMenu_Song);
 }
 
 void Mainmenu_Update()
@@ -219,7 +251,15 @@ void Mainmenu_Update()
 			break;
 		case CurrentScene::CreditScene:
 		case CurrentScene::ControlScene:
+			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
+				backButton.Ptr();
+			break;
 		case CurrentScene::OptionScene:
+			for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
+			{
+				if (AETestPointToRect(&mousePos, &interactableButtonOption[i].pos, interactableButtonOption[i].scale.x, interactableButtonOption[i].scale.y))
+					interactableButtonOption[i].Ptr();
+			}
 			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
 				backButton.Ptr();
 			break;
@@ -308,19 +348,20 @@ void Mainmenu_Draw()
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+		
+		for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
+		{
+			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(optionBackgroundBar[i].pos.x, optionBackgroundBar[i].pos.y, 0.f, optionBackgroundBar[i].scale.x, optionBackgroundBar[i].scale.y).m);
+			AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
 		for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
 		{
 			AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
 			AEGfxSetTransform(ObjectTransformationMatrixSet(optionSoundBar[i].pos.x, optionSoundBar[i].pos.y, 0.f, optionSoundBar[i].scale.x, optionSoundBar[i].scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
-
-		//for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
-		//{
-		//	AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-		//	AEGfxSetTransform(ObjectTransformationMatrixSet(optionBackgroundBar[i].pos.x, optionBackgroundBar[i].pos.y, 0.f, optionBackgroundBar[i].scale.x, optionBackgroundBar[i].scale.y).m);
-		//	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		//}
 
 		f32 width, height;
 
@@ -365,6 +406,9 @@ void Mainmenu_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxTextureUnload(buttonTexture);
 	AEGfxTextureUnload(backgroundTexture);
+	AEGfxTextureUnload(boxBackground);
+	AEGfxTextureUnload(audioUp);
+	AEGfxTextureUnload(audioDown);
 }
 
 void BackMainMenu()
