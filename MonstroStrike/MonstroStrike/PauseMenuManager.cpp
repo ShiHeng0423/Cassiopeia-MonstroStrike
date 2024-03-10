@@ -7,12 +7,12 @@
 //private namespace for this file
 namespace {
 
-	AEGfxTexture* PauseMenuBackground;
-	AEGfxTexture* ButtonFrame;
+	AEGfxTexture* pauseMenuBackgroundTex;
+	AEGfxTexture* buttonFrame;
 
-	Button PauseMenuButtons[4];
-	Button QuitToMainmenu[2];
-	Button BackButton;
+	Button pauseMenuButtons[4];
+	Button quitToMainmenu[2];
+	Button backButton;
 
 	Sprite_V2 pauseMenuBackground;
 
@@ -32,8 +32,8 @@ void BackPauseMenu() { currScene = CurrentScene::PAUSE_SCENE; }
 
 PauseMenu_Manager::PauseMenu_Manager()
 {
-	PauseMenuBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
-	ButtonFrame = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
+	pauseMenuBackgroundTex = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
+	buttonFrame = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 
 	AEGfxMeshStart();
 
@@ -52,56 +52,56 @@ PauseMenu_Manager::PauseMenu_Manager()
 
 PauseMenu_Manager::~PauseMenu_Manager()
 {
-	AEGfxTextureUnload(PauseMenuBackground);
-	AEGfxTextureUnload(ButtonFrame);
+	AEGfxTextureUnload(pauseMenuBackgroundTex);
+	AEGfxTextureUnload(buttonFrame);
 	AEGfxMeshFree(pWhiteSquareMesh);
 }
 
 void PauseMenu_Manager::Init(Camera* cam)
 {
-	for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
+	for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
 	{
-		PauseMenuButtons[i].pTex = ButtonFrame;
-		AEVec2Set(&PauseMenuButtons[i].scale, 250.f, 80.f);
-		AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
+		pauseMenuButtons[i].pTex = buttonFrame;
+		AEVec2Set(&pauseMenuButtons[i].scale, 250.f, 80.f);
+		AEVec2Set(&pauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
 
 		switch (i)
 		{
 		case Interactable::RESUME:
-			PauseMenuButtons[i].Ptr = ResumeGame;
+			pauseMenuButtons[i].Ptr = ResumeGame;
 			break;
 		case Interactable::RETURN:
-			PauseMenuButtons[i].Ptr = ReturnLobby;
+			pauseMenuButtons[i].Ptr = ReturnLobby;
 			break;
 		case Interactable::CONTROLS:
-			PauseMenuButtons[i].Ptr = OpenControls;
+			pauseMenuButtons[i].Ptr = OpenControls;
 			break;
 		case Interactable::GO_MAINMENU:
-			PauseMenuButtons[i].Ptr = QuitConfirmation;
+			pauseMenuButtons[i].Ptr = QuitConfirmation;
 			break;
 		default:
 			break;
 		}
 	}
 
-	QuitToMainmenu[0].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[0].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	QuitToMainmenu[0].Ptr = BackPauseMenu;
+	quitToMainmenu[0].pTex = buttonFrame;
+	AEVec2Set(&quitToMainmenu[0].scale, 250.f, 80.f);
+	AEVec2Set(&quitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+	quitToMainmenu[0].Ptr = BackPauseMenu;
 
-	QuitToMainmenu[1].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[1].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	QuitToMainmenu[1].Ptr = QuitMainmenu;
+	quitToMainmenu[1].pTex = buttonFrame;
+	AEVec2Set(&quitToMainmenu[1].scale, 250.f, 80.f);
+	AEVec2Set(&quitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+	quitToMainmenu[1].Ptr = QuitMainmenu;
 
-	BackButton.pTex = ButtonFrame;
-	AEVec2Set(&BackButton.scale, 250.f, 80.f);
-	AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	BackButton.Ptr = BackPauseMenu;
+	backButton.pTex = buttonFrame;
+	AEVec2Set(&backButton.scale, 250.f, 80.f);
+	AEVec2Set(&backButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
+	backButton.Ptr = BackPauseMenu;
 
 	currScene = CurrentScene::MAIN_SCENE;
 
-	pauseMenuBackground.pTex = PauseMenuBackground;
+	pauseMenuBackground.pTex = pauseMenuBackgroundTex;
 	pauseMenuBackground.scale.x = 1000.f;
 	pauseMenuBackground.scale.y = 500.f;
 	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
@@ -118,13 +118,13 @@ void PauseMenu_Manager::Update(Camera* cam)
 			//rmb to freeze game update
 			currScene = CurrentScene::PAUSE_SCENE;
 
-			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-				AEVec2Set(&PauseMenuButtons[i].pos, x, y - 100.f * i + 100.f);
+			for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
+				AEVec2Set(&pauseMenuButtons[i].pos, x, y - 100.f * i + 100.f);
 
-			AEVec2Set(&QuitToMainmenu[0].pos, 250.f + x, y);
-			AEVec2Set(&QuitToMainmenu[1].pos, -250.f + x, y);
+			AEVec2Set(&quitToMainmenu[0].pos, 250.f + x, y);
+			AEVec2Set(&quitToMainmenu[1].pos, -250.f + x, y);
 
-			AEVec2Set(&BackButton.pos, 280.f + x, -180.f + y);
+			AEVec2Set(&backButton.pos, 280.f + x, -180.f + y);
 
 			AEVec2Set(&pauseMenuBackground.pos, x, y);
 		}
@@ -150,38 +150,38 @@ void PauseMenu_Manager::Update(Camera* cam)
 			{
 			case CurrentScene::PAUSE_SCENE:
 			{
-				for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
+				for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
 				{
-					AEVec2 translateOrigin = PauseMenuButtons[i].pos;
+					AEVec2 translateOrigin = pauseMenuButtons[i].pos;
 					translateOrigin.x -= x;
 					translateOrigin.y -= y;
-					if (AETestPointToRect(&mousePos, &translateOrigin, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y))
-						PauseMenuButtons[i].Ptr();
+					if (AETestPointToRect(&mousePos, &translateOrigin, pauseMenuButtons[i].scale.x, pauseMenuButtons[i].scale.y))
+						pauseMenuButtons[i].Ptr();
 				}
 				break;
 			}
 			case CurrentScene::CONTROL_SCENE:
 			{
-				AEVec2 translateOrigin = BackButton.pos;
+				AEVec2 translateOrigin = backButton.pos;
 				translateOrigin.x -= x;
 				translateOrigin.y -= y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, BackButton.scale.x, BackButton.scale.y))
-					BackButton.Ptr();
+				if (AETestPointToRect(&mousePos, &translateOrigin, backButton.scale.x, backButton.scale.y))
+					backButton.Ptr();
 				break;
 			}
 			case CurrentScene::QUIT_SCENE:
 			{
-				AEVec2 translateOrigin = QuitToMainmenu[0].pos;
+				AEVec2 translateOrigin = quitToMainmenu[0].pos;
 				translateOrigin.x -= x;
 				translateOrigin.y -= y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y))
-					QuitToMainmenu[0].Ptr();
-				translateOrigin = QuitToMainmenu[1].pos;
+				if (AETestPointToRect(&mousePos, &translateOrigin, quitToMainmenu[0].scale.x, quitToMainmenu[0].scale.y))
+					quitToMainmenu[0].Ptr();
+				translateOrigin = quitToMainmenu[1].pos;
 				AEGfxGetCamPosition(&x, &y);
 				translateOrigin.x -= x;
 				translateOrigin.y -= y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y))
-					QuitToMainmenu[1].Ptr();
+				if (AETestPointToRect(&mousePos, &translateOrigin, quitToMainmenu[1].scale.x, quitToMainmenu[1].scale.y))
+					quitToMainmenu[1].Ptr();
 				break;
 			}
 			default:
@@ -202,13 +202,13 @@ void PauseMenu_Manager::Render()
 	{
 	case CurrentScene::PAUSE_SCENE:
 	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
+		AEGfxTextureSet(pauseMenuBackgroundTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
+		for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
 		{
-			AEGfxTextureSet(PauseMenuButtons[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(PauseMenuButtons[i].pos.x, PauseMenuButtons[i].pos.y, 0.f, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y).m);
+			AEGfxTextureSet(pauseMenuButtons[i].pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuButtons[i].pos.x, pauseMenuButtons[i].pos.y, 0.f, pauseMenuButtons[i].scale.x, pauseMenuButtons[i].scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
@@ -231,12 +231,12 @@ void PauseMenu_Manager::Render()
 	}
 	case CurrentScene::CONTROL_SCENE:
 	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
+		AEGfxTextureSet(pauseMenuBackgroundTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxTextureSet(BackButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(BackButton.pos.x, BackButton.pos.y, 0.f, BackButton.scale.x, BackButton.scale.y).m);
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;
@@ -248,16 +248,16 @@ void PauseMenu_Manager::Render()
 	}
 	case CurrentScene::QUIT_SCENE:
 	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
+		AEGfxTextureSet(pauseMenuBackgroundTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxTextureSet(QuitToMainmenu[0].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(QuitToMainmenu[0].pos.x, QuitToMainmenu[0].pos.y, 0.f, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y).m);
+		AEGfxTextureSet(quitToMainmenu[0].pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(quitToMainmenu[0].pos.x, quitToMainmenu[0].pos.y, 0.f, quitToMainmenu[0].scale.x, quitToMainmenu[0].scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxTextureSet(QuitToMainmenu[1].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(QuitToMainmenu[1].pos.x, QuitToMainmenu[1].pos.y, 0.f, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y).m);
+		AEGfxTextureSet(quitToMainmenu[1].pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(quitToMainmenu[1].pos.x, quitToMainmenu[1].pos.y, 0.f, quitToMainmenu[1].scale.x, quitToMainmenu[1].scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;

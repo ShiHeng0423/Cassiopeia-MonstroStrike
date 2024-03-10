@@ -8,11 +8,11 @@
 
 
 
-void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
+void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 
 	Enemy enemy;
 
-	switch (enemy_type) {
+	switch (enemyType) {
 	case ENEMY_JUMPER:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Angry.png");
@@ -29,12 +29,6 @@ void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
 		break;
 	case ENEMY_BOSS1:
 
-		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.angryTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-
-
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
 		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
@@ -43,12 +37,12 @@ void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
 		break;
 
 	default:
-		std::cerr << "Unknown enemy type: " << enemy_type << std::endl;
+		std::cerr << "Unknown enemy type: " << enemyType << std::endl;
 		return;
 
 	}
 
-	enemy.enemyType = enemy_type; //initialize enemy_type
+	enemy.enemyType = enemyType; //initialize enemy_type
 	vecEnemy.push_back(enemy);
 }
 
@@ -269,7 +263,5 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.boxArms = enemy.collisionBox;
 	enemy.boxArms.minimum.x -= horizontalOffset;
 	enemy.boxArms.maximum.x += horizontalOffset;
-
-
 }
 

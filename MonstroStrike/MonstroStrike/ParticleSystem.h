@@ -6,7 +6,7 @@ enum {
 	MAX_PARTICLE_COUNT = 1000
 };
 
-enum PARTICLE_TYPE {
+enum ParticleType {
 	TEST = 0,
 	TEST_2
 };
@@ -26,7 +26,7 @@ struct Particles
 	f32 alpha;
 	int textureIndex;
 
-	PARTICLE_TYPE particleType;
+	ParticleType particleType;
 
 	AEMtx33 transformation;
 	AEMtx33 scale;
@@ -43,7 +43,7 @@ void ParticleInitialize();
 
 void ParticleUpdate();
 
-void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, PARTICLE_TYPE particlePurpose);
+void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose);
 
 void ParticlesDraw(AEGfxVertexList& mesh);
 

@@ -4,10 +4,10 @@
 #include <sstream>
 
 
-std::vector<Recipe> ReadRecipes(const std::string& filename)
+std::vector<Recipe> ReadRecipes(const std::string& fileName)
 {
 	std::vector<Recipe> recipes;
-	std::ifstream file(filename);
+	std::ifstream file(fileName);
 	if (file.is_open())
 	{
 		std::string line;
@@ -36,7 +36,7 @@ std::vector<Recipe> ReadRecipes(const std::string& filename)
 	}
 	else
 	{
-		std::cerr << "Error: Unable to open file " << filename << std::endl;
+		std::cerr << "Error: Unable to open file " << fileName << std::endl;
 	}
 	return recipes;
 }

@@ -7,8 +7,8 @@
 #include <iostream>
 #include <chrono>
 #include <functional> 
-#define camXBoundary (250.f)
-#define camFollowupSpeedX (0.05f)
+#define CAM_X_BOUNDARY (250.f)
+#define CAM_FOLLOW_UP_SPEED_X (0.05f)
 // Define a clock type for high-resolution time measurement
 using Clock = std::chrono::high_resolution_clock;
 
@@ -385,17 +385,17 @@ void PlayerUpdate(Player& player)
 	AEGfxGetCamPosition(&cam.x, &cam.y);
 
 	//150.f refers to the cam boundary;
-	if ((player.expectedLocation.x > cam.x + camXBoundary) && player.isFacingRight)
+	if ((player.expectedLocation.x > cam.x + CAM_X_BOUNDARY) && player.isFacingRight)
 	{
-		AEVec2 desiredCamLocation{cam.x + camXBoundary, 0.f};
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x - camXBoundary, cam.y);
+		AEVec2 desiredCamLocation{cam.x + CAM_X_BOUNDARY, 0.f};
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
+		AEGfxSetCamPosition(desiredCamLocation.x - CAM_X_BOUNDARY, cam.y);
 	}
-	else if ((player.expectedLocation.x < cam.x - camXBoundary) && !player.isFacingRight)
+	else if ((player.expectedLocation.x < cam.x - CAM_X_BOUNDARY) && !player.isFacingRight)
 	{
-		AEVec2 desiredCamLocation{cam.x - camXBoundary, 0.f};
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x + camXBoundary, cam.y);
+		AEVec2 desiredCamLocation{cam.x - CAM_X_BOUNDARY, 0.f};
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
+		AEGfxSetCamPosition(desiredCamLocation.x + CAM_X_BOUNDARY, cam.y);
 	}
 #pragma endregion
 }
