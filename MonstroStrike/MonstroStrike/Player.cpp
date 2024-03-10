@@ -105,7 +105,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 }
 
 
-void PlayerUpdate(Player& player)
+void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
 
 	if (player.isFalling)
@@ -113,12 +113,12 @@ void PlayerUpdate(Player& player)
 		std::cout << "FELL\n";
 	}
 
-	if (AEInputCheckCurr(AEVK_D))
+	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
 	{
 		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = true;
 	}
-	else if (AEInputCheckCurr(AEVK_A))
+	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
 		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = false;
@@ -170,7 +170,7 @@ void PlayerUpdate(Player& player)
 	// End of armor equip
 
 	//For jumping
-	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
+	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor && !isInventoryOpen)
 	{
 		player.onFloor = false;
 		player.velocity.y = 700.f;
@@ -217,7 +217,7 @@ void PlayerUpdate(Player& player)
 	/*Weapon hit box update only*/
 	
 
-	if (AEInputCheckTriggered(AEVK_LBUTTON))
+	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		triggeredTime = Clock::now();
 		undealtTriggerInput = true;
@@ -225,7 +225,7 @@ void PlayerUpdate(Player& player)
 		if_first_input = true;
 	
 	}
-	if (AEInputCheckReleased(AEVK_LBUTTON))
+	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		isReleased = true;
 	}

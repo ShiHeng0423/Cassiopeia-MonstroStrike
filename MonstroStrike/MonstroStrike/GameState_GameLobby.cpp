@@ -248,8 +248,8 @@ void Lobby_Update()
 	menu->Update(cam);
 	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
 		return;
-	if (currScene == CurrentScene::MAIN_SCENE && !inventory_open)
-		PlayerUpdate(*player);
+	if (currScene == CurrentScene::MAIN_SCENE)
+		PlayerUpdate(*player, inventory_open);
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 
@@ -260,8 +260,6 @@ void Lobby_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
-				if (!inventory_open)
-				{
 					//Collision check
 					//Resolve + Vertical Collision only for entity x (wall or ground)
 					//Check vertical box (Head + Feet) 
@@ -278,7 +276,6 @@ void Lobby_Update()
 						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
 							&player->velocity);
 					}
-				}
 				break;
 			case MAP_TRANSITION_GRID:
 				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))

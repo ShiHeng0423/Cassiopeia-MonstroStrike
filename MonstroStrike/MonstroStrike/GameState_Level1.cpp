@@ -213,8 +213,8 @@ void Level1_Update()
 		return;
 
 #pragma region PlayerUpdate
-	if (currScene == MAIN_SCENE && !inventoryOpen)
-		PlayerUpdate(*player);
+	if (currScene == MAIN_SCENE)
+		PlayerUpdate(*player, inventoryOpen);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
 		inventoryOpen = !inventoryOpen;
@@ -264,8 +264,7 @@ void Level1_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
-				if (!inventoryOpen)
-				{
+
 					//Collision check
 					//Resolve + Vertical Collision only for entity x (wall or ground)
 					//Check vertical box (Head + Feet) 
@@ -286,7 +285,6 @@ void Level1_Update()
 							&player->collisionNormal, &player->obj.pos,
 							&player->velocity);
 					}
-				}
 //(ENEMY AND BULLETS COLLISION CHECKING)
 				for (Enemy& enemy : vecEnemy) {
 

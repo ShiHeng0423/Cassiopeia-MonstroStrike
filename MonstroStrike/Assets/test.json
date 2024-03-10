@@ -1,0 +1,55 @@
+{
+  "items": [
+    {
+      "UID": "ahi2bfi2",
+      "ID" :  0,
+      "name": "Demon banana",
+      "description": "burn",
+      "item_type": 2,
+      "rarity": 4,
+      "quantity": 1,
+      "stackable": false,
+      "attack": 69,
+      "defence": 96
+    },
+    {
+      "UID": "ahi2bfi2",
+      "ID": 1,
+      "name": "Black banana",
+      "description": "burnt",
+      "item_type": 2,
+      "rarity": 4,
+      "quantity": 1,
+      "stackable": false,
+      "attack": 69,
+      "defence": 96
+
+    },
+    {
+      "UID": "aqad112341ssssss",
+      "ID": 2,
+      "name": "Merlion saliva",
+      "description": "ages like fine wine",
+      "item_type": 0,
+      "rarity": 4,
+      "quantity": 1,
+      "stackable": true,
+      "attack": 69,
+      "defence": 96
+
+
+    },
+    {
+      "UID": "ahi2bfi2",
+      "ID": 3,
+      "name": "angel banana",
+      "description": "you can fly",
+      "item_type": 2,
+      "rarity": 4,
+      "quantity": 1,
+      "stackable": false,
+      "attack": 69,
+      "defence": 96
+    }
+  ]
+}
