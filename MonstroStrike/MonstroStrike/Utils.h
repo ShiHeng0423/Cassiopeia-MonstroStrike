@@ -36,3 +36,13 @@ struct Button
 
 AEGfxVertexList* GenerateSquareMesh(u32 MeshColor);
 AEGfxVertexList* GenerateLineMesh(u32 MeshColor);
+
+//
+void ResumeGame();
+void ReturnLobby();
+void OpenControls();
+void QuitMainmenu();
+void QuitConfirmation();
+void BackPauseMenu();
+
+void Equip(int index, ButtonGearUI tmp);

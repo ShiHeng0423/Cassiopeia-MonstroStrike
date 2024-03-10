@@ -6,11 +6,15 @@
 #include "GridTypesList.h"
 
 enum {
+	//Level 1 part A
 	MAP_ROW_SIZE = 50,
-	MAP_COLUMN_SIZE = 98
+	MAP_COLUMN_SIZE = 98, 
+
+	//Lobby Level
+	MAP_ROW_LOBBY_SIZE = 25,
+	MAP_COLUMN_LOBBY_SIZE = 65, //Shares the same column amount
+
 };
-//#define MAP_ROW_SIZE 50
-//#define MAP_COLUMN_SIZE 98
 
 //Reminder to add name space
 
@@ -38,7 +42,6 @@ struct Grids2D {
 	GRID_TYPES typeOfGrid;
 
 	AABB collisionBox; //Rectangle collision box
-
 };
 
 bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols);

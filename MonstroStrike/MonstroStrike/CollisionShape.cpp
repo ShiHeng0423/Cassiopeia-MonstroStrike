@@ -67,7 +67,6 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
         if (penetrationDepth > 0) {
             f32 dampingFactor = 0.3f;
             position->x += penetrationDepth * dampingFactor;
-            velocity->x = 0.f;
         }
     }
     else if (collisionNormal->x == -1) // Colliding from left
@@ -77,8 +76,6 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
             f32 dampingFactor = 0.3f;
             
             position->x -= penetrationDepth * dampingFactor;
-            velocity->x = 0.f;
-
         }
     }
 

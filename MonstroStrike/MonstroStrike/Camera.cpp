@@ -133,4 +133,5 @@ f32 Camera::GetCameraScreenY() const
 AEVec2 Camera::GetCameraWorldPoint() const
 {
 	return this->world_coordinate;
+	
 }

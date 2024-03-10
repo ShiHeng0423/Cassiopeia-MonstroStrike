@@ -21,6 +21,7 @@
 #include "Physics.h"
 #include "GameStateManager.h"
 #include "Inventory.h"
+#include "MapTransition.h"
 // ---------------------------------------------------------------------------
 // main
 
@@ -36,7 +37,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Using custom window procedure
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, true, NULL);
-
+	//AESysSetFullScreen(1);
 	// Changing the window title
 	AESysSetWindowTitle("MonstroStrike");
 
@@ -44,6 +45,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//AESysReset();
 
 	GSM_Initialize(GameStates::MainMenu);
+
+	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
 
 	while (current != GameStates::Quit)
 	{
@@ -56,9 +59,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			// Informing the system about the loop's start
 			AESysFrameStart();
-
 			fpUpdate();
 			fpDraw();
+			MapTransitionDraw();
 
 			// Informing the system about the loop's end
 			AESysFrameEnd();
@@ -68,6 +71,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		current = next;
 	}
 
+	MapTransitionUnload();//Unload Map Transition image here
+	
 	// free the system
 	AESysExit();
 }
