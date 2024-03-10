@@ -25,12 +25,19 @@
 
 #include "rapidjson/istreamwrapper.h"
 #include "rapidjson/ostreamwrapper.h"
+#include "rapidjson/filewritestream.h"
+#include <cstdio>
 #include "rapidjson/writer.h"
 #include <fstream>
 
 using namespace rapidjson;
 
 std::vector<Item> Player_Inventory;
+int Player_Inventory_Count;
+Player* playerReference = nullptr;
+Item equippedArmour[4];
+Item equippedWeapon;
+AEGfxTexture* Gear[25];
 
 namespace Inventory
 {
@@ -41,6 +48,15 @@ namespace Inventory
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
+		Item nothing{};
+		nothing.ID = -99999;
+		equippedWeapon = nothing;
+		for (int i =0; i< 4; ++i)
+		{
+			equippedArmour[i] = nothing;
+		}
+
+		
 		//std::vector<Inventory> inventory = new std::vector<Inventory>[1000];
 		std::vector<Item> inventory;
 
@@ -83,8 +99,9 @@ namespace Inventory
 				newItem.ID = ind_item["ID"].GetInt();
 				newItem.name = ind_item["name"].GetString();
 				newItem.description = ind_item["description"].GetString();
-				newItem.item_type = ind_item["item_type"].GetInt();
-				newItem.rarity = ind_item["rarity"].GetInt();
+				newItem.item_type = static_cast<Item_Type>(ind_item["item_type"].GetInt());
+				newItem.rarity = static_cast<Rarity> (ind_item["rarity"].GetInt());
+				newItem.armour_loc = static_cast<Armour_Location> (ind_item["armour_location"].GetInt());
 				newItem.quantity = ind_item["quantity"].GetInt();
 				newItem.stackable = ind_item["stackable"].GetBool();
 				newItem.health = ind_item["health"].GetInt();
@@ -116,17 +133,51 @@ namespace Inventory
 		return inventory;
 	}
 
+	
+
+
+	// void Button_Update()
+	// {
+	// 	for (const auto& obj : Object::ui_queue) {
+	// 		switch (obj->object_render_type) {
+	// 		case ot_img_button:
+	// 			if (point_to_aabb(obj, &Object::mouse))
+	// 			{
+	// 				
+	// 				if (!obj->in_area)
+	// 				{
+	// 					obj->in_area = true;
+	// 					obj->temp_scale = 1.1f;
+	//					panel.text = in
+	// 				}
+	// 			}
+	// 			else
+	// 			{
+	// 				if (obj->in_area)
+	// 				{
+	// 					obj->in_area = false;
+	// 					obj->temp_scale = 1.0;
+	//					Hover exit
+	//					panel.text = "";
+	// 				}
+	// 			}
+	// 			break;
+	// 		default:;
+	// 		}
+	// 	}
+	// }
+
+
+
 
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath)
 	{
 		std::cout << "start writing JSON" << std::endl;
 
 		 Document json;
-		// d.Parse(rapidjson::json);
-		
 		 json.SetObject();
 
-		Value items(kArrayType);
+		Value items( kArrayType);
 
 		// StringBuffer s;
 		// Writer<StringBuffer> writer(s);
@@ -137,6 +188,9 @@ namespace Inventory
 		for (const auto& item : inventory)
 		{
 			Value ind_item(kObjectType);
+			{
+				ind_item.AddMember("UID", "hi",json.GetAllocator());
+			}
 			ind_item.AddMember("UID", Value(item.UID.c_str(), json.GetAllocator()), json.GetAllocator());
 			ind_item.AddMember("ID", item.ID, json.GetAllocator());
 			ind_item.AddMember("name", Value(item.name.c_str(), json.GetAllocator()), json.GetAllocator());
@@ -150,7 +204,7 @@ namespace Inventory
 			ind_item.AddMember("attack", item.attack, json.GetAllocator());
 			ind_item.AddMember("defence", item.defence, json.GetAllocator());
 
-			std::cout << item.UID << std::endl;
+		/*	std::cout << item.UID << std::endl;
 			std::cout << item.ID << std::endl;
 			std::cout << item.name << std::endl;
 			std::cout << item.description << std::endl;
@@ -160,9 +214,9 @@ namespace Inventory
 			std::cout << item.stackable << std::endl;
 			std::cout << item.health << std::endl;
 			std::cout << item.attack << std::endl;
-			std::cout << item.defence << std::endl;
-
+			std::cout << item.defence << std::endl;*/
 			items.PushBack(ind_item, json.GetAllocator());
+			//items.AddMember("items",ind_item, json.GetAllocator());
 		}
 
 		json.AddMember("items", items, json.GetAllocator());
@@ -171,9 +225,18 @@ namespace Inventory
 
 		StringBuffer buffer;
 		Writer<StringBuffer> writer(buffer);
+
+		json.Parse(buffer.GetString());
+
 		json.Accept(writer);
+
+		std::cout << buffer.GetString() << std::endl;
+
 		
-		std::ofstream ofs(filepath);
+		 std::ofstream ofs(filepath);
+
+
+
 		if (ofs.is_open())
 		{
 			ofs << buffer.GetString();
@@ -184,6 +247,7 @@ namespace Inventory
 		{
 			std::cerr << "Failed to open the output JSON file: " << filepath << std::endl;
 		}
+
 	}
 
 
@@ -193,10 +257,21 @@ namespace Inventory
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
-		for(SizeType i=0; i<inventory.size(); ++i)
+		Player_Inventory_Count = 0;
+		for(size_t i=0; i<inventory.size(); ++i)
 		{
 			button[i].Item = inventory[i];
+			Player_Inventory_Count++;
 			
+		}
+		if(inventory.size()<25)
+		{
+			for(size_t i = inventory.size() ; i < 25 ; i++)
+			{
+				Item emptyItemSlot;
+				emptyItemSlot.ID = -999999;
+				button[i].Item = emptyItemSlot;
+			}
 		}
 	}
 
@@ -208,20 +283,19 @@ namespace Inventory
 			rhs = tmp;
 
 		}
-	
 
-
-	// Function to get an item by its ID
-	Item getItemById(int id) {
-		// Iterate through all items to find the one with the matching ID
-		for (const Item& item : allItems) {
-			if (item.ID == id) {
-				return item;
+		// Function to get an item by its ID
+		Item getItemById(int id) {
+			// Iterate through all items to find the one with the matching ID
+			for (const Item& item : allItems) {
+				if (item.ID == id) {
+					return item;
+				}
 			}
+			// Return a default item if the ID is not found
+			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,al_none, true, 1,1 };
 		}
-		// Return a default item if the ID is not found
-		return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,1, true, 1,1};
-	}
+
 
 	void Item_Pickup(Item& item)
 	{
@@ -272,7 +346,7 @@ namespace Inventory
 				//player.attack += item.attack;
 			}
 			// Update player's defence based on equipped armor(s)
-			else if (item.item_type == Item_Type::amour)
+			else if (item.item_type == Item_Type::armour)
 			{
 				//player.health += item.health;
 				//player.defence += item.defence;
@@ -283,7 +357,7 @@ namespace Inventory
 	}
 
 
-	void Equip(int index, ButtonGearUI& item, Player& player)
+	void UseItem(int index, ButtonGearUI& item, Player& player)
 	{
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
@@ -294,10 +368,6 @@ namespace Inventory
 		// Check if the item is available in the player's inventory
 		if (index >= 0 && index < MAX_INVENTORY_SIZE)
 		{
-
-	
-
-			// Remove the item from the inventory (assuming it's consumed when equipped)
 			// @TODO implement more sophisticated logic here
 
 				// Perform actions based on the type of item equipped
@@ -316,20 +386,30 @@ namespace Inventory
 						applyItemEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
-						//Player_Inventory[index].quantity -= 1;
-						Player_Inventory[index].quantity--;
+						Player_Inventory[index].quantity -= 1;
+					
 						std::cout << "Quantity of " << Player_Inventory[index].name << " reduced to " << Player_Inventory[index].quantity << std::endl;
+
+						
 					}
 
 				}
-				else if(item.Item.item_type == weapon || item.Item.item_type == amour)
+				else if(item.Item.item_type == weapon || item.Item.item_type == armour)
 				{
 					// For weapon items
-					// Assign weapon or amour to gear slot
+					// Assign weapon or armour to gear slot
 					// if (player.equipment.size() < MAX_EQUIPPED_ITEMS)
 					// {
 					// 	player.equipment.push_back(item.Item);
 						std::cout << "Equipped " << item.Item.name << std::endl;
+						Item equipping = item.Item;
+						Item blank;
+						blank.ID = -9999;
+						item.Item = blank;
+						Player_Inventory[index].ID = -9999;
+						EquipToBody(equipping);
+						
+
 					//
 					// 	// Remove previous item effect and apply new item effect
 					// 	// updatePlayerStats(player);
@@ -342,6 +422,88 @@ namespace Inventory
 			// Handle invalid index (out of range)
 			// Example: Display an error message or log a warning
 			std::cerr << "Error: Invalid inventory index\n";
+		}
+	}
+
+	void EquipToBody(Item obj)
+	{
+		switch (obj.item_type)
+		{
+		case weapon:
+		{
+			
+			std::cout << "hi" << std::endl;
+				Item backup;
+				backup.ID = -9999;
+				if (equippedWeapon.ID >= 0)
+				{
+					backup = equippedWeapon;
+
+				}
+				equippedWeapon = obj;
+				equipmentDisplay[2].Item = equippedWeapon;
+				playerReference->equippedWeapon.damage = obj.attack;
+
+				for (auto& inventory : Player_Inventory)
+				{
+					if (inventory.ID <0 )
+					{
+						inventory = backup;
+						break;
+					}
+				}
+			
+			
+			
+		}
+			break;
+		case armour:
+
+			switch (obj.armour_loc)
+			{
+		case head:
+			equippedArmour[0] = obj;
+			equipmentDisplay[0].Item = equippedWeapon;
+			//playerReference->equippedArmor.defence = obj.defence;
+			break;
+		case body:
+			equippedArmour[1] = obj;
+			equipmentDisplay[1].Item = equippedWeapon;
+			break;
+		case pants:
+			equippedArmour[2] = obj;
+			equipmentDisplay[3].Item = equippedWeapon;
+			break;
+		case boots:
+			equippedArmour[3] = obj;
+			equipmentDisplay[4].Item = equippedWeapon;
+			break;
+		default:
+			break;
+
+			}
+
+			std::cout << "hi" << std::endl;
+			Item backup;
+			backup.ID = -9999;
+			if (equippedWeapon.ID >= 0)
+			{
+				backup = equippedWeapon;
+
+			}
+
+
+			for (auto& inventory : Player_Inventory)
+			{
+				if (inventory.ID < 0)
+				{
+					inventory = backup;
+					break;
+				}
+			}
+
+			break;
+
 		}
 	}
 
