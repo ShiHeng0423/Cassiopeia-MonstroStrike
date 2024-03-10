@@ -1,5 +1,5 @@
 #include "LevelHeaders.h"
-
+#include "MapTransition.h"
 namespace {
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
@@ -92,7 +92,7 @@ AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
 
 void GameLobby_Load()
 {
-	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,0.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 	//Load map
@@ -133,6 +133,8 @@ void GameLobby_Load()
 
 void GameLobby_Initialize()
 {
+	MapTransitionInit(player->obj.pos);
+
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
@@ -230,6 +232,7 @@ void GameLobby_Initialize()
 	//looping thru to init all enemy variables
 
 	ParticleInitialize();
+
 }
 
 void GameLobby_Update()
@@ -276,6 +279,7 @@ void GameLobby_Update()
 			case MAP_TRANSITION_GRID:
 				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
 				{
+					//std::cout << "Collided\n";
 					if (!transitionalImageOBJ.active)
 					{
 						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
@@ -296,7 +300,7 @@ void GameLobby_Update()
 	if (inventory_open)
 	{
 		//update item position
-		Inventory::UpdateInventory(Inventory::Player_Inventory, inventoryButton);
+		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
 
 		//Hover collision with button && hold left mouse button
 
@@ -420,6 +424,7 @@ void GameLobby_Update()
 
 	UpdateNPC();
 	ParticleUpdate();
+	MapTransitionUpdate(player->obj.pos);
 }
 
 void GameLobby_Draw()
@@ -529,8 +534,10 @@ void GameLobby_Draw()
 
 	if (AEInputCheckTriggered(AEVK_G))
 	{
-		next = MainMenu;
+		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::Area1); //Play the newly set animation here
 	}
+
+	MapTransitionDraw();
 }
 
 void GameLobby_Free()

@@ -152,14 +152,20 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 {
 	//Check vertical box (Head + Feet) 
 	if (AABBvsAABB(enemy.boxHeadFeet, movingObject.collisionBox)) {
-		enemy.isCollision = true;
+
+		bool eCollided = false;
 		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
 			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 
-		enemy.obj.pos.x += movingObject.velocity.x;
-		enemy.obj.pos.y += movingObject.velocity.y;
+		if (enemy.collisionNormal.y == 1) {
+			eCollided = true;
+		}
+		if (eCollided) {
+			enemy.obj.pos.x += movingObject.velocity.x;
+			enemy.obj.pos.y += movingObject.velocity.y;
+		}
 
 	}
 	//Check horizontal box (Left arm -> Right arm)
@@ -169,7 +175,7 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 
 		ResolveHorizontalCollision(enemy.boxArms, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
 			&enemy.velocity);
-		enemy.loop_idle = false;
+		enemy.loopIdle = false;
 
 	}
 

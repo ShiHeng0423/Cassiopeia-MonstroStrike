@@ -58,16 +58,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		GSM_Update();
 		fpLoad();
 		fpInitialize();
-		Inventory::Load_Inventory();
 
 		// Game Loop
 		while (current == next)
 		{
 			// Informing the system about the loop's start
 			AESysFrameStart();
-
 			fpUpdate();
 			fpDraw();
+			MapTransitionDraw();
 
 			if (0 == AESysDoesWindowExist())
 				next = GameStates::Quit;

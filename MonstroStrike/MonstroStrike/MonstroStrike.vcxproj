@@ -109,6 +109,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
+    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameState_GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
@@ -119,6 +120,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="MapTransition.cpp" />
     <ClCompile Include="PauseMenuManager.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
+    <ClCompile Include="TextPrinting.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
@@ -144,6 +146,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
     <ClInclude Include="GameState_Mainmenu.h" />
+    <ClInclude Include="ImageManager.h" />
     <ClInclude Include="LevelHeaders.h" />
     <ClInclude Include="MapPlatformGenerate.h" />
     <ClInclude Include="MapTransition.h" />
@@ -190,6 +193,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\uri.h" />
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
+    <ClInclude Include="TextPrinting.h" />
     <ClInclude Include="TransformMatrix.h" />
     <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />
@@ -202,10 +206,12 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap.csv" />
+    </ItemGroup>
+    <ItemGroup>
+    <None Include="..\Assets\player_inventory.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap_Lobby.csv" />
-    <None Include="test.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

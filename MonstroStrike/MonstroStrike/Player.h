@@ -22,7 +22,7 @@ struct Player {
 
 	Armor equippedArmor;
 
-	Weapon equippedWeapon;
+	Weapon *equippedWeapon;
 	//Gravity affection
 	f32 mass;
 	
@@ -38,6 +38,12 @@ struct Player {
 	float comboTime;
 	int comboState;
 	f32 gravityForce;
+
+	//Player Stats
+	f32 max_health;
+	f32 curr_health;
+	f32 attack;
+	f32 defence;
 };
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

@@ -8,40 +8,38 @@
 
 
 
-void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
+void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
 
 	Enemy enemy;
 
 	switch (enemy_type) {
 	case ENEMY_JUMPER:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Normal.png");
-		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Angry.png");
+		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Angry.png");
 		break;
 	case ENEMY_CHARGER:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Normal.png");
-		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Angry.png");
+		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Angry.png");
 		break;
 	case ENEMY_FLY:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Normal.png");
-		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Angry.png");
+		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Angry.png");
 		break;
 	case ENEMY_PASSIVE:
 		break;
 	case ENEMY_BOSS1:
 
 		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.angrytex = AEGfxTextureLoad("Assets/border.png");
+		//enemy.angryTex = AEGfxTextureLoad("Assets/border.png");
 		//enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
 		//enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
 
 
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
-		enemy.angrytex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
+		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
 		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
 		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_left.png");
 
-		break;
-	case ENEMY_BOSS2:
 		break;
 
 	default:
@@ -57,7 +55,7 @@ void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy ) {
 void FreeEnemy(std::vector<Enemy>& vecEnemy) {
 	for (Enemy& enemy : vecEnemy) {
 		AEGfxTextureUnload(enemy.obj.img.pTex);	//default tex
-		AEGfxTextureUnload(enemy.angrytex);		//angry tex
+		AEGfxTextureUnload(enemy.angryTex);		//angry tex
 
 		if (enemy.enemyType == ENEMY_BOSS1) {	//check if need to free wings
 			AEGfxTextureUnload(enemy.wing1.obj.img.pTex);
@@ -69,18 +67,18 @@ void FreeEnemy(std::vector<Enemy>& vecEnemy) {
 
 
 
-void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) {
+void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 	//Initializing Enemy struct variables
 	AEVec2Set(&enemy.obj.pos, location.x, location.y); //set starting location
 	AEVec2Set(&enemy.obj.img.scale, scale.x, scale.y); //set scale of the image
 
-	enemy.starting_position = location;
-	enemy.last_position = location;
-	enemy.waypoint.x = location.x + 200.f;
-	enemy.waypoint.y = 0;
-	enemy.target_position = ENEMY_DEFAULT;
-	enemy.loop_idle = true;
+	enemy.startingPosition = location;
+	enemy.lastPosition = location;
+	enemy.wayPoint.x = location.x + 200.f;
+	enemy.wayPoint.y = 0;
+	enemy.targetPosition = ENEMY_DEFAULT;
+	enemy.loopIdle = true;
 
 	enemy.enemyCurrent = ENEMY_IDLE;
 	enemy.enemyNext = ENEMY_IDLE;
@@ -91,6 +89,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	enemy.isShooting = false;
 	enemy.isCollision = false;
 	enemy.isFlying = false;
+	enemy.isCollidedWithPlayer = false;
+	enemy.isRecoil = false;
 
 	enemy.timePassed = 0.f;
 
@@ -111,12 +111,12 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		enemy.speed = 50.f;
-		enemy.lineOfSight = 300.f;
+		enemy.lineOfSight = 500.f;
 		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
 		enemy.health = 100;
-		enemy.mass = 80.f;
+		enemy.mass = 50.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_CHARGER:
@@ -182,8 +182,6 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy) 
 		enemy.wing2.timeSinceLastFire = 0;
 		enemy.wing2.health = 100;
 		break;
-	case ENEMY_BOSS2:
-		break;
 	default:
 		return;
 	}
@@ -247,8 +245,6 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	case ENEMY_BOSS1:
 		ENEMY_BOSS_Update(enemy, player);
 		break;
-	case ENEMY_BOSS2:
-		break;
 	default:
 		break;
 	}
@@ -260,7 +256,7 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
 	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
 
-	f32 verticalOffset = enemy.obj.img.scale.y * 0.02f;
+	f32 verticalOffset = enemy.obj.img.scale.y * 0.05f;
 	//Vertical
 	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
 	enemy.boxHeadFeet.minimum.y -= verticalOffset;

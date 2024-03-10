@@ -39,7 +39,6 @@ enum ENEMY_TYPES
 	ENEMY_FLY,
 	ENEMY_PASSIVE,
 	ENEMY_BOSS1,
-	ENEMY_BOSS2,
 };
 
 
@@ -72,25 +71,27 @@ struct Enemy {
 
 	EnemyPart wing1, wing2;
 	Object obj;
-	AEGfxTexture* angrytex;
+	AEGfxTexture* angryTex;
 
-	AEVec2 starting_position;	//startinglocation whr enemy spawns
-	AEVec2 last_position;		//only used by flying enemy
-	AEVec2 waypoint;			//waypoints are for enemy idle back n forth points
-	int target_position;		//some enemies need target a specific location
-	bool loop_idle;
+	AEVec2 startingPosition;	//startinglocation whr enemy spawns
+	AEVec2 lastPosition;		//only used by flying enemy
+	AEVec2 wayPoint;			//wayPoints are for enemy idle back n forth points
+	s8 targetPosition;		//some enemies need target a specific location
+	bool loopIdle;
 
-	int enemyCurrent;
-	int enemyNext;
-	int enemyType;
+	s8 enemyCurrent;
+	s8 enemyNext;
+	s8 enemyType;
 	
-	int attackState;
+	s8 attackState;
 	
 	bool isAlive;
 	bool isShooting;
 	bool isCollision;
 	bool isFlying;
 	bool isFalling;
+	bool isCollidedWithPlayer;
+	bool isRecoil;
 
 	f32 timePassed;				//use to "pause" the enemy 
 
@@ -127,9 +128,9 @@ struct Enemy {
 
 
 
-void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
+void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
 void FreeEnemy(std::vector<Enemy>& vecEnemy);
-void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy);
+void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
 void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
 
 

@@ -8,10 +8,10 @@
 
 
 
-void MoveTowards(Enemy& enemy, AEVec2 target_position) {
+void MoveTowards(Enemy& enemy, AEVec2 targetPosition) {
 
 	// Calculate the direction towards the target position
-	float direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
+	float direction = (targetPosition.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
 
 	// Calculate the distance to move based on speed and elapsed time
 	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
@@ -20,13 +20,13 @@ void MoveTowards(Enemy& enemy, AEVec2 target_position) {
 	enemy.obj.pos.x += direction * enemy.velocity.x;
 }
 
-void MoveTowardsFLY(Enemy& enemy, AEVec2 target_position) {
+void MoveTowardsFLY(Enemy& enemy, AEVec2 targetPosition) {
 
 	f32 Offset = 50.f;	//lifts a bit above the ground
 
 	// Calculate the direction towards the target position for both x and y axes
-	float x_direction = (target_position.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
-	float y_direction = (target_position.y + Offset > enemy.obj.pos.y) ? 1.0f : -1.0f;
+	float x_direction = (targetPosition.x > enemy.obj.pos.x) ? 1.0f : -1.0f;
+	float y_direction = (targetPosition.y + Offset > enemy.obj.pos.y) ? 1.0f : -1.0f;
 
 	// Calculate the distance to move based on speed and elapsed time
 	float delta_time = (f32)AEFrameRateControllerGetFrameTime();
@@ -95,13 +95,13 @@ void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 	}
 }
 
-void Attack_Charge(Enemy& enemy, int target_position, f32 speed) {
+void Attack_Charge(Enemy& enemy, s8 targetPosition, f32 speed) {
 	enemy.speed = speed;
 	enemy.velocity.x = enemy.speed * (f32)AEFrameRateControllerGetFrameTime();
-	if (target_position == ENEMY_RIGHT) {
+	if (targetPosition == ENEMY_RIGHT) {
 		enemy.velocity.x *= 1.0f;
 	}
-	if (target_position == ENEMY_LEFT) {
+	if (targetPosition == ENEMY_LEFT) {
 		enemy.velocity.x *= -1.0f;
 	}
 	enemy.obj.pos.x += enemy.velocity.x;
@@ -119,8 +119,8 @@ void Jump(Enemy& enemy, f32 value) {
 
 void isStuck(Enemy& enemy) {
 	//Check distance travelled to see if enemy is stuck
-	f32 distanceTravelled = AEVec2Distance(&enemy.last_position, &enemy.obj.pos);
-	enemy.last_position = enemy.obj.pos;
+	f32 distanceTravelled = AEVec2Distance(&enemy.lastPosition, &enemy.obj.pos);
+	enemy.lastPosition = enemy.obj.pos;
 	//std::cout << distanceTravelled << "\n";
 	if (distanceTravelled < 0.2f) {
 		if (enemy.stuckTimer < 0) { enemy.stuckTimer = enemy.timePassed; }	//if timer not started start it
@@ -131,11 +131,12 @@ void isStuck(Enemy& enemy) {
 	}
 }
 
-bool reachedPos(Enemy& enemy, AEVec2 waypoint) {
-	if ((enemy.obj.pos.x >= enemy.waypoint.x - 1.0f) && (enemy.obj.pos.x <= enemy.waypoint.x + 1.0f)) {
+bool reachedPos(Enemy& enemy, AEVec2 wayPoint) {
+	if ((enemy.obj.pos.x >= enemy.wayPoint.x - 1.0f) && (enemy.obj.pos.x <= enemy.wayPoint.x + 1.0f)) {
 		return true;
 	}
 	else {
 		return false;
 	}
 }
+

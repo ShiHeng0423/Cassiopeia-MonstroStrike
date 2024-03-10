@@ -1,0 +1,118 @@
+{
+  "items": [
+    {
+      "UID": "ahi2bfi2",
+      "ID": 0,
+      "name": "Banana Head Armour",
+      "description": "A little squishy",
+      "rarity": 1,
+      "item_type": 3,
+      "armour_location": 1,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 69,
+      "defence": 96
+    },
+    {
+      "UID": "ahi2bdsf2",
+      "ID": 1,
+      "name": "Banana Torso",
+      "description": "Dodo",
+      "rarity": 1,
+      "item_type": 3,
+      "armour_location": 2,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 69,
+      "defence": 96
+    },
+    {
+      "UID": "kjhjbdsf2",
+      "ID": 2,
+      "name": "Banana Leggings",
+      "description": "Bendy bend",
+      "rarity": 1,
+      "item_type": 3,
+      "armour_location": 3,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 69,
+      "defence": 96
+    },
+    {
+      "UID": "34jgdsf2",
+      "ID": 3,
+      "name": "Banana Boots",
+      "description": "Dodo",
+      "rarity": 1,
+      "item_type": 3,
+      "armour_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 69,
+      "defence": 96
+    },
+
+    {
+      "UID": "asfag",
+      "ID": 4,
+      "name": "small banana sword",
+      "description": "ripens with even slash",
+      "rarity": 1,
+      "item_type": 2,
+      "armour_location": 0,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 0,
+      "defence": 1
+    },
+    {
+      "UID": "ahi2bfi2",
+      "ID": 5,
+      "name": "Angel Helmet",
+      "description": "you can fly",
+      "rarity": 4,
+      "item_type": 3,
+      "armour_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 4200,
+      "attack": 690,
+      "defence": 720
+    },
+    {
+      "UID": "jj2bfi2",
+      "ID": 6,
+      "name": "Angel Sword",
+      "description": "Pure & unadulterated pain",
+      "rarity": 4,
+      "item_type": 2,
+      "armour_location": 0,
+      "quantity": 1,
+      "stackable": false,
+      "health": 0,
+      "attack": 6900,
+      "defence": 0
+    },
+    {
+      "UID": "aqad112341ssssss",
+      "ID": 7,
+      "name": "Merlion saliva",
+      "description": "Doesnt't 'age like fine wine",
+      "rarity": 2,
+      "item_type": 5,
+      "armour_location": 0,
+      "quantity": 10,
+      "stackable": true,
+      "health": 30,
+      "attack": 30,
+      "defence": 30
+    }
+
+  ]
+}

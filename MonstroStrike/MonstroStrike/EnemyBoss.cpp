@@ -38,6 +38,8 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 
 	if (AEInputCheckCurr(AEVK_L)) {
 		enemy.wing1.isAlive = false;
+	}
+	if (AEInputCheckCurr(AEVK_K)) {
 		enemy.wing2.isAlive = false;
 	}
 
@@ -56,7 +58,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.wing1.isAlive = true;
 		enemy.wing2.isAlive = true;
 		enemy.isFlying = true;
-		Spawnloc = enemy.starting_position;
+		Spawnloc = enemy.startingPosition;
 		if (enemy.obj.pos.y <= Spawnloc.y) {
 			enemy.speed =  120.f;
 			MoveTowardsFLY(enemy, Spawnloc);
@@ -74,7 +76,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		break;
 
 	case ENEMY_ATTACK:
-		if (enemy.wing1.isAlive && enemy.wing2.isAlive) {
+		if (enemy.wing1.isAlive || enemy.wing2.isAlive) {
 
 			static int loopCounter = 0;	//each wing to shoot n bullets, then swap wing
 
@@ -104,12 +106,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 
 			//locking on which direction to dash
-			if (enemy.target_position == ENEMY_DEFAULT) {
+			if (enemy.targetPosition == ENEMY_DEFAULT) {
 				if (enemy.obj.pos.x >= player.obj.pos.x) {
-					enemy.target_position = ENEMY_LEFT;
+					enemy.targetPosition = ENEMY_LEFT;
 				}
 				else {
-					enemy.target_position = ENEMY_RIGHT;
+					enemy.targetPosition = ENEMY_RIGHT;
 				}
 			}
 
@@ -126,12 +128,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 					case 1:
 
 						//set way point
-						enemy.waypoint = { enemy.obj.pos.x, enemy.obj.pos.y };
-						if (enemy.target_position == ENEMY_LEFT) {
-							enemy.waypoint.x += 30.f;	//go right
+						enemy.wayPoint = { enemy.obj.pos.x, enemy.obj.pos.y };
+						if (enemy.targetPosition == ENEMY_LEFT) {
+							enemy.wayPoint.x += 30.f;	//go right
 						}
-						else if (enemy.target_position == ENEMY_RIGHT) {
-							enemy.waypoint.x -= 30.f;	//go left
+						else if (enemy.targetPosition == ENEMY_RIGHT) {
+							enemy.wayPoint.x -= 30.f;	//go left
 						}
 						enemy.attackState = ENEMY_ATTACK_REVERSE;
 						enemy.speed = 120.f;
@@ -143,12 +145,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				break;
 			case ENEMY_ATTACK_CHARGE:
 
-				Attack_Charge(enemy, enemy.target_position, 600.f);
+				Attack_Charge(enemy, enemy.targetPosition, 600.f);
 				if (enemy.timePassed >= 1.f) {
 					enemy.timePassed = 0.0f;
 					enemy.speed = 80.f;
 
-					enemy.target_position = ENEMY_DEFAULT;
+					enemy.targetPosition = ENEMY_DEFAULT;
 					enemy.attackState = ENEMY_ATTACK_CHOOSING;
 				}
 				break;
@@ -164,8 +166,8 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 				break;
 			case ENEMY_ATTACK_REVERSE:
 
-				MoveTowards(enemy, enemy.waypoint);
-				if (reachedPos(enemy, enemy.waypoint)) {
+				MoveTowards(enemy, enemy.wayPoint);
+				if (reachedPos(enemy, enemy.wayPoint)) {
 					enemy.attackState = ENEMY_ATTACK_CHARGE;
 				}
 				break;

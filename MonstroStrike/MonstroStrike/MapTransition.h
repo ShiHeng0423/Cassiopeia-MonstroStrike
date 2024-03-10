@@ -39,6 +39,8 @@ struct TransitionImageObj {
 	AEMtx33 rotation;
 	AEMtx33 scale;
 	AEMtx33 transformation;
+	AEGfxTexture* transitionImage;
+	AEGfxVertexList* pMesh;
 
 	void PlayMapTransition(TransitionDirection directionToPlay, GameStates nextLevel);
 
@@ -47,12 +49,12 @@ struct TransitionImageObj {
 
 void MapTransitionLoad();
 
-void MapTransitionInit();
+void MapTransitionInit(AEVec2 playerPos);
 
-void MapTransitionUpdate(GameStates nextGameState);
+void MapTransitionUpdate(AEVec2 playerPos);
 
 void MapTransitionUnload();
 
-void MapTransitionDraw(AEGfxVertexList* pMesh);
+void MapTransitionDraw();
 
 extern struct TransitionImageObj transitionalImageOBJ;
