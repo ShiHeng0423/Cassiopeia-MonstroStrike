@@ -36,11 +36,11 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 	{
 		AEVec2 desiredCamLocation{ 0,0 };
 		AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &lookAheadDir, 0.2f);
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &lookAheadDir, 0.05f);
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
-		if (AEVec2Distance(&desiredCamLocation, &lookAheadDir) < 1.0f && lookbackTimer <= 0.f && !cameraOnHold)
+		if (AEVec2Distance(&desiredCamLocation, &lookAheadDir) < 100.0f && lookbackTimer <= 0.f && !cameraOnHold)
 		{
-			lookbackTimer = 5.0f;
+			lookbackTimer = 2.0f;
 			cameraOnHold = true;
 		}
 		else
@@ -60,7 +60,7 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 		AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
 		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, 0.05f);
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
-		if (AEVec2Distance(&desiredCamLocation, &this->worldCoordinate) < 1.0f)
+		if (AEVec2Distance(&desiredCamLocation, &this->worldCoordinate) < 10.0f)
 		{
 			lookBack = false;
 		}
@@ -100,6 +100,7 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
 			this->worldCoordinate.y = desiredCamLocation.y + camYBoundary;
 		}
+
 		AEGfxSetCamPosition(this->worldCoordinate.x, this->worldCoordinate.y);
 	}
 

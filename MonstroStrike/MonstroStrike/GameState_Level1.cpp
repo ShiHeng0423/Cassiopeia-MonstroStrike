@@ -223,7 +223,7 @@ void Level1_Update()
 	if (AEInputCheckTriggered(AEVK_0))
 	{
 		//next = GameStates::Quit;
-		AEVec2 test{100.f, 100.f};
+		AEVec2 test{0.f, 0.f};
 		cam->LookAhead(test);
 	}
 	if (AEInputCheckCurr(AEVK_1))
