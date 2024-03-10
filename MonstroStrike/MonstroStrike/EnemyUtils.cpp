@@ -117,7 +117,7 @@ void Jump(Enemy& enemy, f32 value) {
 	enemy.velocity.y = value;
 }
 
-void isStuck(Enemy& enemy) {
+void IsStuck(Enemy& enemy) {
 	//Check distance travelled to see if enemy is stuck
 	f32 distanceTravelled = AEVec2Distance(&enemy.lastPosition, &enemy.obj.pos);
 	enemy.lastPosition = enemy.obj.pos;
@@ -131,7 +131,7 @@ void isStuck(Enemy& enemy) {
 	}
 }
 
-bool reachedPos(Enemy& enemy, AEVec2 wayPoint) {
+bool ReachedPos(Enemy& enemy, AEVec2 wayPoint) {
 	if ((enemy.obj.pos.x >= enemy.wayPoint.x - 1.0f) && (enemy.obj.pos.x <= enemy.wayPoint.x + 1.0f)) {
 		return true;
 	}
