@@ -109,6 +109,7 @@ void Level1_Load()
 
 	//loading texture only, push back into the vector
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
@@ -283,22 +284,19 @@ void Level1_Initialize()
 #pragma endregion PauseMenu
 
 #pragma region Enemy
-	Enemy_Init({70.f,70.f}, { 1500.f,-80.f }, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({70.f,70.f}, {1500.f, 250.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f,70.f}, { -500.f, -80.f }, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({ 70.f,70.f }, { -300.f, -80.f }, ENEMY_IDLE, vecEnemy[3]);
-	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({70.f,70.f}, { 1800.f,-80.f }, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f,70.f }, { 1850.f,-80.f }, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f,70.f}, {1800.f, 250.f}, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({70.f,70.f}, { -500.f, -80.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f,70.f }, { -300.f, -80.f }, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[5]);
 #pragma endregion Enemy
 	ParticleInitialize();
 }
 
 void Level1_Update()
 {
-	if (AEFrameRateControllerGetFrameRate() < 59.f) {
-		std::cout << AEFrameRateControllerGetFrameRate() << "\n";
-	}
-
-
+	
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 
@@ -461,7 +459,6 @@ void Level1_Update()
 						&player->velocity);
 				}
 //(ENEMY AND BULLETS COLLISION CHECKING)
-//is this efficient? 
 				for (Enemy& enemy : vecEnemy) {
 
 					//Check vertical box (Head + Feet) 
@@ -479,7 +476,7 @@ void Level1_Update()
 
 						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
 							&enemy.velocity);
-						enemy.loop_idle = false;
+						enemy.loopIdle = false;
 					}
 
 					if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1) {
@@ -489,7 +486,6 @@ void Level1_Update()
 							}
 						}
 					}
-
 				}
 
 				break;
@@ -716,7 +712,7 @@ void Level1_Draw()
 			if (enemy.isShooting) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 
-				AEGfxTextureSet(enemy.angrytex, 0, 0);
+				AEGfxTextureSet(enemy.angryTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 

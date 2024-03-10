@@ -32,12 +32,12 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 
 		if (distanceFromPlayer <= enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
-			enemy.loop_idle = false;
+			enemy.loopIdle = false;
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-				MoveTowardsFLY(enemy, enemy.starting_position);
+			if (!((enemy.obj.pos.x >= enemy.startingPosition.x - 1.0f) && (enemy.obj.pos.x <= enemy.startingPosition.x + 1.0f)) && !(enemy.loopIdle)) {
+				MoveTowardsFLY(enemy, enemy.startingPosition);
 				isStuck(enemy);
 			}
 		}
@@ -71,17 +71,17 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 
 			MoveTowardsFLY(enemy, player.obj.pos);
 
-			enemy.waypoint = player.obj.pos;	//set a waypoint a player's location
+			enemy.wayPoint = player.obj.pos;	//set a wayPoint a player's location
 			isStuck(enemy);
 
 		}
 		else {
 			//player runs out of line of sight range
-			MoveTowardsFLY(enemy, enemy.waypoint);	//go to the last location player was at
+			MoveTowardsFLY(enemy, enemy.wayPoint);	//go to the last location player was at
 			isStuck(enemy);
 			//when it reaches the way point (manual typed numbers are offsets )
-			if ((enemy.obj.pos.x >= enemy.waypoint.x - 10.f && enemy.obj.pos.x <= enemy.waypoint.x + 10.f)
-				&& (enemy.obj.pos.y >= enemy.waypoint.y - 60.f && enemy.obj.pos.y <= enemy.waypoint.y + 60.f)){	//.y +- value depends on offset in MoveTowards fly
+			if ((enemy.obj.pos.x >= enemy.wayPoint.x - 10.f && enemy.obj.pos.x <= enemy.wayPoint.x + 10.f)
+				&& (enemy.obj.pos.y >= enemy.wayPoint.y - 60.f && enemy.obj.pos.y <= enemy.wayPoint.y + 60.f)){	//.y +- value depends on offset in MoveTowards fly
 
 				enemy.timePassed = 0.0f;
 				enemy.enemyNext = ENEMY_TRANSITION; //go to transition to pause there abit

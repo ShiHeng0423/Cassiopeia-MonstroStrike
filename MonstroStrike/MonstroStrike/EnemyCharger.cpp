@@ -22,20 +22,20 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 
 	// Handle collision with player
 	if (enemy.isCollidedWithPlayer) {
-		if (enemy.target_position == ENEMY_LEFT) {
-			enemy.waypoint.x = enemy.obj.pos.x + 100.f; // Move right
+		if (enemy.targetPosition == ENEMY_LEFT) {
+			enemy.wayPoint.x = enemy.obj.pos.x + 100.f; // Move right
 		}
-		else if (enemy.target_position == ENEMY_RIGHT) {
-			enemy.waypoint.x = enemy.obj.pos.x - 100.f; // Move left
+		else if (enemy.targetPosition == ENEMY_RIGHT) {
+			enemy.wayPoint.x = enemy.obj.pos.x - 100.f; // Move left
 		}
 		enemy.speed = 120.f;
 		enemy.isRecoil = true;
 	}
 
-	// If the enemy is in recoil state, move towards the waypoint until reached or collision occurs
+	// If the enemy is in recoil state, move towards the wayPoint until reached or collision occurs
 	if (enemy.isRecoil) {
-		MoveTowards(enemy, enemy.waypoint);
-		if (reachedPos(enemy, enemy.waypoint) || enemy.isCollision) {
+		MoveTowards(enemy, enemy.wayPoint);
+		if (reachedPos(enemy, enemy.wayPoint) || enemy.isCollision) {
 			enemy.enemyCurrent = ENEMY_IDLE;
 			enemy.speed = 80.f;
 			enemy.isRecoil = false;
@@ -55,15 +55,15 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 				// If there's a collision, update target position and perform charge attack
 				if (enemy.isCollision) {
 					enemy.isCollision = false;
-					enemy.target_position = (enemy.target_position == ENEMY_LEFT) ? ENEMY_RIGHT : ENEMY_LEFT;
+					enemy.targetPosition = (enemy.targetPosition == ENEMY_LEFT) ? ENEMY_RIGHT : ENEMY_LEFT;
 				}
-				Attack_Charge(enemy, enemy.target_position, 80.f);
+				Attack_Charge(enemy, enemy.targetPosition, 80.f);
 			}
 			break;
 		case ENEMY_TRANSITION:
 			// Lock on to player's position
-			if (enemy.target_position == ENEMY_DEFAULT) {
-				enemy.target_position = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
+			if (enemy.targetPosition == ENEMY_DEFAULT) {
+				enemy.targetPosition = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
 			}
 			enemy.isShooting = true;
 			enemy.isCollision = false;
@@ -74,12 +74,12 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 			break;
 		case ENEMY_ATTACK:
 			// Perform charge attack
-			Attack_Charge(enemy, enemy.target_position, 200.f);
+			Attack_Charge(enemy, enemy.targetPosition, 200.f);
 			if (enemy.isCollision) {
 				// Reset enemy state after collision
 				enemy.isCollision = false;
 				enemy.isShooting = false;
-				enemy.target_position = ENEMY_DEFAULT;
+				enemy.targetPosition = ENEMY_DEFAULT;
 				enemy.timePassed = 0.0f;
 				enemy.speed = 80.f;
 				enemy.enemyNext = ENEMY_IDLE;
