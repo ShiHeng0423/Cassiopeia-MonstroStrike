@@ -15,8 +15,8 @@ struct Weapon {
     Position position;
 
     AABB collisionBox;
-    AABB HitBox;
-    AEVec2 Scale;
+    AABB hitBox;
+    AEVec2 scale;
     AEVec2 transformation;
     bool weaponHIT;
 

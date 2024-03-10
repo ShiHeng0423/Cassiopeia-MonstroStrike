@@ -197,7 +197,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 
 
-void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
+void EnemyUpdateChoose(Enemy& enemy, struct Player& player) {
 //(update bullet)---------------------------------------------------------------------------------------
 	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
@@ -209,8 +209,8 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.img.scale.y * 0.5f;
 
 
-		it->lifetime--;	//decrease lifetime
-		if (it->lifetime <= 0) {
+		it->lifeTime--;	//decrease lifetime
+		if (it->lifeTime <= 0) {
 			it = enemy.bullets.erase(it);
 		}
 		else {

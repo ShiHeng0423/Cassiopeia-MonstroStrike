@@ -32,7 +32,7 @@
 
 using namespace rapidjson;
 
-std::vector<Item> Player_Inventory;
+std::vector<Item> playerInventory;
 int Player_Inventory_Count;
 Player* playerReference = nullptr;
 Item equippedArmour[4];
@@ -377,7 +377,7 @@ namespace Inventory
 					// Adjust player attributes or perform other actions
 					// Example: Increase player's health if certain conditions are met
 					
-					if (Player_Inventory[index].quantity > 0)
+					if (playerInventory[index].quantity > 0)
 					{
 						
 						std::cout << "Consumed " << item.Item.name << std::endl;
@@ -386,9 +386,9 @@ namespace Inventory
 						applyItemEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
-						Player_Inventory[index].quantity -= 1;
+						playerInventory[index].quantity -= 1;
 					
-						std::cout << "Quantity of " << Player_Inventory[index].name << " reduced to " << Player_Inventory[index].quantity << std::endl;
+						std::cout << "Quantity of " << playerInventory[index].name << " reduced to " << playerInventory[index].quantity << std::endl;
 
 						
 					}
@@ -406,7 +406,7 @@ namespace Inventory
 						Item blank;
 						blank.ID = -9999;
 						item.Item = blank;
-						Player_Inventory[index].ID = -9999;
+						playerInventory[index].ID = -9999;
 						EquipToBody(equipping);
 						
 
@@ -444,7 +444,7 @@ namespace Inventory
 				equipmentDisplay[2].Item = equippedWeapon;
 				playerReference->equippedWeapon->damage = (f32)obj.attack;
 
-				for (auto& inventory : Player_Inventory)
+				for (auto& inventory : playerInventory)
 				{
 					if (inventory.ID <0 )
 					{
@@ -493,7 +493,7 @@ namespace Inventory
 			}
 
 
-			for (auto& inventory : Player_Inventory)
+			for (auto& inventory : playerInventory)
 			{
 				if (inventory.ID < 0)
 				{
@@ -509,7 +509,7 @@ namespace Inventory
 
 	void Load_Inventory()
 	{
-		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
+		playerInventory = ReadJsonFile("Assets/player_inventory.json");
 
 	}
 
@@ -519,6 +519,6 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(Player_Inventory, "./Assets/saved_player_inventory.json");
+		WriteJsonFile(playerInventory, "./Assets/saved_player_inventory.json");
 	}
 }

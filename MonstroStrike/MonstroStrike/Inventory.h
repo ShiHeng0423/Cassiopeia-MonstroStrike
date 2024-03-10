@@ -85,7 +85,7 @@ struct ButtonGearUI
 	Item Item;
 };
 
-extern std::vector< Item> Player_Inventory;
+extern std::vector< Item> playerInventory;
 extern int Player_Inventory_Count;
 
 extern AEGfxTexture* Gear[25];

@@ -69,7 +69,7 @@ void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bu
 
 	//create a bullet
 	Bullet bullet;
-	bullet.lifetime = 100;													//lifetime
+	bullet.lifeTime = 100;													//lifetime
 	bullet.obj.img.pTex = bulletTex;										//image
 	AEVec2Set(&bullet.obj.pos, enemy_position.x, enemy_position.y);			//start position
 	AEVec2Set(&bullet.obj.img.scale, 25.f, 25.f);							//set scale of the image

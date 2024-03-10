@@ -48,7 +48,7 @@ struct Bullet {
 
 	float bulletSpeed;
 	AEVec2 bulletVel;
-	int lifetime;
+	int lifeTime;
 	AABB collisionBox;
 };
 
@@ -131,7 +131,7 @@ struct Enemy {
 void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
 void FreeEnemy(std::vector<Enemy>& vecEnemy);
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
-void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
+void EnemyUpdateChoose(Enemy& enemy, struct Player& player);
 
 
 

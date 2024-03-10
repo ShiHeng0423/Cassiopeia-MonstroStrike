@@ -31,8 +31,8 @@ namespace
 
 #pragma endregion UserInterface
 
-	bool inventory_open;
-	s16 snap_back = -1;
+	bool inventoryOpen;
+	s16 snapBack = -1;
 
 	s16 hp = 100;
 	s16 gear_equipped = 0;
@@ -165,7 +165,7 @@ void Level1_Initialize()
 
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
-	inventory_open = false;
+	inventoryOpen = false;
 	s16 index = 0;
 	//Display inventory
 
@@ -213,11 +213,11 @@ void Level1_Update()
 		return;
 
 #pragma region PlayerUpdate
-	if (currScene == MAIN_SCENE && !inventory_open)
+	if (currScene == MAIN_SCENE && !inventoryOpen)
 		PlayerUpdate(*player);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
-		inventory_open = !inventory_open;
+		inventoryOpen = !inventoryOpen;
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -243,17 +243,17 @@ void Level1_Update()
 		}
 	}
 
+#pragma endregion
+
+#pragma region EnemyUpdate
 	for (Enemy& enemy : vecEnemy)
 	{
 		if (enemy.isAlive)
 		{
-			Enemy_Update_Choose(enemy, *player);
+			EnemyUpdateChoose(enemy, *player);
 		}
 	}
-
 #pragma endregion
-
-	
 
 #pragma region GridSystem
 	//For printing the grids every frame
@@ -264,7 +264,7 @@ void Level1_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
-				if (!inventory_open)
+				if (!inventoryOpen)
 				{
 					//Collision check
 					//Resolve + Vertical Collision only for entity x (wall or ground)
@@ -316,7 +316,7 @@ void Level1_Update()
 						{
 							if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox))
 							{
-								bullet.lifetime = 0; //makes bullet erase
+								bullet.lifeTime = 0; //makes bullet erase
 							}
 						}
 					}
@@ -331,10 +331,10 @@ void Level1_Update()
 
 #pragma region InventorySystem
 
-	if (inventory_open)
+	if (inventoryOpen)
 	{
 		//update item position
-		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
+		Inventory::UpdateInventory(playerInventory, inventoryButton);
 		s16 index = 0;
 
 
@@ -369,15 +369,15 @@ void Level1_Update()
 
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
-			s32 testx = 0;
-			s32 testy = 0;
+			s32 textX = 0;
+			s32 textY = 0;
 
 			s16 index = 0;
 
-			AEInputGetCursorPosition(&testx, &testy);
+			AEInputGetCursorPosition(&textX, &textY);
 			AEVec2 mousePos;
-			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
 			for (ButtonGearUI& button : inventoryButton)
 			{
@@ -387,7 +387,7 @@ void Level1_Update()
 					{
 						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
-						snap_back = index;
+						snapBack = index;
 						break;
 					}
 					//button.Ptr();
@@ -396,73 +396,73 @@ void Level1_Update()
 			}
 		}
 
-		if (snap_back >= 0)
+		if (snapBack >= 0)
 		{
-			s32 testx = 0;
-			s32 testy = 0;
+			s32 textX = 0;
+			s32 textY = 0;
 
 			s16 index = 0;
 
-			AEInputGetCursorPosition(&testx, &testy);
+			AEInputGetCursorPosition(&textX, &textY);
 			AEVec2 mousePos;
-			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
-			inventoryButton[snap_back].pos = mousePos;
+			inventoryButton[snapBack].pos = mousePos;
 		}
 
 		if (AEInputCheckReleased(AEVK_LBUTTON))
 		{
 			s16 index = 0;
-			if (snap_back >= 0)
+			if (snapBack >= 0)
 			{
 				for (ButtonGearUI& button : inventoryButton)
 				{
-					if (AETestRectToRect(&inventoryButton[snap_back].pos,
-					                     inventoryButton[snap_back].img.scale.x,
-					                     inventoryButton[snap_back].img.scale.y, &button.pos,
+					if (AETestRectToRect(&inventoryButton[snapBack].pos,
+					                     inventoryButton[snapBack].img.scale.x,
+					                     inventoryButton[snapBack].img.scale.y, &button.pos,
 					                     button.img.scale.x,
 					                     button.img.scale.y))
 					{
 						//Different items overlapping
-						if (index != snap_back)
+						if (index != snapBack)
 						{
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-								-(snap_back / 5.f) * 90.f + 180.f);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5.f) * 90.f + 180.f);
 
 							std::cout << "swap\n";
 							ButtonGearUI tmp = button;
-							button = inventoryButton[snap_back];
-							inventoryButton[snap_back] = tmp;
+							button = inventoryButton[snapBack];
+							inventoryButton[snapBack] = tmp;
 
-							if (Player_Inventory.size() <= index)
+							if (playerInventory.size() <= index)
 							{
-								size_t oldsize = Player_Inventory.size();
-								Player_Inventory.resize(index + 1);
-								for (size_t x = oldsize; x < Player_Inventory.size(); x++)
+								size_t oldsize = playerInventory.size();
+								playerInventory.resize(index + 1);
+								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
-									Player_Inventory[x].ID = -9999;
+									playerInventory[x].ID = -9999;
 								}
 							}
-							Inventory::SwapInventory(Player_Inventory[index], Player_Inventory[snap_back]);
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-								-(snap_back / 5) * 90.f + 180.f);
+							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5) * 90.f + 180.f);
 
 							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
 								-(index / 5.f) * 90.f + 180.f);
 
-							snap_back = -1;
+							snapBack = -1;
 							break;
 						}
 					}
 					index++;
 				}
 
-				if (snap_back >= 0)
+				if (snapBack >= 0)
 				{
-					AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-						-(snap_back / 5.f) * 90.f + 180.f);
-					snap_back = -1;
+					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+						-(snapBack / 5.f) * 90.f + 180.f);
+					snapBack = -1;
 				}
 			}
 		}
@@ -471,15 +471,15 @@ void Level1_Update()
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
 			s16 index = 0;
-			s32 testx = 0;
-			s32 testy = 0;
+			s32 textX = 0;
+			s32 textY = 0;
 
 
 			index = 0;
-			AEInputGetCursorPosition(&testx, &testy);
+			AEInputGetCursorPosition(&textX, &textY);
 			AEVec2 mousePos;
-			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
 			for (ButtonGearUI& button : inventoryButton)
 			{
@@ -552,7 +552,7 @@ void Level1_Update()
 
 #pragma region CameraUpdate
 
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][97].collisionBox.maximum.x, grids2D[49][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
 
@@ -616,7 +616,7 @@ void Level1_Draw()
 			if (enemy.isShooting) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 
-				AEGfxTextureSet(enemy.angryTex, 0, 0);
+				AEGfxTextureSet(enemy.angryTex, 0, 0); 
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
@@ -669,8 +669,8 @@ void Level1_Draw()
 	{
 		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon->position.x,
 		                                                player->equippedWeapon->position.y, 0.f,
-		                                                player->equippedWeapon->Scale.x,
-		                                                player->equippedWeapon->Scale.y).m);
+		                                                player->equippedWeapon->scale.x,
+		                                                player->equippedWeapon->scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 	}
 
@@ -701,7 +701,7 @@ void Level1_Draw()
 #pragma region Inventory_UI_Render
 
 	//Inventory images
-	if (inventory_open)
+	if (inventoryOpen)
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 

@@ -25,7 +25,7 @@ namespace {
 #pragma endregion UserInterface
 
 	bool inventory_open = false;
-	int snap_back = -1;
+	int snapBack = -1;
 
 	int hp = 100;
 	int gear_equipped = 0;
@@ -304,7 +304,7 @@ void GameLobby_Update()
 	if (inventory_open)
 	{
 		//update item position
-		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
+		Inventory::UpdateInventory(playerInventory, inventoryButton);
 		int index = 0;
 
 		for (ButtonGearUI& button : inventoryButton)
@@ -356,7 +356,7 @@ void GameLobby_Update()
 					{
 						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
-						snap_back = index;
+						snapBack = index;
 						break;
 					}
 					//button.Ptr();
@@ -365,7 +365,7 @@ void GameLobby_Update()
 			}
 		}
 
-		if (snap_back >= 0)
+		if (snapBack >= 0)
 		{
 			s32 testx = 0;
 			s32 testy = 0;
@@ -377,61 +377,61 @@ void GameLobby_Update()
 			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
 			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
 
-			inventoryButton[snap_back].pos = mousePos;
+			inventoryButton[snapBack].pos = mousePos;
 		}
 
 		if (AEInputCheckReleased(AEVK_LBUTTON))
 		{
 			int index = 0;
-			if (snap_back >= 0)
+			if (snapBack >= 0)
 			{
 				for (ButtonGearUI& button : inventoryButton)
 				{
-					if (AETestRectToRect(&inventoryButton[snap_back].pos,
-						inventoryButton[snap_back].img.scale.x,
-						inventoryButton[snap_back].img.scale.y, &button.pos,
+					if (AETestRectToRect(&inventoryButton[snapBack].pos,
+						inventoryButton[snapBack].img.scale.x,
+						inventoryButton[snapBack].img.scale.y, &button.pos,
 						button.img.scale.x,
 						button.img.scale.y))
 					{
 						//Different items overlapping
-						if (index != snap_back)
+						if (index != snapBack)
 						{
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-								-(snap_back / 5.f) * 90.f + 180.f);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5.f) * 90.f + 180.f);
 
 							std::cout << "swap\n";
 							ButtonGearUI tmp = button;
-							button = inventoryButton[snap_back];
-							inventoryButton[snap_back] = tmp;
+							button = inventoryButton[snapBack];
+							inventoryButton[snapBack] = tmp;
 
-							if (Player_Inventory.size() <= index)
+							if (playerInventory.size() <= index)
 							{
-								size_t oldsize = Player_Inventory.size();
-								Player_Inventory.resize(index + 1);
-								for (size_t x = oldsize; x < Player_Inventory.size(); x++)
+								size_t oldsize = playerInventory.size();
+								playerInventory.resize(index + 1);
+								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
-									Player_Inventory[x].ID = -9999;
+									playerInventory[x].ID = -9999;
 								}
 							}
-							Inventory::SwapInventory(Player_Inventory[index], Player_Inventory[snap_back]);
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-								-(snap_back / 5) * 90.f + 180.f);
+							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5) * 90.f + 180.f);
 
 							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
 								-(index / 5.f) * 90.f + 180.f);
 
-							snap_back = -1;
+							snapBack = -1;
 							break;
 						}
 					}
 					index++;
 				}
 
-				if (snap_back >= 0)
+				if (snapBack >= 0)
 				{
-					AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-						-(snap_back / 5.f) * 90.f + 180.f);
-					snap_back = -1;
+					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+						-(snapBack / 5.f) * 90.f + 180.f);
+					snapBack = -1;
 				}
 			}
 		}
