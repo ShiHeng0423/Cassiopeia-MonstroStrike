@@ -216,5 +216,6 @@ void MapTransitionDraw() //Always the last layer so that it covers EVERYTHING
 
 void MapTransitionUnload()
 {
+	AEGfxMeshFree(transitionalImageOBJ.pMesh);
 	AEGfxTextureUnload(transitionalImageOBJ.transitionImage);
 }
