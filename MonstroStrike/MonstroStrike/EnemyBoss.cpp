@@ -1,6 +1,8 @@
 #include "Enemy.h"
+#include "EnemyUtils.h"
 #include "Player.h"
 #include "AEEngine.h"
+
 
 
 #include <iostream>
@@ -9,6 +11,7 @@
 void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	static f32 timePassed = 0;	//for up and down cos
 	AEVec2 Spawnloc;
 
 //health check
@@ -35,6 +38,8 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 
 	if (AEInputCheckCurr(AEVK_L)) {
 		enemy.wing1.isAlive = false;
+	}
+	if (AEInputCheckCurr(AEVK_K)) {
 		enemy.wing2.isAlive = false;
 	}
 
@@ -53,7 +58,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.wing1.isAlive = true;
 		enemy.wing2.isAlive = true;
 		enemy.isFlying = true;
-		Spawnloc = enemy.starting_position;
+		Spawnloc = enemy.startingPosition;
 		if (enemy.obj.pos.y <= Spawnloc.y) {
 			enemy.speed =  120.f;
 			MoveTowardsFLY(enemy, Spawnloc);
@@ -70,27 +75,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		}
 		break;
 
-	//case ENEMY_CHASE:
-
-	//	if (distanceFromPlayer <= enemy.shootingRange) {
-	//		enemy.enemyNext = ENEMY_ATTACK;
-	//	}
-	//	else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
-	//		enemy.enemyNext = ENEMY_CHASE;
-	//		MoveTowards(enemy, player.obj.pos);
-
-
-
-	//	}
-
-	//	break;
-
 	case ENEMY_ATTACK:
-		if (enemy.wing1.isAlive && enemy.wing2.isAlive) {
+		if (enemy.wing1.isAlive || enemy.wing2.isAlive) {
 
-			static int loopCounter = 0;	//each wing to shoot 20 bullets, then swap wing
+			static int loopCounter = 0;	//each wing to shoot n bullets, then swap wing
 
-			if (loopCounter < 20) {
+			if (loopCounter < 20) {	//20bullets
 				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
 					Spawnloc.x = enemy.wing1.obj.pos.x;
 					Spawnloc.y = enemy.wing1.obj.pos.y;
@@ -114,15 +104,82 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 
 		else {
 			enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
-			if (enemy.timePassed >= 0.5f) {
-				enemy.timePassed = 0.0f;
-				if (enemy.onFloor) {
-					Jump(enemy, 500.f);
+
+			//locking on which direction to dash
+			if (enemy.targetPosition == ENEMY_DEFAULT) {
+				if (enemy.obj.pos.x >= player.obj.pos.x) {
+					enemy.targetPosition = ENEMY_LEFT;
+				}
+				else {
+					enemy.targetPosition = ENEMY_RIGHT;
 				}
 			}
-			if (!enemy.onFloor) {
+
+			switch (enemy.attackState) {
+			case ENEMY_ATTACK_CHOOSING:
+
+				if (enemy.timePassed >= 2.f) {
+					enemy.timePassed = 0.0f;
+					switch (rand() % 2) {	//randomize is seeded 
+					case 0:
+						enemy.timePassed = 0.f;
+						enemy.attackState = ENEMY_ATTACK_JUMP;
+						break;
+					case 1:
+
+						//set way point
+						enemy.wayPoint = { enemy.obj.pos.x, enemy.obj.pos.y };
+						if (enemy.targetPosition == ENEMY_LEFT) {
+							enemy.wayPoint.x += 30.f;	//go right
+						}
+						else if (enemy.targetPosition == ENEMY_RIGHT) {
+							enemy.wayPoint.x -= 30.f;	//go left
+						}
+						enemy.attackState = ENEMY_ATTACK_REVERSE;
+						enemy.speed = 120.f;
+
+						break;
+					}
+
+				}
+				break;
+			case ENEMY_ATTACK_CHARGE:
+
+				Attack_Charge(enemy, enemy.targetPosition, 600.f);
+				if (enemy.timePassed >= 1.f) {
+					enemy.timePassed = 0.0f;
+					enemy.speed = 80.f;
+
+					enemy.targetPosition = ENEMY_DEFAULT;
+					enemy.attackState = ENEMY_ATTACK_CHOOSING;
+				}
+				break;
+			case ENEMY_ATTACK_JUMP:
+
+				if (enemy.timePassed >= 0.5f) {
+					enemy.timePassed = 0.0f;
+					if (enemy.onFloor) {
+						Jump(enemy, 1200.f);
+						enemy.attackState = ENEMY_ATTACK_CHOOSING;
+					}
+				}
+				break;
+			case ENEMY_ATTACK_REVERSE:
+
+				MoveTowards(enemy, enemy.wayPoint);
+				if (reachedPos(enemy, enemy.wayPoint)) {
+					enemy.attackState = ENEMY_ATTACK_CHARGE;
+				}
+				break;
+			}//switch end
+
+
+
+			if (!enemy.onFloor) { //for the jumping
 				MoveTowards(enemy, player.obj.pos);
 			}
+
+
 		}
 
 
@@ -139,6 +196,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 	//for gravity
 	if (!enemy.isFlying) {
 		enemy.obj.pos.y += enemy.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
+	}
+	else {
+		//makes enemy fluctuate up and down
+		timePassed += (f32)AEFrameRateControllerGetFrameTime();
+		f32 verticalMovement = 0.5f * cos(timePassed * (2 * PI / 0.5f));
+		enemy.obj.pos.y += enemy.velocity.y * verticalMovement;
 	}
 
 	//wings collision box
@@ -161,23 +224,4 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
 		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
 	}
-	
-	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;	//changing this to 0.25 will make the bullet glitch
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-
-	f32 verticalOffset = enemy.obj.img.scale.y * 0.01f;
-	//Vertical
-	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
-	enemy.boxHeadFeet.minimum.y -= verticalOffset;
-	enemy.boxHeadFeet.maximum.y += verticalOffset;
-
-	f32 horizontalOffset = enemy.obj.img.scale.x * 0.01f;
-	//Horizontal
-	enemy.boxArms = enemy.collisionBox;
-	enemy.boxArms.minimum.x -= horizontalOffset;
-	enemy.boxArms.maximum.x += horizontalOffset;
-
 }

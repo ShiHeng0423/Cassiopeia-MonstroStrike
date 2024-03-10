@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
 
 //Author: Johny Yong
 //Email: j.yong\@digipen.edu
@@ -52,8 +53,20 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
         {
             if (cellValue != ',')
             {
+                // Accumulate characters until a comma or end of line is encountered
+                std::string numberStr;
+                while (cellValue != ',' && cellValue != '\n' && lineStream)
+                {
+                    numberStr += cellValue;
+                    lineStream >> cellValue; // Read the next character
+                }
+
+                // Convert the accumulated string to an integer
+                int number = std::stoi(numberStr);
+
                 MapCell cell;
-                cell.symbol = cellValue - '0';
+                cell.symbol = number;
+                //std::cout << cell.symbol << ",";
                 rowCells.push_back(cell); // Push the current cell into the row vector
                 col++;
             }
@@ -67,10 +80,10 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
             rowCells.push_back(cell);
             col++;
         }
+        //std::cout << "\n";
 
         map.push_back(rowCells); // Push the row vector into the map
     }
-
     file.close();
     return true;
 }

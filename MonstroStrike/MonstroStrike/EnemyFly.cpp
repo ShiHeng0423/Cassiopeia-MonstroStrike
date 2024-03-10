@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include "EnemyUtils.h"
 #include "Player.h"
 #include "AEEngine.h"
 #include "Physics.h"
@@ -11,6 +12,7 @@
 void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	static f32 timePassed = 0;	//for up and down cos
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();	//time.time
 	//std::cout << enemy.isCollision << "\n";
 	if (enemy.isCollision) {
@@ -30,13 +32,12 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 
 		if (distanceFromPlayer <= enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_CHASE;
-			enemy.loop_idle = false;
+			enemy.loopIdle = false;
 		}
 		else {
 			enemy.enemyNext = ENEMY_IDLE;
-			if (!((enemy.obj.pos.x >= enemy.starting_position.x - 1.0f) && (enemy.obj.pos.x <= enemy.starting_position.x + 1.0f)) && !(enemy.loop_idle)) {
-
-				MoveTowardsFLY(enemy, enemy.starting_position);
+			if (!((enemy.obj.pos.x >= enemy.startingPosition.x - 1.0f) && (enemy.obj.pos.x <= enemy.startingPosition.x + 1.0f)) && !(enemy.loopIdle)) {
+				MoveTowardsFLY(enemy, enemy.startingPosition);
 				isStuck(enemy);
 			}
 		}
@@ -70,17 +71,17 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 
 			MoveTowardsFLY(enemy, player.obj.pos);
 
-			enemy.waypoint = player.obj.pos;	//set a waypoint a player's location
+			enemy.wayPoint = player.obj.pos;	//set a wayPoint a player's location
 			isStuck(enemy);
 
 		}
 		else {
 			//player runs out of line of sight range
-			MoveTowardsFLY(enemy, enemy.waypoint);	//go to the last location player was at
+			MoveTowardsFLY(enemy, enemy.wayPoint);	//go to the last location player was at
 			isStuck(enemy);
 			//when it reaches the way point (manual typed numbers are offsets )
-			if ((enemy.obj.pos.x >= enemy.waypoint.x - 10.f && enemy.obj.pos.x <= enemy.waypoint.x + 10.f)
-				&& (enemy.obj.pos.y >= enemy.waypoint.y - 60.f && enemy.obj.pos.y <= enemy.waypoint.y + 60.f)){	//.y +- value depends on offset in MoveTowards fly
+			if ((enemy.obj.pos.x >= enemy.wayPoint.x - 10.f && enemy.obj.pos.x <= enemy.wayPoint.x + 10.f)
+				&& (enemy.obj.pos.y >= enemy.wayPoint.y - 60.f && enemy.obj.pos.y <= enemy.wayPoint.y + 60.f)){	//.y +- value depends on offset in MoveTowards fly
 
 				enemy.timePassed = 0.0f;
 				enemy.enemyNext = ENEMY_TRANSITION; //go to transition to pause there abit
@@ -105,39 +106,15 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			enemy.enemyNext = ENEMY_CHASE;
 
 		}
-
-
-
 		break;
 	default:
 		break;
 	}
 
-
-
-
-
-
-	//for gravity
-	//enemy.obj.pos.y += enemy.velocity.y * AEFrameRateControllerGetFrameTime();
+	//makes enemy fluctuate up and down
+	timePassed += (f32)AEFrameRateControllerGetFrameTime();
+	f32 verticalMovement = 0.5f *cos(timePassed * (2 * PI / 0.5f));
+	enemy.obj.pos.y += enemy.velocity.y * verticalMovement;
 
 	enemy.enemyCurrent = enemy.enemyNext;
-	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
-
-	f32 verticalOffset = enemy.obj.img.scale.y * 0.01f;
-	//Vertical
-	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
-	enemy.boxHeadFeet.minimum.y -= verticalOffset;
-	enemy.boxHeadFeet.maximum.y += verticalOffset;
-
-	f32 horizontalOffset = enemy.obj.img.scale.x * 0.01f;
-	//Horizontal
-	enemy.boxArms = enemy.collisionBox;
-	enemy.boxArms.minimum.x -= horizontalOffset;
-	enemy.boxArms.maximum.x += horizontalOffset;
-
 }

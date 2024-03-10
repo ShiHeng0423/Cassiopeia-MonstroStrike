@@ -109,6 +109,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageManager.cpp">
+    <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MapTransition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -161,6 +164,9 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Assets\player_inventory.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMap_Lobby.csv">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
@@ -316,6 +322,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageManager.h">
+          <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelHeaders.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MapTransition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
