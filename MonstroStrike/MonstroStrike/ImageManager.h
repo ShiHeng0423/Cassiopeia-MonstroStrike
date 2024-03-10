@@ -1,4 +1,4 @@
 #pragma once
 #include "Inventory.h"
 
-void Image_Init(const int item);
+void ImageInit(const int item);

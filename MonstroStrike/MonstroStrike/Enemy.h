@@ -9,13 +9,13 @@
 
 
 
-enum ENEMY_DIR {
+enum EnemyDir {
 	ENEMY_DEFAULT = 0,
 	ENEMY_LEFT,
 	ENEMY_RIGHT,
 };
 
-enum ENEMY_STATES
+enum EnemyStates
 {
 	ENEMY_IDLE = 0,
 	ENEMY_CHASE,
@@ -23,7 +23,7 @@ enum ENEMY_STATES
 	ENEMY_TRANSITION,
 };
 
-enum ENEMY_ATTACK_STATE {
+enum EnemyAttackStates {
 
 	ENEMY_ATTACK_DEFAULT = 0,
 	ENEMY_ATTACK_CHARGE,
@@ -32,7 +32,7 @@ enum ENEMY_ATTACK_STATE {
 	ENEMY_ATTACK_CHOOSING,
 };
 
-enum ENEMY_TYPES 
+enum EnemyTypes 
 {
 	ENEMY_JUMPER = 0,
 	ENEMY_CHARGER,
@@ -128,7 +128,7 @@ struct Enemy {
 
 
 
-void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
+void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy); //loads the sprite
 void FreeEnemy(std::vector<Enemy>& vecEnemy);
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
 void EnemyUpdateChoose(Enemy& enemy, struct Player& player);

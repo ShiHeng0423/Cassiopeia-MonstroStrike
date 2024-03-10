@@ -167,7 +167,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player)
 			case ENEMY_ATTACK_REVERSE:
 
 				MoveTowards(enemy, enemy.wayPoint);
-				if (reachedPos(enemy, enemy.wayPoint)) {
+				if (ReachedPos(enemy, enemy.wayPoint)) {
 					enemy.attackState = ENEMY_ATTACK_CHARGE;
 				}
 				break;

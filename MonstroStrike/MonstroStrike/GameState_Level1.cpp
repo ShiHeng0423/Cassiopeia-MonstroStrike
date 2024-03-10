@@ -82,7 +82,7 @@ void Level1_Load()
 	}
 
 	//Inventory assets
-	Inventory::Load_Inventory();
+	Inventory::LoadInventory();
 
 	inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
@@ -540,11 +540,11 @@ void Level1_Update()
 
 	if (AEInputCheckTriggered(AEVK_U))
 	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, TEST);
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, ParticleType::TEST);
 	}
 	if (AEInputCheckTriggered(AEVK_H))
 	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, TEST);
+		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, ParticleType::TEST);
 	}
 	ParticleUpdate();
 

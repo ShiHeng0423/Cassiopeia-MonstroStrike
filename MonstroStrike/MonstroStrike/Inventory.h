@@ -113,18 +113,18 @@ namespace Inventory
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
 	void InitInventory();
-	void Load_Inventory();
+	void LoadInventory();
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 	void SwapInventory(Item& lhs, Item& rhs);
 
-	Item getItemById(int id);
+	Item GetItemById(int id);
 
 	void Item_Pickup(Item& item);
 	void Item_Drop();
 
 
 	void EquipToBody(Item obj);
-	void applyItemEffect(Player& player, const Item& item);
+	void ApplyItemEffect(Player& player, const Item& item);
 	void UseItem(int index, ButtonGearUI& item, Player& player);
 	
 

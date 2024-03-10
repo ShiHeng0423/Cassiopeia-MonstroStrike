@@ -35,7 +35,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 	// If the enemy is in recoil state, move towards the wayPoint until reached or collision occurs
 	if (enemy.isRecoil) {
 		MoveTowards(enemy, enemy.wayPoint);
-		if (reachedPos(enemy, enemy.wayPoint) || enemy.isCollision) {
+		if (ReachedPos(enemy, enemy.wayPoint) || enemy.isCollision) {
 			enemy.enemyCurrent = ENEMY_IDLE;
 			enemy.speed = 80.f;
 			enemy.isRecoil = false;
@@ -46,7 +46,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
 		switch (enemy.enemyCurrent) {
 		case ENEMY_IDLE:
 			// Check if player is within line of sight and aligned with enemy
-			if (distanceFromPlayer <= enemy.lineOfSight && areAligned(player.obj.pos, enemy.obj.pos)) {
+			if (distanceFromPlayer <= enemy.lineOfSight && AreAligned(player.obj.pos, enemy.obj.pos)) {
 				enemy.enemyNext = ENEMY_TRANSITION;
 				enemy.isCollision = false;
 				enemy.timePassed = 0.0f;

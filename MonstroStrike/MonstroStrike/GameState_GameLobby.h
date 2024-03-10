@@ -1,8 +1,8 @@
 #pragma once
 
-void GameLobby_Load();
-void GameLobby_Initialize();
-void GameLobby_Update();
-void GameLobby_Draw();
-void GameLobby_Free();
-void GameLobby_Unload();
+void Lobby_Load();
+void Lobby_Initialize();
+void Lobby_Update();
+void Lobby_Draw();
+void Lobby_Free();
+void Lobby_Unload();

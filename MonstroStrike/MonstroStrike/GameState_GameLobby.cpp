@@ -90,7 +90,7 @@ AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
 	return AEGfxMeshEnd();
 }
 
-void GameLobby_Load()
+void Lobby_Load()
 {
 	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
@@ -132,7 +132,7 @@ void GameLobby_Load()
 	menu = new PauseMenu_Manager();
 }
 
-void GameLobby_Initialize()
+void Lobby_Initialize()
 {
 	MapTransitionInit(player->obj.pos);
 
@@ -237,7 +237,7 @@ void GameLobby_Initialize()
 
 }
 
-void GameLobby_Update()
+void Lobby_Update()
 {
 
 	if (AEInputCheckTriggered(AEVK_9))
@@ -248,7 +248,7 @@ void GameLobby_Update()
 	menu->Update(cam);
 	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
 		return;
-	if (currScene == MAIN_SCENE && !inventory_open)
+	if (currScene == CurrentScene::MAIN_SCENE && !inventory_open)
 		PlayerUpdate(*player);
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
@@ -484,7 +484,7 @@ void GameLobby_Update()
 	MapTransitionUpdate(player->obj.pos);
 }
 
-void GameLobby_Draw()
+void Lobby_Draw()
 {
 	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
 
@@ -633,7 +633,7 @@ void GameLobby_Draw()
 	MapTransitionDraw();
 }
 
-void GameLobby_Free()
+void Lobby_Free()
 {
 
 	gameMap.clear();
@@ -645,7 +645,7 @@ void GameLobby_Free()
 	ParticlesFree();
 }
 
-void GameLobby_Unload()
+void Lobby_Unload()
 {
 	Inventory::SaveInventory();
 

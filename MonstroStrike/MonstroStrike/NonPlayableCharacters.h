@@ -35,4 +35,3 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions); //Initialize positio
 void UpdateNPC(); //Update
 void FreeNPC(); //Free textures
 void DrawNPC(AEGfxVertexList& mesh);
-void UnloadNPC(); //Unload the mesh if have

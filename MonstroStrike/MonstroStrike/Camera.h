@@ -4,12 +4,12 @@
 
 class Camera {
 public:
-	Camera(AEVec2);
+	Camera(AEVec2 player);
 	~Camera();
 
-	void UpdatePos(Player, f32, f32, f32, f32);
+	void UpdatePos(Player player, f32 gameMinWidth, f32 gameMaxWidth, f32 gameMinHeight, f32 gameMaxHeight);
 	void CameraShake();
-	void LookAhead(AEVec2);
+	void LookAhead(AEVec2 locationPlayer);
 
 	f32  GetCameraScreenX() const;
 	f32  GetCameraScreenY() const;
@@ -20,12 +20,12 @@ private:
 	bool lookBack;
 	bool cameraOnHold;
 
-	f64 shake_Timer;
-	f64 lookback_Timer;
+	f64 shakeTimer;
+	f64 lookbackTimer;
 	
-	f32 screen_X;
-	f32 screen_Y;
+	f32 screenX;
+	f32 screenY;
 
-	AEVec2 world_Coordinate;
-	AEVec2 look_Ahead;
+	AEVec2 worldCoordinate;
+	AEVec2 lookAheadDir;
 };

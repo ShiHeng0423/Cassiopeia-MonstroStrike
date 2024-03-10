@@ -34,17 +34,17 @@ struct Player {
 
 	f32 attackTime;
 	bool burningEffect;
-	int combo_trig;
+	int comboTrig;
 	float comboTime;
 	int comboState;
 	f32 gravityForce;
 
 	//Player Stats
-	f32 max_health;
-	f32 curr_health;
+	f32 maxHealth;
+	f32 currHealth;
 	f32 attack;
 	f32 defence;
 };
 
-Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
+Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
 void PlayerUpdate(Player& player);

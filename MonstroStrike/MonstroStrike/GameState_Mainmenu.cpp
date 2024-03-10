@@ -8,20 +8,20 @@
 namespace {
 
 	enum CurrentScene {
-		MainScene,
-		CreditScene,
-		ControlScene,
-		OptionScene,
-		QuitScene
+		MAIN_SCENE,
+		CREDIT_SCENE,
+		CONTROL_SCENE,
+		OPTION_SCENE,
+		QUIT_SCENE
 	};
 
 	enum Interactable {
-		Start,
-		Load,
-		Credit,
-		Controls,
-		Options,
-		Quit
+		START,
+		LOAD,
+		CREDIT,
+		CONTROLS,
+		OPTIONS,
+		QUIT
 	};
 
 	//Main menu buttons
@@ -150,22 +150,22 @@ void Mainmenu_Initialize()
 
 		switch (i)
 		{
-		case Interactable::Start:
+		case Interactable::START:
 			interactableButtonMainMenu[i].Ptr = GoNewGameLevel1;
 			break;
-		case Interactable::Load:
+		case Interactable::LOAD:
 			interactableButtonMainMenu[i].Ptr = GoLoadSaveLevel;
 			break;
-		case Interactable::Credit:
+		case Interactable::CREDIT:
 			interactableButtonMainMenu[i].Ptr = GoCreditScene;
 			break;
-		case Interactable::Controls:
+		case Interactable::CONTROLS:
 			interactableButtonMainMenu[i].Ptr = GoControlScene;
 			break;
-		case Interactable::Options:
+		case Interactable::OPTIONS:
 			interactableButtonMainMenu[i].Ptr = GoOptionScene;
 			break;
-		case Interactable::Quit:
+		case Interactable::QUIT:
 			interactableButtonMainMenu[i].Ptr = GoConfirmQuitScene;
 			break;
 		default:
@@ -228,7 +228,7 @@ void Mainmenu_Initialize()
 	background.scale.x = 1600;
 	background.scale.y = 900;
 
-	currScene = CurrentScene::MainScene;
+	currScene = CurrentScene::MAIN_SCENE;
 
 	audioManager->PlayAudio(true, Audio_List::MAINMENU_SONG);
 }
@@ -245,19 +245,19 @@ void Mainmenu_Update()
 
 		switch (currScene)
 		{
-		case CurrentScene::MainScene:
+		case CurrentScene::MAIN_SCENE:
 			for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 			{
 				if (AETestPointToRect(&mousePos, &interactableButtonMainMenu[i].pos, interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y))
 					interactableButtonMainMenu[i].Ptr();
 			}
 			break;
-		case CurrentScene::CreditScene:
-		case CurrentScene::ControlScene:
+		case CurrentScene::CREDIT_SCENE:
+		case CurrentScene::CONTROL_SCENE:
 			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
 				backButton.Ptr();
 			break;
-		case CurrentScene::OptionScene:
+		case CurrentScene::OPTION_SCENE:
 			for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
 			{
 				if (AETestPointToRect(&mousePos, &interactableButtonOption[i].pos, interactableButtonOption[i].scale.x, interactableButtonOption[i].scale.y))
@@ -266,7 +266,7 @@ void Mainmenu_Update()
 			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
 				backButton.Ptr();
 			break;
-		case CurrentScene::QuitScene:
+		case CurrentScene::QUIT_SCENE:
 			if (AETestPointToRect(&mousePos, &confirmationButtion[0].pos, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y))
 				confirmationButtion[0].Ptr();
 			if (AETestPointToRect(&mousePos, &confirmationButtion[1].pos, confirmationButtion[1].scale.x, confirmationButtion[1].scale.y))
@@ -294,7 +294,7 @@ void Mainmenu_Draw()
 
 	switch (currScene)
 	{
-	case CurrentScene::MainScene:
+	case CurrentScene::MAIN_SCENE:
 	{
 		for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 		{
@@ -333,8 +333,8 @@ void Mainmenu_Draw()
 		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
-	case CurrentScene::CreditScene:
-	case CurrentScene::ControlScene:
+	case CurrentScene::CREDIT_SCENE:
+	case CurrentScene::CONTROL_SCENE:
 	{
 		AEGfxTextureSet(backButton.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
@@ -347,7 +347,7 @@ void Mainmenu_Draw()
 		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
-	case CurrentScene::OptionScene:
+	case CurrentScene::OPTION_SCENE:
 	{
 		AEGfxTextureSet(optionbackground.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(optionbackground.pos.x, optionbackground.pos.y, 0.f, optionbackground.scale.x, optionbackground.scale.y).m);
@@ -388,7 +388,7 @@ void Mainmenu_Draw()
 		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
-	case CurrentScene::QuitScene:
+	case CurrentScene::QUIT_SCENE:
 	{
 		AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[0].pos.x, confirmationButtion[0].pos.y, 0.f, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y).m);
@@ -432,7 +432,7 @@ void Mainmenu_Unload()
 
 void BackMainMenu()
 {
-	currScene = CurrentScene::MainScene;
+	currScene = CurrentScene::MAIN_SCENE;
 }
 
 void GoNewGameLevel1()
@@ -447,22 +447,22 @@ void GoLoadSaveLevel()
 
 void GoCreditScene()
 {
-	currScene = CurrentScene::CreditScene;
+	currScene = CurrentScene::CREDIT_SCENE;
 }
 
 void GoControlScene()
 {
-	currScene = CurrentScene::ControlScene;
+	currScene = CurrentScene::CONTROL_SCENE;
 }
 
 void GoOptionScene()
 {
-	currScene = CurrentScene::OptionScene;
+	currScene = CurrentScene::OPTION_SCENE;
 }
 
 void GoConfirmQuitScene()
 {
-	currScene = CurrentScene::QuitScene;
+	currScene = CurrentScene::QUIT_SCENE;
 }
 
 void GoQuitGame()
