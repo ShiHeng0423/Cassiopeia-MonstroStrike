@@ -106,17 +106,10 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			enemy.enemyNext = ENEMY_CHASE;
 
 		}
-
-
-
 		break;
 	default:
 		break;
 	}
-
-
-
-
 
 	//makes enemy fluctuate up and down
 	timePassed += (f32)AEFrameRateControllerGetFrameTime();

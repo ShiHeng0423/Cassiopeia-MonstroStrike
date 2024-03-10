@@ -62,6 +62,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			AESysFrameStart();
 			fpUpdate();
 			fpDraw();
+			MapTransitionDraw();
 
 			// Informing the system about the loop's end
 			AESysFrameEnd();

@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "TransformMatrix.h"
 #include "GameStateManager.h"
+#include "TextPrinting.h"
 
 namespace {
 
@@ -44,6 +45,8 @@ namespace {
 	//Options Menu - "Options"
 
 	s8 currScene;
+	std::vector<PrintedCharacter> printedCharVec;
+	f32 printTimer = 0.0f;
 }
 
 void GoNewGameLevel1();
@@ -76,7 +79,6 @@ void Mainmenu_Load()
 
 	// Saving the mesh (list of triangles) in pMesh
 	pWhiteSquareMesh = AEGfxMeshEnd();
-
 }
 
 void Mainmenu_Initialize()
@@ -131,6 +133,7 @@ void Mainmenu_Initialize()
 	background.scale.x = 1600;
 	background.scale.y = 900;
 	currScene = CurrentScene::MainScene;
+
 }
 
 void Mainmenu_Update()
@@ -196,6 +199,9 @@ void Mainmenu_Draw()
 		}
 
 		f32 width, height;
+		//const char* testText = "Did you know? Mejiro Mcqueen is my first UD horse? HAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHAH";
+		//PrintTextOverTime(testText, 0.01f, -1.f, 0.f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, pFont, printedCharVec, & printTimer);
+		////AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText = "Start";
 		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
@@ -261,8 +267,6 @@ void Mainmenu_Draw()
 	default:
 		break;
 	}
-
-
 }
 
 void Mainmenu_Free()
