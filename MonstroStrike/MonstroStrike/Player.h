@@ -47,4 +47,4 @@ struct Player {
 };
 
 Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
-void PlayerUpdate(Player& player);
+void PlayerUpdate(Player& player, bool isInventoryOpen);
