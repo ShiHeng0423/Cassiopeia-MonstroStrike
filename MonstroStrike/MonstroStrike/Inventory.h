@@ -131,3 +131,5 @@ namespace Inventory
 	void SaveInventory();
 
 }
+
+void Equip(int index, ButtonGearUI tmp);
