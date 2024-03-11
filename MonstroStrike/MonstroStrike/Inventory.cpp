@@ -35,8 +35,7 @@ using namespace rapidjson;
 std::vector<Item> Player_Inventory;
 int Player_Inventory_Count;
 Player* playerReference = nullptr;
-Item equippedArmour[4];
-Item equippedWeapon;
+Item equippedGear[5];
 AEGfxTexture* Gear[25];
 
 namespace Inventory
@@ -50,10 +49,10 @@ namespace Inventory
 	{
 		Item nothing{};
 		nothing.ID = -99999;
-		equippedWeapon = nothing;
-		for (int i =0; i< 4; ++i)
+		for (int i =0; i< 5; ++i)
 		{
-			equippedArmour[i] = nothing;
+			equippedGear[i] = nothing;
+			equipmentDisplay[i].Item = equippedGear[i];
 		}
 
 		
@@ -101,7 +100,7 @@ namespace Inventory
 				newItem.description = ind_item["description"].GetString();
 				newItem.item_type = static_cast<Item_Type>(ind_item["item_type"].GetInt());
 				newItem.rarity = static_cast<Rarity> (ind_item["rarity"].GetInt());
-				newItem.armour_loc = static_cast<Armour_Location> (ind_item["armour_location"].GetInt());
+				newItem.gear_loc = static_cast<Gear_Location> (ind_item["gear_location"].GetInt());
 				newItem.quantity = ind_item["quantity"].GetInt();
 				newItem.stackable = ind_item["stackable"].GetBool();
 				newItem.health = ind_item["health"].GetInt();
@@ -198,6 +197,7 @@ namespace Inventory
 			                   json.GetAllocator());
 			ind_item.AddMember("item_type", item.item_type, json.GetAllocator());
 			ind_item.AddMember("rarity", item.rarity, json.GetAllocator());
+			ind_item.AddMember("gear_location", item.gear_loc, json.GetAllocator());
 			ind_item.AddMember("quantity", item.quantity, json.GetAllocator());
 			ind_item.AddMember("stackable", item.stackable, json.GetAllocator());
 			ind_item.AddMember("health", item.health, json.GetAllocator());
@@ -269,7 +269,7 @@ namespace Inventory
 			for(size_t i = inventory.size() ; i < 25 ; i++)
 			{
 				Item emptyItemSlot;
-				emptyItemSlot.ID = -999999;
+				emptyItemSlot.ID = -99;
 				button[i].Item = emptyItemSlot;
 			}
 		}
@@ -293,7 +293,7 @@ namespace Inventory
 				}
 			}
 			// Return a default item if the ID is not found
-			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,al_none, true, 1,1 };
+			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,GL_NONE, true, 1,1 };
 		}
 
 
@@ -427,89 +427,103 @@ namespace Inventory
 
 	void EquipToBody(Item obj)
 	{
-		switch (obj.item_type)
-		{
-		case weapon:
-		{
-			
-			std::cout << "hi" << std::endl;
-				Item backup;
-				backup.ID = -9999;
-				if (equippedWeapon.ID >= 0)
-				{
-					backup = equippedWeapon;
+		Item backup[5];
+		for(int i = 0; i< 5; ++i)
+		backup[i].ID = -9999;
 
-				}
-				equippedWeapon = obj;
-				equipmentDisplay[2].Item = equippedWeapon;
-				playerReference->equippedWeapon.damage = obj.attack;
 
-				for (auto& inventory : Player_Inventory)
-				{
-					if (inventory.ID <0 )
-					{
-						inventory = backup;
-						break;
-					}
-				}
-			
-			
-			
-		}
-			break;
-		case armour:
-
-			switch (obj.armour_loc)
+			switch (obj.gear_loc)
 			{
-		case head:
-			equippedArmour[0] = obj;
-			equipmentDisplay[0].Item = equippedWeapon;
+		case weaponry:
+			if (equippedGear[obj.gear_loc].ID >= 0)
+			{
+				backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+			}
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+			//update stats
+			//playerReference->equippedWeapon.damage = static_cast<f32>(obj.attack);
+
+			break;
+
+
+			case head:
+
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+			std::cout << "Display: helm, " << equippedGear->name << std::endl;
+
+
 			//playerReference->equippedArmor.defence = obj.defence;
 			break;
-		case body:
-			equippedArmour[1] = obj;
-			equipmentDisplay[1].Item = equippedWeapon;
+
+			case body:
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+
 			break;
-		case pants:
-			equippedArmour[2] = obj;
-			equipmentDisplay[3].Item = equippedWeapon;
+
+			case pants:
+
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+
 			break;
-		case boots:
-			equippedArmour[3] = obj;
-			equipmentDisplay[4].Item = equippedWeapon;
+
+			case boots:
+
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+				equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+
 			break;
 		default:
 			break;
 
 			}
 
-			std::cout << "hi" << std::endl;
-			Item backup;
-			backup.ID = -9999;
-			if (equippedWeapon.ID >= 0)
+		//Assign the previously equipped item to empty inventory slot
+		for (auto& inventory : Player_Inventory)
+		{
+			if (inventory.ID < 0) //check for -99 id
 			{
-				backup = equippedWeapon;
-
+				
+				inventory = backup[obj.gear_loc];
+				break;
 			}
-
-
-			for (auto& inventory : Player_Inventory)
-			{
-				if (inventory.ID < 0)
-				{
-					inventory = backup;
-					break;
-				}
-			}
-
-			break;
-
 		}
 	}
 
 	void Load_Inventory()
 	{
-		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
+		Player_Inventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
 
 	}
 
@@ -519,6 +533,6 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(Player_Inventory, "./Assets/saved_player_inventory.json");
+		WriteJsonFile(Player_Inventory, "./Assets/SaveFiles/saved_player_inventory.json");
 	}
 }

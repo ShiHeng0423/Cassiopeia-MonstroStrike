@@ -85,11 +85,7 @@ namespace
 
 
 	AEGfxTexture* blank;
-	// AEGfxTexture* Gear1;
-	// AEGfxTexture* Gear2;
-	// AEGfxTexture* weapon3;
-	// AEGfxTexture* Gear4;
-	// AEGfxTexture* Gear5;
+
 
 	//Button inventoryBackground;
 }
@@ -142,20 +138,24 @@ void Level1_Load()
 
 	equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
-	Gear[0] = AEGfxTextureLoad("Assets/items/item_helmet.png");
-	Gear[1] = AEGfxTextureLoad("Assets/items/chest.png");
-	Gear[2] = AEGfxTextureLoad("Assets/items/tile_archHalf.png");
-	Gear[3] = AEGfxTextureLoad("Assets/items/tile_archColumns.png");
-	Gear[4] = AEGfxTextureLoad("Assets/items/item_sword.png");
-	Gear[5] = AEGfxTextureLoad("Assets/items/item_helmet.png");
-	Gear[6] = AEGfxTextureLoad("Assets/items/item_angel_sword.png");
-	Gear[7] = AEGfxTextureLoad("Assets/items/item_.png");
+	Gear[0] = AEGfxTextureLoad("Assets/items/item_0.png");
+	Gear[1] = AEGfxTextureLoad("Assets/items/item_1.png");
+	Gear[2] = AEGfxTextureLoad("Assets/items/item_2.png");
+	Gear[3] = AEGfxTextureLoad("Assets/items/item_3.png");
+	Gear[4] = AEGfxTextureLoad("Assets/items/item_4.png");
+	Gear[5] = AEGfxTextureLoad("Assets/items/item_5.png");
+	Gear[6] = AEGfxTextureLoad("Assets/items/item_6.png");
+	Gear[7] = AEGfxTextureLoad("Assets/items/item_7.png");
+	Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
+	Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
+	Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
+
 
 	blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 	LoadNPC();
 
-	
+
 	ParticleLoad();
 
 #pragma region Mesh Creations
@@ -288,21 +288,20 @@ void Level1_Initialize()
 #pragma endregion PauseMenu
 
 #pragma region Enemy
-	Enemy_Init({70.f,70.f}, { 1800.f,-80.f }, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({ 70.f,70.f }, { 1850.f,-80.f }, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f,70.f}, {1800.f, 250.f}, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({70.f,70.f}, { -500.f, -80.f }, ENEMY_IDLE, vecEnemy[3]);
-	Enemy_Init({ 70.f,70.f }, { -300.f, -80.f }, ENEMY_IDLE, vecEnemy[4]);
-	Enemy_Init({70.f,70.f }, { 800.f,150.f }, ENEMY_IDLE, vecEnemy[5]);
+	Enemy_Init({70.f, 70.f}, {1800.f, -80.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({70.f, 70.f}, {1850.f, -80.f}, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({70.f, 70.f}, {1800.f, 250.f}, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({70.f, 70.f}, {-500.f, -80.f}, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({70.f, 70.f}, {-300.f, -80.f}, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({70.f, 70.f}, {800.f, 150.f}, ENEMY_IDLE, vecEnemy[5]);
 #pragma endregion Enemy
-	
+
 	ParticleInitialize();
 	MapTransitionInit(player->obj.pos);
 }
 
 void Level1_Update()
 {
-	
 	PlayerUpdate(*player);
 	cam->UpdatePos(*player);
 	MapTransitionUpdate(player->obj.pos);
@@ -427,24 +426,22 @@ void Level1_Update()
 	}
 
 
-	 //if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
-	 //{
-	 //	next = GameStates::Quit;
-	 //	//cam->CameraShake();
-	 //}
+	//if (AEInputCheckTriggered(AEVK_ESCAPE) || 0 == AESysDoesWindowExist())
+	//{
+	//	next = GameStates::Quit;
+	//	//cam->CameraShake();
+	//}
 
-	 //if (AEInputCheckTriggered(AEVK_0))
-	 //{
-	 //	//next = GameStates::Quit;
-	 //	AEVec2 test{100.f, 100.f};
-	 //	cam->LookAhead(test);
-	 //}
-	 //if (AEInputCheckCurr(AEVK_1))
-	 //{
-	 //	cam->CameraShake();
-	 //}
-
-
+	//if (AEInputCheckTriggered(AEVK_0))
+	//{
+	//	//next = GameStates::Quit;
+	//	AEVec2 test{100.f, 100.f};
+	//	cam->LookAhead(test);
+	//}
+	//if (AEInputCheckCurr(AEVK_1))
+	//{
+	//	cam->CameraShake();
+	//}
 
 
 	//For printing the grids every frame
@@ -476,11 +473,12 @@ void Level1_Update()
 					                           &player->collisionNormal, &player->obj.pos,
 					                           &player->velocity);
 				}
-//(ENEMY AND BULLETS COLLISION CHECKING)
-				for (Enemy& enemy : vecEnemy) {
-
+			//(ENEMY AND BULLETS COLLISION CHECKING)
+				for (Enemy& enemy : vecEnemy)
+				{
 					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox))
+					{
 						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
 
 						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox,
@@ -494,8 +492,9 @@ void Level1_Update()
 						enemy.isCollision = true;
 						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
 
-						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity);
+						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox,
+						                           &enemy.collisionNormal, &enemy.obj.pos,
+						                           &enemy.velocity);
 						enemy.loopIdle = false;
 					}
 
@@ -534,7 +533,7 @@ void Level1_Update()
 		{
 			button.img.pTex = blank;
 			AEVec2Set(&button.img.scale, 60.f, 60.f);
-			AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f, -(index / 5) * 90.f + 180.f);
+			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
 
 			if (button.Item.ID < 0)
 			{
@@ -681,7 +680,7 @@ void Level1_Update()
 					if (button.img.pTex != blank)
 					{
 						Inventory::UseItem(index, button, *player);
-						if (button.Item.quantity == 0)
+						if (button.Item.quantity == 0 || button.Item.ID < 0)
 						{
 							button.img.pTex = blank;
 						}
@@ -695,7 +694,14 @@ void Level1_Update()
 			index = 0;
 			for (ButtonGearUI& button : Inventory::equipmentDisplay)
 			{
-				button.img.pTex = Gear[button.Item.ID];
+				if (button.Item.ID < 0)
+				{
+					button.img.pTex = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
 				AEVec2Set(&button.img.scale, 60.f, 60.f);
 				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 				index++;
@@ -782,15 +788,17 @@ void Level1_Draw()
 	                                                player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	for (Enemy& enemy : vecEnemy) {
-		if (enemy.isAlive) {
-
-
-			if (enemy.isShooting) {
+	for (Enemy& enemy : vecEnemy)
+	{
+		if (enemy.isAlive)
+		{
+			if (enemy.isShooting)
+			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 
 				AEGfxTextureSet(enemy.angryTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
+				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
@@ -808,29 +816,39 @@ void Level1_Draw()
 			}
 
 
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-				if (enemy.isShooting) {
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive)
+			{
+				if (enemy.isShooting)
+				{
 					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
 				}
-				else {
+				else
+				{
 					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				}
 
 
 				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f,
+				                                                enemy.wing1.obj.img.scale.x,
+				                                                enemy.wing1.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-				if (enemy.isShooting) {
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive)
+			{
+				if (enemy.isShooting)
+				{
 					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
 				}
-				else {
+				else
+				{
 					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				}
 
 				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f,
+				                                                enemy.wing2.obj.img.scale.x,
+				                                                enemy.wing2.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
@@ -1058,7 +1076,7 @@ void Level1_Unload()
 	AEGfxTextureUnload(blank);
 
 
-	for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		AEGfxTextureUnload(Gear[i]);
 	}

@@ -46,18 +46,19 @@ enum Rarity
 	unique
 };
 
-enum Armour_Location
+enum Gear_Location
 {
-	al_none = 0,
-	head,
+	head = 0,
 	body,
+	weaponry,
 	pants,
-	boots
+	boots,
+	GL_NONE
+
 };
 
 struct Item
 {
-
 	std::string UID;
 	int ID;
 	std::string name;
@@ -65,14 +66,13 @@ struct Item
 
 	Item_Type item_type;
 	Rarity rarity;
-	Armour_Location armour_loc;
+	Gear_Location gear_loc;
 
 	int quantity;
 	bool stackable;
 	int health;
 	int attack;
 	int defence;
-	
 };
 
 
@@ -91,8 +91,7 @@ extern int Player_Inventory_Count;
 extern AEGfxTexture* Gear[25];
 
 extern Player* playerReference;
-extern Item equippedArmour[4];
-extern Item equippedWeapon;
+extern Item equippedGear[5];
 
 namespace Inventory
 {
