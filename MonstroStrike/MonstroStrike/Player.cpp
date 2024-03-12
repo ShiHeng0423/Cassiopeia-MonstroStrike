@@ -32,6 +32,21 @@ auto triggeredTime = Clock::now();
 auto releasedTime = Clock::now();
 auto comboTime = Clock::now();
 
+//#pragma region AnimationQueue
+//
+//
+//class anima
+//{
+// public:
+//	bool is_playing = false;
+//	void (*play_animation)(Player&);
+//
+//};
+//
+//std::queue<anima> con_anima;
+//
+//#pragma endregion
+
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	//for every anima in the con_anima
@@ -91,7 +106,6 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 
 void PlayerUpdate(Player& player)
 {
-<<<<<<< Updated upstream
 	////X-Axis control
 	//bool isDashing = false;
 	//const f32 dashDuration = 0.2f; 
@@ -110,24 +124,6 @@ void PlayerUpdate(Player& player)
 	//	std::cout << "HI\n";
 	//}
 
-=======
-	if (AEInputCheckTriggered(AEVK_B))
-	{
-		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
-
-	}
-	if (AEInputCheckTriggered(AEVK_N))
-	{
-		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_M))
-	{
-		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
-	}
->>>>>>> Stashed changes
 
 	if (player.isFalling)
 	{
@@ -292,11 +288,15 @@ void PlayerUpdate(Player& player)
 			1000.0; // Convert to seconds
 		if (elapsedTime >= PRESS_THRESHOLD && !is_released)
 		{
-			if (player.comboState == 2 &&(player.equippedWeapon->name=="Short-Sword"|| player.equippedWeapon->name == "Broad-Sword")) //held
+			if (player.comboState == 2) //held
 			{
+		
 				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
 				player.isAttacking = true;
+			
+
+				
 			}
 			comboTime = Clock::now();
 			if_there_is_undealt_trigger_input = false;
