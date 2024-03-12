@@ -25,7 +25,7 @@ Weapon* createWeapon(const std::string& name, float x, float y) {
 
 
 
-void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
+void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
 {
   
     if (player->comboState == 0)
@@ -218,7 +218,7 @@ void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struc
 
   }
 
-void UpdateWeaponHitBoxHeld(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
+void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
 {
     if (player->comboState == 2)
     {
@@ -300,7 +300,7 @@ void UpdateWeaponHitBoxHeld(struct Player* player, bool playerFacingRight, struc
     }
 }
 
-void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, struct Player& player)
+void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, class Player& player)
 {
     //wings
     if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) {

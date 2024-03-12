@@ -131,7 +131,7 @@ struct Enemy {
 void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy); //loads the sprite
 void FreeEnemy(std::vector<Enemy>& vecEnemy);
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
-void EnemyUpdateChoose(Enemy& enemy, struct Player& player);
+void EnemyUpdateChoose(Enemy& enemy, class Player& player);
 
 
 
@@ -139,10 +139,10 @@ void EnemyUpdateChoose(Enemy& enemy, struct Player& player);
 
 
 
-void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player);
-void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player);
-void ENEMY_FLY_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player);
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player);
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player);
+void ENEMY_BOSS_Update(Enemy& enemy, class Player& player);
 
 
 

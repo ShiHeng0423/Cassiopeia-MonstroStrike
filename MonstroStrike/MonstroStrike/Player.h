@@ -6,7 +6,13 @@
 #include "Armor_add.h"
 #include "Weapon.h"
 
-struct Player {
+class Player {
+
+public:
+
+	//Player();
+	//~Player();
+
 	Object obj;
 	AEVec2 prevPos;
 
