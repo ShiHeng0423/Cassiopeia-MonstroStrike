@@ -41,7 +41,7 @@ void MapTransitionInit() //Call when enter a new level
 	AEGfxGetCamPosition(&transitInPos.x, &transitInPos.y);
 	std::cout << transitInPos.x << " " << transitInPos.y << std::endl;
 
-	transitionalImageOBJ.animationSpeed = 3000.f;
+	transitionalImageOBJ.animationSpeed = 2500.f;
 	transitionalImageOBJ.velocity = { 0 }; //No Veloicity
 	transitionalImageOBJ.active = false; //False by default, play animation function will set it true later
 	transitionalImageOBJ.position = { transitInPos.x, transitInPos.y }; //Set as player pos first but should not be visible
@@ -111,12 +111,12 @@ void MapTransitionUpdate() //Update only when transition image is active
 			case TRANSITION_UP: //Play up animation
 				transitionalImageOBJ.velocity.y = transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y + AEGfxGetWindowHeight()};
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y + AEGfxGetWindowHeight() * 1.75f };
 				break;
 			case TRANSITION_DOWN: //Play down animation
 				transitionalImageOBJ.velocity.y = -transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y - AEGfxGetWindowHeight() * 1.5f };
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y - AEGfxGetWindowHeight() * 1.75f };
 				break;
 			case TRANSITION_LEFT: //Play left animation
 				transitionalImageOBJ.velocity.x = -transitionalImageOBJ.animationSpeed;
@@ -173,7 +173,7 @@ void MapTransitionUpdate() //Update only when transition image is active
 	case TRANSITION_UPDATE:
 
 		//std::cout << AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) << std::endl;
-		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 5.f)
+		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 20.f)
 		{
 			//std::cout << transitionalImageOBJ.position.x <<  " " << transitionalImageOBJ.position.y << std::endl;
 			//std::cout << transitionalImageOBJ.velocity.x << " " << transitionalImageOBJ.velocity.y << std::endl;
