@@ -92,7 +92,7 @@ AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
 
 void Lobby_Load()
 {
-	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 0.f,0.f }, { 0.f,0.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 
@@ -134,7 +134,6 @@ void Lobby_Load()
 
 void Lobby_Initialize()
 {
-	MapTransitionInit(player->obj.pos);
 
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
@@ -161,6 +160,9 @@ void Lobby_Initialize()
 			case 12:
 				grids2D[rows][cols].typeOfGrid = NPC_QUEST_GIVER_POS;
 				break;
+			case 97:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+				break;
 			case 98:
 				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
 				break;
@@ -171,7 +173,7 @@ void Lobby_Initialize()
 		}
 	}
 
-	//For Initializing the grids
+	//For Initializing the grids and positions
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
 		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
@@ -189,11 +191,17 @@ void Lobby_Initialize()
 			case 12:
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
+			case 97:
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				break;
 			default:
 				break;
 			}
 		}
 	}
+
+	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
+	MapTransitionInit(player->obj.pos);
 
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
@@ -283,6 +291,7 @@ void Lobby_Update()
 					//std::cout << "Collided\n";MainMenu_Song
 					if (!transitionalImageOBJ.active)
 					{
+						//std::cout << grids2D[rows][cols].size.x << " " << grids2D[rows][cols].size.y << " Pos\n";
 						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
 					}
 				}

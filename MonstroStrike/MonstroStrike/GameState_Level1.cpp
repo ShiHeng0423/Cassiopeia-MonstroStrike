@@ -71,7 +71,7 @@ void Level1_Load()
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
-	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0,-100 }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 0.f, 0.f }, { 0.f,0.f },{ 40.f,0.f }, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
@@ -134,6 +134,12 @@ void Level1_Initialize()
 			case 1:
 				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
 				break;
+			case 97:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+				break;
+			case 98:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
+				break;
 			default:
 				grids2D[rows][cols].typeOfGrid = NONE;
 				break;
@@ -141,7 +147,7 @@ void Level1_Initialize()
 		}
 	}
 
-	//For Initializing the grids
+	//For Initializing the grids and positions
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
 		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
@@ -150,8 +156,14 @@ void Level1_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
+
+			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID)
+			{
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+			}
 		}
 	}
+	player->obj.img.scale = { grids2D[0][0].size };
 
 	//Need to place the objects one by one 
 	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);
@@ -317,6 +329,15 @@ void Level1_Update()
 								bullet.lifeTime = 0; //makes bullet erase
 							}
 						}
+					}
+				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
+				{
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
 					}
 				}
 				break;

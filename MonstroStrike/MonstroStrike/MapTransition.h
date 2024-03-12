@@ -45,6 +45,7 @@ struct TransitionImageObj {
 	void PlayMapTransition(TransitionDirection directionToPlay, GameStates nextLevel);
 
 	bool active;
+	bool enteringLevel;
 };
 
 void MapTransitionLoad();
