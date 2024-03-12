@@ -285,6 +285,7 @@ void Level1_Update()
 							&player->collisionNormal, &player->obj.pos,
 							&player->velocity);
 					}
+
 //(ENEMY AND BULLETS COLLISION CHECKING)
 				for (Enemy& enemy : vecEnemy) {
 

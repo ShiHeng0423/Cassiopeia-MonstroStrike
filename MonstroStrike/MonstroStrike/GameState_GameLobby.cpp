@@ -1,5 +1,7 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
+
+
 namespace {
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
@@ -63,32 +65,7 @@ void Equip(int index, ButtonGearUI tmp)
 	}
 }
 
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxTriAdd(
-		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f,  // bottom-left: red
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	AEGfxTriAdd(
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f,   // bottom-right: green
-		0.5f, 0.5f, MeshColor, 1.0f, 0.0f,    // top-right: white
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f);  // top-left: blue
-
-	return AEGfxMeshEnd();
-}
-
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxVertexAdd(-0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-	AEGfxVertexAdd(0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-
-	return AEGfxMeshEnd();
-}
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* player);
 
 void Lobby_Load()
 {
@@ -252,46 +229,7 @@ void Lobby_Update()
 		PlayerUpdate(*player, inventory_open);
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
-
-	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
-	{
-		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
-		{
-			switch (grids2D[rows][cols].typeOfGrid)
-			{
-			case NORMAL_GROUND:
-					//Collision check
-					//Resolve + Vertical Collision only for entity x (wall or ground)
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-							&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-					}
-
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-							&player->velocity);
-					}
-				break;
-			case MAP_TRANSITION_GRID:
-				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
-				{
-					//std::cout << "Collided\n";MainMenu_Song
-					if (!transitionalImageOBJ.active)
-					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
-					}
-				}
-				break;
-			case EMPTY:
-				break;
-			}
-		}
-	}
+	CheckPlayerGridCollision(grids2D, player);
 
 	if (AEInputCheckTriggered(AEVK_I))
 	{
@@ -476,7 +414,7 @@ void Lobby_Update()
 		}
 	}
 
-	UpdateNPC();
+	UpdateNPC(player);
 	ParticleUpdate();
 	MapTransitionUpdate(player->obj.pos);
 }
@@ -672,4 +610,38 @@ void Lobby_Unload()
 	delete player;
 	delete cam;
 	delete menu;
+}
+
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* player)
+{
+	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
+
+	for (int i = 0; i < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+	{
+		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+		for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+		{
+			if (gridMap[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
+			{
+				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+
+					std::cout << playerIndexY << "," << playerIndexX << std::endl;
+				}
+
+				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity);
+
+					std::cout << playerIndexY << "," << playerIndexX << std::endl;
+				}
+			}
+			playerIndexX += 1;
+		}
+		playerIndexY += 1;
+	}
 }

@@ -1,5 +1,7 @@
 #include "NonPlayableCharacters.h"
+#include "Player.h"
 #include <vector>
+#include <algorithm>
 
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
 
@@ -8,6 +10,8 @@ namespace {
 
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
 }
+
+
 
 void LoadNPC()
 {
@@ -43,26 +47,46 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 	}
 }
 
-void UpdateNPC()
+void UpdateNPC(Player* player)
 {
+	std::vector<std::pair<f32, s8>>collidedPlayer;
 	//Insert based on NPC TYPE
 	for (s8 i = 0; i < 3; i++)
 	{
 		switch (npcs[i].typeOfNPC)
 		{
 		case NPC_BLACKSMITH_A:
-			//Here to pop out options / messages
+			//Here to pop out options / messages to be able to interact to this npc
+			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			{
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i });
+			}
 			break;
 		case NPC_BLACKSMITH_B:
 			//Here to pop out options / messages
+			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			{
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i });
+			}
 			break;		
 		case NPC_QUEST_GIVER:
 			//Here to pop out options / messages
+			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			{
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i });
+			}
 			break;
 		default:
 			std::cout << "NPC " << i << " does not have a type?\n";
 			break;
 		}
+	}
+
+	std::sort(collidedPlayer.begin(), collidedPlayer.end());
+	if (AEInputCheckTriggered(AEVK_I))
+	{
+		//interact
+		//function call (collidedPlayer[0].second) -> nearest npc to player
 	}
 }
 
