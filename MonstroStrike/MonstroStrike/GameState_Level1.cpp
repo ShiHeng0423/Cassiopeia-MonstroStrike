@@ -246,13 +246,7 @@ void Level1_Update()
 #pragma endregion
 
 #pragma region EnemyUpdate
-	for (Enemy& enemy : vecEnemy)
-	{
-		if (enemy.isAlive)
-		{
-			EnemyUpdateChoose(enemy, *player);
-		}
-	}
+	AllEnemyUpdate(vecEnemy, *player);
 #pragma endregion
 
 #pragma region GridSystem
@@ -265,60 +259,28 @@ void Level1_Update()
 			{
 			case NORMAL_GROUND:
 
-					//Collision check
-					//Resolve + Vertical Collision only for entity x (wall or ground)
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity, &player->onFloor, &player->gravityForce,
-							&player->isFalling);
-					}
-
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity);
-					}
-//(ENEMY AND BULLETS COLLISION CHECKING)
-				for (Enemy& enemy : vecEnemy) {
-
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
-
-						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox,
-						                         &enemy.collisionNormal, &enemy.obj.pos,
-						                         &enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
-						                         &enemy.isFalling);
-					}
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(enemy.boxArms, grids2D[rows][cols].collisionBox))
-					{
-						enemy.isCollision = true;
-						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
-
-						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-							&enemy.velocity);
-						enemy.loopIdle = false;
-					}
-
-					if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1)
-					{
-						for (Bullet& bullet : enemy.bullets)
-						{
-							if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox))
-							{
-								bullet.lifeTime = 0; //makes bullet erase
-							}
-						}
-					}
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
+						&player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor, &player->gravityForce,
+						&player->isFalling);
 				}
+
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
+						&player->collisionNormal, &player->obj.pos,
+						&player->velocity);
+				}
+				//(ENEMY AND BULLETS COLLISION CHECKING)
+				AllEnemyNBulletCollisionCheck(vecEnemy, grids2D[rows][cols].collisionBox);
 				break;
 			case EMPTY:
 				break;
@@ -607,59 +569,8 @@ void Level1_Draw()
 	                                                player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	for (Enemy& enemy : vecEnemy) {
-		if (enemy.isAlive) {
-
-
-			if (enemy.isShooting) {
-				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-				AEGfxTextureSet(enemy.angryTex, 0, 0); 
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
-			}
-			else
-			{
-				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
-				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
-			}
-
-
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-				if (enemy.isShooting) {
-					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-				}
-				else {
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				}
-
-
-				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-				if (enemy.isShooting) {
-					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-				}
-				else {
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				}
-
-				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-	}
+	//drawing enemy
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 

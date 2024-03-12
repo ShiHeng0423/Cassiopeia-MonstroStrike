@@ -2,8 +2,8 @@
 #include "Player.h"
 #include "AEEngine.h"
 #include "Physics.h"
+#include "EnemyUtils.h"
 
-#include <iostream>
 
 
 
@@ -82,11 +82,14 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 	enemy.attackState = ENEMY_ATTACK_DEFAULT;
 
 	enemy.isAlive = true;
-	enemy.isShooting = false;
+	enemy.isAttacking = false;
 	enemy.isCollision = false;
 	enemy.isFlying = false;
 	enemy.isCollidedWithPlayer = false;
 	enemy.isRecoil = false;
+	enemy.hasDealtDmg = false;
+
+	enemy.isVisible = true;
 
 	enemy.timePassed = 0.f;
 
@@ -190,7 +193,6 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 
 
-
 void EnemyUpdateChoose(Enemy& enemy, struct Player& player) {
 //(update bullet)---------------------------------------------------------------------------------------
 	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
@@ -265,3 +267,104 @@ void EnemyUpdateChoose(Enemy& enemy, struct Player& player) {
 	enemy.boxArms.maximum.x += horizontalOffset;
 }
 
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, struct Player& player) {
+	for (Enemy& enemy : vecEnemyVar)
+	{
+		if (enemy.isAlive)
+		{
+			EnemyUpdateChoose(enemy, player);
+		}
+	}
+}
+
+void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB) {
+	for (Enemy& enemy : vecEnemyVar) {
+
+		//Check vertical box (Head + Feet) 
+		if (AABBvsAABB(enemy.boxHeadFeet, gridBoxAABB)) {
+			enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, gridBoxAABB);
+
+			ResolveVerticalCollision(enemy.boxHeadFeet, gridBoxAABB,
+				&enemy.collisionNormal, &enemy.obj.pos,
+				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
+				&enemy.isFalling);
+		}
+		//Check horizontal box (Left arm -> Right arm)
+		if (AABBvsAABB(enemy.boxArms, gridBoxAABB))
+		{
+			enemy.isCollision = true;
+			enemy.collisionNormal = AABBNormalize(enemy.boxArms, gridBoxAABB);
+
+			ResolveHorizontalCollision(enemy.boxArms, gridBoxAABB, &enemy.collisionNormal, &enemy.obj.pos,
+				&enemy.velocity);
+			enemy.loopIdle = false;
+		}
+
+		if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1)
+		{
+			for (Bullet& bullet : enemy.bullets)
+			{
+				if (AABBvsAABB(bullet.collisionBox, gridBoxAABB))
+				{
+					bullet.lifeTime = 0; //makes bullet erase
+				}
+			}
+		}
+	}
+}
+
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh) {
+	for (Enemy& enemy : vecEnemyVar) {
+		if (enemy.isAlive) {
+
+
+			if (enemy.isAttacking) {
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+				AEGfxTextureSet(enemy.angryTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+
+				DrawBullets(enemy, pWhitesqrMesh); //drawing bullets
+			}
+			else
+			{
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+
+				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
+					enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+
+				DrawBullets(enemy, pWhitesqrMesh); //drawing bullets
+			}
+
+
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
+				if (enemy.isAttacking) {
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+				}
+				else {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+
+				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+			}
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
+				if (enemy.isAttacking) {
+					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
+				}
+				else {
+					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+
+				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+	}
+}

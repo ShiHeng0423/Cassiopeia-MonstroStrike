@@ -1,14 +1,12 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
-#include "Player.h"
-#include "AEEngine.h"
-#include "Physics.h"
 
-#include <iostream>
+
 
 void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
     const f32 frameTime = (f32)AEFrameRateControllerGetFrameTime();
-    const f32 jumpForce = 500.f;
+    f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+    enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.collisionBox);
 
     // Update enemy state based on health
     if (enemy.health <= 0) {
@@ -16,8 +14,17 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
         return;
     }
 
-    // Calculate distance from player
-    f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+    // Handle collision with player
+    if (enemy.isCollidedWithPlayer) {
+        if (!enemy.hasDealtDmg) {
+            enemy.hasDealtDmg = true;
+            std::cout << "Hit!\n";
+        }
+    }
+    else {
+        enemy.hasDealtDmg = false;
+    }
+
 
     switch (enemy.enemyCurrent) {
     case ENEMY_IDLE:
@@ -36,7 +43,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
                 if (enemy.timePassed >= 2.0f) {
                     enemy.timePassed = 0.0f;
                     if (enemy.onFloor) {
-                        Jump(enemy, jumpForce);
+                        Jump(enemy, 500.f);
                     }
                 }
                 if (!enemy.onFloor) {
@@ -56,7 +63,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
                 if (enemy.timePassed >= 2.0f) {
                     enemy.timePassed = 0.0f;
                     if (enemy.onFloor) {
-                        Jump(enemy, jumpForce);
+                        Jump(enemy, 500.f);
                     }
                 }
                 if (!enemy.onFloor) {
@@ -71,7 +78,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
             enemy.targetPosition = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
         }
         enemy.timePassed += frameTime;
-        enemy.isShooting = true;
+        enemy.isAttacking = true;
         if (enemy.timePassed >= 1.0f) {
             enemy.timePassed = 0.0f;
             enemy.enemyNext = ENEMY_ATTACK;
@@ -92,7 +99,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
             }
         }
         else {
-            enemy.isShooting = false;
+            enemy.isAttacking = false;
             enemy.timePassed = 0.f;
             enemy.enemyNext = ENEMY_IDLE;
             enemy.speed = 80.f;
@@ -107,3 +114,5 @@ void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
 
     enemy.enemyCurrent = enemy.enemyNext;
 }
+
+

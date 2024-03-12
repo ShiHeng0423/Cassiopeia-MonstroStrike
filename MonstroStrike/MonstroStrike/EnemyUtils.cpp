@@ -1,10 +1,4 @@
-#include "Enemy.h"
-#include "Player.h"
-#include "AEEngine.h"
 #include "EnemyUtils.h"
-#include "TransformMatrix.h"
-#include <iostream>
-#include <cmath> // For abs function
 
 
 
@@ -125,7 +119,7 @@ void IsStuck(Enemy& enemy) {
 	if (distanceTravelled < 0.2f) {
 		if (enemy.stuckTimer < 0) { enemy.stuckTimer = enemy.timePassed; }	//if timer not started start it
 		if (enemy.timePassed > enemy.stuckTimer + 1) {	//if enemy has been stuck for more than 1 sec
-			enemy.isShooting = false;
+			enemy.isAttacking = false;
 			enemy.enemyNext = ENEMY_IDLE;
 		}
 	}

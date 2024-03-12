@@ -1,10 +1,8 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
-#include "Player.h"
-#include "AEEngine.h"
-#include "Physics.h"
 
-#include <iostream>
+
+
 
 
 
@@ -45,13 +43,13 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 	case ENEMY_TRANSITION:
 
 
-		enemy.isShooting = true;
+		enemy.isAttacking = true;
 
 		if (enemy.timePassed >= 0.5f) {
 			enemy.timePassed = 0.0f;
 			if (distanceFromPlayer > enemy.lineOfSight) {
 				//Gives Up
-				enemy.isShooting = false;	//turns red color off
+				enemy.isAttacking = false;	//turns red color off
 				enemy.enemyNext = ENEMY_IDLE;
 			}
 			else {
@@ -62,7 +60,7 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 
 		break;
 	case ENEMY_CHASE: 
-		enemy.isShooting = true;
+		enemy.isAttacking = true;
 		if (distanceFromPlayer <= enemy.shootingRange) {
 			enemy.enemyNext = ENEMY_ATTACK;
 		}
@@ -92,7 +90,7 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 		break;
 	case ENEMY_ATTACK:
 
-		enemy.isShooting = true;
+		enemy.isAttacking = true;
 		if (distanceFromPlayer <= enemy.shootingRange) {
 
 			if(CanFire(enemy)) {
