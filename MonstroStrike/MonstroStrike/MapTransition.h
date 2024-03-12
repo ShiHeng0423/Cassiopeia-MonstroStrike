@@ -50,9 +50,9 @@ struct TransitionImageObj {
 
 void MapTransitionLoad();
 
-void MapTransitionInit(AEVec2 playerPos);
+void MapTransitionInit();
 
-void MapTransitionUpdate(AEVec2 playerPos);
+void MapTransitionUpdate();
 
 void MapTransitionUnload();
 

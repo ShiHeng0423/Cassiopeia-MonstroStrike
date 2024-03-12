@@ -207,13 +207,13 @@ void Level1_Initialize()
 	
 	menu->Init(cam);
 	ParticleInitialize();
-	MapTransitionInit(player->obj.pos);
+	MapTransitionInit();
 }
 
 void Level1_Update()
 {
 	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
-	MapTransitionUpdate(player->obj.pos);
+	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
 
@@ -337,7 +337,7 @@ void Level1_Update()
 				{
 					if (!transitionalImageOBJ.active)
 					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, GAME_LOBBY);
 					}
 				}
 				break;

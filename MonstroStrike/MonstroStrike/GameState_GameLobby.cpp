@@ -201,7 +201,6 @@ void Lobby_Initialize()
 	}
 
 	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
-	MapTransitionInit(player->obj.pos);
 
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
@@ -236,18 +235,18 @@ void Lobby_Initialize()
 
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
 
 	//looping thru to init all enemy variables
 
 	ParticleInitialize();
-
+	MapTransitionInit();
 }
 
 void Lobby_Update()
 {
-
 	if (AEInputCheckTriggered(AEVK_9))
 	{
 		next = GameStates::AREA1;
@@ -487,7 +486,7 @@ void Lobby_Update()
 
 	UpdateNPC();
 	ParticleUpdate();
-	MapTransitionUpdate(player->obj.pos);
+	MapTransitionUpdate();
 }
 
 void Lobby_Draw()
