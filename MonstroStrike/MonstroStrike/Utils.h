@@ -1,6 +1,5 @@
 #pragma once
 #include <string>
-
 #include "AEEngine.h"
 
 //#include "Inventory.h"
@@ -34,13 +33,5 @@ struct Button
 };
 
 
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor);
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor);
-
-//
-void ResumeGame();
-void ReturnLobby();
-void OpenControls();
-void QuitMainmenu();
-void QuitConfirmation();
-void BackPauseMenu();
+AEGfxVertexList* GenerateSquareMesh(u32 meshColor);
+AEGfxVertexList* GenerateLineMesh(u32 meshColor);

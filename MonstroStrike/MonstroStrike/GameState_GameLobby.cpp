@@ -11,15 +11,12 @@ namespace {
 	std::vector<std::vector<MapCell>> gameMap; //Map for this level
 	std::vector<AEVec2> NPCPositions;
 
-
 	Player* player;
 
 	AEGfxTexture* background;
 
 	Camera* cam;
-
-	s8 pFont;
-
+	PauseMenu_Manager* menu;
 #pragma region UserInterface
 	//User Health
 	AEGfxVertexList* pMeshRedBar;
@@ -27,42 +24,8 @@ namespace {
 
 #pragma endregion UserInterface
 
-#pragma region PauseMenu
-
-	enum CurrentScene {
-		MainScene,
-		PauseScene,
-		ControlScene,
-		QuitScene
-	};
-
-	enum Interactable {
-		Resume,
-		Return,
-		Controls,
-		Quit
-	};
-
-	AEGfxTexture* PauseMenuBackground;
-	AEGfxTexture* ButtonFrame;
-
-	//Return to Main Menu Option - "Return to Main Menu" or "Exit to Main Menu"
-	// //Restart Game Option - "Restart Game", "Return to Overworld", "New Game", "Exit Level"
-	//How To Play - "How to Play" or "Controls"
-	//Resume Game Option - "Resume Game"
-
-	Button PauseMenuButtons[4];
-	Button QuitToMainmenu[2];
-	Button BackButton;
-
-	Sprite_V2 pauseMenuBackground;
-
-	int currScene;
-
-#pragma endregion PauseMenu
-
 	bool inventory_open = false;
-	int snap_back = -1;
+	int snapBack = -1;
 
 	int hp = 100;
 	int gear_equipped = 0;
@@ -127,29 +90,17 @@ AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
 	return AEGfxMeshEnd();
 }
 
-#pragma region PauseMenu
-
-void ResumeGame() { currScene = CurrentScene::MainScene; }
-void ReturnLobby() { /* go back to village aka safe spot */ }
-void OpenControls() { currScene = CurrentScene::ControlScene; }
-void QuitMainmenu() { next = GameStates::SplashScreen; }
-void QuitConfirmation() { currScene = CurrentScene::QuitScene; }
-void BackPauseMenu() { currScene = CurrentScene::PauseScene; }
-
-#pragma endregion PauseMenu
-
-void GameLobby_Load()
+void Lobby_Load()
 {
 	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
+
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
 	{
 		PrintMap(gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE); //Just for checking if the map data is stored properly
 	}
-
-	pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 
 	inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
@@ -178,13 +129,10 @@ void GameLobby_Load()
 
 	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 
-#pragma region PauseMenu
-	PauseMenuBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
-	ButtonFrame = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
-#pragma endregion PauseMenu
+	menu = new PauseMenu_Manager();
 }
 
-void GameLobby_Initialize()
+void Lobby_Initialize()
 {
 	MapTransitionInit(player->obj.pos);
 
@@ -258,6 +206,7 @@ void GameLobby_Initialize()
 		button.isWeapon = false;
 		index++;
 	}
+
 	inventoryButton[0].img.pTex = Gear1;
 	inventoryButton[1].img.pTex = Gear2;
 	inventoryButton[2].img.pTex = weapon3;
@@ -278,147 +227,31 @@ void GameLobby_Initialize()
 	}
 
 	cam = new Camera(player->obj.pos);
-
+	menu->Init(cam);
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
-#pragma region PauseMenu
 
-	for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-	{
-		PauseMenuButtons[i].pTex = ButtonFrame;
-		AEVec2Set(&PauseMenuButtons[i].scale, 250.f, 80.f);
-		AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
-
-		switch (i)
-		{
-		case Interactable::Resume:
-			PauseMenuButtons[i].Ptr = ResumeGame;
-			break;
-		case Interactable::Return:
-			PauseMenuButtons[i].Ptr = ReturnLobby;
-			break;
-		case Interactable::Controls:
-			PauseMenuButtons[i].Ptr = OpenControls;
-			break;
-		case Interactable::Quit:
-			PauseMenuButtons[i].Ptr = QuitConfirmation;
-			break;
-		default:
-			break;
-		}
-	}
-
-	QuitToMainmenu[0].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[0].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	QuitToMainmenu[0].Ptr = BackPauseMenu;
-
-	QuitToMainmenu[1].pTex = ButtonFrame;
-	AEVec2Set(&QuitToMainmenu[1].scale, 250.f, 80.f);
-	AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	QuitToMainmenu[1].Ptr = QuitMainmenu;
-
-	BackButton.pTex = ButtonFrame;
-	AEVec2Set(&BackButton.scale, 250.f, 80.f);
-	AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-	BackButton.Ptr = BackPauseMenu;
-
-	currScene = CurrentScene::MainScene;
-
-	pauseMenuBackground.pTex = PauseMenuBackground;
-	pauseMenuBackground.scale.x = 1000.f;
-	pauseMenuBackground.scale.y = 500.f;
-	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
-#pragma endregion PauseMenu
+	//looping thru to init all enemy variables
 
 	ParticleInitialize();
 
 }
 
-void GameLobby_Update()
+void Lobby_Update()
 {
 
-	PlayerUpdate(*player);
-	cam->UpdatePos(*player);
-
-	if (AEInputCheckTriggered(AEVK_LBUTTON))
+	if (AEInputCheckTriggered(AEVK_9))
 	{
-		//player->isAttacking = true;
-		s32 x, y;
-		AEInputGetCursorPosition(&x, &y);
-		AEVec2 mousePos{ 0,0 };
-		mousePos.x = x - AEGfxGetWindowWidth() * 0.5f;
-		mousePos.y = AEGfxGetWindowHeight() * 0.5f - y;
-
-		switch (currScene)
-		{
-		case CurrentScene::PauseScene:
-		{
-			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-			{
-				AEVec2 translateOrigin = PauseMenuButtons[i].pos;
-				translateOrigin.x -= cam->GetCameraWorldPoint().x;
-				translateOrigin.y -= cam->GetCameraWorldPoint().y;
-				if (AETestPointToRect(&mousePos, &translateOrigin, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y))
-					PauseMenuButtons[i].Ptr();
-			}
-			break;
-		}
-		case CurrentScene::ControlScene:
-		{
-			AEVec2 translateOrigin = BackButton.pos;
-			translateOrigin.x -= cam->GetCameraWorldPoint().x;
-			translateOrigin.y -= cam->GetCameraWorldPoint().y;
-			if (AETestPointToRect(&mousePos, &translateOrigin, BackButton.scale.x, BackButton.scale.y))
-				BackButton.Ptr();
-			break;
-		}
-		case CurrentScene::QuitScene:
-		{
-			AEVec2 translateOrigin = QuitToMainmenu[0].pos;
-			translateOrigin.x -= cam->GetCameraWorldPoint().x;
-			translateOrigin.y -= cam->GetCameraWorldPoint().y;
-			if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y))
-				QuitToMainmenu[0].Ptr();
-
-			translateOrigin = QuitToMainmenu[1].pos;
-			translateOrigin.x -= cam->GetCameraWorldPoint().x;
-			translateOrigin.y -= cam->GetCameraWorldPoint().y;
-			if (AETestPointToRect(&mousePos, &translateOrigin, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y))
-				QuitToMainmenu[1].Ptr();
-			break;
-		}
-		default:
-			break;
-		}
+		next = GameStates::AREA1;
 	}
 
-	if (AEInputCheckTriggered(AEVK_ESCAPE))
-	{
-		if (currScene == CurrentScene::MainScene)
-		{
-			//rmb to freeze game update
-			currScene = CurrentScene::PauseScene;
+	menu->Update(cam);
+	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
+		return;
+	if (currScene == CurrentScene::MAIN_SCENE)
+		PlayerUpdate(*player, inventory_open);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
-			for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-				AEVec2Set(&PauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
-
-			AEVec2Set(&QuitToMainmenu[0].pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-			AEVec2Set(&QuitToMainmenu[1].pos, -250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-
-			AEVec2Set(&BackButton.pos, 250.f + cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y);
-		}
-		else
-		{
-			//unfreeze the game
-			currScene = CurrentScene::MainScene;
-		}
-	}
-
-	if (0 == AESysDoesWindowExist())
-	{
-		next = GameStates::Quit;
-	}
 
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
@@ -427,31 +260,30 @@ void GameLobby_Update()
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
 			case NORMAL_GROUND:
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+							&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+					}
 
-				//Collision check
-				//Resolve + Vertical Collision only for entity x (wall or ground)
-				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-				}
-
-				//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-				{
-					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity);
-				}
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+							&player->velocity);
+					}
 				break;
 			case MAP_TRANSITION_GRID:
 				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
 				{
-					//std::cout << "Collided\n";
+					//std::cout << "Collided\n";MainMenu_Song
 					if (!transitionalImageOBJ.active)
 					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, Area1);
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
 					}
 				}
 				break;
@@ -469,10 +301,37 @@ void GameLobby_Update()
 	if (inventory_open)
 	{
 		//update item position
-		Inventory::UpdateInventory(Player_Inventory, inventoryButton);
+		Inventory::UpdateInventory(playerInventory, inventoryButton);
+		int index = 0;
 
+		for (ButtonGearUI& button : inventoryButton)
+		{
+			button.img.pTex = blank;
+			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f, -(index / 5) * 90.f + 180.f);
+
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				if (button.Item.quantity <= 0)
+				{
+					Item blank;
+					blank.ID = -9999;
+					button.Item = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
+			}
+
+			//button.isWeapon = false;
+			index++;
+		}
 		//Hover collision with button && hold left mouse button
-
 
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
@@ -492,9 +351,9 @@ void GameLobby_Update()
 				{
 					if (button.img.pTex != blank)
 					{
-						std::cout << "left triggered\n";
+						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
-						snap_back = index;
+						snapBack = index;
 						break;
 					}
 					//button.Ptr();
@@ -503,7 +362,7 @@ void GameLobby_Update()
 			}
 		}
 
-		if (snap_back >= 0)
+		if (snapBack >= 0)
 		{
 			s32 testx = 0;
 			s32 testy = 0;
@@ -515,52 +374,65 @@ void GameLobby_Update()
 			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
 			mousePos.y = AEGfxGetWindowHeight() * 0.5f - testy;
 
-			inventoryButton[snap_back].pos = mousePos;
+			inventoryButton[snapBack].pos = mousePos;
 		}
 
 		if (AEInputCheckReleased(AEVK_LBUTTON))
 		{
 			int index = 0;
-			if (snap_back >= 0)
+			if (snapBack >= 0)
 			{
 				for (ButtonGearUI& button : inventoryButton)
 				{
-					if (AETestRectToRect(&inventoryButton[snap_back].pos, inventoryButton[snap_back].img.scale.x,
-						inventoryButton[snap_back].img.scale.y, &button.pos, button.img.scale.x,
+					if (AETestRectToRect(&inventoryButton[snapBack].pos,
+						inventoryButton[snapBack].img.scale.x,
+						inventoryButton[snapBack].img.scale.y, &button.pos,
+						button.img.scale.x,
 						button.img.scale.y))
 					{
 						//Different items overlapping
-						if (index != snap_back)
+						if (index != snapBack)
 						{
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-								-(snap_back / 5.f) * 90.f + 180.f);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5.f) * 90.f + 180.f);
 
 							std::cout << "swap\n";
 							ButtonGearUI tmp = button;
-							button = inventoryButton[snap_back];
-							inventoryButton[snap_back] = tmp;
+							button = inventoryButton[snapBack];
+							inventoryButton[snapBack] = tmp;
 
-							AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-								-(snap_back / 5) * 90.f + 180.f);
+							if (playerInventory.size() <= index)
+							{
+								size_t oldsize = playerInventory.size();
+								playerInventory.resize(index + 1);
+								for (size_t x = oldsize; x < playerInventory.size(); x++)
+								{
+									playerInventory[x].ID = -9999;
+								}
+							}
+							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5) * 90.f + 180.f);
 
 							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
 								-(index / 5.f) * 90.f + 180.f);
 
-							snap_back = -1;
+							snapBack = -1;
 							break;
 						}
 					}
 					index++;
 				}
 
-				if (snap_back >= 0)
+				if (snapBack >= 0)
 				{
-					AEVec2Set(&inventoryButton[snap_back].pos, (snap_back % 5) * 90.f - 180.f,
-						-(snap_back / 5.f) * 90.f + 180.f);
-					snap_back = -1;
+					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+						-(snapBack / 5.f) * 90.f + 180.f);
+					snapBack = -1;
 				}
 			}
 		}
+
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
@@ -569,6 +441,7 @@ void GameLobby_Update()
 			s32 testy = 0;
 
 
+			index = 0;
 			AEInputGetCursorPosition(&testx, &testy);
 			AEVec2 mousePos;
 			mousePos.x = testx - AEGfxGetWindowWidth() * 0.5f;
@@ -580,12 +453,24 @@ void GameLobby_Update()
 				{
 					if (button.img.pTex != blank)
 					{
-						Equip(index, button);
-						button.img.pTex = blank;
+						Inventory::UseItem(index, button, *player);
+						if (button.Item.quantity == 0)
+						{
+							button.img.pTex = blank;
+						}
 						break;
 					}
-					//button.Ptr();
 				}
+
+				index++;
+			}
+
+			index = 0;
+			for (ButtonGearUI& button : Inventory::equipmentDisplay)
+			{
+				button.img.pTex = Gear[button.Item.ID];
+				AEVec2Set(&button.img.scale, 60.f, 60.f);
+				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 				index++;
 			}
 		}
@@ -596,7 +481,7 @@ void GameLobby_Update()
 	MapTransitionUpdate(player->obj.pos);
 }
 
-void GameLobby_Draw()
+void Lobby_Draw()
 {
 	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
 
@@ -643,139 +528,109 @@ void GameLobby_Draw()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + cam->GetCameraWorldPoint().x, 450.f + cam->GetCameraWorldPoint().y, 0, hp * 2.f, 80.f).m);
+	f32 x, y;
+	AEGfxGetCamPosition(&x, &y);
+
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + cam->GetCameraWorldPoint().x, 450.f + cam->GetCameraWorldPoint().y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	std::string str = std::to_string(hp);
 	const char* pTextHP = str.c_str();
 	f32 width, height;
-	AEGfxGetPrintSize(pFont, pTextHP, 0.5f, &width, &height);
-	AEGfxPrint(pFont, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
+	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
+	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
 
 	//Inventory images
 	if (inventory_open)
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
+		f32 x, y;
+		AEGfxGetCamPosition(&x, &y);
+
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
 			inventoryBackground.img.scale.x,
 			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		for (ButtonGearUI button : inventoryButton)
-		{
-			AEGfxTextureSet(button.img.pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
-				button.img.scale.x, button.img.scale.y).m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		}
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(equipmentBackground.pos.x + cam->GetCameraWorldPoint().x,
-			equipmentBackground.pos.y + cam->GetCameraWorldPoint().y, 0.f,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(
+			equipmentBackground.pos.x + x,
+			equipmentBackground.pos.y + y, 0.f,
 			equipmentBackground.img.scale.x,
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		for (ButtonGearUI button : equipmentDisplay)
+		for (ButtonGearUI button : inventoryButton)
 		{
-			AEGfxTextureSet(button.img.pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + cam->GetCameraWorldPoint().x,
-				button.pos.y + cam->GetCameraWorldPoint().y, 0.f,
-				button.img.scale.x, button.img.scale.y).m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
 		}
 	}
 
-	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-	switch (currScene)
-	{
-	case CurrentScene::PauseScene:
-	{
-		AEGfxTextureSet(PauseMenuBackground, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.x, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.pos.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		for (size_t i = 0; i < sizeof(PauseMenuButtons) / sizeof(PauseMenuButtons[0]); i++)
-		{
-			AEGfxTextureSet(PauseMenuButtons[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(PauseMenuButtons[i].pos.x, PauseMenuButtons[i].pos.y, 0.f, PauseMenuButtons[i].scale.x, PauseMenuButtons[i].scale.y).m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		}
-
-		const char* pText = "Resume";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
-
-		const char* pText1 = "Back To Village";
-		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
-
-		const char* pText2 = "Controls";
-		AEGfxGetPrintSize(pFont, pText2, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
-
-		const char* pText3 = "Quit to Main menu";
-		AEGfxGetPrintSize(pFont, pText3, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	case CurrentScene::ControlScene:
-	{
-		AEGfxTextureSet(BackButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(BackButton.pos.x, BackButton.pos.y, 0.f, BackButton.scale.x, BackButton.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
-
-		const char* pText = "Back";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	case CurrentScene::QuitScene:
-	{
-		AEGfxTextureSet(QuitToMainmenu[0].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(QuitToMainmenu[0].pos.x, QuitToMainmenu[0].pos.y, 0.f, QuitToMainmenu[0].scale.x, QuitToMainmenu[0].scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(QuitToMainmenu[1].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(QuitToMainmenu[1].pos.x, QuitToMainmenu[1].pos.y, 0.f, QuitToMainmenu[1].scale.x, QuitToMainmenu[1].scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
-
-		const char* pText = "Yes";
-		AEGfxGetPrintSize(pFont, pText, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-
-		const char* pText1 = "No";
-		AEGfxGetPrintSize(pFont, pText1, 0.5f, &width, &height);
-		AEGfxPrint(pFont, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	default:
-		break;
-	}
+	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
 
 	if (AEInputCheckTriggered(AEVK_G))
 	{
-		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::Area1); //Play the newly set animation here
+		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::AREA1); //Play the newly set animation here
 	}
 
 	MapTransitionDraw();
 }
 
-void GameLobby_Free()
+void Lobby_Free()
 {
 
 	gameMap.clear();
@@ -787,14 +642,12 @@ void GameLobby_Free()
 	ParticlesFree();
 }
 
-void GameLobby_Unload()
+void Lobby_Unload()
 {
 	Inventory::SaveInventory();
 
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
-	AEGfxTextureUnload(PauseMenuBackground);
-	AEGfxTextureUnload(ButtonFrame);
 
 	AEGfxTextureUnload(blank);
 	AEGfxTextureUnload(Gear1);
@@ -807,9 +660,6 @@ void GameLobby_Unload()
 	AEGfxTextureUnload(equipmentBackground.img.pTex);
 	AEGfxTextureUnload(player->obj.img.pTex);
 
-
-	AEGfxDestroyFont(pFont);
-
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -817,6 +667,9 @@ void GameLobby_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
+	delete player->equippedWeapon;
+
 	delete player;
 	delete cam;
+	delete menu;
 }

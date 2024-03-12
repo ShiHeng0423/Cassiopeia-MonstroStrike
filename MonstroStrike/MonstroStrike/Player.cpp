@@ -7,8 +7,8 @@
 #include <iostream>
 #include <chrono>
 #include <functional> 
-#define camXBoundary (250.f)
-#define camFollowupSpeedX (0.05f)
+#define CAM_X_BOUNDARY (250.f)
+#define CAM_FOLLOW_UP_SPEED_X (0.05f)
 // Define a clock type for high-resolution time measurement
 using Clock = std::chrono::high_resolution_clock;
 
@@ -22,8 +22,8 @@ constexpr f32 comboWindowDuration = 1.0f;
 constexpr f32 PRESS_THRESHOLD = 0.5f;
 //Attack hold and atack release
 
-bool if_there_is_undealt_trigger_input = false; // identifier
-bool is_released = true;
+bool undealtTriggerInput = false; // identifier
+bool isReleased = true;
 bool if_first_input = false;
 
 
@@ -82,7 +82,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 	//
 	player->attackTime = 1.f;
 	player->isAttacking = false;
-	player->combo_trig = 0;
+	player->comboTrig = 0;
 	player->comboTime = 0.0f;
 	player->comboState = 0;
 	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
@@ -95,64 +95,30 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 
 
 	//Player Stats
-	f32 max_health = 500.f;
-	f32 curr_health = max_health;
+	f32 maxHealth = 500.f;
+	f32 currHealth = maxHealth;
 	f32 attack = 100.f;
 	f32 defence = 50.f;
 
 	return player;
+
 }
 
 
-void PlayerUpdate(Player& player)
+void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
-	////X-Axis control
-	//bool isDashing = false;
-	//const f32 dashDuration = 0.2f; 
-	//const f32 dashSpeedMultiplier = 20.0f;
-	//const f32 dashCooldownTime = 1.0f; 
-	//f32 dashCooldown = 0.0f;
-
-	//if (player.velocity.y < player.gravityForce + 0.001f)
-	//{
-	//	std::cout << "TIE\n";
-	//}
-
-	//if (player.velocity.y < player.gravityForce - 0.001f)
-	//{
-
-	//	std::cout << "HI\n";
-	//}
-
 
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
 	}
 
-	//Just for fun
-	//if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
-	//isDashing = true;
-	//dashCooldown = dashCooldownTime;
-
-	//	//// Determine dash direction based on current movement
-	//	//if (AEInputCheckCurr(AEVK_D)) {
-	//	//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-	//	//	player.isFacingRight = true;
-	//	//}
-	//	//else if (AEInputCheckCurr(AEVK_A)) {
-	//	//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-	//	//	player.isFacingRight = false;
-	//	//}
-	//}
-	//else
-	//{
-	if (AEInputCheckCurr(AEVK_D))
+	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
 	{
 		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = true;
 	}
-	else if (AEInputCheckCurr(AEVK_A))
+	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
 		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = false;
@@ -161,14 +127,6 @@ void PlayerUpdate(Player& player)
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
-
-	// Update dash cooldown
-	//if (dashCooldown > 0.0f) {
-	//	dashCooldown -= (f32)AEFrameRateControllerGetFrameTime();
-	//	if (dashCooldown <= 0.0f) {
-	//		isDashing = false;
-	//	}
-	//}
 
 
 	// Calculate the desired location
@@ -186,7 +144,7 @@ void PlayerUpdate(Player& player)
 	{
 		Player player;
 		Armor armor;
-		armor.armorType = Armor::Type::First;
+		armor.armorType = Armor::Type::FIRST;
 		armor.leather.defense = 20;
 
 		player.equippedArmor = armor;
@@ -200,7 +158,7 @@ void PlayerUpdate(Player& player)
 	{
 		Player player;
 		Armor armor;
-		armor.armorType = Armor::Type::Second;
+		armor.armorType = Armor::Type::SECOND;
 		armor.leather.defense = 50;
 
 		player.equippedArmor = armor;
@@ -212,7 +170,7 @@ void PlayerUpdate(Player& player)
 	// End of armor equip
 
 	//For jumping
-	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
+	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor && !isInventoryOpen)
 	{
 		player.onFloor = false;
 		player.velocity.y = 700.f;
@@ -226,6 +184,9 @@ void PlayerUpdate(Player& player)
 	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
+
+	player.prevPos = player.obj.pos;
+	player.prevcollisionBox = player.collisionBox;
 	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 	player.obj.pos.x += player.velocity.x;
 
@@ -256,20 +217,20 @@ void PlayerUpdate(Player& player)
 	/*Weapon hit box update only*/
 	
 
-	if (AEInputCheckTriggered(AEVK_LBUTTON))
+	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		triggeredTime = Clock::now();
-		if_there_is_undealt_trigger_input = true;
-		is_released = false;
+		undealtTriggerInput = true;
+		isReleased = false;
 		if_first_input = true;
 	
 	}
-	if (AEInputCheckReleased(AEVK_LBUTTON))
+	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 	{
-		is_released = true;
+		isReleased = true;
 	}
 	//reset
-	if (!if_there_is_undealt_trigger_input)
+	if (!undealtTriggerInput)
 	{
 		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0; // Convert to seconds
 		if (elapsedTime > comboWindowDuration)
@@ -282,11 +243,11 @@ void PlayerUpdate(Player& player)
 		}
 
 	}
-	if (if_there_is_undealt_trigger_input)
+	if (undealtTriggerInput)
 	{
 		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
 			1000.0; // Convert to seconds
-		if (elapsedTime >= PRESS_THRESHOLD && !is_released)
+		if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
 		{
 			if (player.comboState == 2) //held
 			{
@@ -299,10 +260,10 @@ void PlayerUpdate(Player& player)
 				
 			}
 			comboTime = Clock::now();
-			if_there_is_undealt_trigger_input = false;
+			undealtTriggerInput = false;
 
 		}
-		if (elapsedTime < PRESS_THRESHOLD && is_released) //Trigger (Here is flag for initialization)
+		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 		{
 
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
@@ -313,7 +274,7 @@ void PlayerUpdate(Player& player)
 			{
 
 				player.comboState++;
-				player.comboTime += elapsedTime;
+				player.comboTime += (float)elapsedTime;
 
 			}
 
@@ -326,7 +287,7 @@ void PlayerUpdate(Player& player)
 
 			}
 			comboTime = Clock::now();
-			if_there_is_undealt_trigger_input = false;
+			undealtTriggerInput = false;
 
 
 		}
@@ -420,21 +381,21 @@ void PlayerUpdate(Player& player)
 
 #pragma region Camera Section
 	//Camera region
-	AEVec2 cam;
-	AEGfxGetCamPosition(&cam.x, &cam.y);
+	//AEVec2 cam;
+	//AEGfxGetCamPosition(&cam.x, &cam.y);
 
-	//150.f refers to the cam boundary;
-	if ((player.expectedLocation.x > cam.x + camXBoundary) && player.isFacingRight)
-	{
-		AEVec2 desiredCamLocation{cam.x + camXBoundary, 0.f};
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x - camXBoundary, cam.y);
-	}
-	else if ((player.expectedLocation.x < cam.x - camXBoundary) && !player.isFacingRight)
-	{
-		AEVec2 desiredCamLocation{cam.x - camXBoundary, 0.f};
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x + camXBoundary, cam.y);
-	}
+	////150.f refers to the cam boundary;
+	//if ((player.expectedLocation.x > cam.x + CAM_X_BOUNDARY) && player.isFacingRight)
+	//{
+	//	AEVec2 desiredCamLocation{cam.x + CAM_X_BOUNDARY, 0.f};
+	//	AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
+	//	AEGfxSetCamPosition(desiredCamLocation.x - CAM_X_BOUNDARY, cam.y);
+	//}
+	//else if ((player.expectedLocation.x < cam.x - CAM_X_BOUNDARY) && !player.isFacingRight)
+	//{
+	//	AEVec2 desiredCamLocation{cam.x - CAM_X_BOUNDARY, 0.f};
+	//	AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
+	//	AEGfxSetCamPosition(desiredCamLocation.x + CAM_X_BOUNDARY, cam.y);
+	//}
 #pragma endregion
 }

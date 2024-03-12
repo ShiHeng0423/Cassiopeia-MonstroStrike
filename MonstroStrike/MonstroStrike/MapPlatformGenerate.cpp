@@ -182,7 +182,7 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 	if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1) {
 		for (Bullet& bullet : enemy.bullets) {
 			if (AABBvsAABB(bullet.collisionBox, movingObject.collisionBox)) {
-				bullet.lifetime = 0; //makes bullet erase
+				bullet.lifeTime = 0; //makes bullet erase
 			}
 		}
 	}

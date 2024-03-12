@@ -9,7 +9,7 @@
 
 
 
-void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
@@ -38,7 +38,7 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			enemy.enemyNext = ENEMY_IDLE;
 			if (!((enemy.obj.pos.x >= enemy.startingPosition.x - 1.0f) && (enemy.obj.pos.x <= enemy.startingPosition.x + 1.0f)) && !(enemy.loopIdle)) {
 				MoveTowardsFLY(enemy, enemy.startingPosition);
-				isStuck(enemy);
+				IsStuck(enemy);
 			}
 		}
 		break;
@@ -72,13 +72,13 @@ void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
 			MoveTowardsFLY(enemy, player.obj.pos);
 
 			enemy.wayPoint = player.obj.pos;	//set a wayPoint a player's location
-			isStuck(enemy);
+			IsStuck(enemy);
 
 		}
 		else {
 			//player runs out of line of sight range
 			MoveTowardsFLY(enemy, enemy.wayPoint);	//go to the last location player was at
-			isStuck(enemy);
+			IsStuck(enemy);
 			//when it reaches the way point (manual typed numbers are offsets )
 			if ((enemy.obj.pos.x >= enemy.wayPoint.x - 10.f && enemy.obj.pos.x <= enemy.wayPoint.x + 10.f)
 				&& (enemy.obj.pos.y >= enemy.wayPoint.y - 60.f && enemy.obj.pos.y <= enemy.wayPoint.y + 60.f)){	//.y +- value depends on offset in MoveTowards fly

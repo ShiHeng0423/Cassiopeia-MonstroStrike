@@ -32,8 +32,8 @@
 
 using namespace rapidjson;
 
-std::vector<Item> Player_Inventory;
-int Player_Inventory_Count;
+std::vector<Item> playerInventory;
+int playerInventoryCount;
 Player* playerReference = nullptr;
 Item equippedArmour[4];
 Item equippedWeapon;
@@ -257,11 +257,11 @@ namespace Inventory
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
-		Player_Inventory_Count = 0;
+		playerInventoryCount = 0;
 		for(size_t i=0; i<inventory.size(); ++i)
 		{
 			button[i].Item = inventory[i];
-			Player_Inventory_Count++;
+			playerInventoryCount++;
 			
 		}
 		if(inventory.size()<25)
@@ -285,7 +285,7 @@ namespace Inventory
 		}
 
 		// Function to get an item by its ID
-		Item getItemById(int id) {
+		Item GetItemById(int id) {
 			// Iterate through all items to find the one with the matching ID
 			for (const Item& item : allItems) {
 				if (item.ID == id) {
@@ -293,23 +293,23 @@ namespace Inventory
 				}
 			}
 			// Return a default item if the ID is not found
-			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", food,unique,al_none, true, 1,1 };
+			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,AL_NONE, true, 1,1 };
 		}
 
 
-	void Item_Pickup(Item& item)
+	void ItemPickup(Item& item)
 	{
 	}
 
-	void Item_Drop()
+	void ItemDrop()
 	{
 	}
 
 	//Function to apply the effect of a consumable item on the player
-	void applyItemEffect(Player& player, const Item& item)
+	void ApplyItemEffect(Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
-		if (item.item_type == Item_Type::food || item.item_type == Item_Type::potion)
+		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
 		{
 			// Apply the effect of the item on the player
 
@@ -330,7 +330,7 @@ namespace Inventory
 
 
 	// Function to update the player's stats after equipping or unequipping items
-	void updatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
+	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
 	{
 		// Reset player's stats to base values
 		// player.hp = player.maxHp;
@@ -341,12 +341,12 @@ namespace Inventory
 		for (const auto& item : equippedItems)
 		{
 			// Update player's attack based on equipped weapon(s)
-			if (item.item_type == Item_Type::weapon)
+			if (item.item_type == Item_Type::WEAPON)
 			{
 				//player.attack += item.attack;
 			}
 			// Update player's defence based on equipped armor(s)
-			else if (item.item_type == Item_Type::armour)
+			else if (item.item_type == Item_Type::ARMOUR)
 			{
 				//player.health += item.health;
 				//player.defence += item.defence;
@@ -371,30 +371,30 @@ namespace Inventory
 			// @TODO implement more sophisticated logic here
 
 				// Perform actions based on the type of item equipped
-				if (item.Item.item_type == food || item.Item.item_type == potion)
+				if (item.Item.item_type == FOOD || item.Item.item_type == POTION)
 				{
 					// For non-weapon items
 					// Adjust player attributes or perform other actions
 					// Example: Increase player's health if certain conditions are met
 					
-					if (Player_Inventory[index].quantity > 0)
+					if (playerInventory[index].quantity > 0)
 					{
 						
 						std::cout << "Consumed " << item.Item.name << std::endl;
 
 						// Apply item effect
-						applyItemEffect(player, item.Item);
+						ApplyItemEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
-						Player_Inventory[index].quantity -= 1;
+						playerInventory[index].quantity -= 1;
 					
-						std::cout << "Quantity of " << Player_Inventory[index].name << " reduced to " << Player_Inventory[index].quantity << std::endl;
+						std::cout << "Quantity of " << playerInventory[index].name << " reduced to " << playerInventory[index].quantity << std::endl;
 
 						
 					}
 
 				}
-				else if(item.Item.item_type == weapon || item.Item.item_type == armour)
+				else if(item.Item.item_type == WEAPON || item.Item.item_type == ARMOUR)
 				{
 					// For weapon items
 					// Assign weapon or armour to gear slot
@@ -406,7 +406,7 @@ namespace Inventory
 						Item blank;
 						blank.ID = -9999;
 						item.Item = blank;
-						Player_Inventory[index].ID = -9999;
+						playerInventory[index].ID = -9999;
 						EquipToBody(equipping);
 						
 
@@ -429,7 +429,7 @@ namespace Inventory
 	{
 		switch (obj.item_type)
 		{
-		case weapon:
+		case WEAPON:
 		{
 			
 			std::cout << "hi" << std::endl;
@@ -442,9 +442,9 @@ namespace Inventory
 				}
 				equippedWeapon = obj;
 				equipmentDisplay[2].Item = equippedWeapon;
-				playerReference->equippedWeapon->damage = obj.attack;
+				playerReference->equippedWeapon->damage = (f32)obj.attack;
 
-				for (auto& inventory : Player_Inventory)
+				for (auto& inventory : playerInventory)
 				{
 					if (inventory.ID <0 )
 					{
@@ -457,24 +457,24 @@ namespace Inventory
 			
 		}
 			break;
-		case armour:
+		case ARMOUR:
 
 			switch (obj.armour_loc)
 			{
-		case head:
+		case HEAD:
 			equippedArmour[0] = obj;
 			equipmentDisplay[0].Item = equippedWeapon;
 			//playerReference->equippedArmor.defence = obj.defence;
 			break;
-		case body:
+		case BODY:
 			equippedArmour[1] = obj;
 			equipmentDisplay[1].Item = equippedWeapon;
 			break;
-		case pants:
+		case PANTS:
 			equippedArmour[2] = obj;
 			equipmentDisplay[3].Item = equippedWeapon;
 			break;
-		case boots:
+		case BOOTS:
 			equippedArmour[3] = obj;
 			equipmentDisplay[4].Item = equippedWeapon;
 			break;
@@ -493,7 +493,7 @@ namespace Inventory
 			}
 
 
-			for (auto& inventory : Player_Inventory)
+			for (auto& inventory : playerInventory)
 			{
 				if (inventory.ID < 0)
 				{
@@ -507,9 +507,9 @@ namespace Inventory
 		}
 	}
 
-	void Load_Inventory()
+	void LoadInventory()
 	{
-		Player_Inventory = ReadJsonFile("Assets/player_inventory.json");
+		playerInventory = ReadJsonFile("Assets/player_inventory.json");
 
 	}
 
@@ -519,6 +519,6 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(Player_Inventory, "./Assets/saved_player_inventory.json");
+		WriteJsonFile(playerInventory, "./Assets/saved_player_inventory.json");
 	}
 }

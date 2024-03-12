@@ -1,5 +1,5 @@
 #pragma once
-enum GRID_TYPES
+enum GridTypes
 {
     EMPTY = 0,
     NORMAL_GROUND = 1,

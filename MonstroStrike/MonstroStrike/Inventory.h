@@ -27,32 +27,32 @@
 
 enum Item_Type
 {
-	it_none = 0,
-	material,
-	weapon,
-	armour,
-	food,
-	potion,
-	recipe
+	IT_NONE = 0,
+	MATERIAL,
+	WEAPON,
+	ARMOUR,
+	FOOD,
+	POTION,
+	RECIPE
 };
 
 enum Rarity
 {
-	ir_none = 0,
-	common,
-	rare,
-	epic,
-	legendary,
-	unique
+	IR_NONE = 0,
+	COMMON,
+	RARE,
+	EPIC,
+	LEGENDARY,
+	UNIQUE
 };
 
 enum Armour_Location
 {
-	al_none = 0,
-	head,
-	body,
-	pants,
-	boots
+	AL_NONE = 0,
+	HEAD,
+	BODY,
+	PANTS,
+	BOOTS
 };
 
 struct Item
@@ -85,7 +85,7 @@ struct ButtonGearUI
 	Item Item;
 };
 
-extern std::vector< Item> Player_Inventory;
+extern std::vector< Item> playerInventory;
 extern int Player_Inventory_Count;
 
 extern AEGfxTexture* Gear[25];
@@ -113,18 +113,18 @@ namespace Inventory
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
 	void InitInventory();
-	void Load_Inventory();
+	void LoadInventory();
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 	void SwapInventory(Item& lhs, Item& rhs);
 
-	Item getItemById(int id);
+	Item GetItemById(int id);
 
-	void Item_Pickup(Item& item);
-	void Item_Drop();
+	void ItemPickUp(Item& item);
+	void ItemDrop();
 
 
 	void EquipToBody(Item obj);
-	void applyItemEffect(Player& player, const Item& item);
+	void ApplyItemEffect(Player& player, const Item& item);
 	void UseItem(int index, ButtonGearUI& item, Player& player);
 	
 

@@ -15,14 +15,14 @@ struct Weapon {
     Position position;
 
     AABB collisionBox;
-    AABB HitBox;
-    AEVec2 Scale;
+    AABB hitBox;
+    AEVec2 scale;
     AEVec2 transformation;
     bool weaponHIT;
 
 };
 
 Weapon* createWeapon(const std::string& name, float x, float y);
-void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struct Weapon*, f32);
-void UpdateWeaponHitBoxHeld (struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32);
-void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, struct Player& player);
+void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct Weapon*, f32);
+void UpdateWeaponHitBoxHeld (class Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32);
+void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, class Player& player);
