@@ -16,6 +16,7 @@
 #include "CollisionShape.h" //For Vertical + Horizontal collision
 #include <string>
 #include "Camera.h"
+#include "PauseMenuManager.h"
 #include <vector>
 
 #include "MapPlatformGenerate.h"
@@ -24,5 +25,6 @@
 #include "ParticleSystem.h"
 
 #include "Inventory.h"
+#include "main.h"
 
 //Slapped it here first

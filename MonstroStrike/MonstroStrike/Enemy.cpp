@@ -8,11 +8,11 @@
 
 
 
-void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
+void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 
 	Enemy enemy;
 
-	switch (enemy_type) {
+	switch (enemyType) {
 	case ENEMY_JUMPER:
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Angry.png");
@@ -29,12 +29,6 @@ void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
 		break;
 	case ENEMY_BOSS1:
 
-		//enemy.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.angryTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-		//enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/border.png");
-
-
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
 		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
@@ -43,12 +37,12 @@ void Enemy_Load(s8 enemy_type, std::vector<Enemy>& vecEnemy ) {
 		break;
 
 	default:
-		std::cerr << "Unknown enemy type: " << enemy_type << std::endl;
+		std::cerr << "Unknown enemy type: " << enemyType << std::endl;
 		return;
 
 	}
 
-	enemy.enemyType = enemy_type; //initialize enemy_type
+	enemy.enemyType = enemyType; //initialize enemy_type
 	vecEnemy.push_back(enemy);
 }
 
@@ -68,6 +62,8 @@ void FreeEnemy(std::vector<Enemy>& vecEnemy) {
 
 
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
+
+	UNREFERENCED_PARAMETER(startingState);
 
 	//Initializing Enemy struct variables
 	AEVec2Set(&enemy.obj.pos, location.x, location.y); //set starting location
@@ -195,7 +191,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 
 
-void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
+void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 //(update bullet)---------------------------------------------------------------------------------------
 	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
@@ -207,8 +203,8 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.img.scale.y * 0.5f;
 
 
-		it->lifetime--;	//decrease lifetime
-		if (it->lifetime <= 0) {
+		it->lifeTime--;	//decrease lifetime
+		if (it->lifeTime <= 0) {
 			it = enemy.bullets.erase(it);
 		}
 		else {
@@ -267,7 +263,5 @@ void Enemy_Update_Choose(Enemy& enemy, struct Player& player) {
 	enemy.boxArms = enemy.collisionBox;
 	enemy.boxArms.minimum.x -= horizontalOffset;
 	enemy.boxArms.maximum.x += horizontalOffset;
-
-
 }
 

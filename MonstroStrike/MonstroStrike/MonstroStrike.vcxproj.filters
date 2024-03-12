@@ -109,16 +109,19 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageManager.cpp">
-    <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MapTransition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PauseMenuManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextPrinting.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClInclude Include="Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -156,6 +159,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Physics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -322,12 +331,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageManager.h">
-          <Filter>Header Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="LevelHeaders.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MapTransition.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PauseMenuManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextPrinting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

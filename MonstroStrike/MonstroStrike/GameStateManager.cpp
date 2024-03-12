@@ -17,7 +17,7 @@ void GSM_Update()
 {
 	switch (current)
 	{
-	case SplashScreen:
+	case SPLASHSCREEN:
 		fpLoad = SplashScreen_Load;
 		fpInitialize = SplashScreen_Initialize;
 		fpUpdate = SplashScreen_Update;
@@ -25,7 +25,7 @@ void GSM_Update()
 		fpFree = SplashScreen_Free;
 		fpUnload = SplashScreen_Unload;
 		break;
-	case MainMenu:
+	case MAINMENU:
 		fpLoad = Mainmenu_Load;
 		fpInitialize = Mainmenu_Initialize;
 		fpUpdate = Mainmenu_Update;
@@ -33,15 +33,15 @@ void GSM_Update()
 		fpFree = Mainmenu_Free;
 		fpUnload = Mainmenu_Unload;
 		break;
-	case GameLobby:
-		fpLoad = GameLobby_Load;
-		fpInitialize = GameLobby_Initialize;
-		fpUpdate = GameLobby_Update;
-		fpDraw = GameLobby_Draw;
-		fpFree = GameLobby_Free;
-		fpUnload = GameLobby_Unload;
+	case GAME_LOBBY:
+		fpLoad = Lobby_Load;
+		fpInitialize = Lobby_Initialize;
+		fpUpdate = Lobby_Update;
+		fpDraw = Lobby_Draw;
+		fpFree = Lobby_Free;
+		fpUnload = Lobby_Unload;
 		break;
-	case Area1:
+	case AREA1:
 		fpLoad = Level1_Load;
 		fpInitialize = Level1_Initialize;
 		fpUpdate = Level1_Update;
@@ -49,7 +49,7 @@ void GSM_Update()
 		fpFree = Level1_Free;
 		fpUnload = Level1_Unload;
 		break;
-	case Quit:
+	case QUIT:
 		break;
 	default:
 		break;

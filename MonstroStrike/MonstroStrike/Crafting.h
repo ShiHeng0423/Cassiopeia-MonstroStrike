@@ -37,6 +37,6 @@ struct Recipe
 namespace Crafting
 {
 	std::vector<Recipe> ReadRecipes(const std::string filepath);
-	bool can_craft(const Recipe recipe, const std::vector<Item> Inventory);
-	void craft_item(std::vector<Item>& Inventory);
+	bool Can_Craft(const Recipe recipe, const std::vector<Item> Inventory);
+	void Craft_Item(std::vector<Item>& Inventory);
 }
