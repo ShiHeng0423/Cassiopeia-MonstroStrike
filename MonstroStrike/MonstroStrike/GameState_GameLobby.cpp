@@ -621,24 +621,38 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* 
 		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
 		for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
 		{
-			if (gridMap[playerIndexY][playerIndexX].typeOfGrid == NORMAL_GROUND)
+			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 			{
+			case NORMAL_GROUND:
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
 				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
 					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-
-					std::cout << playerIndexY << "," << playerIndexX << std::endl;
 				}
 
+				//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
 				{
 					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
 						&player->velocity);
-
-					std::cout << playerIndexY << "," << playerIndexX << std::endl;
 				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					//std::cout << "Collided\n";MainMenu_Song
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
+					}
+				}
+				break;
+			case EMPTY:
+				break;
 			}
 			playerIndexX += 1;
 		}
