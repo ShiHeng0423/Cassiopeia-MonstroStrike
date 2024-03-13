@@ -32,11 +32,23 @@
 
 using namespace rapidjson;
 
-std::vector<Item> playerInventory;
-int playerInventoryCount;
-Player* playerReference = nullptr;
-Item equippedGear[5];
-AEGfxTexture* Gear[25];
+ std::vector< Item> playerInventory;
+ int Player_Inventory_Count;
+
+ AEGfxTexture* Gear[25];
+ s16 snapBack = -1;
+
+ Player* playerReference;
+ Item equippedGear[5];
+
+ ButtonGearUI inventoryBackground;
+ ButtonGearUI inventoryButton[25];
+
+ ButtonGearUI equipmentBackground;
+
+ AEGfxTexture* blank;
+
+ int playerInventoryCount;
 
 namespace Inventory
 {
@@ -44,6 +56,7 @@ namespace Inventory
 	
 	std::vector<Item> allItems; //list of all items in game
 	ButtonGearUI equipmentDisplay[5];
+	bool inventoryOpen;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -187,9 +200,7 @@ namespace Inventory
 		for (const auto& item : inventory)
 		{
 			Value ind_item(kObjectType);
-			{
-				ind_item.AddMember("UID", "hi",json.GetAllocator());
-			}
+
 			ind_item.AddMember("UID", Value(item.UID.c_str(), json.GetAllocator()), json.GetAllocator());
 			ind_item.AddMember("ID", item.ID, json.GetAllocator());
 			ind_item.AddMember("name", Value(item.name.c_str(), json.GetAllocator()), json.GetAllocator());
@@ -252,10 +263,8 @@ namespace Inventory
 
 
 
-
-
 	//Update inventory vector every frame
-	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
+	void UpdatePlayerInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
 		playerInventoryCount = 0;
 		for(size_t i=0; i<inventory.size(); ++i)
@@ -295,6 +304,195 @@ namespace Inventory
 			// Return a default item if the ID is not found
 			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,GL_NONE, true, 1,1 };
 		}
+
+
+
+	void OpenInventory()
+	{
+		//update item position
+		Inventory::UpdatePlayerInventory(playerInventory, inventoryButton);
+		s16 index = 0;
+
+
+		for (ButtonGearUI& button : inventoryButton)
+		{
+			button.img.pTex = blank;
+			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
+
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				if (button.Item.quantity <= 0)
+				{
+					Item blank;
+					blank.ID = -9999;
+					button.Item = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
+			}
+
+			//button.isWeapon = false;
+			index++;
+		}
+		//Hover collision with button && hold left mouse button
+
+		if (AEInputCheckTriggered(AEVK_LBUTTON))
+		{
+			s32 textX = 0;
+			s32 textY = 0;
+
+			s16 index = 0;
+
+			AEInputGetCursorPosition(&textX, &textY);
+			AEVec2 mousePos;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+			for (ButtonGearUI& button : inventoryButton)
+			{
+				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				{
+					if (button.img.pTex != blank)
+					{
+						std::cout << button.Item.name << std::endl;
+						//snap origin of img to mouse pos
+						snapBack = index;
+						break;
+					}
+					//button.Ptr();
+				}
+				index++;
+			}
+		}
+
+		if (snapBack >= 0)
+		{
+			s32 textX = 0;
+			s32 textY = 0;
+
+			s16 index = 0;
+
+			AEInputGetCursorPosition(&textX, &textY);
+			AEVec2 mousePos;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+			inventoryButton[snapBack].pos = mousePos;
+		}
+
+		if (AEInputCheckReleased(AEVK_LBUTTON))
+		{
+			s16 index = 0;
+			if (snapBack >= 0)
+			{
+				for (ButtonGearUI& button : inventoryButton)
+				{
+					if (AETestRectToRect(&inventoryButton[snapBack].pos,
+						inventoryButton[snapBack].img.scale.x,
+						inventoryButton[snapBack].img.scale.y, &button.pos,
+						button.img.scale.x,
+						button.img.scale.y))
+					{
+						//Different items overlapping
+						if (index != snapBack)
+						{
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5.f) * 90.f + 180.f);
+
+							//std::cout << "swap\n";
+							ButtonGearUI tmp = button;
+							button = inventoryButton[snapBack];
+							inventoryButton[snapBack] = tmp;
+
+							if (playerInventory.size() <= index)
+							{
+								size_t oldsize = playerInventory.size();
+								playerInventory.resize(index + 1);
+								for (size_t x = oldsize; x < playerInventory.size(); x++)
+								{
+									playerInventory[x].ID = -9999;
+								}
+							}
+							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5) * 90.f + 180.f);
+
+							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
+								-(index / 5.f) * 90.f + 180.f);
+
+							snapBack = -1;
+							break;
+						}
+					}
+					index++;
+				}
+
+				if (snapBack >= 0)
+				{
+					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+						-(snapBack / 5.f) * 90.f + 180.f);
+					snapBack = -1;
+				}
+			}
+		}
+
+
+		if (AEInputCheckTriggered(AEVK_RBUTTON))
+		{
+			s16 index = 0;
+			s32 textX = 0;
+			s32 textY = 0;
+
+
+			index = 0;
+			AEInputGetCursorPosition(&textX, &textY);
+			AEVec2 mousePos;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+			for (ButtonGearUI& button : inventoryButton)
+			{
+				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				{
+					if (button.img.pTex != blank)
+					{
+						Inventory::UseItem(index, button, *playerReference);
+						if (button.Item.quantity == 0 || button.Item.ID < 0)
+						{
+							button.img.pTex = blank;
+						}
+						break;
+					}
+				}
+
+				index++;
+			}
+
+			index = 0;
+			for (ButtonGearUI& button : Inventory::equipmentDisplay)
+			{
+				if (button.Item.ID < 0)
+				{
+					button.img.pTex = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
+				AEVec2Set(&button.img.scale, 60.f, 60.f);
+				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+				index++;
+			}
+	}
+	}
+
 
 
 	void ItemPickup(Item& item)
@@ -525,10 +723,51 @@ namespace Inventory
 	{
 		playerInventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
 
+
+		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+
+		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+
+		Gear[0] = AEGfxTextureLoad("Assets/items/item_0.png");
+		Gear[1] = AEGfxTextureLoad("Assets/items/item_1.png");
+		Gear[2] = AEGfxTextureLoad("Assets/items/item_2.png");
+		Gear[3] = AEGfxTextureLoad("Assets/items/item_3.png");
+		Gear[4] = AEGfxTextureLoad("Assets/items/item_4.png");
+		Gear[5] = AEGfxTextureLoad("Assets/items/item_5.png");
+		Gear[6] = AEGfxTextureLoad("Assets/items/item_6.png");
+		Gear[7] = AEGfxTextureLoad("Assets/items/item_7.png");
+		Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
+		Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
+		Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
+
+
+		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
+
+
 	}
 
 	void InitInventory()
 	{
+		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
+
+		inventoryOpen = false;
+		s16 index = 0;
+
+		snapBack = -1;
+
+		//Display inventory
+		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
+		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
+
+		index = 0;
+		for (ButtonGearUI& button : Inventory::equipmentDisplay)
+		{
+			button.img.pTex = blank;
+			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+			index++;
+		}
+
 	}
 
 	void SaveInventory()

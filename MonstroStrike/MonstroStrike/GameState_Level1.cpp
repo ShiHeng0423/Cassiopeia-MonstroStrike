@@ -31,21 +31,12 @@ namespace
 
 #pragma endregion UserInterface
 
-	bool inventoryOpen;
-	s16 snapBack = -1;
-
 	s16 hp = 100;
 	s16 gear_equipped = 0;
 
 	f32 burningEffectDuration = 1.5f;
 	f64 timer = 0.f;
 
-	ButtonGearUI inventoryBackground;
-	ButtonGearUI inventoryButton[25];
-
-	ButtonGearUI equipmentBackground;
-
-	AEGfxTexture* blank;
 
 	AEVec2 playerBoundaryMin;
 	AEVec2 playerBoundaryMax;
@@ -71,10 +62,11 @@ void Level1_Load()
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
-	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0,-100 }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", {AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f},
+	                          {0, -100}, {40.f, 0.f}, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
+	auto fileName = "Assets/GameMap.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
@@ -84,24 +76,6 @@ void Level1_Load()
 	//Inventory assets
 	Inventory::LoadInventory();
 
-	inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-
-	equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-
-	Gear[0] = AEGfxTextureLoad("Assets/items/item_0.png");
-	Gear[1] = AEGfxTextureLoad("Assets/items/item_1.png");
-	Gear[2] = AEGfxTextureLoad("Assets/items/item_2.png");
-	Gear[3] = AEGfxTextureLoad("Assets/items/item_3.png");
-	Gear[4] = AEGfxTextureLoad("Assets/items/item_4.png");
-	Gear[5] = AEGfxTextureLoad("Assets/items/item_5.png");
-	Gear[6] = AEGfxTextureLoad("Assets/items/item_6.png");
-	Gear[7] = AEGfxTextureLoad("Assets/items/item_7.png");
-	Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
-	Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
-	Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
-
-
-	blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 
@@ -117,13 +91,12 @@ void Level1_Load()
 #pragma endregion
 
 	ParticleLoad();
-	
+
 	menu = new PauseMenu_Manager();
 }
 
 void Level1_Initialize()
 {
-
 #pragma region Grid_Loading
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
@@ -167,24 +140,7 @@ void Level1_Initialize()
 
 #pragma region Inventory_UI
 
-	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
-
-	inventoryOpen = false;
-	s16 index = 0;
-	//Display inventory
-
-
-	AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
-	AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
-
-	index = 0;
-	for (ButtonGearUI& button : Inventory::equipmentDisplay)
-	{
-		button.img.pTex = blank;
-		AEVec2Set(&button.img.scale, 60.f, 60.f);
-		AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
-		index++;
-	}
+	Inventory::InitInventory();
 
 #pragma endregion
 
@@ -196,7 +152,7 @@ void Level1_Initialize()
 	Enemy_Init({70.f, 70.f}, {-300.f, -80.f}, ENEMY_IDLE, vecEnemy[4]);
 	Enemy_Init({70.f, 70.f}, {800.f, 150.f}, ENEMY_IDLE, vecEnemy[5]);
 #pragma endregion Enemy
-	
+
 	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit(player->obj.pos);
@@ -213,15 +169,16 @@ void Level1_Update()
 
 #pragma endregion
 
-	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene == CurrentScene::QUIT_SCENE)
+	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene ==
+		CurrentScene::QUIT_SCENE)
 		return;
 
 #pragma region PlayerUpdate
 	if (currScene == MAIN_SCENE)
-		PlayerUpdate(*player, inventoryOpen);
+		PlayerUpdate(*player, Inventory::inventoryOpen);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
-		inventoryOpen = !inventoryOpen;
+		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -269,29 +226,29 @@ void Level1_Update()
 			{
 			case NORMAL_GROUND:
 
-					//Collision check
-					//Resolve + Vertical Collision only for entity x (wall or ground)
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity, &player->onFloor, &player->gravityForce,
-							&player->isFalling);
-					}
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
+					                         &player->collisionNormal, &player->obj.pos,
+					                         &player->velocity, &player->onFloor, &player->gravityForce,
+					                         &player->isFalling);
+				}
 
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity);
-					}
-//(ENEMY AND BULLETS COLLISION CHECKING)
-				for (Enemy& enemy : vecEnemy) {
-
+			//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
+					                           &player->collisionNormal, &player->obj.pos,
+					                           &player->velocity);
+				}
+			//(ENEMY AND BULLETS COLLISION CHECKING)
+				for (Enemy& enemy : vecEnemy)
+				{
 					//Check vertical box (Head + Feet) 
 					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox))
 					{
@@ -335,190 +292,9 @@ void Level1_Update()
 
 #pragma region InventorySystem
 
-	if (inventoryOpen)
+	if (Inventory::inventoryOpen)
 	{
-		//update item position
-		Inventory::UpdateInventory(playerInventory, inventoryButton);
-		s16 index = 0;
-
-
-		for (ButtonGearUI& button : inventoryButton)
-		{
-			button.img.pTex = blank;
-			AEVec2Set(&button.img.scale, 60.f, 60.f);
-			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
-
-			if (button.Item.ID < 0)
-			{
-				button.img.pTex = blank;
-			}
-			else
-			{
-				if (button.Item.quantity <= 0)
-				{
-					Item blank;
-					blank.ID = -9999;
-					button.Item = blank;
-				}
-				else
-				{
-					button.img.pTex = Gear[button.Item.ID];
-				}
-			}
-
-			//button.isWeapon = false;
-			index++;
-		}
-		//Hover collision with button && hold left mouse button
-
-		if (AEInputCheckTriggered(AEVK_LBUTTON))
-		{
-			s32 textX = 0;
-			s32 textY = 0;
-
-			s16 index = 0;
-
-			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
-			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
-
-			for (ButtonGearUI& button : inventoryButton)
-			{
-				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
-				{
-					if (button.img.pTex != blank)
-					{
-						std::cout << button.Item.name << std::endl;
-						//snap origin of img to mouse pos
-						snapBack = index;
-						break;
-					}
-					//button.Ptr();
-				}
-				index++;
-			}
-		}
-
-		if (snapBack >= 0)
-		{
-			s32 textX = 0;
-			s32 textY = 0;
-
-			s16 index = 0;
-
-			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
-			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
-
-			inventoryButton[snapBack].pos = mousePos;
-		}
-
-		if (AEInputCheckReleased(AEVK_LBUTTON))
-		{
-			s16 index = 0;
-			if (snapBack >= 0)
-			{
-				for (ButtonGearUI& button : inventoryButton)
-				{
-					if (AETestRectToRect(&inventoryButton[snapBack].pos,
-					                     inventoryButton[snapBack].img.scale.x,
-					                     inventoryButton[snapBack].img.scale.y, &button.pos,
-					                     button.img.scale.x,
-					                     button.img.scale.y))
-					{
-						//Different items overlapping
-						if (index != snapBack)
-						{
-							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
-								-(snapBack / 5.f) * 90.f + 180.f);
-
-							//std::cout << "swap\n";
-							ButtonGearUI tmp = button;
-							button = inventoryButton[snapBack];
-							inventoryButton[snapBack] = tmp;
-
-							if (playerInventory.size() <= index)
-							{
-								size_t oldsize = playerInventory.size();
-								playerInventory.resize(index + 1);
-								for (size_t x = oldsize; x < playerInventory.size(); x++)
-								{
-									playerInventory[x].ID = -9999;
-								}
-							}
-							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
-							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
-								-(snapBack / 5) * 90.f + 180.f);
-
-							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
-								-(index / 5.f) * 90.f + 180.f);
-
-							snapBack = -1;
-							break;
-						}
-					}
-					index++;
-				}
-
-				if (snapBack >= 0)
-				{
-					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
-						-(snapBack / 5.f) * 90.f + 180.f);
-					snapBack = -1;
-				}
-			}
-		}
-
-
-		if (AEInputCheckTriggered(AEVK_RBUTTON))
-		{
-			s16 index = 0;
-			s32 textX = 0;
-			s32 textY = 0;
-
-
-			index = 0;
-			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
-			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
-
-			for (ButtonGearUI& button : inventoryButton)
-			{
-				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
-				{
-					if (button.img.pTex != blank)
-					{
-						Inventory::UseItem(index, button, *player);
-						if (button.Item.quantity == 0 || button.Item.ID < 0)
-						{
-							button.img.pTex = blank;
-						}
-						break;
-					}
-				}
-
-				index++;
-			}
-
-			index = 0;
-			for (ButtonGearUI& button : Inventory::equipmentDisplay)
-			{
-				if (button.Item.ID < 0)
-				{
-					button.img.pTex = blank;
-				}
-				else
-				{
-					button.img.pTex = Gear[button.Item.ID];
-				}
-				AEVec2Set(&button.img.scale, 60.f, 60.f);
-				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
-				index++;
-			}
-		}
+		Inventory::OpenInventory();
 	}
 
 	if (player->burningEffect)
@@ -563,10 +339,11 @@ void Level1_Update()
 
 #pragma region CameraUpdate
 
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+	               grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x,
+	               grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
-
 }
 
 void Level1_Draw()
@@ -628,8 +405,9 @@ void Level1_Draw()
 			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 
-				AEGfxTextureSet(enemy.angryTex, 0, 0); 
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxTextureSet(enemy.angryTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
+				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
@@ -708,7 +486,7 @@ void Level1_Draw()
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp +x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -723,7 +501,7 @@ void Level1_Draw()
 #pragma region Inventory_UI_Render
 
 	//Inventory images
-	if (inventoryOpen)
+	if (Inventory::inventoryOpen)
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
@@ -731,16 +509,16 @@ void Level1_Draw()
 		AEGfxGetCamPosition(&x, &y);
 
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(x,y, 0.f,
-			inventoryBackground.img.scale.x,
-			inventoryBackground.img.scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
+		                                                inventoryBackground.img.scale.x,
+		                                                inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
 			equipmentBackground.pos.x + x,
-			equipmentBackground.pos.y +y, 0.f,
+			equipmentBackground.pos.y + y, 0.f,
 			equipmentBackground.img.scale.x,
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -750,8 +528,8 @@ void Level1_Draw()
 			if (button.Item.ID < 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x +x,
-				                                                button.pos.y +y, 0.f,
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
 				                                                button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
@@ -807,19 +585,20 @@ void Level1_Draw()
 #pragma endregion
 
 
-
 #pragma region Center_Line_Render
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f, (f32)AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+	                                                (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
+	                                                0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 #pragma endregion
 
-MapTransitionDraw();
+	MapTransitionDraw();
 }
 
 void Level1_Free()

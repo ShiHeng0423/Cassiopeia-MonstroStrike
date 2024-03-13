@@ -89,15 +89,26 @@ extern std::vector< Item> playerInventory;
 extern int Player_Inventory_Count;
 
 extern AEGfxTexture* Gear[25];
+extern s16 snapBack;
 
 extern Player* playerReference;
 extern Item equippedGear[5];
+
+extern ButtonGearUI inventoryBackground;
+extern ButtonGearUI inventoryButton[25];
+
+extern ButtonGearUI equipmentBackground;
+
+extern AEGfxTexture* blank;
+
 
 namespace Inventory
 {
 	
 	extern std::vector<Item> allItems; //list of all items in game
 	extern ButtonGearUI equipmentDisplay[5];
+
+	extern bool inventoryOpen;
 
 
 
@@ -113,10 +124,12 @@ namespace Inventory
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
 	void InitInventory();
 	void LoadInventory();
-	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
+	void UpdatePlayerInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 	void SwapInventory(Item& lhs, Item& rhs);
 
 	Item GetItemById(int id);
+
+	void OpenInventory();
 
 	void ItemPickUp(Item& item);
 	void ItemDrop();
