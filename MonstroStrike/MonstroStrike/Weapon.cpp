@@ -25,7 +25,7 @@ Weapon* createWeapon(const std::string& name, float x, float y) {
 
 
 
-void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
+void UpdateWeaponHitBoxTrig(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
 {
     if (player->equippedWeapon->name == "Short-Sword")
     {
@@ -37,31 +37,27 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
             playerEquip->position.x = player->obj.pos.x;
             playerEquip->position.y = player->obj.pos.y;
 
-        // change the hitbox
-        f32 hit = playerFacingRight ?  // change the hitbox
-            playerEquip->position.x = player->obj.pos.x + 20.0f : playerEquip->position.x = player->obj.pos.x - 20.0f;
-        playerEquip->position.y = player->obj.pos.y;
-        
-        AEVec2Set(&player->equippedWeapon->Scale, 30.f, 20.f);
-       
-        f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x *1.0f;
-        
-        playerEquip->position.x += xOffset;
-        playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            // change the hitbox
+            f32 hit = playerFacingRight ?  // change the hitbox
+                playerEquip->position.x = player->obj.pos.x + 20.0f : playerEquip->position.x = player->obj.pos.x - 20.0f;
+            playerEquip->position.y = player->obj.pos.y;
 
-        playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-        playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-        playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-        playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            AEVec2Set(&player->equippedWeapon->scale, 30.f, 20.f);
+
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
+
+            playerEquip->position.x += xOffset;
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
+
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
 
             //player->isAttacking = false; //If player is attacking render the hitbox
             playerEquip->weaponHIT = false;
 
-     /*   playerEquip->collisionBox.minimum.x = xOffset - playerEquip->Scale.x * 5.5f;
-        playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 5.5f;
-        playerEquip->collisionBox.maximum.x = xOffset + playerEquip->Scale.x * 5.5f;
-        playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 5.5f;*/
 
         }
         else if (player->comboState == 1)
@@ -70,25 +66,23 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
             playerEquip->position.x = player->obj.pos.x;
             playerEquip->position.y = player->obj.pos.y;
 
-        ///*std::cout << "Entering Input Check - Combo State1: " << player->comboState << ", Combo Time1: " << player->comboTime << std::endl;*/
-        //// Calculate the offset based on attack progress
-        //f32 yOffset = playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            // change the hitbox
+            f32 hit = playerFacingRight ?  // change the hitbox
+                playerEquip->position.x = player->obj.pos.x + 20.0f : playerEquip->position.x = player->obj.pos.x - 20.0f;
+            playerEquip->position.y = player->obj.pos.y;
+            playerEquip->position.y = player->obj.pos.y - 10.0f;
 
-        //// Use sine function for circular ease-out motion
-        //f32 xOffset = playerFacingRight
-        //    ? attackProgress * playerEquip->Scale.x * 0.5f * cos(attackProgress * M_PI / 2.0f)
-        //    : -attackProgress * playerEquip->Scale.x * 0.5f * cos(attackProgress * M_PI / 2.0f);
+            AEVec2Set(&player->equippedWeapon->scale, 30.f, 20.f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-        ////Resetting main AABB box...
-        //playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-        //playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-        //playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-        //playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             //player->isAttacking = false;
             playerEquip->weaponHIT = false;
@@ -110,17 +104,17 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
             playerEquip->position.y = player->obj.pos.y;
             playerEquip->position.y = player->obj.pos.y - 20.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 30.f, 20.f);
+            AEVec2Set(&player->equippedWeapon->scale, 30.f, 20.f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             std::cout << playerEquip->damage << std::endl;
             /*player->isAttacking = false;*/
@@ -146,17 +140,17 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 13.0f : playerEquip->position.x = player->obj.pos.x - 13.0f;
             playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 45.f, 55.0f);
+            AEVec2Set(&player->equippedWeapon->scale, 45.f, 55.0f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
 
             //player->isAttacking = false; //If player is attacking render the hitbox
@@ -175,17 +169,17 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 13.0f : playerEquip->position.x = player->obj.pos.x - 13.0f;
             playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 45.f, 55.0f);
+            AEVec2Set(&player->equippedWeapon->scale, 45.f, 55.0f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             //player->isAttacking = false;
             playerEquip->weaponHIT = false;
@@ -206,17 +200,17 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 7.0f : playerEquip->position.x = player->obj.pos.x - 7.0f;
             playerEquip->position.y = player->obj.pos.y - 20.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 60.f, 40.f);
+            AEVec2Set(&player->equippedWeapon->scale, 60.f, 40.f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             std::cout << playerEquip->damage << std::endl;
             /*player->isAttacking = false;*/
@@ -238,20 +232,19 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 13.0f : playerEquip->position.x = player->obj.pos.x - 13.0f;
             playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 60.f, 60.0f);
+            AEVec2Set(&player->equippedWeapon->scale, 60.f, 60.0f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
 
-            //player->isAttacking = false; //If player is attacking render the hitbox
             playerEquip->weaponHIT = false;
 
 
@@ -267,19 +260,18 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 13.0f : playerEquip->position.x = player->obj.pos.x - 13.0f;
             playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 60.f, 60.0f);
+            AEVec2Set(&player->equippedWeapon->scale, 60.f, 60.0f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
-            //player->isAttacking = false;
             playerEquip->weaponHIT = false;
 
 
@@ -296,28 +288,27 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
             // change the hitbox
             f32 hit = playerFacingRight ?  // change the hitbox
                 playerEquip->position.x = player->obj.pos.x + 7.0f : playerEquip->position.x = player->obj.pos.x - 7.0f;
-            playerEquip->position.y = player->obj.pos.y - 20.0f;
+            playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 80.f, 60.f);
+            AEVec2Set(&player->equippedWeapon->scale, 80.f, 60.f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             std::cout << playerEquip->damage << std::endl;
-            /*player->isAttacking = false;*/
             playerEquip->weaponHIT = false;
         }
     }
 }
 
-void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
+void UpdateWeaponHitBoxHeld(struct Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32 attackProgress)
 {
     if (player->equippedWeapon->name == "Short-Sword")
     {
@@ -336,17 +327,17 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 20.0f : playerEquip->position.x = player->obj.pos.x - 20.0f;
             playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-            AEVec2Set(&player->equippedWeapon->Scale, 30.f, 50.f);
+            AEVec2Set(&player->equippedWeapon->scale, 30.f, 50.f);
 
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             std::cout << playerEquip->damage << std::endl;
             player->isAttacking = false;
@@ -373,35 +364,17 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
                 playerEquip->position.x = player->obj.pos.x + 5.0f : playerEquip->position.x = player->obj.pos.x - 5.0f;
             playerEquip->position.y = player->obj.pos.y - 30.0f;
 
-        //std::cout << "Entering Input Check - Combo StateHeld: " << player->comboState << ", Combo TimeHeld: " << player->comboTime << std::endl;
-        //// Calculate the offset based on attack progress
-        //f32 yOffset = playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            AEVec2Set(&player->equippedWeapon->scale, 80.f, 70.f);
 
-        //// Use sine function for circular ease-out motion
-        //f32 xOffset = playerFacingRight
-        //    ? attackProgress * playerEquip->Scale.x * 0.5f * sin(attackProgress * M_PI / 2.0f)
-        //    : -attackProgress * playerEquip->Scale.x * 0.5f * sin(attackProgress * M_PI / 2.0f);
-
-        //// Set the weapon's position
-        //playerEquip->position.x = player->obj.pos.x + xOffset * 4;
-        //playerEquip->position.y = player->obj.pos.y + yOffset * 5;
-        //
-
-        ////Resetting main AABB box...
-        //playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-        //playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-        //playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-        //playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
-
-            f32 xOffset = playerFacingRight ? playerEquip->Scale.x * 1.0f : -playerEquip->Scale.x * 1.0f;
+            f32 xOffset = playerFacingRight ? playerEquip->scale.x * 1.0f : -playerEquip->scale.x * 1.0f;
 
             playerEquip->position.x += xOffset;
-            playerEquip->position.y += playerEquip->Scale.y * 0.5f * (1.0f - attackProgress * 2);
+            playerEquip->position.y += playerEquip->scale.y * 0.5f * (1.0f - attackProgress * 2);
 
-            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->Scale.y * 0.5f;
-            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->Scale.x * 0.5f;
-            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->Scale.y * 0.5f;
+            playerEquip->collisionBox.minimum.x = playerEquip->position.x - playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.minimum.y = playerEquip->position.y - playerEquip->scale.y * 0.5f;
+            playerEquip->collisionBox.maximum.x = playerEquip->position.x + playerEquip->scale.x * 0.5f;
+            playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
             std::cout << playerEquip->damage << std::endl;
             player->isAttacking = false;
@@ -419,7 +392,7 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
     }
 }
 
-void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, class Player& player)
+void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, struct Player& player)
 {
     //wings
     if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) {

@@ -592,7 +592,7 @@ void Level1_Draw()
 		}
 	}
 
-	for (s16 i = 0; i < platformVectors.size(); i++)
+	for (s16 i = 0; i < platformVectors.size(); i++) //related problem
 	{
 		AEGfxSetTransform(platformVectors[i].transformation.m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
@@ -670,6 +670,7 @@ void Level1_Draw()
 		                                                player->equippedWeapon->scale.x,
 		                                                player->equippedWeapon->scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+		player->isAttacking = false; //Makes it so the hitbox despawns
 	}
 
 #pragma endregion

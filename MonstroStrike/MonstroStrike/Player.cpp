@@ -28,31 +28,17 @@ bool if_first_input = false;
 
 
 bool isFirstInput = true;
+bool delayFlag = false;
+bool isTriggerAttacking = false;
 auto triggeredTime = Clock::now();
 auto releasedTime = Clock::now();
 auto comboTime = Clock::now();
+auto delayTime = Clock::now();
+float threshold = 2.0f; //Testing purposes. Change during creation threshold
 
-//#pragma region AnimationQueue
-//
-//
-//class anima
-//{
-// public:
-//	bool is_playing = false;
-//	void (*play_animation)(Player&);
-//
-//};
-//
-//std::queue<anima> con_anima;
-//
-//#pragma endregion
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
-	//for every anima in the con_anima
-	//if there is an anima in the con_anima
-	//execute the function pointer (play_animation)
-
 	Player *player = new Player;
 	player->obj.img.pTex = AEGfxTextureLoad(filename);
 	player->obj.speed = speed;
@@ -107,6 +93,22 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 
 void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
+	if (AEInputCheckTriggered(AEVK_B))
+	{
+		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
+
+	}
+	if (AEInputCheckTriggered(AEVK_N))
+	{
+		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_M))
+	{
+		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
+	}
 
 	if (player.isFalling)
 	{
@@ -177,11 +179,6 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling);
-	//Velocity passed in must be modifiable, mass can be adjusted if needed to
-	//
-	//std::cout << "Player on floor: " << player.onFloor << std::endl;
-	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
-	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
 
@@ -217,18 +214,23 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	/*Weapon hit box update only*/
 	
 
-	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
+	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen && !delayFlag)
 	{
 		triggeredTime = Clock::now();
 		undealtTriggerInput = true;
 		isReleased = false;
 		if_first_input = true;
+		delayFlag = true;
 	
 	}
+
+
 	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		isReleased = true;
+
 	}
+	
 	//reset
 	if (!undealtTriggerInput)
 	{
@@ -251,28 +253,39 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		{
 			if (player.comboState == 2) //held
 			{
-		
+
 				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
 				player.isAttacking = true;
-			
 
-				
+
+
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
 
+
+			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
+			{
+				isTriggerAttacking = true;
+			
+			}
+			
 		}
-		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
+	/*	float timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0;
+		if (timeNow > delayTime)
 		{
 
+		}*/
+		if (isTriggerAttacking)
+		{
+	
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
 			player.isAttacking = true;
 
 			if (player.comboState < 2)
 			{
-
 				player.comboState++;
 				player.comboTime += (float)elapsedTime;
 
@@ -280,101 +293,16 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 			else
 			{
-			
 				player.comboState = 0;
-				player.comboTime = 0.0f;
-
-
+				player.comboTime = 0.0f; 
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
-
 
 		}
 	}
 	
 	
-
-		//else
-		//{
-		//	// Combo window expired + hold window
-		//	player.isAttacking = false;
-		//	player.equippedWeapon.weaponHIT = false;
-		//	player.comboTime = 0.0f; // Reset combo time
-		//	player.comboState = 0;   // Reset combo state
-
-		//}
-
-
-		//
-		//else
-		//{
-		//	// No input, reset weapon position
-		//	player.equippedWeapon.position.x = player.obj.pos.x;
-		//	player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
-		//	player.attackTime = 1.f;
-		//}
-
-		//if (holding_down)
-		//{
-		//	//auto currentTime = Clock::now();
-		//	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
-
-		//	lastInputTime = currentTime; // Update last input time
-		//	// Update hit box triggered
-		//	if (player.comboTime <= comboWindowDuration)
-		//	{
-		//		// Combo is within the window
-		//		player.attackTime -= AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
-		//		f32 attackProgress = 1.0f - (player.attackTime / 1.f);
-		//		UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-		//		// Use elapsedTime for all time-related calculations
-		//		
-		//		if (player.comboState != 3)
-		//		{
-		//			player.comboState++;
-		//			player.comboTime += elapsedTime;
-		//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-		//			holding_down = false;
-		//		}
-
-		//		else
-		//		{
-		//			player.comboState = 0;
-		//			player.comboTime = 0.0f;
-		//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-		//			holding_down = false;
-		//		}
-
-
-		//	}
-		//	else if (player.comboTime > comboWindowDuration * 2 / 3 )
-		//	{
-		//		std::cout << "Left mouse button held for " << elapsedTime << " seconds." << std::endl;
-		//		player.isAttacking = false;
-		//		player.equippedWeapon.weaponHIT = false;
-		//		player.comboTime = 0.0f; // Reset combo time
-		//		player.comboState = 0;   // Reset combo state
-
-
-		//	}
-		//	else
-		//	{
-		//		// Combo window expired
-		//		player.isAttacking = false;
-		//		player.equippedWeapon.weaponHIT = false;
-		//		player.comboTime = 0.0f; // Reset combo time
-		//		player.comboState = 0;   // Reset combo state
-
-		//	}
-		//}
-		//else
-		//{
-		//		// No input, reset weapon position
-		//		player.equippedWeapon.position.x = player.obj.pos.x;
-		//		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
-		//		player.attackTime = 1.f;
-		//}
 
 	
 
