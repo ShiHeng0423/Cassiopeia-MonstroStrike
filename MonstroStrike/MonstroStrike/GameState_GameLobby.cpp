@@ -371,8 +371,6 @@ void Lobby_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
-	delete player->equippedWeapon;
-
 	delete player;
 	delete cam;
 	delete menu;

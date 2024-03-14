@@ -215,7 +215,7 @@ void Level1_Update()
 		{
 			if (enemy.isAlive)
 			{
-				CheckWeaponCollision(player->equippedWeapon, enemy, *player);
+				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
 			}
 		}
 	}
@@ -358,10 +358,10 @@ void Level1_Draw()
 
 	if (player->isAttacking)
 	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon->position.x,
-		                                                player->equippedWeapon->position.y, 0.f,
-		                                                player->equippedWeapon->scale.x,
-		                                                player->equippedWeapon->scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
+		                                                player->equippedWeapon.position.y, 0.f,
+		                                                player->equippedWeapon.scale.x,
+		                                                player->equippedWeapon.scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 	}
 
@@ -528,7 +528,6 @@ void Level1_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
-	delete player->equippedWeapon;
 	delete player;
 	delete cam;
 	delete menu;
