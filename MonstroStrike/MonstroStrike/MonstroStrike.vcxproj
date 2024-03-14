@@ -102,34 +102,35 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="Armor_add.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="Crafting.cpp" />
-    <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyBoss.cpp" />
     <ClCompile Include="EnemyCharger.cpp" />
     <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
-    <ClCompile Include="GameStateManager.cpp" />
+    <ClCompile Include="ImageManager.cpp" />
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameState_GameLobby.cpp" />
+    <ClCompile Include="GameStateManager.cpp" />
     <ClCompile Include="GameState_Level1.cpp" />
     <ClCompile Include="GameState_Mainmenu.cpp" />
     <ClCompile Include="GameState_SplashScreen.cpp" />
-    <ClCompile Include="ImageManager.cpp" />
-    <ClCompile Include="Inventory.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="MapPlatformGenerate.cpp" />
+    <ClInclude Include="main.h" />
     <ClCompile Include="MapTransition.cpp" />
-    <ClCompile Include="NonPlayableCharacters.cpp" />
-    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PauseMenuManager.cpp" />
-    <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="TextPrinting.cpp" />
-    <ClCompile Include="TransformMatrix.cpp" />
-    <ClCompile Include="TriggerAttack.cpp" />
     <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="MapPlatformGenerate.cpp" />
+    <ClCompile Include="NonPlayableCharacters.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="TransformMatrix.cpp" />
+    <ClCompile Include="CollisionShape.cpp" />
+    <ClCompile Include="CSVMapLoader.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Physics.cpp" />
+    <ClCompile Include="TriggerAttack.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -137,28 +138,21 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="Armor_add.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="Crafting.h" />
-    <ClInclude Include="CSVMapLoader.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyUtils.h" />
-    <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_GameLobby.h" />
+    <ClInclude Include="Utils.h" />
+    <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
     <ClInclude Include="GameState_Mainmenu.h" />
-    <ClInclude Include="GameState_SplashScreen.h" />
-    <ClInclude Include="GridTypesList.h" />
     <ClInclude Include="ImageManager.h" />
-    <ClInclude Include="Inventory.h" />
     <ClInclude Include="LevelHeaders.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="MapPlatformGenerate.h" />
     <ClInclude Include="MapTransition.h" />
+    <ClInclude Include="PauseMenuManager.h" />
     <ClInclude Include="NonPlayableCharacters.h" />
     <ClInclude Include="ParticleSystem.h" />
-    <ClInclude Include="PauseMenuManager.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="Physics.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="rapidjson\allocators.h" />
     <ClInclude Include="rapidjson\cursorstreamwrapper.h" />
@@ -198,18 +192,26 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\stringbuffer.h" />
     <ClInclude Include="rapidjson\uri.h" />
     <ClInclude Include="rapidjson\writer.h" />
+    <ClInclude Include="GameState_SplashScreen.h" />
     <ClInclude Include="TextPrinting.h" />
     <ClInclude Include="TransformMatrix.h" />
     <ClInclude Include="TriggerAttack.h" />
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="Weapon.h" />
+    <ClInclude Include="CollisionShape.h" />
+    <ClInclude Include="CSVMapLoader.h" />
+    <ClInclude Include="GridTypesList.h" />
+    <ClInclude Include="Physics.h" />
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap.csv" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="test.json" />
+    <None Include="..\Assets\player_inventory.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Assets\GameMap_Lobby.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

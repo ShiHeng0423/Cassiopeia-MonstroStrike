@@ -6,8 +6,15 @@
 #include "Armor_add.h"
 #include "Weapon.h"
 
-struct Player {
+class Player {
+
+public:
+
+	//Player();
+	//~Player();
+
 	Object obj;
+	AEVec2 prevPos;
 
 	bool isFacingRight;
 	bool onFloor; //Added to check entity on floor, hence can jump
@@ -26,17 +33,26 @@ struct Player {
 	f32 mass;
 	
 	//Collision boxes
+	AABB prevcollisionBox;
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;
 
 	f32 attackTime;
 	bool burningEffect;
-	int combo_trig;
+	int comboTrig;
 	float comboTime;
 	int comboState;
 	f32 gravityForce;
+
+	//Player Stats
+	f32 maxHealth;
+	f32 currHealth;
+	f32 attack;
+	f32 defence;
+
+	bool isConversation;
 };
 
-Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
-void PlayerUpdate(Player& player);
+Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
+void PlayerUpdate(Player& player, bool isInventoryOpen);

@@ -8,8 +8,8 @@
 #include <chrono>
 #include <queue>
 #include <functional>  // for std::function
-#define camXBoundary (250.f)
-#define camFollowupSpeedX (0.05f)
+#define CAM_X_BOUNDARY (250.f)
+#define CAM_FOLLOW_UP_SPEED_X (0.05f)
 // Define a clock type for high-resolution time measurement
 using Clock = std::chrono::high_resolution_clock;
 
@@ -22,8 +22,9 @@ constexpr f32 comboWindowDuration = 1.0f;
 constexpr f32 PRESS_THRESHOLD = 0.5f;
 //Attack hold and atack release
 
-bool if_there_is_undealt_trigger_input = false; // identifier
-bool is_released = true;
+bool undealtTriggerInput = false; // identifier
+bool isReleased = true;
+bool if_first_input = false;
 
 using AnimationFunction = std::function<void(Player&, float)>;
 
@@ -50,6 +51,10 @@ auto comboTime = Clock::now();
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
+	//for every anima in the con_anima
+	//if there is an anima in the con_anima
+	//execute the function pointer (play_animation)
+
 	Player *player = new Player;
 	player->obj.img.pTex = AEGfxTextureLoad(filename);
 	player->obj.speed = speed;
@@ -79,57 +84,40 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	AEVec2Set(&player->equippedWeapon.Scale, 20.f, 20.f);
 	player->attackTime = 1.f;
 	player->isAttacking = false;
-	player->combo_trig= 0;
+	player->comboTrig= 0;
 	player->comboTime = 0.0f;
 	player->comboState = 0;
 	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
 
 	player->burningEffect = false;
+	player->isConversation = false;
+
+
+	//Player Stats
+	f32 maxHealth = 500.f;
+	f32 currHealth = maxHealth;
+	f32 attack = 100.f;
+	f32 defence = 50.f;
+
 	return player;
+
 }
 
-void PlayerUpdate(Player& player)
+
+void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
-
-	//X-Axis control
-	bool isDashing = false;
-	const f32 dashDuration = 0.2f; 
-	const f32 dashSpeedMultiplier = 20.0f;
-	const f32 dashCooldownTime = 1.0f; 
-	f32 dashCooldown = 0.0f;
-
-	//if (player.velocity.y < player.gravityForce + 0.001f)
-	//{
-	//	std::cout << "TIE\n";
-	//}
-
-	//if (player.velocity.y < player.gravityForce - 0.001f)
-	//{
-
-	//	std::cout << "HI\n";
-	//}
 
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
 	}
 
-	//Just for fun
-	if (AEInputCheckTriggered(AEVK_LSHIFT) && !isDashing && dashCooldown <= 0.0f) {
-		//isDashing = true;
-		//dashCooldown = dashCooldownTime;
-
-		//// Determine dash direction based on current movement
-		//if (AEInputCheckCurr(AEVK_D)) {
-		//	player.velocity.x += player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-		//	player.isFacingRight = true;
-		//}
-		//else if (AEInputCheckCurr(AEVK_A)) {
-		//	player.velocity.x -= player.obj.speed.x * dashSpeedMultiplier * AEFrameRateControllerGetFrameTime();
-		//	player.isFacingRight = false;
-		//}
+	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
+	{
+		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+		player.isFacingRight = true;
 	}
-	else
+	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
 		if (AEInputCheckCurr(AEVK_D)) {
 			player.velocity.x += player.obj.speed.x * AEFrameRateControllerGetFrameTime();
@@ -142,15 +130,7 @@ void PlayerUpdate(Player& player)
 	}
 
 	// Apply velocity constraints
-	player.velocity.x = AEClamp(player.velocity.x, -10.f, 10.f);
-
-	// Update dash cooldown
-	if (dashCooldown > 0.0f) {
-		dashCooldown -= AEFrameRateControllerGetFrameTime();
-		if (dashCooldown <= 0.0f) {
-			isDashing = false;
-		}
-	}
+	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
 
 
 	// Calculate the desired location
@@ -168,7 +148,7 @@ void PlayerUpdate(Player& player)
 	{
 		Player player;
 		Armor armor;
-		armor.armorType = Armor::Type::First;
+		armor.armorType = Armor::Type::FIRST;
 		armor.leather.defense = 20;
 
 		player.equippedArmor = armor;
@@ -182,7 +162,7 @@ void PlayerUpdate(Player& player)
 	{
 		Player player;
 		Armor armor;
-		armor.armorType = Armor::Type::Second;
+		armor.armorType = Armor::Type::SECOND;
 		armor.leather.defense = 50;
 
 		player.equippedArmor = armor;
@@ -194,10 +174,10 @@ void PlayerUpdate(Player& player)
 	// End of armor equip
 
 	//For jumping
-	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor)
+	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor && !isInventoryOpen)
 	{
 		player.onFloor = false;
-		player.velocity.y = 400.f;
+		player.velocity.y = 700.f;
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
@@ -207,7 +187,10 @@ void PlayerUpdate(Player& player)
 	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
 
 	//Player position update
-	player.obj.pos.y += player.velocity.y * AEFrameRateControllerGetFrameTime();
+
+	player.prevPos = player.obj.pos;
+	player.prevcollisionBox = player.collisionBox;
+	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 	player.obj.pos.x += player.velocity.x;
 
 	//Resetting main AABB box...
@@ -234,16 +217,20 @@ void PlayerUpdate(Player& player)
 	//std::cout << "Collision Normal Y: " << player.collisionNormal.y << std::endl;
 	//Update player weapon hit box
 
-	//Weapon hit box update only
-	if (AEInputCheckTriggered(AEVK_LBUTTON))
+	/*Weapon hit box update only*/
+	
+
+	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		triggeredTime = Clock::now();
-		if_there_is_undealt_trigger_input = true;
-		is_released = false;
+		undealtTriggerInput = true;
+		isReleased = false;
+		if_first_input = true;
+	
 	}
-	if (AEInputCheckReleased(AEVK_LBUTTON))
+	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 	{
-		is_released = true;
+		isReleased = true;
 	}
 
 	if (if_there_is_undealt_trigger_input)
@@ -281,9 +268,8 @@ void PlayerUpdate(Player& player)
 			if (player.comboState != 3)
 			{
 				player.comboState++;
-				player.comboTime += elapsedTime;
-				std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-				std::cout << "combo attack " + player.comboState << std::endl;
+				player.comboTime += (float)elapsedTime;
+
 			}
 
 			else
@@ -314,7 +300,6 @@ void PlayerUpdate(Player& player)
 			}
 
 		}
-
 		//else
 		//{
 		//	// Combo window expired + hold window
@@ -396,27 +381,4 @@ void PlayerUpdate(Player& player)
 		//		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 		//		player.attackTime = 1.f;
 		//}
-
-	}
-
-
-#pragma region Camera Section
-	//Camera region
-	AEVec2 cam;
-	AEGfxGetCamPosition(&cam.x, &cam.y);
-
-	//150.f refers to the cam boundary;
-	if ((player.expectedLocation.x > cam.x + camXBoundary) && player.isFacingRight)
-	{
-		AEVec2 desiredCamLocation{ cam.x + camXBoundary,0.f };
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x - camXBoundary, cam.y);
-	}
-	else if ((player.expectedLocation.x < cam.x - camXBoundary) && !player.isFacingRight)
-	{
-		AEVec2 desiredCamLocation{ cam.x - camXBoundary,0.f };
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
-		AEGfxSetCamPosition(desiredCamLocation.x + camXBoundary, cam.y);
-	}
-#pragma endregion
 }
