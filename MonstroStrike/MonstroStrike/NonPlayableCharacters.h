@@ -1,15 +1,16 @@
 #pragma once
 #include <AEEngine.h>
 #include "CollisionShape.h"
-
-enum TYPE_NPCS {
+#include "Player.h"
+#include <vector>
+enum NpcTypes {
 	NPC_NONE = 0,
 	NPC_BLACKSMITH_A,
 	NPC_BLACKSMITH_B,
 	NPC_QUEST_GIVER
 };
 
-struct NON_PLAYABLE_CHARACTERS
+struct NonPlayableCharacters
 {
 	AEVec2 position;
 	AEVec2 size;
@@ -24,15 +25,14 @@ struct NON_PLAYABLE_CHARACTERS
 	AEGfxTexture* pTexPortrait;
 	AEGfxTexture* pTexSprite;
 
-	TYPE_NPCS typeOfNPC;
+	NpcTypes typeOfNPC;
 };
 
 //Now just generalize 3 NPCs first...
 //NPC 1 -> Black Smith, NPC 2 -> Black Smith B, NPC 3 ->Quest giver
 
 void LoadNPC(); //Load textures, now only spawn at lobby level so don't need indicate which level i guess
-void InitializeNPC(); //Initialize positions etc
-void UpdateNPC(); //Update
+void InitializeNPC(std::vector<AEVec2> allocatedPositions); //Initialize positions etc
+void UpdateNPC(Player* player); //Update
 void FreeNPC(); //Free textures
 void DrawNPC(AEGfxVertexList& mesh);
-void UnloadNPC(); //Unload the mesh if have

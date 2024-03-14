@@ -2,20 +2,23 @@
 #include "Utils.h"
 #include "Player.h"
 #include "CollisionShape.h"
+#include "TransformMatrix.h"
+#include "AEEngine.h"
+#include "Physics.h"
 #include <vector>
+#include <iostream>
 
 
 
 
 
-
-enum ENEMY_DIR {
+enum EnemyDir {
 	ENEMY_DEFAULT = 0,
 	ENEMY_LEFT,
 	ENEMY_RIGHT,
 };
 
-enum ENEMY_STATES
+enum EnemyStates
 {
 	ENEMY_IDLE = 0,
 	ENEMY_CHASE,
@@ -23,14 +26,22 @@ enum ENEMY_STATES
 	ENEMY_TRANSITION,
 };
 
-enum ENEMY_TYPES 
+enum EnemyAttackStates {
+
+	ENEMY_ATTACK_DEFAULT = 0,
+	ENEMY_ATTACK_CHARGE,
+	ENEMY_ATTACK_JUMP,
+	ENEMY_ATTACK_REVERSE,
+	ENEMY_ATTACK_CHOOSING,
+};
+
+enum EnemyTypes 
 {
 	ENEMY_JUMPER = 0,
 	ENEMY_CHARGER,
 	ENEMY_FLY,
 	ENEMY_PASSIVE,
 	ENEMY_BOSS1,
-	ENEMY_BOSS2,
 };
 
 
@@ -40,7 +51,7 @@ struct Bullet {
 
 	float bulletSpeed;
 	AEVec2 bulletVel;
-	int lifetime;
+	int lifeTime;
 	AABB collisionBox;
 };
 
@@ -60,24 +71,33 @@ struct EnemyPart {
 
 
 struct Enemy {
+
+	EnemyPart wing1, wing2;		
 	Object obj;
-	AEGfxTexture* angrytex;
+	AEGfxTexture* angryTex;
 
-	AEVec2 starting_position;	//startinglocation whr enemy spawns
-	AEVec2 last_position;		//only used by flying enemy
-	AEVec2 waypoint;			//waypoints are for enemy idle back n forth points
-	int target_position;		//some enemies need target a specific location
-	bool loop_idle;
+	AEVec2 startingPosition;	//startinglocation whr enemy spawns
+	AEVec2 lastPosition;		//only used by flying enemy
+	AEVec2 wayPoint;			//wayPoints are for enemy idle back n forth points
+	s8 targetPosition;			//some enemies need target a specific location
+	bool loopIdle;
 
-	int enemyCurrent;
-	int enemyNext;
-	int enemyType;
+	s8 enemyCurrent;			//enemy current state
+	s8 enemyNext;				//enemy next state
+	s8 enemyType;				//Type of enemy eg.charger,boss
 	
-	bool isAlive;
-	bool isShooting;
-	bool isCollision;
-	bool isFlying;
-	bool isFalling;
+	s8 attackState;				//only the boss use it
+	
+	bool isAlive;				//alive or dead
+	bool isAttacking;			//in attack mode or not	
+	bool isCollision;			
+	bool isFlying;				//won't be affected by gravity	
+	bool isFalling;				//for gravity function
+	bool isCollidedWithPlayer;	//ideally use it to check AABB collision with player
+	bool isRecoil;				//only the charger uses it
+	bool hasDealtDmg;			//use to make enemy only deal 1 instance of dmg
+
+	bool isVisible;
 
 	f32 timePassed;				//use to "pause" the enemy 
 
@@ -95,10 +115,9 @@ struct Enemy {
 	AEVec2 velocity;			//speed is the scalar of the velocity
 //(stats)----------------------------------------------
 
-	f32 stuckTimer; 
-	bool onFloor; //Added to check entity on floor, hence can jump
-	//Gravity affection
-	AEVec2 collisionNormal; 
+	f32 stuckTimer;				//only fly enemy uses it
+	bool onFloor;				//Added to check entity on floor, hence can jump
+	AEVec2 collisionNormal;		//check with direction is the collision from
 
 	//Collision boxes
 	AABB collisionBox;
@@ -108,45 +127,31 @@ struct Enemy {
 	std::vector<Bullet> bullets;	// Shared vector container for bullets
 	AEVec2 spawnPoint;				//point the bullet spawns from
 
-
-	EnemyPart wing1, wing2;
 };
 
 
 
 
 
-void Enemy_Load(int enemy_type, std::vector<Enemy>& vecEnemy); //loads the sprite
+void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy); //loads the sprite
 void FreeEnemy(std::vector<Enemy>& vecEnemy);
-void Enemy_Init(AEVec2 scale, AEVec2 location, int startingState, Enemy& enemy);
-void Enemy_Update_Choose(Enemy& enemy, struct Player& player);
+void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
+void EnemyUpdateChoose(Enemy& enemy, class Player& player);
+
+//the functions to use in levels
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player);
+void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB);
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh);
 
 
 
 
 
 
-
-void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player);
-void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player);
-void ENEMY_FLY_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSS_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSSWING1_Update(Enemy& enemy, struct Player& player);
-void ENEMY_BOSSWING2_Update(Enemy& enemy, struct Player& player);
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player);
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player);
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player);
+void ENEMY_BOSS_Update(Enemy& enemy, class Player& player);
 
 
 
-//(EnemyUtils)-------------------------------------------------------------------------
-void MoveTowards(Enemy& moving_entity, AEVec2 target_position);
-void MoveTowardsFLY(Enemy& moving_entity, AEVec2 target_position);	//only for the flying enemy
-bool CanFire(Enemy& enemy);
-bool CanPartFire(EnemyPart& part);
-void SpawnBullet(AEVec2& enemy_position, AEVec2& player_position, std::vector<Bullet>& bullets);
-void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh);
-
-void Attack_Charge(Enemy& enemy, int target_position);
-bool areAligned(AEVec2 player_position, AEVec2 enemy_position);	//checks if player and enemy y position are the same
-void Jump(Enemy& enemy, f32 value);
-void isStuck(Enemy& enemy);
-
-//(EnemyUtils)-------------------------------------------------------------------------

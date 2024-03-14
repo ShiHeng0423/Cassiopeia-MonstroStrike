@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <string>
 
 //Author: Johny Yong
 //Email: j.yong\@digipen.edu
@@ -27,12 +28,9 @@ Number of cols
 
 \return Result of successful map load
 */
-bool MapLoader(const char *csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols) {
-    
-    std::cout << csvFilePath << std::endl;
-    std::ifstream file(csvFilePath, std::ios::in);
+bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols) {
 
-    std::cout << "In Loader: " << std::endl;
+    std::ifstream file(csvFilePath, std::ios::in);
 
     if (!file.is_open()) {
         std::cerr << "Error opening file: " << csvFilePath << std::endl;
@@ -47,21 +45,44 @@ bool MapLoader(const char *csvFilePath, std::vector<std::vector<MapCell>>& map, 
         }
 
         std::istringstream lineStream(line);
+        std::vector<MapCell> rowCells; // Temporary vector for the current row
 
         int col = 0;
-        while (col < cols)
+        char cellValue;
+        while (lineStream >> cellValue && col < cols)
         {
-            char cellValue;
-
-            while (lineStream >> cellValue)
+            if (cellValue != ',')
             {
-                if (cellValue != ',')
+                // Accumulate characters until a comma or end of line is encountered
+                std::string numberStr;
+                while (cellValue != ',' && cellValue != '\n' && lineStream)
                 {
-                    map[row][col].symbol = cellValue - '0';
-                    col++;
+                    numberStr += cellValue;
+                    lineStream >> cellValue; // Read the next character
                 }
+
+                // Convert the accumulated string to an integer
+                int number = std::stoi(numberStr);
+
+                MapCell cell;
+                cell.symbol = number;
+                //std::cout << cell.symbol << ",";
+                rowCells.push_back(cell); // Push the current cell into the row vector
+                col++;
             }
         }
+
+        // Ensure that the row vector has enough cells (if cols > number of cells in the row)
+        while (col < cols)
+        {
+            MapCell cell;
+            cell.symbol = 0; // Default value for missing cells
+            rowCells.push_back(cell);
+            col++;
+        }
+        //std::cout << "\n";
+
+        map.push_back(rowCells); // Push the row vector into the map
     }
     file.close();
     return true;
@@ -73,16 +94,16 @@ bool MapLoader(const char *csvFilePath, std::vector<std::vector<MapCell>>& map, 
 
 void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols)
 {
-    //std::cout << "In Printer: " << std::endl;
+    std::cout << "In Printer: " << std::endl;
 
-    //for (int i = 0; i < rows; i++)
-    //{
-    //    for (int j = 0; j < cols; j++)
-    //    {
-    //        std::cout << map[i][j].symbol << ' ';
-    //    }
-    //    std::cout << std::endl;
-    //}
+    for (int i = 0; i < rows; i++)
+    {
+        for (int j = 0; j < cols; j++)
+        {
+           // std::cout << map[i][j].symbol << ' ';
+        }
+       // std::cout << std::endl;
+    }
 }
 
 //This is for printing the map

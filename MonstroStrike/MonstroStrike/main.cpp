@@ -21,33 +21,13 @@
 #include "Physics.h"
 #include "GameStateManager.h"
 #include "Inventory.h"
+#include "MapTransition.h"
+#include "main.h"
 // ---------------------------------------------------------------------------
 // main
 
-namespace
-{
-	s32 cursorX, cursorY; //Mouse coordinate
-	const f32 friction = 0.95f; //Friction, const for now unless some tile add friction
-}
-
-struct Player
-{
-	AEMtx33 scale;
-	AEMtx33 rotation;
-	AEMtx33 translation;
-	AEMtx33 transformation;
-
-	AEVec2 size;
-	AEVec2 position;
-	AEVec2 velocity;
-	f32 mass;
-
-	AABB collisionBox;
-	AABB boxHeadFeet;
-	AABB arms;
-
-	bool canJump;
-} player;
+s8 fontID;
+AudioManager* audioManager;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -61,34 +41,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	// Using custom window procedure
 	AESysInit(hInstance, nCmdShow, 1600, 900, 1, 60, true, NULL);
-
+	//AESysSetFullScreen(1);
 	// Changing the window title
 	AESysSetWindowTitle("MonstroStrike");
 
 	//// reset the system modules
 	//AESysReset();
 
-	//Load Fonts
-	s8 pFont = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
-	//2D vector create
+	GSM_Initialize(GameStates::GAME_LOBBY);
+	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
+	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
+	audioManager = new AudioManager();
 
-	GSM_Initialize(GameStates::MainMenu);
-
-	while (current != GameStates::Quit)
+	while (current != GameStates::QUIT)
 	{
 		GSM_Update();
 		fpLoad();
 		fpInitialize();
-		Inventory::Load_Inventory();
 
 		// Game Loop
 		while (current == next)
 		{
 			// Informing the system about the loop's start
 			AESysFrameStart();
-
 			fpUpdate();
 			fpDraw();
+			MapTransitionDraw();
+
+			if (0 == AESysDoesWindowExist())
+				next = GameStates::QUIT;
 
 			// Informing the system about the loop's end
 			AESysFrameEnd();
@@ -97,11 +78,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		fpUnload();
 		current = next;
 	}
-	/*-----------Freeing Images and others----------*/
 
-	AEGfxDestroyFont(pFont);
-	//Resizing vector, clear content, then resize it to 0
-
+	MapTransitionUnload();//Unload Map Transition image here
+	AEGfxDestroyFont(fontID);
+	delete audioManager;
 	// free the system
 	AESysExit();
 }

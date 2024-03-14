@@ -14,8 +14,8 @@ namespace {
 
 void Particles::Update()
 {
-	position.x += velocity.x * AEFrameRateControllerGetFrameTime();
-	position.y += velocity.y * AEFrameRateControllerGetFrameTime();
+	position.x += velocity.x * (f32)AEFrameRateControllerGetFrameTime();
+	position.y += velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	//std::cout << "Active Particles: " << GetActiveParticleCount() << std::endl;
 	std::cout << "Particles rotation: " << rotate << std::endl;
@@ -38,7 +38,7 @@ void ParticleInitialize()
 		allParticles[i].scale = { 0 };
 		allParticles[i].transformation = { 0 };
 		allParticles[i].textureIndex = 0;
-		allParticles[i].particleType = PARTICLE_TYPE::TEST;
+		allParticles[i].particleType = ParticleType::TEST;
 		allParticles[i].rotate = 0.f;
 
 		allParticles[i].maximumLifeTime = 1.f;
@@ -63,9 +63,9 @@ void ParticleUpdate()
 
 			switch (allParticles[i].particleType)
 			{
-			case PARTICLE_TYPE::TEST:
+			case ParticleType::TEST:
 				break;
-			case PARTICLE_TYPE::TEST_2:
+			case ParticleType::TEST_2:
 				break;
 			default:
 				break;
@@ -82,8 +82,8 @@ void ParticleUpdate()
 
 			if (allParticles[i].lifeTime > 0.f)
 			{
-				allParticles[i].lifeTime -= AEFrameRateControllerGetFrameTime();
-				allParticles[i].alpha -= AEFrameRateControllerGetFrameTime();
+				allParticles[i].lifeTime -= (f32)AEFrameRateControllerGetFrameTime();
+				allParticles[i].alpha -= (f32)AEFrameRateControllerGetFrameTime();
 				//allParticles[i].rotate += 0.04f; //Just for testing
 			}
 			else
@@ -99,7 +99,7 @@ void ParticleUpdate()
 	}
 }
 
-void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, PARTICLE_TYPE particlePurpose)
+void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose)
 {
 
 	f32 angle = 0.f;
@@ -130,7 +130,7 @@ void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initi
 		//Setting initial velocities and textures index (Texture index maybe can just base on particle type)
 		switch (allParticles[index].particleType)
 		{
-		case PARTICLE_TYPE::TEST:
+		case ParticleType::TEST:
 
 			angle = static_cast<f32>(rand() % 360);
 			speed = static_cast<f32>(rand() % 60 + 10);
@@ -142,7 +142,7 @@ void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initi
 
 			allParticles[index].textureIndex = 0;
 			break;
-		case PARTICLE_TYPE::TEST_2:
+		case ParticleType::TEST_2:
 			allParticles[index].velocity.x = -10.f;
 			allParticles[index].velocity.y = -20.f;
 
@@ -192,6 +192,7 @@ void ParticlesFree()
 	}
 
 	particleTextureList.clear();
+	inactiveParticles.clear();
 }
 
 void ParticlesAddTexture(const char* fileName)
@@ -214,7 +215,7 @@ void ParticlesDeactivate(int index)
 			allParticles[index].scale = { 0 };
 			allParticles[index].transformation = { 0 };
 			allParticles[index].textureIndex = 0;
-			allParticles[index].particleType = PARTICLE_TYPE::TEST;
+			allParticles[index].particleType = ParticleType::TEST;
 			allParticles[index].alpha = 1.f;
 			allParticles[index].rotate = 0.f;
 			allParticles[index].lifeTime = allParticles[index].maximumLifeTime;
@@ -231,7 +232,7 @@ int GetActiveParticleCount()
 	return activeCount;
 }
 
-int GetInactiveParticleCount()
+size_t GetInactiveParticleCount()
 {
 	return inactiveParticles.size();
 }

@@ -5,19 +5,19 @@
 
 bool AABBvsAABB(AABB firstBox, AABB secondBox)
 {
-	const f32 epsilon = -0.001f;
-	//Return false if there are no intersection found separated along axis
-	if (firstBox.maximum.x + epsilon < secondBox.minimum.x || firstBox.minimum.x > secondBox.maximum.x + epsilon)
-	{
-		return false;
-	}
-	if (firstBox.maximum.y + epsilon < secondBox.minimum.y || firstBox.minimum.y > secondBox.maximum.y + epsilon)
-	{
-		return false;
-	}
+    const f32 epsilon = -0.001f;
+    //Return false if there are no intersection found separated along axis
+    if (firstBox.maximum.x + epsilon < secondBox.minimum.x || firstBox.minimum.x > secondBox.maximum.x + epsilon)
+    {
+        return false;
+    }
+    if (firstBox.maximum.y + epsilon < secondBox.minimum.y || firstBox.minimum.y > secondBox.maximum.y + epsilon)
+    {
+        return false;
+    }
 
-	//Means at least one overlapping axis
-	return true;
+    //Means at least one overlapping axis
+    return true;
 }
 
 //bool CirclevsCircle(Circle first, Circle second)
@@ -67,7 +67,6 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
         if (penetrationDepth > 0) {
             f32 dampingFactor = 0.3f;
             position->x += penetrationDepth * dampingFactor;
-            velocity->x = 0.f;
         }
     }
     else if (collisionNormal->x == -1) // Colliding from left
@@ -75,10 +74,8 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
         penetrationDepth = firstArms.maximum.x - second.minimum.x;
         if (penetrationDepth > 0) {
             f32 dampingFactor = 0.3f;
-            
-            position->x -= penetrationDepth * dampingFactor;
-            velocity->x = 0.f;
 
+            position->x -= penetrationDepth * dampingFactor;
         }
     }
 

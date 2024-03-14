@@ -1,51 +1,114 @@
 #include "NonPlayableCharacters.h"
+#include "Player.h"
+#include <vector>
+#include <algorithm>
 
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
 
 namespace {
-	struct NON_PLAYABLE_CHARACTERS npcs[3];
+	struct NonPlayableCharacters npcs[3];
 
-	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NON_PLAYABLE_CHARACTERS& npc, TYPE_NPCS npcType);
+	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
 }
+
+
 
 void LoadNPC()
 {
 	npcs[0].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
 	npcs[1].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
-	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
+	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/border.png");
 
 	npcs[0].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
 	npcs[1].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
 	npcs[2].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
 }
 
-void InitializeNPC()
+void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 {
-	CreateNPCInstance(80.f, -155.f, 70.f, 70.f, npcs[0], NPC_BLACKSMITH_A);
-	CreateNPCInstance(160.f, -155.f, 70.f, 70.f, npcs[1], NPC_BLACKSMITH_B);
-	CreateNPCInstance(240.f, -155.f, 70.f, 70.f, npcs[2], NPC_QUEST_GIVER);
+	for (int i = 0; i < allocatedPositions.size(); i++)
+	{
+		AEVec2 pos = allocatedPositions[i];
+		switch (i) {
+		case 0:
+			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_BLACKSMITH_A);
+			break;
+		case 1:
+			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_BLACKSMITH_B);
+			break;
+		case 2:
+			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_QUEST_GIVER);
+			break;
+		default:
+			// Handle error or ignore if necessary
+			std::cerr << "Went out of range for enemy\n";
+			break;
+		}
+	}
 }
 
-void UpdateNPC()
+void UpdateNPC(Player* player)
 {
+	std::vector<std::pair<f32, s8>>collidedPlayer;
 	//Insert based on NPC TYPE
 	for (s8 i = 0; i < 3; i++)
 	{
 		switch (npcs[i].typeOfNPC)
 		{
 		case NPC_BLACKSMITH_A:
-			//Here to pop out options / messages
+			//Here to pop out options / messages to be able to interact to this npc
+			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			{
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1 });
+			}
 			break;
 		case NPC_BLACKSMITH_B:
 			//Here to pop out options / messages
-			break;		
+			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			{
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1});
+			}
+			break;
 		case NPC_QUEST_GIVER:
 			//Here to pop out options / messages
+			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			{
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1});
+			}
 			break;
 		default:
 			std::cout << "NPC " << i << " does not have a type?\n";
 			break;
 		}
+
+	}
+
+
+	//std::sort(collidedPlayer.begin(), collidedPlayer.end());
+	if (AEInputCheckTriggered(AEVK_F) && !collidedPlayer.empty())
+	{
+		switch (collidedPlayer[0].second)
+		{
+		case NPC_BLACKSMITH_A:
+			//Here to pop out options / messages to be able to interact to this npc
+			std::cout << "A ddd\n";
+
+			break;
+		case NPC_BLACKSMITH_B:
+			//Here to pop out options / messages
+			std::cout << "B ddd\n";
+
+			break;
+		case NPC_QUEST_GIVER:
+			std::cout << "C ddd\n";
+
+			//Here to pop out options / messages
+			break;
+		default:
+			break;
+		}
+		//interact
+		//function call (collidedPlayer[0].second) -> nearest npc to player
 	}
 }
 
@@ -68,7 +131,7 @@ void FreeNPC()
 	}
 }
 namespace {
-	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NON_PLAYABLE_CHARACTERS& npc, TYPE_NPCS npcType)
+	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType)
 	{
 		npc.rotation = { 0 };
 		AEMtx33Rot(&npc.rotation, 0.f);
