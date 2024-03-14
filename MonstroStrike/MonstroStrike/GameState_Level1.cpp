@@ -790,10 +790,10 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player
 {
 	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-	for (int i = 0; i < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+	for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
 	{
 		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-		for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+		for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
 		{
 			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 			{
@@ -840,10 +840,10 @@ void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Ene
 
 		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmp.obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i < (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
 			int enemyIndexX = (int)((tmp.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j < (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			for (int j = 0; j <= (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
 				switch (gridMap[enemyIndexY][enemyIndexX].typeOfGrid)
 				{

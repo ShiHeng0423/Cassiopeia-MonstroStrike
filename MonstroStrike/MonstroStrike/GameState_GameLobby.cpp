@@ -230,7 +230,6 @@ void Lobby_Update()
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 	CheckPlayerGridCollision(grids2D, player);
-
 	if (AEInputCheckTriggered(AEVK_I))
 	{
 		inventory_open = !inventory_open;
@@ -616,10 +615,10 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* 
 {
 	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-	for (int i = 0; i < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+	for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
 	{
 		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-		for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+		for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
 		{
 			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 			{

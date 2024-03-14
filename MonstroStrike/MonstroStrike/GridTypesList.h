@@ -10,5 +10,5 @@ enum GridTypes
     NPC_QUEST_GIVER_POS = 12,
 
     MAP_TRANSITION_GRID = 98,
-    NONE = 999
+    NONE = 100
 };
