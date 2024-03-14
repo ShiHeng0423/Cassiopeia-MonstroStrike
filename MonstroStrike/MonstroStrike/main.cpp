@@ -48,7 +48,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	//// reset the system modules
 	//AESysReset();
 
-	GSM_Initialize(GameStates::GAME_LOBBY);
+	GSM_Initialize(GameStates::SPLASHSCREEN);
 	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
 	audioManager = new AudioManager();
