@@ -50,6 +50,8 @@ public:
 	f32 currHealth;
 	f32 attack;
 	f32 defence;
+
+	bool isConversation;
 };
 
 Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

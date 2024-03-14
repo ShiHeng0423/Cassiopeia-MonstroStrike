@@ -35,16 +35,20 @@ void MapTransitionLoad() {
 	transitionalImageOBJ.transitionImage = AEGfxTextureLoad("Assets/TransitionalScreen.png");
 }
 
-void MapTransitionInit(AEVec2 playerPos) //Call when enter a new level
+void MapTransitionInit() //Call when enter a new level
 {
-	transitionalImageOBJ.animationSpeed = 1500.f;
+	AEVec2 transitInPos;
+	AEGfxGetCamPosition(&transitInPos.x, &transitInPos.y);
+	std::cout << transitInPos.x << " " << transitInPos.y << std::endl;
+
+	transitionalImageOBJ.animationSpeed = 2500.f;
 	transitionalImageOBJ.velocity = { 0 }; //No Veloicity
-	transitionalImageOBJ.active = true; //False by default, play animation function will set it true later
-	transitionalImageOBJ.position = { playerPos.x, playerPos.y }; //Set as 0,0 first but should not be visible
+	transitionalImageOBJ.active = false; //False by default, play animation function will set it true later
+	transitionalImageOBJ.position = { transitInPos.x, transitInPos.y }; //Set as player pos first but should not be visible
 	transitionalImageOBJ.destPosition = { 0 }; //Final destination for the player to move against
 	transitionalImageOBJ.translation = { 0 };
 	transitionalImageOBJ.rotation = { 0 }; //Why I even have this?
-	transitionalImageOBJ.size = { (f32)AEGfxGetWindowWidth() * 1.75f, (f32)AEGfxGetWindowHeight() * 1.75f}; //Set both to fit window
+	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 1.5f, (f32)AEGfxGetWindowHeight() * 1.5f }; //Set both to fit window
 	transitionalImageOBJ.scale = { 0 }; //Set scale as size
 	transitionalImageOBJ.transformation = { 0 };
 	
@@ -69,12 +73,12 @@ void MapTransitionInit(AEVec2 playerPos) //Call when enter a new level
 		break;
 	}
 
-	transitionalImageOBJ.PlayMapTransition(prevTransitionDir, GameStates::GAMESTATE_NONE);
+	transitionalImageOBJ.PlayMapTransition(transitionDir, nextGameState);
 }
 
 void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, GameStates nextLevel) //To call when exiting a level
 {
-	//std::cout << "Play Animation\n";
+	std::cout << "Play Animation\n";
 
 	transitionDir = directionToPlay;
 	transitionalImageOBJ.active = true;
@@ -82,8 +86,10 @@ void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, 
 	currentTransitState = TRANSITION_ENTER;
 }
 
-void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image is active
+void MapTransitionUpdate() //Update only when transition image is active
 {
+	//std::cout << transitionalImageOBJ.position.x  << " " << transitionalImageOBJ.position.y << " \n";
+	//std::cout << "Transit obj active: " << transitionalImageOBJ.active << "\n";
 	//Note to future self: Initial position need to get via min max XY of the entire map size
 	//Either that or get just outside camera view *Recommended
 	if (!transitionalImageOBJ.active)
@@ -95,32 +101,32 @@ void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image i
 	switch (currentTransitState)
 	{
 	case TRANSITION_ENTER:
+		AEVec2 transitPos;
+		AEGfxGetCamPosition(&transitPos.x, &transitPos.y);
 
 		if (nextGameState == GameStates::GAMESTATE_NONE) //Means just enter level
 		{
-			//transitionalImageOBJ.position = { playerPos.x , playerPos.y }; //Initial should be at player pos
-
 			switch (transitionDir)
 			{
 			case TRANSITION_UP: //Play up animation
 				transitionalImageOBJ.velocity.y = transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { playerPos.x, playerPos.y + AEGfxGetWindowHeight() * 1.5f};
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y + AEGfxGetWindowHeight() * 1.75f };
 				break;
 			case TRANSITION_DOWN: //Play down animation
 				transitionalImageOBJ.velocity.y = -transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { playerPos.x, playerPos.y - AEGfxGetWindowHeight() * 1.5f };
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y - AEGfxGetWindowHeight() * 1.75f };
 				break;
 			case TRANSITION_LEFT: //Play left animation
 				transitionalImageOBJ.velocity.x = -transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { playerPos.x - AEGfxGetWindowWidth() * 1.5f, playerPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x - AEGfxGetWindowWidth() * 1.75f, transitPos.y };
 				break;
 			case TRANSITION_RIGHT: //Play right animation
 				transitionalImageOBJ.velocity.x = transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { playerPos.x + AEGfxGetWindowWidth() * 1.5f, playerPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x + AEGfxGetWindowWidth() * 1.75f, transitPos.y };
 				break;
 			default:
 				std::cerr << "Cannot find animation to play\n";
@@ -134,35 +140,40 @@ void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image i
 			case TRANSITION_UP: //Play up animation
 				transitionalImageOBJ.velocity.y = transitionalImageOBJ.animationSpeed;
 				//Set initial starting position for this animation 
-				transitionalImageOBJ.position = { playerPos.x , playerPos.y - AEGfxGetWindowHeight() };
+				transitionalImageOBJ.position = { transitPos.x , transitPos.y - AEGfxGetWindowHeight()};
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y };
 				break;
 			case TRANSITION_DOWN: //Play down animation
 				transitionalImageOBJ.velocity.y = -transitionalImageOBJ.animationSpeed;
 				//Set initial starting position for this animation 
-				transitionalImageOBJ.position = { playerPos.x , playerPos.y + AEGfxGetWindowHeight() };
+				transitionalImageOBJ.position = { transitPos.x , transitPos.y + AEGfxGetWindowHeight() };
 				break;
 			case TRANSITION_LEFT: //Play left animation
 				transitionalImageOBJ.velocity.x = -transitionalImageOBJ.animationSpeed;
 				//Set initial starting position for this animation 
-				transitionalImageOBJ.position = { playerPos.x + AEGfxGetWindowWidth(), playerPos.y };
+				transitionalImageOBJ.position = { transitPos.x + AEGfxGetWindowWidth(), transitPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y};
 				break;
 			case TRANSITION_RIGHT: //Play right animation
 				transitionalImageOBJ.velocity.x = transitionalImageOBJ.animationSpeed;
 				//Set initial starting position for this animation 
-				transitionalImageOBJ.position = { playerPos.x - AEGfxGetWindowWidth(), playerPos.y };
+				transitionalImageOBJ.position = { transitPos.x - AEGfxGetWindowWidth(), transitPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x, transitPos.y };
+
 				break;
 			default:
 				std::cerr << "Cannot find animation to play\n";
 				break;
 			}
-			transitionalImageOBJ.destPosition = { playerPos.x, playerPos.y };
+
+			//std::cout << transitionalImageOBJ.position.x << " " << transitionalImageOBJ.destPosition.x << "\n";
 		}
 		currentTransitState = TRANSITION_UPDATE;
 		break;
 	case TRANSITION_UPDATE:
 
 		//std::cout << AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) << std::endl;
-		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 5.f)
+		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 20.f)
 		{
 			//std::cout << transitionalImageOBJ.position.x <<  " " << transitionalImageOBJ.position.y << std::endl;
 			//std::cout << transitionalImageOBJ.velocity.x << " " << transitionalImageOBJ.velocity.y << std::endl;
@@ -186,9 +197,12 @@ void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image i
 		}
 		else //Reached destination
 		{
+			std::cout << "False\n";
+
 			if (nextGameState != GameStates::GAMESTATE_NONE)
 			{
 				prevTransitionDir = transitionDir;
+				std::cout << "Entering game state: " << GameStates::GAME_LOBBY << "\n";
 				next = nextGameState; //Go next game state as long as it is not a none
 			}
 			transitionalImageOBJ.velocity = { 0 }; //Pause instance of moving the object
@@ -196,6 +210,7 @@ void MapTransitionUpdate(AEVec2 playerPos) //Update only when transition image i
 		}
 		break;
 	case TRANSITION_EXIT:
+		std::cout << "False\n";
 		transitionalImageOBJ.active = false; //Shouldn't be outside to the player view at this point
 		break;
 	}

@@ -1,8 +1,8 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
 
-namespace
-{
+
+namespace {
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
 	AEGfxVertexList* pMeshRed;
@@ -37,36 +37,11 @@ namespace
 }
 
 
-AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxTriAdd(
-		-0.5f, -0.5f, MeshColor, 0.0f, 1.0f, // bottom-left: red
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f, // bottom-right: green
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f); // top-left: blue
-
-	AEGfxTriAdd(
-		0.5f, -0.5f, MeshColor, 1.0f, 1.0f, // bottom-right: green
-		0.5f, 0.5f, MeshColor, 1.0f, 0.0f, // top-right: white
-		-0.5f, 0.5f, MeshColor, 0.0f, 0.0f); // top-left: blue
-
-	return AEGfxMeshEnd();
-}
-
-AEGfxVertexList* GenerateLineMesh(u32 MeshColor)
-{
-	AEGfxMeshStart();
-
-	AEGfxVertexAdd(-0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-	AEGfxVertexAdd(0.5f, 0.f, MeshColor, 1.0f, 1.0f);
-
-	return AEGfxMeshEnd();
-}
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* player);
 
 void Lobby_Load()
 {
-	player = PlayerInitialize("Assets/Border.png", {70.f, 70.f}, {0.f, -400.f}, {40.f, 0.f}, true);
+	player = PlayerInitialize("Assets/Border.png", { 0.f,0.f }, { 0.f,0.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	auto fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 
@@ -100,7 +75,6 @@ void Lobby_Load()
 
 void Lobby_Initialize()
 {
-	MapTransitionInit(player->obj.pos);
 
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
@@ -127,6 +101,9 @@ void Lobby_Initialize()
 			case 12:
 				grids2D[rows][cols].typeOfGrid = NPC_QUEST_GIVER_POS;
 				break;
+			case 97:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+				break;
 			case 98:
 				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
 				break;
@@ -137,7 +114,7 @@ void Lobby_Initialize()
 		}
 	}
 
-	//For Initializing the grids
+	//For Initializing the grids and positions
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
 		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
@@ -155,21 +132,27 @@ void Lobby_Initialize()
 			case 12:
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
+			case 97:
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				break;
 			default:
 				break;
 			}
 		}
 	}
 
+	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
 
 	//looping thru to init all enemy variables
 	Inventory::InitInventory();
 	ParticleInitialize();
+	MapTransitionInit();
 }
 
 void Lobby_Update()
@@ -189,50 +172,7 @@ void Lobby_Update()
 	               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
 	               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
-
-	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
-	{
-		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
-		{
-			switch (grids2D[rows][cols].typeOfGrid)
-			{
-			case NORMAL_GROUND:
-				//Collision check
-				//Resolve + Vertical Collision only for entity x (wall or ground)
-				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
-				{
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
-					                         &player->collisionNormal, &player->obj.pos,
-					                         &player->velocity, &player->onFloor, &player->gravityForce,
-					                         &player->isFalling);
-				}
-
-			//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-				{
-					player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
-					                           &player->collisionNormal, &player->obj.pos,
-					                           &player->velocity);
-				}
-				break;
-			case MAP_TRANSITION_GRID:
-				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
-				{
-					//std::cout << "Collided\n";MainMenu_Song
-					if (!transitionalImageOBJ.active)
-					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
-					}
-				}
-				break;
-			case EMPTY:
-				break;
-			}
-		}
-	}
+	CheckPlayerGridCollision(grids2D, player);
 
 	if (AEInputCheckTriggered(AEVK_I))
 	{
@@ -244,9 +184,9 @@ void Lobby_Update()
 		Inventory::OpenInventory();
 	}
 
-	UpdateNPC();
+	UpdateNPC(player);
 	ParticleUpdate();
-	MapTransitionUpdate(player->obj.pos);
+	MapTransitionUpdate();
 }
 
 void Lobby_Draw()
@@ -436,4 +376,52 @@ void Lobby_Unload()
 	delete player;
 	delete cam;
 	delete menu;
+}
+
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* player)
+{
+	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
+
+	for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+	{
+		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+		for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+		{
+			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+				}
+
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity);
+				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					//std::cout << "Collided\n";MainMenu_Song
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
+					}
+				}
+				break;
+			case EMPTY:
+				break;
+			}
+			playerIndexX += 1;
+		}
+		playerIndexY += 1;
+	}
 }

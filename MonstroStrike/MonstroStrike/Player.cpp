@@ -92,6 +92,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 	//// change the hitbox
 	//AEVec2Set(&player->equippedWeapon->Scale, 30.f, 20.f);
 	player->burningEffect = false;
+	player->isConversation = false;
 
 
 	//Player Stats
@@ -375,27 +376,4 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		//		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
 		//		player.attackTime = 1.f;
 		//}
-
-	
-
-
-#pragma region Camera Section
-	//Camera region
-	//AEVec2 cam;
-	//AEGfxGetCamPosition(&cam.x, &cam.y);
-
-	////150.f refers to the cam boundary;
-	//if ((player.expectedLocation.x > cam.x + CAM_X_BOUNDARY) && player.isFacingRight)
-	//{
-	//	AEVec2 desiredCamLocation{cam.x + CAM_X_BOUNDARY, 0.f};
-	//	AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
-	//	AEGfxSetCamPosition(desiredCamLocation.x - CAM_X_BOUNDARY, cam.y);
-	//}
-	//else if ((player.expectedLocation.x < cam.x - CAM_X_BOUNDARY) && !player.isFacingRight)
-	//{
-	//	AEVec2 desiredCamLocation{cam.x - CAM_X_BOUNDARY, 0.f};
-	//	AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
-	//	AEGfxSetCamPosition(desiredCamLocation.x + CAM_X_BOUNDARY, cam.y);
-	//}
-#pragma endregion
 }
