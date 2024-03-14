@@ -95,6 +95,9 @@ namespace Inventory
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
 
+			if (items.Size() == 0)
+				return inventory;
+
 			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
 
@@ -182,7 +185,7 @@ namespace Inventory
 	{
 		std::cout << "start writing JSON" << std::endl;
 
-		 Document json;
+		 Document json = nullptr;
 		 json.SetObject();
 
 		Value items( kArrayType);
@@ -195,8 +198,10 @@ namespace Inventory
 
 		for (const auto& item : inventory)
 		{
-			Value ind_item(kObjectType);
+			if(item.ID < 0)
+				continue;
 
+			Value ind_item(kObjectType);
 			ind_item.AddMember("UID", Value(item.UID.c_str(), json.GetAllocator()), json.GetAllocator());
 			ind_item.AddMember("ID", item.ID, json.GetAllocator());
 			ind_item.AddMember("name", Value(item.name.c_str(), json.GetAllocator()), json.GetAllocator());
@@ -240,20 +245,21 @@ namespace Inventory
 		std::cout << buffer.GetString() << std::endl;
 
 		
-		 std::ofstream ofs(filepath);
+		 std::ofstream ofs;
 
-
+		 ofs.open(filepath,std::fstream::out);
 
 		if (ofs.is_open())
 		{
 			ofs << buffer.GetString();
-			ofs.close();
 			std::cout << "Successfully wrote to the JSON file: " << filepath << std::endl;
 		}
 		else
 		{
 			std::cerr << "Failed to open the output JSON file: " << filepath << std::endl;
 		}
+
+		ofs.close();
 
 	}
 
@@ -281,25 +287,25 @@ namespace Inventory
 	}
 
 
-		void SwapInventory(Item& lhs, Item& rhs)
-		{
-			Item tmp = lhs;
-			lhs = rhs;
-			rhs = tmp;
+	void SwapInventory(Item& lhs, Item& rhs)
+	{
+		Item tmp = lhs;
+		lhs = rhs;
+		rhs = tmp;
 
-		}
+	}
 
-		// Function to get an item by its ID
-		Item GetItemById(int id) {
-			// Iterate through all items to find the one with the matching ID
-			for (const Item& item : allItems) {
-				if (item.ID == id) {
-					return item;
-				}
+	// Function to get an item by its ID
+	Item GetItemById(int id) {
+		// Iterate through all items to find the one with the matching ID
+		for (const Item& item : allItems) {
+			if (item.ID == id) {
+				return item;
 			}
-			// Return a default item if the ID is not found
-			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,GL_NONE, true, 1,1 };
 		}
+		// Return a default item if the ID is not found
+		return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,GL_NONE, true, 1,1 };
+	}
 
 
 
@@ -715,7 +721,7 @@ namespace Inventory
 	{
 		playerInventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
 		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
-		equippedGear = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
+		equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
@@ -738,13 +744,27 @@ namespace Inventory
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 
-		Item nothing;
-		nothing.ID = -999;
+		Item nothing {"", -999, "", "",
+			IT_NONE, IR_NONE, GL_NONE, 0,
+			false, 0, 0, 0};
+		//nothing.ID = -999;
 
 		for (size_t i = 0; i < 5; ++i)
 		{
-			equippedGear[i] = nothing;
-			equipmentDisplay[i].Item = nothing;
+			//fillup equippedGear vector with empty elements if less than maxslots occupied
+			if(equippedGear.size() < 5)
+			{
+				equippedGear.push_back(nothing);
+			}
+
+			if(equippedGear[i].ID < 0)
+			{
+				equipmentDisplay[i].Item = nothing;
+			}else
+			{
+				equipmentDisplay[i].Item = equippedGear[i];
+			}
+			
 		}
 
 
@@ -766,7 +786,13 @@ namespace Inventory
 		index = 0;
 		for (ButtonGearUI& button : Inventory::equipmentDisplay)
 		{
-			button.img.pTex = blank;
+			if(button.Item.ID<0)
+			{
+				button.img.pTex = blank;
+			}else
+			{
+				button.img.pTex = Gear[button.Item.ID];
+			}
 			AEVec2Set(&button.img.scale, 60.f, 60.f);
 			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 			index++;
@@ -776,7 +802,8 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(playerInventory, "./Assets/SaveFiles/saved_player_inventory.json");
+		WriteJsonFile(playerInventory, "Assets/SaveFiles/player_inventory.json");
+		WriteJsonFile(equippedGear, "Assets/SaveFiles/equipped_gears.json");
 	}
 
 	void FreeInventory()
