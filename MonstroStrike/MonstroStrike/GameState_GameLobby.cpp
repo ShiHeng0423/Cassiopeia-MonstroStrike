@@ -237,51 +237,7 @@ void Lobby_Update()
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 	CheckPlayerGridCollision(grids2D, player);
-<<<<<<< HEAD
-=======
 
-	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
-	{
-		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
-		{
-			switch (grids2D[rows][cols].typeOfGrid)
-			{
-			case NORMAL_GROUND:
-					//Collision check
-					//Resolve + Vertical Collision only for entity x (wall or ground)
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
-						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
-						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-							&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
-					}
-
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
-						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
-							&player->velocity);
-					}
-				break;
-			case MAP_TRANSITION_GRID:
-				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
-				{
-					//std::cout << "Collided\n";MainMenu_Song
-					if (!transitionalImageOBJ.active)
-					{
-						//std::cout << grids2D[rows][cols].size.x << " " << grids2D[rows][cols].size.y << " Pos\n";
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
-					}
-				}
-				break;
-			case EMPTY:
-				break;
-			}
-		}
-	}
-
->>>>>>> parent of ecf486f (Revert "Merge remote-tracking branch 'origin/JohnyYong' into Shi-Heng")
 	if (AEInputCheckTriggered(AEVK_I))
 	{
 		inventory_open = !inventory_open;

@@ -911,7 +911,7 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player
 					//std::cout << "Collided\n";MainMenu_Song
 					if (!transitionalImageOBJ.active)
 					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
 					}
 				}
 				break;
