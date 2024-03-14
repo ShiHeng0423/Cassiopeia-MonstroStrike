@@ -416,18 +416,10 @@ void Lobby_Free()
 void Lobby_Unload()
 {
 	Inventory::SaveInventory();
+	Inventory::FreeInventory();
 
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
-
-	for (int i = 0; i < 10; ++i)
-	{
-		AEGfxTextureUnload(Gear[i]);
-	}
-
-
-	AEGfxTextureUnload(inventoryBackground.img.pTex);
-	AEGfxTextureUnload(equipmentBackground.img.pTex);
 
 
 	AEGfxTextureUnload(player->obj.img.pTex);

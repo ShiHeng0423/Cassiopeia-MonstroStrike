@@ -33,13 +33,16 @@
 using namespace rapidjson;
 
  std::vector< Item> playerInventory;
+ std::vector< Item> fullInventoryList;
+
+
  int Player_Inventory_Count;
 
  AEGfxTexture* Gear[25];
  s16 snapBack = -1;
 
  Player* playerReference;
- Item equippedGear[5];
+ std::vector< Item> equippedGear;
 
  ButtonGearUI inventoryBackground;
  ButtonGearUI inventoryButton[25];
@@ -55,19 +58,12 @@ namespace Inventory
 	//Global Variable
 	
 	std::vector<Item> allItems; //list of all items in game
+	//std::vector<ButtonGearUI> equipmentDisplay[5];
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
-		Item nothing{};
-		nothing.ID = -99999;
-		for (int i =0; i< 5; ++i)
-		{
-			equippedGear[i] = nothing;
-			equipmentDisplay[i].Item = equippedGear[i];
-		}
-
 		
 		//std::vector<Inventory> inventory = new std::vector<Inventory>[1000];
 		std::vector<Item> inventory;
@@ -101,7 +97,7 @@ namespace Inventory
 
 			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
-				//std::cout << loc << std::endl;
+
 
 				const Value& ind_item = items[loc];
 
@@ -264,7 +260,7 @@ namespace Inventory
 
 
 	//Update inventory vector every frame
-	void UpdatePlayerInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
+	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
 		playerInventoryCount = 0;
 		for(size_t i=0; i<inventory.size(); ++i)
@@ -310,7 +306,7 @@ namespace Inventory
 	void OpenInventory()
 	{
 		//update item position
-		Inventory::UpdatePlayerInventory(playerInventory, inventoryButton);
+		Inventory::UpdateInventory(playerInventory, inventoryButton);
 		s16 index = 0;
 
 
@@ -608,10 +604,10 @@ namespace Inventory
 						EquipToBody(equipping);
 						
 
-					//
-					// 	// Remove previous item effect and apply new item effect
-					// 	// updatePlayerStats(player);
-					// }
+					
+					// 	Remove previous item effect and apply new item effect
+						UpdatePlayerStats(player, equippedGear);
+
 				}
 			
 		}
@@ -632,12 +628,12 @@ namespace Inventory
 
 			switch (obj.gear_loc)
 			{
-		case weaponry:
+			case weaponry:
 			if (equippedGear[obj.gear_loc].ID >= 0)
 			{
 				backup[obj.gear_loc] = equippedGear[obj.gear_loc];
-
 			}
+
 			equippedGear[obj.gear_loc] = obj;
 			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
 
@@ -652,14 +648,10 @@ namespace Inventory
 				if (equippedGear[obj.gear_loc].ID >= 0)
 				{
 					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
-
 				}
 
 			equippedGear[obj.gear_loc] = obj;
 			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
-
-			std::cout << "Display: helm, " << equippedGear->name << std::endl;
-
 
 			//playerReference->equippedArmor.defence = obj.defence;
 			break;
@@ -722,6 +714,8 @@ namespace Inventory
 	void LoadInventory()
 	{
 		playerInventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
+		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
+		equippedGear = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
 
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
@@ -742,6 +736,16 @@ namespace Inventory
 
 
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
+
+
+		Item nothing;
+		nothing.ID = -999;
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+			equippedGear[i] = nothing;
+			equipmentDisplay[i].Item = nothing;
+		}
 
 
 	}
@@ -773,5 +777,20 @@ namespace Inventory
 	void SaveInventory()
 	{
 		WriteJsonFile(playerInventory, "./Assets/SaveFiles/saved_player_inventory.json");
+	}
+
+	void FreeInventory()
+	{
+		AEGfxTextureUnload(blank);
+
+
+		for (int i = 0; i <= 10; ++i)
+		{
+			AEGfxTextureUnload(Gear[i]);
+		}
+
+
+		AEGfxTextureUnload(inventoryBackground.img.pTex);
+		AEGfxTextureUnload(equipmentBackground.img.pTex);
 	}
 }
