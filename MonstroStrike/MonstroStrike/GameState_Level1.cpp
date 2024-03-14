@@ -228,7 +228,20 @@ void Level1_Update()
 
 #pragma region GridSystem
 	CheckPlayerGridCollision(grids2D, player);
-	CheckEnemyGridCollision(grids2D, vecEnemy);
+	//CheckEnemyGridCollision(grids2D, vecEnemy);
+
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+	{
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+		{
+			switch (grids2D[rows][cols].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+				AllEnemyNBulletCollisionCheck(vecEnemy, grids2D[rows][cols].collisionBox);
+				break;
+			}
+		}
+	}
 #pragma endregion
 
 #pragma region InventorySystem
