@@ -139,7 +139,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
 void EnemyUpdateChoose(Enemy& enemy, class Player& player);
 
 //the functions to use in levels
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, struct Player& player);
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player);
 void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB);
 void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh);
 

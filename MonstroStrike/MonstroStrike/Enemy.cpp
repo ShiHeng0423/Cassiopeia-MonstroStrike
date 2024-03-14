@@ -268,7 +268,7 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 	enemy.boxArms.maximum.x += horizontalOffset;
 }
 
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, struct Player& player) {
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player) {
 	for (Enemy& enemy : vecEnemyVar)
 	{
 		if (enemy.isAlive)

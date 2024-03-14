@@ -571,37 +571,49 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player
 
 void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy)
 {
-	AllEnemyNBulletCollisionCheck(vecEnemy, grids2D[rows][cols].collisionBox);
+	for (Enemy& tmpEnemy : enemy)
+	{
 
-	for (Enemy& tmp : enemy) {
+		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
 
-		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmp.obj.pos.y) / (gridMap[0][0].size.x));
-
-		for (int i = 0; i <= (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
-			int enemyIndexX = (int)((tmp.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+			for (int j = 0; j <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
-				switch (gridMap[enemyIndexY][enemyIndexX].typeOfGrid)
-				{
-				case NORMAL_GROUND:
-					if (AABBvsAABB(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) {
-						tmp.collisionNormal = AABBNormalize(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
-						ResolveVerticalCollision(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmp.collisionNormal, &tmp.obj.pos,
-							&tmp.velocity, &tmp.onFloor, &tmp.gravityForce, &tmp.isFalling);
-					}
 
-					if (AABBvsAABB(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
-					{
-						tmp.collisionNormal = AABBNormalize(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
-						ResolveHorizontalCollision(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmp.collisionNormal, &tmp.obj.pos,
-							&tmp.velocity);
-					}
-					break;
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) 
+				{
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
+						&tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
+						&tmpEnemy.isFalling);
 				}
-				enemyIndexX += 1;
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+				{
+					tmpEnemy.isCollision = true;
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveHorizontalCollision(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity);
+					tmpEnemy.loopIdle = false;
+				}
+
+				//if (tmpEnemy.enemyType == ENEMY_FLY || tmpEnemy.enemyType == ENEMY_BOSS1)
+				//{
+				//	for (Bullet& bullet : tmpEnemy.bullets)
+				//	{
+				//		if (AABBvsAABB(bullet.collisionBox, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+				//		{
+				//			bullet.lifeTime = 0; //makes bullet erase
+				//		}
+				//	}
+				//}
 			}
-			enemyIndexY += 1;
 		}
 	}
 }
