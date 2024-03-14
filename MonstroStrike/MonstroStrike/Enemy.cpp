@@ -341,25 +341,12 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 
 
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-				if (enemy.isAttacking) {
-					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-				}
-				else {
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				}
-
 
 				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-				if (enemy.isAttacking) {
-					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-				}
-				else {
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				}
 
 				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
