@@ -102,7 +102,7 @@ void Attack_Charge(Enemy& enemy, s8 targetPosition, f32 speed) {
 
 }
 bool AreAligned(AEVec2 playerPosition, AEVec2 enemyPosition) {
-	float tolerance = 10.f;
+	float tolerance = 25.f;
 	return std::abs(playerPosition.y - enemyPosition.y) < tolerance;
 }
 
