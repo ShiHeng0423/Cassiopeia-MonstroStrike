@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-void ENEMY_CHARGER_Update(Enemy& enemy, struct Player& player)
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();

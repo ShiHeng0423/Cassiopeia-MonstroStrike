@@ -6,7 +6,13 @@
 #include "Armor_add.h"
 #include "Weapon.h"
 
-struct Player {
+class Player {
+
+public:
+
+	//Player();
+	//~Player();
+
 	Object obj;
 	AEVec2 prevPos;
 
@@ -44,6 +50,8 @@ struct Player {
 	f32 currHealth;
 	f32 attack;
 	f32 defence;
+
+	bool isConversation;
 };
 
 Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

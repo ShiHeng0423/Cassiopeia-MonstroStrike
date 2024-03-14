@@ -9,7 +9,7 @@
 
 
 
-void ENEMY_FLY_Update(Enemy& enemy, struct Player& player)
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos

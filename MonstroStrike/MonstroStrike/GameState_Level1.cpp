@@ -59,6 +59,10 @@ s16 playerGridMinY;
 s16 playerGridMaxX;
 s16 playerGridMaxY;
 
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player);
+
+void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy);
+
 void Level1_Load()
 {
 	//loading texture only, push back into the vector
@@ -235,7 +239,7 @@ void Level1_Update()
 	if (AEInputCheckTriggered(AEVK_0))
 	{
 		//next = GameStates::Quit;
-		AEVec2 test{0.f, 0.f};
+		AEVec2 test{100.f, 100.f};
 		cam->LookAhead(test);
 	}
 	if (AEInputCheckCurr(AEVK_1))
@@ -868,4 +872,87 @@ void Level1_Unload()
 	delete player;
 	delete cam;
 	delete menu;
+}
+
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player)
+{
+	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
+
+	for (int i = 0; i < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+	{
+		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+		for (int j = 0; j < (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+		{
+			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+				}
+
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity);
+				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					//std::cout << "Collided\n";MainMenu_Song
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
+					}
+				}
+				break;
+			case EMPTY:
+				break;
+			}
+			playerIndexX += 1;
+		}
+		playerIndexY += 1;
+	}
+}
+
+void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy)
+{
+	for (Enemy& tmp : enemy) {
+
+		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmp.obj.pos.y) / (gridMap[0][0].size.x));
+
+		for (int i = 0; i < (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		{
+			int enemyIndexX = (int)((tmp.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+			for (int j = 0; j < (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			{
+				switch (gridMap[enemyIndexY][enemyIndexX].typeOfGrid)
+				{
+				case NORMAL_GROUND:
+					if (AABBvsAABB(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) {
+						tmp.collisionNormal = AABBNormalize(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+						ResolveVerticalCollision(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmp.collisionNormal, &tmp.obj.pos,
+							&tmp.velocity, &tmp.onFloor, &tmp.gravityForce, &tmp.isFalling);
+					}
+
+					if (AABBvsAABB(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+					{
+						tmp.collisionNormal = AABBNormalize(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+						ResolveHorizontalCollision(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmp.collisionNormal, &tmp.obj.pos,
+							&tmp.velocity);
+					}
+					break;
+				}
+				enemyIndexX += 1;
+			}
+			enemyIndexY += 1;
+		}
+	}
 }

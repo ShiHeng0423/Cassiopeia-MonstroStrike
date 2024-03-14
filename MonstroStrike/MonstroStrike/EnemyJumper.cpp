@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
     const f32 frameTime = (f32)AEFrameRateControllerGetFrameTime();
     const f32 jumpForce = 500.f;
 
