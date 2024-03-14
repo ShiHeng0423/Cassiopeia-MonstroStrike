@@ -3,7 +3,7 @@
 
 
 
-void ENEMY_JUMPER_Update(Enemy& enemy, struct Player& player) {
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
     const f32 frameTime = (f32)AEFrameRateControllerGetFrameTime();
     f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
     enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.collisionBox);

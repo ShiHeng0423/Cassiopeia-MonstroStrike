@@ -193,7 +193,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 
 
-void EnemyUpdateChoose(Enemy& enemy, struct Player& player) {
+
+void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 //(update bullet)---------------------------------------------------------------------------------------
 	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;

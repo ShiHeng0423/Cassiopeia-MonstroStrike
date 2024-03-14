@@ -46,18 +46,19 @@ enum Rarity
 	UNIQUE
 };
 
-enum Armour_Location
+enum Gear_Location
 {
-	AL_NONE = 0,
-	HEAD,
-	BODY,
-	PANTS,
-	BOOTS
+	head = 0,
+	body,
+	weaponry,
+	pants,
+	boots,
+	GL_NONE
+
 };
 
 struct Item
 {
-
 	std::string UID;
 	int ID;
 	std::string name;
@@ -65,14 +66,13 @@ struct Item
 
 	Item_Type item_type;
 	Rarity rarity;
-	Armour_Location armour_loc;
+	Gear_Location gear_loc;
 
 	int quantity;
 	bool stackable;
 	int health;
 	int attack;
 	int defence;
-	
 };
 
 
@@ -89,16 +89,28 @@ extern std::vector< Item> playerInventory;
 extern int Player_Inventory_Count;
 
 extern AEGfxTexture* Gear[25];
+extern s16 snapBack;
 
 extern Player* playerReference;
-extern Item equippedArmour[4];
-extern Item equippedWeapon;
+extern std::vector< Item> equippedGear;
+
+extern ButtonGearUI inventoryBackground;
+extern ButtonGearUI inventoryButton[25];
+
+extern ButtonGearUI equipmentBackground;
+
+extern AEGfxTexture* blank;
+
 
 namespace Inventory
 {
 	
 	extern std::vector<Item> allItems; //list of all items in game
+	
+	//extern std::vector<ButtonGearUI> equipmentDisplay[5];
 	extern ButtonGearUI equipmentDisplay[5];
+
+	extern bool inventoryOpen;
 
 
 
@@ -119,6 +131,8 @@ namespace Inventory
 
 	Item GetItemById(int id);
 
+	void OpenInventory();
+
 	void ItemPickUp(Item& item);
 	void ItemDrop();
 
@@ -127,8 +141,10 @@ namespace Inventory
 	void ApplyItemEffect(Player& player, const Item& item);
 	void UseItem(int index, ButtonGearUI& item, Player& player);
 	
-
+	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems);
 	void SaveInventory();
+
+	void FreeInventory();
 
 }
 

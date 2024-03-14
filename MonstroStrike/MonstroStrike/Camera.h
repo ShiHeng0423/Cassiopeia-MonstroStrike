@@ -15,17 +15,19 @@ public:
 	f32  GetCameraScreenY() const;
 
 	AEVec2 GetCameraWorldPoint() const;
+
 private:
 	bool lookAhead;
 	bool lookBack;
 	bool cameraOnHold;
 
-	f64 shakeTimer;
-	f64 lookbackTimer;
+	f32 shakeTimer;
+	f32 lookbackTimer;
 	
 	f32 screenX;
 	f32 screenY;
 
 	AEVec2 worldCoordinate;
-	AEVec2 lookAheadDir;
+	AEVec2 currLookAheadDir;
+	AEVec2 expectedLookAheadDir;
 };

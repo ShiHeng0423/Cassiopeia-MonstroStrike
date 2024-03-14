@@ -32,30 +32,38 @@
 
 using namespace rapidjson;
 
-std::vector<Item> playerInventory;
-int playerInventoryCount;
-Player* playerReference = nullptr;
-Item equippedArmour[4];
-Item equippedWeapon;
-AEGfxTexture* Gear[25];
+ std::vector< Item> playerInventory;
+ std::vector< Item> fullInventoryList;
+
+
+ int Player_Inventory_Count;
+
+ AEGfxTexture* Gear[25];
+ s16 snapBack = -1;
+
+ Player* playerReference;
+ std::vector< Item> equippedGear;
+
+ ButtonGearUI inventoryBackground;
+ ButtonGearUI inventoryButton[25];
+
+ ButtonGearUI equipmentBackground;
+
+ AEGfxTexture* blank;
+
+ int playerInventoryCount;
 
 namespace Inventory
 {
 	//Global Variable
 	
 	std::vector<Item> allItems; //list of all items in game
+	//std::vector<ButtonGearUI> equipmentDisplay[5];
 	ButtonGearUI equipmentDisplay[5];
+	bool inventoryOpen;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
-		Item nothing{};
-		nothing.ID = -99999;
-		equippedWeapon = nothing;
-		for (int i =0; i< 4; ++i)
-		{
-			equippedArmour[i] = nothing;
-		}
-
 		
 		//std::vector<Inventory> inventory = new std::vector<Inventory>[1000];
 		std::vector<Item> inventory;
@@ -89,7 +97,7 @@ namespace Inventory
 
 			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
-				//std::cout << loc << std::endl;
+
 
 				const Value& ind_item = items[loc];
 
@@ -101,7 +109,7 @@ namespace Inventory
 				newItem.description = ind_item["description"].GetString();
 				newItem.item_type = static_cast<Item_Type>(ind_item["item_type"].GetInt());
 				newItem.rarity = static_cast<Rarity> (ind_item["rarity"].GetInt());
-				newItem.armour_loc = static_cast<Armour_Location> (ind_item["armour_location"].GetInt());
+				newItem.gear_loc = static_cast<Gear_Location> (ind_item["gear_location"].GetInt());
 				newItem.quantity = ind_item["quantity"].GetInt();
 				newItem.stackable = ind_item["stackable"].GetBool();
 				newItem.health = ind_item["health"].GetInt();
@@ -188,9 +196,7 @@ namespace Inventory
 		for (const auto& item : inventory)
 		{
 			Value ind_item(kObjectType);
-			{
-				ind_item.AddMember("UID", "hi",json.GetAllocator());
-			}
+
 			ind_item.AddMember("UID", Value(item.UID.c_str(), json.GetAllocator()), json.GetAllocator());
 			ind_item.AddMember("ID", item.ID, json.GetAllocator());
 			ind_item.AddMember("name", Value(item.name.c_str(), json.GetAllocator()), json.GetAllocator());
@@ -198,6 +204,7 @@ namespace Inventory
 			                   json.GetAllocator());
 			ind_item.AddMember("item_type", item.item_type, json.GetAllocator());
 			ind_item.AddMember("rarity", item.rarity, json.GetAllocator());
+			ind_item.AddMember("gear_location", item.gear_loc, json.GetAllocator());
 			ind_item.AddMember("quantity", item.quantity, json.GetAllocator());
 			ind_item.AddMember("stackable", item.stackable, json.GetAllocator());
 			ind_item.AddMember("health", item.health, json.GetAllocator());
@@ -252,8 +259,6 @@ namespace Inventory
 
 
 
-
-
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
@@ -269,7 +274,7 @@ namespace Inventory
 			for(size_t i = inventory.size() ; i < 25 ; i++)
 			{
 				Item emptyItemSlot;
-				emptyItemSlot.ID = -999999;
+				emptyItemSlot.ID = -99;
 				button[i].Item = emptyItemSlot;
 			}
 		}
@@ -293,8 +298,197 @@ namespace Inventory
 				}
 			}
 			// Return a default item if the ID is not found
-			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,AL_NONE, true, 1,1 };
+			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,GL_NONE, true, 1,1 };
 		}
+
+
+
+	void OpenInventory()
+	{
+		//update item position
+		Inventory::UpdateInventory(playerInventory, inventoryButton);
+		s16 index = 0;
+
+
+		for (ButtonGearUI& button : inventoryButton)
+		{
+			button.img.pTex = blank;
+			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
+
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				if (button.Item.quantity <= 0)
+				{
+					Item blank;
+					blank.ID = -9999;
+					button.Item = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
+			}
+
+			//button.isWeapon = false;
+			index++;
+		}
+		//Hover collision with button && hold left mouse button
+
+		if (AEInputCheckTriggered(AEVK_LBUTTON))
+		{
+			s32 textX = 0;
+			s32 textY = 0;
+
+			s16 index = 0;
+
+			AEInputGetCursorPosition(&textX, &textY);
+			AEVec2 mousePos;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+			for (ButtonGearUI& button : inventoryButton)
+			{
+				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				{
+					if (button.img.pTex != blank)
+					{
+						std::cout << button.Item.name << std::endl;
+						//snap origin of img to mouse pos
+						snapBack = index;
+						break;
+					}
+					//button.Ptr();
+				}
+				index++;
+			}
+		}
+
+		if (snapBack >= 0)
+		{
+			s32 textX = 0;
+			s32 textY = 0;
+
+			s16 index = 0;
+
+			AEInputGetCursorPosition(&textX, &textY);
+			AEVec2 mousePos;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+			inventoryButton[snapBack].pos = mousePos;
+		}
+
+		if (AEInputCheckReleased(AEVK_LBUTTON))
+		{
+			s16 index = 0;
+			if (snapBack >= 0)
+			{
+				for (ButtonGearUI& button : inventoryButton)
+				{
+					if (AETestRectToRect(&inventoryButton[snapBack].pos,
+						inventoryButton[snapBack].img.scale.x,
+						inventoryButton[snapBack].img.scale.y, &button.pos,
+						button.img.scale.x,
+						button.img.scale.y))
+					{
+						//Different items overlapping
+						if (index != snapBack)
+						{
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5.f) * 90.f + 180.f);
+
+							//std::cout << "swap\n";
+							ButtonGearUI tmp = button;
+							button = inventoryButton[snapBack];
+							inventoryButton[snapBack] = tmp;
+
+							if (playerInventory.size() <= index)
+							{
+								size_t oldsize = playerInventory.size();
+								playerInventory.resize(index + 1);
+								for (size_t x = oldsize; x < playerInventory.size(); x++)
+								{
+									playerInventory[x].ID = -9999;
+								}
+							}
+							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
+							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+								-(snapBack / 5) * 90.f + 180.f);
+
+							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
+								-(index / 5.f) * 90.f + 180.f);
+
+							snapBack = -1;
+							break;
+						}
+					}
+					index++;
+				}
+
+				if (snapBack >= 0)
+				{
+					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
+						-(snapBack / 5.f) * 90.f + 180.f);
+					snapBack = -1;
+				}
+			}
+		}
+
+
+		if (AEInputCheckTriggered(AEVK_RBUTTON))
+		{
+			s16 index = 0;
+			s32 textX = 0;
+			s32 textY = 0;
+
+
+			index = 0;
+			AEInputGetCursorPosition(&textX, &textY);
+			AEVec2 mousePos;
+			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+			for (ButtonGearUI& button : inventoryButton)
+			{
+				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				{
+					if (button.img.pTex != blank)
+					{
+						Inventory::UseItem(index, button, *playerReference);
+						if (button.Item.quantity == 0 || button.Item.ID < 0)
+						{
+							button.img.pTex = blank;
+						}
+						break;
+					}
+				}
+
+				index++;
+			}
+
+			index = 0;
+			for (ButtonGearUI& button : Inventory::equipmentDisplay)
+			{
+				if (button.Item.ID < 0)
+				{
+					button.img.pTex = blank;
+				}
+				else
+				{
+					button.img.pTex = Gear[button.Item.ID];
+				}
+				AEVec2Set(&button.img.scale, 60.f, 60.f);
+				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+				index++;
+			}
+	}
+	}
+
 
 
 	void ItemPickup(Item& item)
@@ -410,10 +604,10 @@ namespace Inventory
 						EquipToBody(equipping);
 						
 
-					//
-					// 	// Remove previous item effect and apply new item effect
-					// 	// updatePlayerStats(player);
-					// }
+					
+					// 	Remove previous item effect and apply new item effect
+						UpdatePlayerStats(player, equippedGear);
+
 				}
 			
 		}
@@ -427,98 +621,176 @@ namespace Inventory
 
 	void EquipToBody(Item obj)
 	{
-		switch (obj.item_type)
-		{
-		case WEAPON:
-		{
-			
-			std::cout << "hi" << std::endl;
-				Item backup;
-				backup.ID = -9999;
-				if (equippedWeapon.ID >= 0)
-				{
-					backup = equippedWeapon;
+		Item backup[5];
+		for(int i = 0; i< 5; ++i)
+		backup[i].ID = -9999;
 
-				}
-				equippedWeapon = obj;
-				equipmentDisplay[2].Item = equippedWeapon;
-				playerReference->equippedWeapon->damage = (f32)obj.attack;
 
-				for (auto& inventory : playerInventory)
-				{
-					if (inventory.ID <0 )
-					{
-						inventory = backup;
-						break;
-					}
-				}
-			
-			
-			
-		}
-			break;
-		case ARMOUR:
-
-			switch (obj.armour_loc)
+			switch (obj.gear_loc)
 			{
-		case HEAD:
-			equippedArmour[0] = obj;
-			equipmentDisplay[0].Item = equippedWeapon;
+			case weaponry:
+			if (equippedGear[obj.gear_loc].ID >= 0)
+			{
+				backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+			}
+
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+			//update stats
+			//playerReference->equippedWeapon.damage = static_cast<f32>(obj.attack);
+
+			break;
+
+
+			case head:
+
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+				}
+
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
 			//playerReference->equippedArmor.defence = obj.defence;
 			break;
-		case BODY:
-			equippedArmour[1] = obj;
-			equipmentDisplay[1].Item = equippedWeapon;
+
+			case body:
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+
 			break;
-		case PANTS:
-			equippedArmour[2] = obj;
-			equipmentDisplay[3].Item = equippedWeapon;
+
+			case pants:
+
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+			equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+
 			break;
-		case BOOTS:
-			equippedArmour[3] = obj;
-			equipmentDisplay[4].Item = equippedWeapon;
+
+			case boots:
+
+				if (equippedGear[obj.gear_loc].ID >= 0)
+				{
+					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+
+				}
+				equippedGear[obj.gear_loc] = obj;
+			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
+
+
 			break;
 		default:
 			break;
 
 			}
 
-			std::cout << "hi" << std::endl;
-			Item backup;
-			backup.ID = -9999;
-			if (equippedWeapon.ID >= 0)
+		//Assign the previously equipped item to empty inventory slot
+		for (auto& inventory : playerInventory)
+		{
+			if (inventory.ID < 0) //check for -99 id
 			{
-				backup = equippedWeapon;
-
+				
+				inventory = backup[obj.gear_loc];
+				break;
 			}
-
-
-			for (auto& inventory : playerInventory)
-			{
-				if (inventory.ID < 0)
-				{
-					inventory = backup;
-					break;
-				}
-			}
-
-			break;
-
 		}
 	}
 
 	void LoadInventory()
 	{
-		playerInventory = ReadJsonFile("Assets/player_inventory.json");
+		playerInventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
+		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
+		equippedGear = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
+
+
+		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+
+		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+
+		Gear[0] = AEGfxTextureLoad("Assets/items/item_0.png");
+		Gear[1] = AEGfxTextureLoad("Assets/items/item_1.png");
+		Gear[2] = AEGfxTextureLoad("Assets/items/item_2.png");
+		Gear[3] = AEGfxTextureLoad("Assets/items/item_3.png");
+		Gear[4] = AEGfxTextureLoad("Assets/items/item_4.png");
+		Gear[5] = AEGfxTextureLoad("Assets/items/item_5.png");
+		Gear[6] = AEGfxTextureLoad("Assets/items/item_6.png");
+		Gear[7] = AEGfxTextureLoad("Assets/items/item_7.png");
+		Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
+		Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
+		Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
+
+
+		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
+
+
+		Item nothing;
+		nothing.ID = -999;
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+			equippedGear[i] = nothing;
+			equipmentDisplay[i].Item = nothing;
+		}
+
 
 	}
 
 	void InitInventory()
 	{
+		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
+
+		inventoryOpen = false;
+		s16 index = 0;
+
+		snapBack = -1;
+
+		//Display inventory
+		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
+		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
+
+		index = 0;
+		for (ButtonGearUI& button : Inventory::equipmentDisplay)
+		{
+			button.img.pTex = blank;
+			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+			index++;
+		}
+
 	}
 
 	void SaveInventory()
 	{
-		WriteJsonFile(playerInventory, "./Assets/saved_player_inventory.json");
+		WriteJsonFile(playerInventory, "./Assets/SaveFiles/saved_player_inventory.json");
+	}
+
+	void FreeInventory()
+	{
+		AEGfxTextureUnload(blank);
+
+
+		for (int i = 0; i <= 10; ++i)
+		{
+			AEGfxTextureUnload(Gear[i]);
+		}
+
+
+		AEGfxTextureUnload(inventoryBackground.img.pTex);
+		AEGfxTextureUnload(equipmentBackground.img.pTex);
 	}
 }

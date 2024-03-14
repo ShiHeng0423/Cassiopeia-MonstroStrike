@@ -9,17 +9,23 @@ Camera::Camera(AEVec2 player)
 	s32 cursor_x = 0;
 	s32 cursor_y = 0;
 	AEInputGetCursorPosition(&cursor_x, &cursor_y);
+
 	this->screenX = cursor_x - AEGfxGetWindowWidth() * 0.5f;
 	this->screenY = AEGfxGetWindowHeight() * 0.5f - cursor_x;
+
 	this->screenX = this->screenX - AEGfxGetWindowWidth() * 0.5f;
 	this->screenY = AEGfxGetWindowHeight() * 0.5f - this->screenY;
+
 	this->worldCoordinate = player;
 	AEGfxSetCamPosition(this->worldCoordinate.x, this->worldCoordinate.y);
-	lookAheadDir.x = lookAheadDir.y = 0;
+
+	AEVec2Set(&currLookAheadDir, 0, 0);
+	AEVec2Set(&expectedLookAheadDir, 0, 0);
 
 	lookAhead = false;
 	lookBack = false;
 	cameraOnHold = false;
+
 	shakeTimer = 0.f; 
 	lookbackTimer = 0.f;
 }
@@ -35,10 +41,20 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 	if (lookAhead)
 	{
 		AEVec2 desiredCamLocation{ 0,0 };
-		AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &lookAheadDir, 0.05f);
+
+		if (AEVec2Distance(&currLookAheadDir, &desiredCamLocation) == 0)
+		{
+			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
+			currLookAheadDir = desiredCamLocation;
+		}
+		else
+			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
+
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &expectedLookAheadDir, 0.05f);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &expectedLookAheadDir, 0.05f);
+
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
-		if (AEVec2Distance(&desiredCamLocation, &lookAheadDir) < 100.0f && lookbackTimer <= 0.f && !cameraOnHold)
+		if (AEVec2Distance(&currLookAheadDir, &expectedLookAheadDir) < 1.0f && lookbackTimer <= 0.f && !cameraOnHold)
 		{
 			lookbackTimer = 2.0f;
 			cameraOnHold = true;
@@ -51,23 +67,33 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 				cameraOnHold = false;
 				lookAhead = false;
 				lookBack = true;
+				AEVec2Set(&currLookAheadDir, 0, 0);
 			}
 		}
 	}
 	else if (lookBack)
 	{
 		AEVec2 desiredCamLocation{ 0,0 };
-		AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
+		if (AEVec2Distance(&currLookAheadDir, &desiredCamLocation) == 0)
+		{
+			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
+			currLookAheadDir = desiredCamLocation;
+		}
+		else
+			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
+
 		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, 0.05f);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, 0.05f);
+
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
-		if (AEVec2Distance(&desiredCamLocation, &this->worldCoordinate) < 10.0f)
+		if (AEVec2Distance(&currLookAheadDir, &this->worldCoordinate) < 1.0f)
 		{
 			lookBack = false;
 		}
 	}
 	else
 	{
-		shakeTimer -= AEFrameRateControllerGetFrameTime();
+		shakeTimer -= (f32)AEFrameRateControllerGetFrameTime();
 		if (shakeTimer > 0.f)
 		{
 			f32 randX = (AERandFloat() - 0.5f) * 100.f;
@@ -128,8 +154,8 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 
 void Camera::LookAhead(AEVec2 locationPlayer)
 {
-	lookAheadDir.x = locationPlayer.x;
-	lookAheadDir.y = locationPlayer.y;
+	expectedLookAheadDir.x = locationPlayer.x;
+	expectedLookAheadDir.y = locationPlayer.y;
 	lookAhead = true;
 }
 
