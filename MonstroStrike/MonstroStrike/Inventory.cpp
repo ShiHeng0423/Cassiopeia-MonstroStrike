@@ -739,6 +739,7 @@ namespace Inventory
 		Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
 		Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
 		Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
+		Gear[11] = AEGfxTextureLoad("Assets/items/item_11.png");
 
 
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
@@ -764,10 +765,7 @@ namespace Inventory
 			{
 				equipmentDisplay[i].Item = equippedGear[i];
 			}
-			
 		}
-
-
 	}
 
 	void InitInventory()
@@ -811,7 +809,7 @@ namespace Inventory
 		AEGfxTextureUnload(blank);
 
 
-		for (int i = 0; i <= 10; ++i)
+		for (int i = 0; i <= 11; ++i)
 		{
 			AEGfxTextureUnload(Gear[i]);
 		}

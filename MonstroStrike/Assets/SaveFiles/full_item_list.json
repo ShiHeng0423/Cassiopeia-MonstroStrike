@@ -154,6 +154,20 @@
       "health": 30,
       "attack": 30,
       "defence": 30
+    },
+    {
+      "UID": "ameow112adss",
+      "ID": 11,
+      "name": "Horn of Salvation",
+      "description": "It takes 10 years to attain bankai, but with this 1 second.",
+      "rarity": 5,
+      "item_type": 1,
+      "gear_location": 5,
+      "quantity": 2,
+      "stackable": true,
+      "health": 0,
+      "attack": 0,
+      "defence": 0
     }
 
   ]

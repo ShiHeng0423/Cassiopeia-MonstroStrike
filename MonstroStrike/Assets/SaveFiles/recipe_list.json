@@ -1,0 +1,30 @@
+{
+  "recipes": [
+    {
+      "item_id": 9,
+      "material_requirements": [
+        {
+          "mat_ID": 11,
+          "mat_quantity": 1
+        },
+        {
+          "mat_ID": 12,
+          "mat_quantity": 2
+        }
+      ]
+    },
+    {
+      "item_id": 13,
+      "material_requirements": [
+        {
+          "mat_ID": 14,
+          "mat_quantity": 1
+        },
+        {
+          "mat_ID": 15,
+          "mat_quantity": 1
+        }
+      ]
+    }
+  ]
+}

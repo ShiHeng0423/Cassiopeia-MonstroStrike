@@ -25,6 +25,7 @@
 #include "ParticleSystem.h"
 
 #include "Inventory.h"
+#include "Crafting.h"
 #include "main.h"
 
 //Slapped it here first
