@@ -99,6 +99,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 
 	}
+	
 	if (AEInputCheckTriggered(AEVK_N))
 	{
 		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
@@ -109,7 +110,6 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
 		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 	}
-
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
@@ -212,25 +212,20 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	//Update player weapon hit box
 
 	/*Weapon hit box update only*/
-	
 
-	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen && !delayFlag)
+
+	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		triggeredTime = Clock::now();
 		undealtTriggerInput = true;
 		isReleased = false;
 		if_first_input = true;
-		delayFlag = true;
-	
+
 	}
-
-
 	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 	{
 		isReleased = true;
-
 	}
-	
 	//reset
 	if (!undealtTriggerInput)
 	{
@@ -264,28 +259,17 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
 
-
-			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
-			{
-				isTriggerAttacking = true;
-			
-			}
-			
 		}
-	/*	float timeNow = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0;
-		if (timeNow > delayTime)
+		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 		{
 
-		}*/
-		if (isTriggerAttacking)
-		{
-	
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
 			player.isAttacking = true;
 
 			if (player.comboState < 2)
 			{
+
 				player.comboState++;
 				player.comboTime += (float)elapsedTime;
 
@@ -293,17 +277,22 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 			else
 			{
+
 				player.comboState = 0;
-				player.comboTime = 0.0f; 
+				player.comboTime = 0.0f;
+
+
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
+
 
 		}
 	}
 	
 	
 
+	
 	
 
 
