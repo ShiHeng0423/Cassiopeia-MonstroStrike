@@ -75,7 +75,7 @@ void Level1_Load()
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
-	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f }, { 0,-100 }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 0.f, 0.f }, { 0.f,0.f },{ 40.f,0.f }, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap.csv"; //Change name as per level
@@ -138,6 +138,12 @@ void Level1_Initialize()
 			case 1:
 				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
 				break;
+			case 97:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+				break;
+			case 98:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
+				break;
 			default:
 				grids2D[rows][cols].typeOfGrid = NONE;
 				break;
@@ -145,7 +151,7 @@ void Level1_Initialize()
 		}
 	}
 
-	//For Initializing the grids
+	//For Initializing the grids and positions
 	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
 		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
@@ -154,8 +160,14 @@ void Level1_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
+
+			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID)
+			{
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+			}
 		}
 	}
+	player->obj.img.scale = { grids2D[0][0].size };
 
 	//Need to place the objects one by one 
 	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);
@@ -199,13 +211,13 @@ void Level1_Initialize()
 	
 	menu->Init(cam);
 	ParticleInitialize();
-	MapTransitionInit(player->obj.pos);
+	MapTransitionInit();
 }
 
 void Level1_Update()
 {
 	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
-	MapTransitionUpdate(player->obj.pos);
+	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
 
@@ -262,6 +274,84 @@ void Level1_Update()
 #pragma region GridSystem
 	CheckPlayerGridCollision(grids2D, player);
 	CheckEnemyGridCollision(grids2D, vecEnemy);
+	//For printing the grids every frame
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+	{
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+		{
+			switch (grids2D[rows][cols].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox,
+							&player->collisionNormal, &player->obj.pos,
+							&player->velocity, &player->onFloor, &player->gravityForce,
+							&player->isFalling);
+					}
+
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox,
+							&player->collisionNormal, &player->obj.pos,
+							&player->velocity);
+					}
+//(ENEMY AND BULLETS COLLISION CHECKING)
+				for (Enemy& enemy : vecEnemy) {
+
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+						enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox);
+
+						ResolveVerticalCollision(enemy.boxHeadFeet, grids2D[rows][cols].collisionBox,
+						                         &enemy.collisionNormal, &enemy.obj.pos,
+						                         &enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
+						                         &enemy.isFalling);
+					}
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(enemy.boxArms, grids2D[rows][cols].collisionBox))
+					{
+						enemy.isCollision = true;
+						enemy.collisionNormal = AABBNormalize(enemy.boxArms, grids2D[rows][cols].collisionBox);
+
+						ResolveHorizontalCollision(enemy.boxArms, grids2D[rows][cols].collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
+							&enemy.velocity);
+						enemy.loopIdle = false;
+					}
+
+					if (enemy.enemyType == ENEMY_FLY || enemy.enemyType == ENEMY_BOSS1)
+					{
+						for (Bullet& bullet : enemy.bullets)
+						{
+							if (AABBvsAABB(bullet.collisionBox, grids2D[rows][cols].collisionBox))
+							{
+								bullet.lifeTime = 0; //makes bullet erase
+							}
+						}
+					}
+				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
+				{
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, GAME_LOBBY);
+					}
+				}
+				break;
+			case EMPTY:
+				break;
+			}
+		}
+	}
 #pragma endregion
 
 #pragma region InventorySystem
