@@ -69,7 +69,7 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* 
 
 void Lobby_Load()
 {
-	player = PlayerInitialize("Assets/Border.png", { 70.f,70.f }, { 0.f,-400.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", { 0.f,0.f }, { 0.f,0.f }, { 40.f,0.f }, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 
@@ -111,7 +111,6 @@ void Lobby_Load()
 
 void Lobby_Initialize()
 {
-	MapTransitionInit(player->obj.pos);
 
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
@@ -138,6 +137,9 @@ void Lobby_Initialize()
 			case 12:
 				grids2D[rows][cols].typeOfGrid = NPC_QUEST_GIVER_POS;
 				break;
+			case 97:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+				break;
 			case 98:
 				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
 				break;
@@ -148,7 +150,7 @@ void Lobby_Initialize()
 		}
 	}
 
-	//For Initializing the grids
+	//For Initializing the grids and positions
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
 		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
@@ -166,11 +168,16 @@ void Lobby_Initialize()
 			case 12:
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
+			case 97:
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				break;
 			default:
 				break;
 			}
 		}
 	}
+
+	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 	AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
@@ -205,18 +212,18 @@ void Lobby_Initialize()
 
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
 
 	//looping thru to init all enemy variables
 
 	ParticleInitialize();
-
+	MapTransitionInit();
 }
 
 void Lobby_Update()
 {
-
 	if (AEInputCheckTriggered(AEVK_9))
 	{
 		next = GameStates::AREA1;
@@ -230,6 +237,51 @@ void Lobby_Update()
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 	CheckPlayerGridCollision(grids2D, player);
+<<<<<<< HEAD
+=======
+
+	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
+	{
+		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
+		{
+			switch (grids2D[rows][cols].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player->boxHeadFeet, grids2D[rows][cols].collisionBox)) {
+						player->collisionNormal = AABBNormalize(player->boxHeadFeet, grids2D[rows][cols].collisionBox);
+						ResolveVerticalCollision(player->boxHeadFeet, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+							&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+					}
+
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player->boxArms, grids2D[rows][cols].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxArms, grids2D[rows][cols].collisionBox);
+						ResolveHorizontalCollision(player->boxArms, grids2D[rows][cols].collisionBox, &player->collisionNormal, &player->obj.pos,
+							&player->velocity);
+					}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, grids2D[rows][cols].collisionBox))
+				{
+					//std::cout << "Collided\n";MainMenu_Song
+					if (!transitionalImageOBJ.active)
+					{
+						//std::cout << grids2D[rows][cols].size.x << " " << grids2D[rows][cols].size.y << " Pos\n";
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
+					}
+				}
+				break;
+			case EMPTY:
+				break;
+			}
+		}
+	}
+
+>>>>>>> parent of ecf486f (Revert "Merge remote-tracking branch 'origin/JohnyYong' into Shi-Heng")
 	if (AEInputCheckTriggered(AEVK_I))
 	{
 		inventory_open = !inventory_open;
@@ -415,7 +467,7 @@ void Lobby_Update()
 
 	UpdateNPC(player);
 	ParticleUpdate();
-	MapTransitionUpdate(player->obj.pos);
+	MapTransitionUpdate();
 }
 
 void Lobby_Draw()

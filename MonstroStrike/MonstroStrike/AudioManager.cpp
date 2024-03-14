@@ -13,7 +13,7 @@ AudioManager::AudioManager()
 
 	// Plays 'bouken' audio in the "bgm" audio group with
 	// 50% volume, 200% pitch, looped infinitely.
-	this->bgmVolume = this->sfxVolume = 0.5f;
+	this->bgmVolume = this->sfxVolume = 0.f;
 }
 
 AudioManager::~AudioManager()
