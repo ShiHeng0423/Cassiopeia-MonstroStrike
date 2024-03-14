@@ -226,63 +226,8 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	{
 		isReleased = true;
 	}
-
-	if (undealtTriggerInput)
-	{
-		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
-		if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
-		{
-			if (player.comboState == 1) //held
-			{
-				//std::cout << "Triggered and not released" << std::endl;
-				//std::cout << "Combo state is 1" << std::endl;
-
-				std::cout << "hold" << std::endl;
-				player.attackTime -= AEFrameRateControllerGetFrameTime() * 100.f;
-				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-				player.comboTime = 0.0f; // Reset combo time
-				player.comboState = 0;   // Reset combo state
-
-			}
-
-		}
-		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger
-		{
-			//code will come here once per each trigger
-			//but you want this part of code to be called til the attack is done.
-			//then you need to make separate function and call it on here.
-
-			//Only happens in 1 frame
-
-			player.attackTime -= AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
-			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-
-			if (player.comboState != 3)
-			{
-				player.comboState++;
-				player.comboTime += (float)elapsedTime;
-
-			}
-
-			else
-			{
-				player.comboState = 0;
-				player.comboTime = 0.0f;
-				std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-
-				////
-				comboTime = Clock::now();
-				undealtTriggerInput = false;
-
-			}
-
-
-		}
-	}
 	//reset
-	if (!undealtTriggerInput && player.comboState > 1)
+	if (!undealtTriggerInput)
 	{
 		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0; // Convert to seconds
 		if (elapsedTime > comboWindowDuration)
@@ -291,10 +236,60 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 			player.equippedWeapon.weaponHIT = false;
 			player.comboTime = 0.0f; // Reset combo time
 			player.comboState = 0;   // Reset combo state
-			std::cout << "resetting combo" << std::endl;
+
 		}
 
 	}
+	if (undealtTriggerInput)
+	{
+		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
+			1000.0; // Convert to seconds
+		if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
+		{
+			if (player.comboState == 2) //held
+			{
+
+				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
+				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
+				player.isAttacking = true;
+
+
+
+			}
+			comboTime = Clock::now();
+			undealtTriggerInput = false;
+
+		}
+		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
+		{
+
+			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
+			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
+			player.isAttacking = true;
+
+			if (player.comboState < 2)
+			{
+
+				player.comboState++;
+				player.comboTime += (float)elapsedTime;
+
+			}
+
+			else
+			{
+
+				player.comboState = 0;
+				player.comboTime = 0.0f;
+
+
+			}
+			comboTime = Clock::now();
+			undealtTriggerInput = false;
+
+
+		}
+	}
+
 	//else
 	//{
 	//	// Combo window expired + hold window
