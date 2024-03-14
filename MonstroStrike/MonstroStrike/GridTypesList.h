@@ -11,5 +11,5 @@ enum GridTypes
 
     PLAYER_POS_GRID = 97,
     MAP_TRANSITION_GRID = 98,
-    NONE = 999
+    NONE = 100
 };

@@ -17,7 +17,7 @@ void LoadNPC()
 {
 	npcs[0].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
 	npcs[1].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
-	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
+	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/border.png");
 
 	npcs[0].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
 	npcs[1].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
@@ -59,32 +59,54 @@ void UpdateNPC(Player* player)
 			//Here to pop out options / messages to be able to interact to this npc
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i });
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1 });
 			}
 			break;
 		case NPC_BLACKSMITH_B:
 			//Here to pop out options / messages
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i });
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1});
 			}
-			break;		
+			break;
 		case NPC_QUEST_GIVER:
 			//Here to pop out options / messages
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i });
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1});
 			}
 			break;
 		default:
 			std::cout << "NPC " << i << " does not have a type?\n";
 			break;
 		}
+
 	}
 
-	std::sort(collidedPlayer.begin(), collidedPlayer.end());
-	if (AEInputCheckTriggered(AEVK_I))
+
+	//std::sort(collidedPlayer.begin(), collidedPlayer.end());
+	if (AEInputCheckTriggered(AEVK_F) && !collidedPlayer.empty())
 	{
+		switch (collidedPlayer[0].second)
+		{
+		case NPC_BLACKSMITH_A:
+			//Here to pop out options / messages to be able to interact to this npc
+			std::cout << "A ddd\n";
+
+			break;
+		case NPC_BLACKSMITH_B:
+			//Here to pop out options / messages
+			std::cout << "B ddd\n";
+
+			break;
+		case NPC_QUEST_GIVER:
+			std::cout << "C ddd\n";
+
+			//Here to pop out options / messages
+			break;
+		default:
+			break;
+		}
 		//interact
 		//function call (collidedPlayer[0].second) -> nearest npc to player
 	}
