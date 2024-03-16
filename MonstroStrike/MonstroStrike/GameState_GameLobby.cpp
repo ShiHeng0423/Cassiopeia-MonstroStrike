@@ -163,25 +163,33 @@ void Lobby_Update()
 	}
 
 	menu->Update(cam);
-	if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene ==
-		CurrentScene::QUIT_SCENE)
-		return;
-	if (currScene == CurrentScene::MAIN_SCENE)
-		PlayerUpdate(*player, Inventory::inventoryOpen);
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
-	               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
-	               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
-	CheckPlayerGridCollision(grids2D, player);
-
-	if (AEInputCheckTriggered(AEVK_I))
+	if (player->isConversation)
 	{
-		Inventory::inventoryOpen = !Inventory::inventoryOpen;
+
 	}
-
-	if (Inventory::inventoryOpen)
+	else
 	{
-		Inventory::OpenInventory();
+		if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene ==
+			CurrentScene::QUIT_SCENE)
+			return;
+		if (currScene == CurrentScene::MAIN_SCENE)
+			PlayerUpdate(*player, Inventory::inventoryOpen);
+		cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+			grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
+			grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+
+		CheckPlayerGridCollision(grids2D, player);
+
+		if (AEInputCheckTriggered(AEVK_I))
+		{
+			Inventory::inventoryOpen = !Inventory::inventoryOpen;
+		}
+
+		if (Inventory::inventoryOpen)
+		{
+			Inventory::OpenInventory();
+		}
 	}
 
 	UpdateNPC(player);
@@ -334,12 +342,9 @@ void Lobby_Draw()
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
 
-	if (AEInputCheckTriggered(AEVK_G))
-	{
-		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GameStates::AREA1); //Play the newly set animation here
-	}
-
+	DrawConvBox(player->isConversation, *pWhiteSquareMesh);
 	MapTransitionDraw();
+
 }
 
 void Lobby_Free()
@@ -347,7 +352,7 @@ void Lobby_Free()
 	gameMap.clear();
 	gameMap.resize(0);
 	NPCPositions.clear();
-	FreeNPC();
+	FreeNPC(); //Free both conv box and npc sprites here
 
 	AEGfxSetCamPosition(0.f, 0.f);
 	ParticlesFree();

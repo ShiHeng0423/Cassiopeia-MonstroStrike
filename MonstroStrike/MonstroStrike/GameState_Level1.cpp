@@ -144,7 +144,7 @@ void Level1_Initialize()
 			}
 		}
 	}
-	player->obj.img.scale = { grids2D[0][0].size };
+	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 	//Need to place the objects one by one 
 	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);

@@ -2,6 +2,7 @@
 #include "Player.h"
 #include <vector>
 #include <algorithm>
+#include "LevelHeaders.h"
 
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
 
@@ -9,9 +10,15 @@ namespace {
 	struct NonPlayableCharacters npcs[3];
 
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
+
+	struct conversationBox convBox;
+	
+	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize,
+		conversationBox& convBox);
+
+	AEVec2 screenPos;
+	std::vector<std::pair<f32, s16>>collidedPlayer;
 }
-
-
 
 void LoadNPC()
 {
@@ -19,9 +26,19 @@ void LoadNPC()
 	npcs[1].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
 	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/border.png");
 
-	npcs[0].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
-	npcs[1].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
+	npcs[0].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
+	npcs[1].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
 	npcs[2].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
+
+	convBox.conversationBoxSprite = AEGfxTextureLoad("Assets/ConversationBox.png");
+
+	npcs[0].npcName = "Tom, Armor Blacksmith";
+	npcs[1].npcName = "Jack, Weapon Blacksmith";
+	npcs[2].npcName = "Marie, Quest Counter";
+
+	npcs[0].conversationText = "Heya chump, looking for some armors?";
+	npcs[1].conversationText = "It is too dangerous to go alone, craft some weapons from me.";
+	npcs[2].conversationText = "Good day, are there any quests that caught your eye?";
 }
 
 void InitializeNPC(std::vector<AEVec2> allocatedPositions)
@@ -45,13 +62,17 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 			break;
 		}
 	}
+	
+	AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
+	CreateConvBoxInstance(screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f,
+		(f32)AEGfxGetWindowWidth(), (f32)AEGfxGetWindowHeight() * 0.25f, convBox);
 }
 
 void UpdateNPC(Player* player)
 {
-	std::vector<std::pair<f32, s8>>collidedPlayer;
+	collidedPlayer.clear();
 	//Insert based on NPC TYPE
-	for (s8 i = 0; i < 3; i++)
+	for (s16 i = 0; i < 3; i++)
 	{
 		switch (npcs[i].typeOfNPC)
 		{
@@ -59,56 +80,60 @@ void UpdateNPC(Player* player)
 			//Here to pop out options / messages to be able to interact to this npc
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1 });
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		case NPC_BLACKSMITH_B:
 			//Here to pop out options / messages
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1});
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		case NPC_QUEST_GIVER:
 			//Here to pop out options / messages
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i + 1});
+				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		default:
 			std::cout << "NPC " << i << " does not have a type?\n";
 			break;
 		}
-
 	}
 
-
-	//std::sort(collidedPlayer.begin(), collidedPlayer.end());
+	std::sort(collidedPlayer.begin(), collidedPlayer.end());
 	if (AEInputCheckTriggered(AEVK_F) && !collidedPlayer.empty())
 	{
+		std::cout << collidedPlayer[0].second << std::endl;
+		AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
 		switch (collidedPlayer[0].second)
 		{
 		case NPC_BLACKSMITH_A:
 			//Here to pop out options / messages to be able to interact to this npc
-			std::cout << "A ddd\n";
-
+			std::cout << "A" << std::endl;
+			player->isConversation = true;
 			break;
 		case NPC_BLACKSMITH_B:
 			//Here to pop out options / messages
-			std::cout << "B ddd\n";
-
+			player->isConversation = true;
+			std::cout << "NB" << std::endl;
 			break;
 		case NPC_QUEST_GIVER:
-			std::cout << "C ddd\n";
+			player->isConversation = true;
+			std::cout << "C" << std::endl;
 
 			//Here to pop out options / messages
 			break;
 		default:
 			break;
 		}
-		//interact
-		//function call (collidedPlayer[0].second) -> nearest npc to player
+	}
+
+	if (AEInputCheckTriggered(AEVK_G))
+	{
+		player->isConversation = false;
 	}
 }
 
@@ -122,6 +147,44 @@ void DrawNPC(AEGfxVertexList& mesh)
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 	}
 }
+
+void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
+{
+	if (inConv)
+	{
+		AEMtx33 transformation, scale, rotation, translation;
+
+		AEMtx33Rot(&rotation, 0.f);
+		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.25f, AEGfxGetWindowHeight() * 0.75f);
+		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
+
+		AEMtx33Concat(&transformation, &rotation, &scale);
+		AEMtx33Concat(&transformation, &translation, &transformation);
+
+		//NPC portrait (Should be at left)
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTextureSet(npcs[collidedPlayer[0].second].pTexPortrait, 0, 0);
+		AEGfxSetTransform(transformation.m);
+		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+		AEVec2Set(&convBox.position, screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f);
+		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
+		AEMtx33Concat(&convBox.transformation, &convBox.rotation, &convBox.scale);
+		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
+
+		//The box itself
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTextureSet(convBox.conversationBoxSprite, 0, 0);
+		AEGfxSetTransform(convBox.transformation.m);
+		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+		//Print name
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].conversationText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
+	}
+
+}
+
 void FreeNPC()
 {
 	for (s8 i = 0; i < 3; i++)
@@ -129,6 +192,8 @@ void FreeNPC()
 		AEGfxTextureUnload(npcs[i].pTexPortrait);
 		AEGfxTextureUnload(npcs[i].pTexSprite);
 	}
+
+	AEGfxTextureUnload(convBox.conversationBoxSprite);
 }
 namespace {
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType)
@@ -155,5 +220,22 @@ namespace {
 		npc.collisionBox.maximum.y = npc.position.y + npc.size.y * 0.5f;
 
 		//Does not need put in update considering NPCS are at static position
+	}
+
+	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, conversationBox& convBox)
+	{
+		convBox.rotate = { 0 };
+		AEMtx33Rot(&convBox.rotation, 0.f);
+
+		AEVec2Set(&convBox.size, xSize, ySize);
+		AEMtx33Scale(&convBox.scale, convBox.size.x, convBox.size.y);
+
+		AEVec2Set(&convBox.position, xPos, yPos);
+		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
+
+		convBox.transformation = { 0 };
+		AEMtx33Concat(&convBox.transformation, &convBox.rotation, &convBox.scale);
+		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
+		//No need collision box
 	}
 }

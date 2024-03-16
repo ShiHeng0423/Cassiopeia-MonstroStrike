@@ -4,8 +4,7 @@
 #include "Player.h"
 #include <vector>
 enum NpcTypes {
-	NPC_NONE = 0,
-	NPC_BLACKSMITH_A,
+	NPC_BLACKSMITH_A = 0,
 	NPC_BLACKSMITH_B,
 	NPC_QUEST_GIVER
 };
@@ -26,6 +25,22 @@ struct NonPlayableCharacters
 	AEGfxTexture* pTexSprite;
 
 	NpcTypes typeOfNPC;
+
+	const char* npcName;
+	const char* conversationText;
+};
+
+struct conversationBox {
+	AEVec2 position;
+	AEVec2 size;
+	AEVec2 rotate;
+
+	AEMtx33 transformation;
+	AEMtx33 translation;
+	AEMtx33 rotation;
+	AEMtx33 scale;
+
+	AEGfxTexture* conversationBoxSprite;
 };
 
 //Now just generalize 3 NPCs first...
@@ -36,3 +51,6 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions); //Initialize positio
 void UpdateNPC(Player* player); //Update
 void FreeNPC(); //Free textures
 void DrawNPC(AEGfxVertexList& mesh);
+
+//For conversational box
+void DrawConvBox(bool inConv, AEGfxVertexList& mesh);
