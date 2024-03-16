@@ -162,14 +162,14 @@ void Lobby_Update()
 		next = GameStates::AREA1;
 	}
 
-	menu->Update(cam);
-
 	if (player->isConversation)
 	{
 
 	}
 	else
 	{
+		menu->Update(cam);
+
 		if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene ==
 			CurrentScene::QUIT_SCENE)
 			return;

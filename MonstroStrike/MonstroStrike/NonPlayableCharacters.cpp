@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include "LevelHeaders.h"
+#include "MissionList.h"
 
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
 
@@ -11,10 +12,12 @@ namespace {
 
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
 
-	struct conversationBox convBox;
+	struct ConversationContent convBox;
 	
-	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize,
-		conversationBox& convBox);
+	AEGfxTexture* npcContentBox;
+	AEGfxTexture* contentListBox; //The list of bars shown in content, like showing missions, crafting lists etc...
+
+	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& convBox);
 	
 	enum ConversationState {
 		
@@ -26,11 +29,17 @@ namespace {
 
 	AEVec2 screenPos;
 
+	
 	std::vector<std::pair<f32, s16>>collidedPlayer;
+	
+	std::vector<int> availableMissionsID;
+
+	MissionSystem theMissions;
 }
 
 void LoadNPC()
 {
+	//Texture loading
 	npcs[0].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
 	npcs[1].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
 	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/border.png");
@@ -40,18 +49,14 @@ void LoadNPC()
 	npcs[2].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
 
 	convBox.conversationBoxSprite = AEGfxTextureLoad("Assets/ConversationBox.png");
+	npcContentBox = AEGfxTextureLoad("Assets/NPC_ContentScreen.png");
+	contentListBox = AEGfxTextureLoad("Assets/Contentbar.png");
 
-	npcs[0].npcName = "Tom, Armor Blacksmith";
-	npcs[1].npcName = "Jack, Weapon Blacksmith";
-	npcs[2].npcName = "Marie, Quest Counter";
+	theMissions.CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 0, 5, true);
+	theMissions.CreateKillEnemyMission("Slimy disaster", 5, 0, 0, true);
+	theMissions.CreateKillEnemyMission("Rampaging nightmare", 0, 5, 0, false);
+	theMissions.CreateKillEnemyMission("Rampaging nightmare strike again", 0, 15, 0, true);
 
-	npcs[0].openingText = "Heya chump, looking for some armors? [Y/N]";
-	npcs[1].openingText = "It is too dangerous to go alone, craft some weapons from me.[Y/N]";
-	npcs[2].openingText = "Good day, are there any quests that caught your eye? [Y/N]";
-
-	npcs[0].exitingText = "Storm through, brave soldier. [Y] to continue";
-	npcs[1].exitingText = "Feel free to come back anytime. [Y] to continue";
-	npcs[2].exitingText = "Looking forward to your next visit! [Y] to continue";
 }
 
 void InitializeNPC(std::vector<AEVec2> allocatedPositions)
@@ -81,6 +86,20 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 		(f32)AEGfxGetWindowWidth(), (f32)AEGfxGetWindowHeight() * 0.25f, convBox);
 
 	currentConvState = CONVERSATION_OUTSIDE; //Not in conversation
+
+	//Initialize the names, texts etc
+	npcs[0].npcName = "Tom, Armor Blacksmith";
+	npcs[1].npcName = "Jack, Weapon Blacksmith";
+	npcs[2].npcName = "Marie, Quest Counter";
+
+	npcs[0].openingText = "Heya chump, looking for some armors? [Y/N]";
+	npcs[1].openingText = "It is too dangerous to go alone, craft some weapons from me.[Y/N]";
+	npcs[2].openingText = "Good day, are there any quests that caught your eye? [Y/N]";
+
+	npcs[0].exitingText = "Storm through, brave soldier. [Y] to continue";
+	npcs[1].exitingText = "Feel free to come back anytime. [Y] to continue";
+	npcs[2].exitingText = "Looking forward to your next visit! [Y] to continue";
+
 }
 
 void UpdateNPC(Player* player)
@@ -132,7 +151,7 @@ void UpdateNPC(Player* player)
 			if (AEInputCheckTriggered(AEVK_Y))
 			{
 				//Activate next conversation
-				//currentConvState = CONVERSATION_CONTENT;
+				currentConvState = CONVERSATION_CONTENT;
 			}
 			else if (AEInputCheckTriggered(AEVK_N))
 			{
@@ -141,6 +160,7 @@ void UpdateNPC(Player* player)
 			break;
 		case CONVERSATION_CONTENT:
 			//Check which content to display
+
 			switch (collidedPlayer[0].second)
 			{
 			case NPC_BLACKSMITH_A:
@@ -148,7 +168,15 @@ void UpdateNPC(Player* player)
 			case NPC_BLACKSMITH_B:
 				break;
 			case NPC_QUEST_GIVER:
+				availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
 				break;
+			default:
+				break;
+			}
+
+			if (AEInputCheckTriggered(AEVK_ESCAPE))
+			{
+				currentConvState = CONVERSATION_EXIT;
 			}
 			break;
 		case CONVERSATION_EXIT:
@@ -181,10 +209,9 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 	AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
 	AEMtx33 transformation, scale, rotation, translation;
 
-	switch (currentConvState)
-	{
-	case CONVERSATION_ENTRY:
-		//NPC portrait (Should be at left)
+	if (inConv)
+	{ 
+		//Drawing NPC portrait
 		AEMtx33Rot(&rotation, 0.f);
 		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.25f, AEGfxGetWindowHeight() * 0.75f);
 		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
@@ -196,7 +223,11 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		AEGfxTextureSet(npcs[collidedPlayer[0].second].pTexSprite, 0, 0);
 		AEGfxSetTransform(transformation.m);
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+	}
 
+	switch (currentConvState)
+	{
+	case CONVERSATION_ENTRY:
 		//The box itself
 		AEVec2Set(&convBox.position, screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f);
 		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
@@ -209,24 +240,71 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
 		//Print name and text
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f);
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].openingText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f); //name 
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].openingText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f); //text
 		break;
 	case CONVERSATION_CONTENT: //After pressing Y and enter quest lists / crafting lists
-		break;
-	case CONVERSATION_EXIT: //Say good bye
+
+		//Content box itself
 		AEMtx33Rot(&rotation, 0.f);
-		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.25f, AEGfxGetWindowHeight() * 0.75f);
-		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
+		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.8f, AEGfxGetWindowHeight());
+		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.1f, screenPos.y);
 
 		AEMtx33Concat(&transformation, &rotation, &scale);
 		AEMtx33Concat(&transformation, &translation, &transformation);
 
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-		AEGfxTextureSet(npcs[collidedPlayer[0].second].pTexSprite, 0, 0);
+		AEGfxTextureSet(npcContentBox, 0, 0);
 		AEGfxSetTransform(transformation.m);
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
+		switch (collidedPlayer[0].second)
+		{
+		case NPC_BLACKSMITH_A:
+			break;
+		case NPC_BLACKSMITH_B:
+			break;
+		case NPC_QUEST_GIVER:
+			for (size_t i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
+			{
+				AEMtx33Rot(&rotation, 0.f);
+				f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
+				AEMtx33Scale(&scale, (f32)AEGfxGetWindowWidth() * 0.55f, yScale);
+				//ScreenPos.y is in the middle so, we need to shift up by adding half the height
+				AEMtx33Trans(&translation, screenPos.x * 1.02f, (screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - yScale * 0.8f) - yScale * i * 1.1f);
+
+				AEMtx33Concat(&transformation, &rotation, &scale);
+				AEMtx33Concat(&transformation, &translation, &transformation);
+
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+				AEGfxTextureSet(contentListBox, 0, 0);
+				AEGfxSetTransform(transformation.m);
+				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+				const KillEnemyMission* missionPtr = nullptr;
+				for (const KillEnemyMission& mission : theMissions.enemyMissions) {
+					if (mission.missionID == availableMissionsID[i]) {
+						missionPtr = &mission;
+						break;
+					}
+				}
+
+				if (missionPtr)
+				{
+					AEVec2 posText = { screenPos.x * 1.02f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
+					AEGfxPrint(fontID, missionPtr->missionName, -posText.x / AEGfxGetWindowWidth(), (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+
+		//Default for everyone else
+		AEGfxPrint(fontID, "Anything fancy?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f); //If possible want to improve, doesn't really like hardcoded values with no scalar...
+		AEGfxPrint(fontID, "[Esc] to exit", -0.98f, -0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		break;
+	case CONVERSATION_EXIT: //Say good bye
 		//The box itself
 		AEVec2Set(&convBox.position, screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f);
 		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
@@ -258,6 +336,10 @@ void FreeNPC()
 	}
 
 	AEGfxTextureUnload(convBox.conversationBoxSprite);
+	AEGfxTextureUnload(contentListBox);
+	AEGfxTextureUnload(npcContentBox);
+
+
 }
 
 namespace {
@@ -287,7 +369,7 @@ namespace {
 		//Does not need put in update considering NPCS are at static position
 	}
 
-	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, conversationBox& convBox)
+	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& convBox)
 	{
 		convBox.rotate = { 0 };
 		AEMtx33Rot(&convBox.rotation, 0.f);
@@ -303,4 +385,6 @@ namespace {
 		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
 		//No need collision box
 	}
+
+
 }

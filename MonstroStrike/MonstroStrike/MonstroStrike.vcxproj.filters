@@ -129,6 +129,9 @@
     <ClCompile Include="TextPrinting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MissionList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h">
@@ -162,9 +165,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Physics.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PauseMenuManager.h">
@@ -245,17 +245,18 @@
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MissionList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="test.json">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Assets\GameMap_Lobby.csv">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="..\Assets\player_inventory.json" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rapidjson\allocators.h">

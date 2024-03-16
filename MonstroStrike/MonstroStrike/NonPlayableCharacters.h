@@ -33,7 +33,7 @@ struct NonPlayableCharacters
 
 };
 
-struct conversationBox {
+struct ConversationContent {
 	AEVec2 position;
 	AEVec2 size;
 	AEVec2 rotate;
