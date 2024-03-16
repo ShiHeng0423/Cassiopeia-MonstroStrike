@@ -88,8 +88,6 @@ void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, 
 
 void MapTransitionUpdate() //Update only when transition image is active
 {
-	//std::cout << transitionalImageOBJ.position.x  << " " << transitionalImageOBJ.position.y << " \n";
-	//std::cout << "Transit obj active: " << transitionalImageOBJ.active << "\n";
 	//Note to future self: Initial position need to get via min max XY of the entire map size
 	//Either that or get just outside camera view *Recommended
 	if (!transitionalImageOBJ.active)

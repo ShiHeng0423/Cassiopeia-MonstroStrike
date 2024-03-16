@@ -15,8 +15,17 @@ namespace {
 	
 	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize,
 		conversationBox& convBox);
+	
+	enum ConversationState {
+		
+		CONVERSATION_OUTSIDE = 0,
+		CONVERSATION_ENTRY,
+		CONVERSATION_CONTENT,
+		CONVERSATION_EXIT
+	} currentConvState;
 
 	AEVec2 screenPos;
+
 	std::vector<std::pair<f32, s16>>collidedPlayer;
 }
 
@@ -36,9 +45,13 @@ void LoadNPC()
 	npcs[1].npcName = "Jack, Weapon Blacksmith";
 	npcs[2].npcName = "Marie, Quest Counter";
 
-	npcs[0].conversationText = "Heya chump, looking for some armors?";
-	npcs[1].conversationText = "It is too dangerous to go alone, craft some weapons from me.";
-	npcs[2].conversationText = "Good day, are there any quests that caught your eye?";
+	npcs[0].openingText = "Heya chump, looking for some armors? [Y/N]";
+	npcs[1].openingText = "It is too dangerous to go alone, craft some weapons from me.[Y/N]";
+	npcs[2].openingText = "Good day, are there any quests that caught your eye? [Y/N]";
+
+	npcs[0].exitingText = "Storm through, brave soldier. [Y] to continue";
+	npcs[1].exitingText = "Feel free to come back anytime. [Y] to continue";
+	npcs[2].exitingText = "Looking forward to your next visit! [Y] to continue";
 }
 
 void InitializeNPC(std::vector<AEVec2> allocatedPositions)
@@ -66,32 +79,32 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 	AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
 	CreateConvBoxInstance(screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f,
 		(f32)AEGfxGetWindowWidth(), (f32)AEGfxGetWindowHeight() * 0.25f, convBox);
+
+	currentConvState = CONVERSATION_OUTSIDE; //Not in conversation
 }
 
 void UpdateNPC(Player* player)
 {
-	collidedPlayer.clear();
-	//Insert based on NPC TYPE
-	for (s16 i = 0; i < 3; i++)
+	collidedPlayer.clear(); //Clear vector
+
+	//By Shi heng
+	for (s16 i = 0; i < 3; i++) //Check collided NPC
 	{
 		switch (npcs[i].typeOfNPC)
 		{
 		case NPC_BLACKSMITH_A:
-			//Here to pop out options / messages to be able to interact to this npc
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
 				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		case NPC_BLACKSMITH_B:
-			//Here to pop out options / messages
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
 				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		case NPC_QUEST_GIVER:
-			//Here to pop out options / messages
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
 				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
@@ -103,37 +116,52 @@ void UpdateNPC(Player* player)
 		}
 	}
 
-	std::sort(collidedPlayer.begin(), collidedPlayer.end());
+	//Check if there are any collided NPC
 	if (AEInputCheckTriggered(AEVK_F) && !collidedPlayer.empty())
 	{
-		std::cout << collidedPlayer[0].second << std::endl;
-		AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
-		switch (collidedPlayer[0].second)
-		{
-		case NPC_BLACKSMITH_A:
-			//Here to pop out options / messages to be able to interact to this npc
-			std::cout << "A" << std::endl;
-			player->isConversation = true;
-			break;
-		case NPC_BLACKSMITH_B:
-			//Here to pop out options / messages
-			player->isConversation = true;
-			std::cout << "NB" << std::endl;
-			break;
-		case NPC_QUEST_GIVER:
-			player->isConversation = true;
-			std::cout << "C" << std::endl;
-
-			//Here to pop out options / messages
-			break;
-		default:
-			break;
-		}
+		std::sort(collidedPlayer.begin(), collidedPlayer.end()); //Sort the closest collided NPC to be front
+		currentConvState = CONVERSATION_ENTRY;
+		player->isConversation = true;
 	}
 
-	if (AEInputCheckTriggered(AEVK_G))
+	if (player->isConversation)
 	{
-		player->isConversation = false;
+		switch (currentConvState)
+		{
+		case CONVERSATION_ENTRY:
+			if (AEInputCheckTriggered(AEVK_Y))
+			{
+				//Activate next conversation
+				//currentConvState = CONVERSATION_CONTENT;
+			}
+			else if (AEInputCheckTriggered(AEVK_N))
+			{
+				currentConvState = CONVERSATION_EXIT;
+			}
+			break;
+		case CONVERSATION_CONTENT:
+			//Check which content to display
+			switch (collidedPlayer[0].second)
+			{
+			case NPC_BLACKSMITH_A:
+				break;
+			case NPC_BLACKSMITH_B:
+				break;
+			case NPC_QUEST_GIVER:
+				break;
+			}
+			break;
+		case CONVERSATION_EXIT:
+			if (AEInputCheckTriggered(AEVK_Y))
+			{
+				currentConvState = CONVERSATION_OUTSIDE;
+			}
+			break;
+		case CONVERSATION_OUTSIDE:
+		default:
+			player->isConversation = false;
+			break;
+		}
 	}
 }
 
@@ -150,10 +178,13 @@ void DrawNPC(AEGfxVertexList& mesh)
 
 void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 {
-	if (inConv)
-	{
-		AEMtx33 transformation, scale, rotation, translation;
+	AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
+	AEMtx33 transformation, scale, rotation, translation;
 
+	switch (currentConvState)
+	{
+	case CONVERSATION_ENTRY:
+		//NPC portrait (Should be at left)
 		AEMtx33Rot(&rotation, 0.f);
 		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.25f, AEGfxGetWindowHeight() * 0.75f);
 		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
@@ -161,28 +192,61 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		AEMtx33Concat(&transformation, &rotation, &scale);
 		AEMtx33Concat(&transformation, &translation, &transformation);
 
-		//NPC portrait (Should be at left)
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-		AEGfxTextureSet(npcs[collidedPlayer[0].second].pTexPortrait, 0, 0);
+		AEGfxTextureSet(npcs[collidedPlayer[0].second].pTexSprite, 0, 0);
 		AEGfxSetTransform(transformation.m);
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
+		//The box itself
 		AEVec2Set(&convBox.position, screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f);
 		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
 		AEMtx33Concat(&convBox.transformation, &convBox.rotation, &convBox.scale);
 		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
 
-		//The box itself
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 		AEGfxTextureSet(convBox.conversationBoxSprite, 0, 0);
 		AEGfxSetTransform(convBox.transformation.m);
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
-		//Print name
+		//Print name and text
 		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f);
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].conversationText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
-	}
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].openingText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
+		break;
+	case CONVERSATION_CONTENT: //After pressing Y and enter quest lists / crafting lists
+		break;
+	case CONVERSATION_EXIT: //Say good bye
+		AEMtx33Rot(&rotation, 0.f);
+		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.25f, AEGfxGetWindowHeight() * 0.75f);
+		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
 
+		AEMtx33Concat(&transformation, &rotation, &scale);
+		AEMtx33Concat(&transformation, &translation, &transformation);
+
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTextureSet(npcs[collidedPlayer[0].second].pTexSprite, 0, 0);
+		AEGfxSetTransform(transformation.m);
+		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+		//The box itself
+		AEVec2Set(&convBox.position, screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f);
+		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
+		AEMtx33Concat(&convBox.transformation, &convBox.rotation, &convBox.scale);
+		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
+
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTextureSet(convBox.conversationBoxSprite, 0, 0);
+		AEGfxSetTransform(convBox.transformation.m);
+		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+		//Print name and text
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].exitingText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
+		break;
+	case CONVERSATION_OUTSIDE: 
+	default:
+		break;
+	}
+	
 }
 
 void FreeNPC()
@@ -195,6 +259,7 @@ void FreeNPC()
 
 	AEGfxTextureUnload(convBox.conversationBoxSprite);
 }
+
 namespace {
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType)
 	{

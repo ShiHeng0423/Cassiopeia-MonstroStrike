@@ -4,9 +4,10 @@
 #include "Player.h"
 #include <vector>
 enum NpcTypes {
-	NPC_BLACKSMITH_A = 0,
-	NPC_BLACKSMITH_B,
-	NPC_QUEST_GIVER
+	NPC_BLACKSMITH_A = 0, //Armor black smith
+	NPC_BLACKSMITH_B, //Weapon black smith
+	NPC_QUEST_GIVER //Quest give
+	//Might add an NPC who restore health
 };
 
 struct NonPlayableCharacters
@@ -27,7 +28,9 @@ struct NonPlayableCharacters
 	NpcTypes typeOfNPC;
 
 	const char* npcName;
-	const char* conversationText;
+	const char* openingText;
+	const char* exitingText;
+
 };
 
 struct conversationBox {
