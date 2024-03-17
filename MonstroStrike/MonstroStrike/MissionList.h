@@ -25,9 +25,12 @@ struct MissionSystem {
 	
 	void AcceptKillEnemyMission(int missionID);
 
+	void MissionComplete(int missionID);
+
 	size_t GetEnemyMissionsCount();
 
 	std::vector<int>GetAvailableEnemyMissionsIDs();
 
+	void InitialMission(); //Called only once through out entire game
 };
 

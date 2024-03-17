@@ -23,6 +23,7 @@
 #include "Inventory.h"
 #include "MapTransition.h"
 #include "main.h"
+#include "MissionList.h"
 // ---------------------------------------------------------------------------
 // main
 

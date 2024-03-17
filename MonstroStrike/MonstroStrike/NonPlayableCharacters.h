@@ -46,6 +46,19 @@ struct ConversationContent {
 	AEGfxTexture* conversationBoxSprite;
 };
 
+struct ContentBar {
+	AEVec2 position;
+	AEVec2 size;
+	AEVec2 rotate;
+
+	AEMtx33 transformation;
+	AEMtx33 translation;
+	AEMtx33 rotation;
+	AEMtx33 scale;
+
+	AABB collisionBox;
+};
+
 //Now just generalize 3 NPCs first...
 //NPC 1 -> Black Smith, NPC 2 -> Black Smith B, NPC 3 ->Quest giver
 

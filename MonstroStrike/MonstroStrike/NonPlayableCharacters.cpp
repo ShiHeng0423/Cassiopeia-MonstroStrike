@@ -6,18 +6,22 @@
 #include "MissionList.h"
 
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
+static bool initialMissionsLoaded = false;
 
 namespace {
 	struct NonPlayableCharacters npcs[3];
 
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
 
+	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& convBox);
+
+	void CreateContentBarInstance(int num);
+
 	struct ConversationContent convBox;
 	
 	AEGfxTexture* npcContentBox;
 	AEGfxTexture* contentListBox; //The list of bars shown in content, like showing missions, crafting lists etc...
 
-	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& convBox);
 	
 	enum ConversationState {
 		
@@ -29,10 +33,13 @@ namespace {
 
 	AEVec2 screenPos;
 
+	AEVec2 mousePos{ 0,0 };
 	
 	std::vector<std::pair<f32, s16>>collidedPlayer;
 	
 	std::vector<int> availableMissionsID;
+
+	std::vector<struct ContentBar> contentBarContainer;
 
 	MissionSystem theMissions;
 }
@@ -52,11 +59,11 @@ void LoadNPC()
 	npcContentBox = AEGfxTextureLoad("Assets/NPC_ContentScreen.png");
 	contentListBox = AEGfxTextureLoad("Assets/Contentbar.png");
 
-	theMissions.CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 0, 5, true);
-	theMissions.CreateKillEnemyMission("Slimy disaster", 5, 0, 0, true);
-	theMissions.CreateKillEnemyMission("Rampaging nightmare", 0, 5, 0, false);
-	theMissions.CreateKillEnemyMission("Rampaging nightmare strike again", 0, 15, 0, true);
-
+	if (!initialMissionsLoaded)
+	{
+		theMissions.InitialMission();
+		initialMissionsLoaded = true;
+	}
 }
 
 void InitializeNPC(std::vector<AEVec2> allocatedPositions)
@@ -105,7 +112,6 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 void UpdateNPC(Player* player)
 {
 	collidedPlayer.clear(); //Clear vector
-
 	//By Shi heng
 	for (s16 i = 0; i < 3; i++) //Check collided NPC
 	{
@@ -152,6 +158,25 @@ void UpdateNPC(Player* player)
 			{
 				//Activate next conversation
 				currentConvState = CONVERSATION_CONTENT;
+
+				switch (collidedPlayer[0].second)
+				{
+				case NPC_BLACKSMITH_A:
+					break;
+				case NPC_BLACKSMITH_B:
+					break;
+
+				case NPC_QUEST_GIVER:
+					contentBarContainer.clear(); //Clean container
+					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
+					for (size_t i = 0; i < availableMissionsID.size(); i++)
+					{
+						CreateContentBarInstance(i);
+					}
+					break;
+				default:
+					break;
+				}
 			}
 			else if (AEInputCheckTriggered(AEVK_N))
 			{
@@ -160,6 +185,10 @@ void UpdateNPC(Player* player)
 			break;
 		case CONVERSATION_CONTENT:
 			//Check which content to display
+			s32 x, y;
+			AEInputGetCursorPosition(&x, &y);
+			mousePos.x = screenPos.x - AEGfxGetWindowWidth() * 0.5f + x;
+			mousePos.y = screenPos.y + AEGfxGetWindowHeight() * 0.5f - y;
 
 			switch (collidedPlayer[0].second)
 			{
@@ -167,17 +196,53 @@ void UpdateNPC(Player* player)
 				break;
 			case NPC_BLACKSMITH_B:
 				break;
+
 			case NPC_QUEST_GIVER:
-				availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
+				if (AEInputCheckTriggered(AEVK_L))
+				{
+					theMissions.AcceptKillEnemyMission(1);
+
+					//Reset the content bars...
+					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
+					if (!availableMissionsID.empty())
+					{
+						contentBarContainer.clear();
+						for (size_t i = 0; i < availableMissionsID.size(); i++)
+						{
+							CreateContentBarInstance(i);
+						}
+					}
+				}
+
+				if (AEInputCheckTriggered(AEVK_J))
+				{
+					theMissions.MissionComplete(1);
+				}
+
+				for (size_t i = 0; i < availableMissionsID.size(); i++)
+				{
+					const KillEnemyMission* missionPtr = nullptr;
+					for (const KillEnemyMission& mission : theMissions.enemyMissions) {
+						if (mission.missionID == availableMissionsID[i]) {
+							missionPtr = &mission;
+							break;
+						}
+					}
+
+					if (AETestPointToRect(&mousePos, &contentBarContainer[i].position, contentBarContainer[i].size.x, contentBarContainer[i].size.y))
+					{
+					}
+				}
 				break;
-			default:
-				break;
+
 			}
 
 			if (AEInputCheckTriggered(AEVK_ESCAPE))
 			{
 				currentConvState = CONVERSATION_EXIT;
 			}
+
+
 			break;
 		case CONVERSATION_EXIT:
 			if (AEInputCheckTriggered(AEVK_Y))
@@ -261,24 +326,19 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		switch (collidedPlayer[0].second)
 		{
 		case NPC_BLACKSMITH_A:
+			//Available recipes
 			break;
 		case NPC_BLACKSMITH_B:
+			//Available recipes
 			break;
 		case NPC_QUEST_GIVER:
 			for (size_t i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
 			{
-				AEMtx33Rot(&rotation, 0.f);
 				f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
-				AEMtx33Scale(&scale, (f32)AEGfxGetWindowWidth() * 0.55f, yScale);
-				//ScreenPos.y is in the middle so, we need to shift up by adding half the height
-				AEMtx33Trans(&translation, screenPos.x * 1.02f, (screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - yScale * 0.8f) - yScale * i * 1.1f);
-
-				AEMtx33Concat(&transformation, &rotation, &scale);
-				AEMtx33Concat(&transformation, &translation, &transformation);
 
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(contentListBox, 0, 0);
-				AEGfxSetTransform(transformation.m);
+				AEGfxSetTransform(contentBarContainer[i].transformation.m);
 				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
 				const KillEnemyMission* missionPtr = nullptr;
@@ -288,11 +348,10 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 						break;
 					}
 				}
-
 				if (missionPtr)
 				{
-					AEVec2 posText = { screenPos.x * 1.02f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
-					AEGfxPrint(fontID, missionPtr->missionName, -posText.x / AEGfxGetWindowWidth(), (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
+					AEVec2 posText = {-0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
+					AEGfxPrint(fontID, missionPtr->missionName, posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
 				}
 			}
 			break;
@@ -339,7 +398,9 @@ void FreeNPC()
 	AEGfxTextureUnload(contentListBox);
 	AEGfxTextureUnload(npcContentBox);
 
-
+	collidedPlayer.clear();
+	availableMissionsID.clear();
+	contentBarContainer.clear();
 }
 
 namespace {
@@ -386,5 +447,30 @@ namespace {
 		//No need collision box
 	}
 
+	void CreateContentBarInstance(int num)
+	{
+		ContentBar contBar;
+		f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
 
+		AEMtx33Rot(&contBar.rotation, 0.f);
+		
+		AEVec2Set(&contBar.size, (f32)AEGfxGetWindowWidth() * 0.55f, yScale);
+		AEMtx33Scale(&contBar.scale, contBar.size.x , contBar.size.y);
+		
+		AEVec2Set(&contBar.position, screenPos.x * 1.02f, 
+			(screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - yScale * 0.8f) - yScale * num * 1.1f);
+		AEMtx33Trans(&contBar.translation, contBar.position.x, contBar.position.y);
+
+		contBar.transformation = { 0 };
+		AEMtx33Concat(&contBar.transformation, &contBar.rotation, &contBar.scale);
+		AEMtx33Concat(&contBar.transformation, &contBar.translation, &contBar.transformation);
+
+		//AABB box
+		contBar.collisionBox.minimum.x = contBar.position.x - contBar.size.x * 0.5f;
+		contBar.collisionBox.minimum.y = contBar.position.y - contBar.size.y * 0.5f;
+		contBar.collisionBox.maximum.x = contBar.position.x + contBar.size.x * 0.5f;
+		contBar.collisionBox.maximum.y = contBar.position.y + contBar.size.y * 0.5f;
+
+		contentBarContainer.push_back(contBar);
+	}
 }
