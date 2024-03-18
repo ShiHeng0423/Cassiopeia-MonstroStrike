@@ -169,7 +169,7 @@ void UpdateNPC(Player* player)
 				case NPC_QUEST_GIVER:
 					contentBarContainer.clear(); //Clean container
 					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
-					for (size_t i = 0; i < availableMissionsID.size(); i++)
+					for (int i = 0; i < availableMissionsID.size(); i++)
 					{
 						CreateContentBarInstance(i);
 					}
@@ -207,7 +207,7 @@ void UpdateNPC(Player* player)
 					if (!availableMissionsID.empty())
 					{
 						contentBarContainer.clear();
-						for (size_t i = 0; i < availableMissionsID.size(); i++)
+						for (int i = 0; i < availableMissionsID.size(); i++)
 						{
 							CreateContentBarInstance(i);
 						}
@@ -217,9 +217,19 @@ void UpdateNPC(Player* player)
 				if (AEInputCheckTriggered(AEVK_J))
 				{
 					theMissions.MissionComplete(1);
+					//Reset the content bars...
+					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
+					if (!availableMissionsID.empty())
+					{
+						contentBarContainer.clear();
+						for (int i = 0; i < availableMissionsID.size(); i++)
+						{
+							CreateContentBarInstance(i);
+						}
+					}
 				}
 
-				for (size_t i = 0; i < availableMissionsID.size(); i++)
+				for (int i = 0; i < availableMissionsID.size(); i++)
 				{
 					const KillEnemyMission* missionPtr = nullptr;
 					for (const KillEnemyMission& mission : theMissions.enemyMissions) {
@@ -312,7 +322,7 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 
 		//Content box itself
 		AEMtx33Rot(&rotation, 0.f);
-		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.8f, AEGfxGetWindowHeight());
+		AEMtx33Scale(&scale, (f32)AEGfxGetWindowWidth() * 0.8f, (f32)AEGfxGetWindowHeight());
 		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.1f, screenPos.y);
 
 		AEMtx33Concat(&transformation, &rotation, &scale);
