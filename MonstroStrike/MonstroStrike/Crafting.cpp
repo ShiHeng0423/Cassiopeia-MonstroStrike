@@ -76,6 +76,56 @@ namespace Crafting
 	}
 
 
+	//choose from list of recipes
+	//display materials & opacity down if not enough qty
+	//if craftable all icon opacity 100% -> save index location
+	//craft will take index of inventory items and reduce qty
+
+	bool Can_Craft(const Recipe recipe, const std::vector<Item> Inventory, int& loc1, int& loc2)
+	{
+		bool first_good = false;
+		bool second_good = false;
+
+		int index = 0;
+		for (auto item : Inventory)
+		{
+			if (recipe.mat_requirements.first.mat_ID == Inventory[index].ID)
+			{
+				if (Inventory[index].quantity >= recipe.mat_requirements.first.mat_quantity)
+				{
+					first_good = true;
+					loc1 = index;
+				}
+			}
+
+			if (recipe.mat_requirements.second.mat_ID == Inventory[index].ID)
+			{
+				if (Inventory[index].quantity >= recipe.mat_requirements.second.mat_quantity)
+				{
+					second_good = true;
+					loc2 = index;
+				}
+			}
+			index++;
+		}
+
+		if (first_good && second_good)
+		{
+			return true;
+		}
+
+		return false;
+	}
+
+	void Craft_Item(const Recipe recipe, std::vector<Item>& Inventory, const int loc1, const int loc2)
+	{
+		Inventory[loc1].quantity -= recipe.mat_requirements.first.mat_quantity;
+		Inventory[loc2].quantity -= recipe.mat_requirements.second.mat_quantity;
+
+		Inventory::AddItem(fullInventoryList[recipe.item_id]);
+	}
+
+
 	void LoadRecipes()
 	{
 		recipeList = ReadRecipes("Assets/SaveFiles/recipe_list.json");

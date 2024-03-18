@@ -29,6 +29,7 @@
 #include <cstdio>
 #include "rapidjson/writer.h"
 #include <fstream>
+#include <sstream>
 
 using namespace rapidjson;
 
@@ -88,7 +89,7 @@ namespace Inventory
 				ifs.close();
 			}
 
-			printf("\nAccess items in Inventory:\n");
+			std::cout << "Access items in " << filepath << std::endl;
 			assert(json.IsObject());
 			// Document is a JSON value represents the root of DOM. Root can be either an object or array.
 
@@ -495,6 +496,10 @@ namespace Inventory
 	}
 	}
 
+	void AddItem(const Item& item)
+	{
+		playerInventory.push_back(item);
+	}
 
 
 	void ItemPickup(Item& item)
@@ -728,27 +733,24 @@ namespace Inventory
 
 		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
-		Gear[0] = AEGfxTextureLoad("Assets/items/item_0.png");
-		Gear[1] = AEGfxTextureLoad("Assets/items/item_1.png");
-		Gear[2] = AEGfxTextureLoad("Assets/items/item_2.png");
-		Gear[3] = AEGfxTextureLoad("Assets/items/item_3.png");
-		Gear[4] = AEGfxTextureLoad("Assets/items/item_4.png");
-		Gear[5] = AEGfxTextureLoad("Assets/items/item_5.png");
-		Gear[6] = AEGfxTextureLoad("Assets/items/item_6.png");
-		Gear[7] = AEGfxTextureLoad("Assets/items/item_7.png");
-		Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
-		Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
-		Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
-		Gear[11] = AEGfxTextureLoad("Assets/items/item_11.png");
-
-
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
+
+		//Item images
+		for (size_t i = 0 ; i < fullInventoryList.size(); ++i)
+		{
+			// Construct the file path for the texture
+			std::stringstream ss;
+			ss << "Assets/items/item_" << i << ".png";
+			std::string filePath = ss.str();
+
+			// Load the texture using the constructed file path
+			Gear[i] = AEGfxTextureLoad(filePath.c_str());
+		}
 
 
 		Item nothing {"", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
 			false, 0, 0, 0};
-		//nothing.ID = -999;
 
 		for (size_t i = 0; i < 5; ++i)
 		{
@@ -807,15 +809,13 @@ namespace Inventory
 	void FreeInventory()
 	{
 		AEGfxTextureUnload(blank);
+		AEGfxTextureUnload(inventoryBackground.img.pTex);
+		AEGfxTextureUnload(equipmentBackground.img.pTex);
 
-
-		for (int i = 0; i <= 11; ++i)
+		//free item images
+		for (size_t i = 0; i <= fullInventoryList.size(); ++i)
 		{
 			AEGfxTextureUnload(Gear[i]);
 		}
-
-
-		AEGfxTextureUnload(inventoryBackground.img.pTex);
-		AEGfxTextureUnload(equipmentBackground.img.pTex);
 	}
 }

@@ -46,7 +46,7 @@ namespace Crafting
 
 	std::vector<Recipe> ReadRecipes(const std::string& filepath);
 	bool Can_Craft(const Recipe recipe, const std::vector<Item> Inventory);
-	void Craft_Item(std::vector<Item>& Inventory);
+	void Craft_Item(const Recipe recipe, std::vector<Item>& Inventory);
 
 
 	void LoadRecipes();

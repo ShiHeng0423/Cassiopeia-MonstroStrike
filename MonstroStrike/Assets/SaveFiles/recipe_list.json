@@ -1,27 +1,66 @@
 {
   "recipes": [
     {
-      "item_id": 9,
+      "item_id": 5,
       "material_requirements": [
         {
-          "mat_ID": 11,
+          "mat_ID": 12,
           "mat_quantity": 1
         },
         {
-          "mat_ID": 12,
-          "mat_quantity": 2
+          "mat_ID": 13,
+          "mat_quantity": 1
         }
       ]
     },
     {
-      "item_id": 13,
+      "item_id": 6,
       "material_requirements": [
+        {
+          "mat_ID": 12,
+          "mat_quantity": 2
+        },
+        {
+          "mat_ID": 13,
+          "mat_quantity": 1
+        }
+      ]
+    },
+    {
+      "item_id": 7,
+      "material_requirements": [
+        {
+          "mat_ID": 12,
+          "mat_quantity": 2
+        },
+        {
+          "mat_ID": 13,
+          "mat_quantity": 1
+        }
+      ]
+    },
+    {
+      "item_id": 8,
+      "material_requirements": [
+        {
+          "mat_ID": 12,
+          "mat_quantity": 2
+        },
         {
           "mat_ID": 14,
           "mat_quantity": 1
+        }
+      ]
+    },    
+    {
+      "item_id": 9,
+      "material_requirements": [
+        {
+          "mat_ID": 12,
+          "mat_quantity": 2
         },
         {
-          "mat_ID": 15,
+          "mat_ID": 14,
           "mat_quantity": 1
         }
       ]

@@ -75,8 +75,6 @@ struct Item
 	int defence;
 };
 
-
-
 struct ButtonGearUI
 {
 	Sprite img;
@@ -85,54 +83,53 @@ struct ButtonGearUI
 	Item Item;
 };
 
+//Inventory list
 extern std::vector< Item> playerInventory;
-extern int Player_Inventory_Count;
-
-extern AEGfxTexture* Gear[25];
-extern s16 snapBack;
-
-extern Player* playerReference;
+extern std::vector< Item> fullInventoryList;
 extern std::vector< Item> equippedGear;
 
+//Misc
+extern int Player_Inventory_Count;
+extern s16 snapBack;
+extern Player* playerReference;
+
+
+//Display
 extern ButtonGearUI inventoryBackground;
 extern ButtonGearUI inventoryButton[25];
-
 extern ButtonGearUI equipmentBackground;
 
+//Textures
+extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
 
 namespace Inventory
 {
-	
-	extern std::vector<Item> allItems; //list of all items in game
-	
-	//extern std::vector<ButtonGearUI> equipmentDisplay[5];
-	extern ButtonGearUI equipmentDisplay[5];
-
 	extern bool inventoryOpen;
+	extern std::vector<Item> allItems; //list of all items in game
+	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
 
 
+	// const int inventory_size = 1000;
+	// const int inventory_height = 5;
+	// const int inventory_width = 5;
 
-	const int inventory_size = 1000;
-	const int inventory_height = 5;
-	const int inventory_width = 5;
-
-
-
-	//extern std::vector<Item> Player_Inventory;
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
+
 	void InitInventory();
 	void LoadInventory();
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
-	void SwapInventory(Item& lhs, Item& rhs);
 
+
+	void SwapInventory(Item& lhs, Item& rhs);
 	Item GetItemById(int id);
 
 	void OpenInventory();
 
+	void AddItem(const Item& item);
 	void ItemPickUp(Item& item);
 	void ItemDrop();
 
