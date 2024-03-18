@@ -30,7 +30,6 @@ struct NonPlayableCharacters
 	const char* npcName;
 	const char* openingText;
 	const char* exitingText;
-
 };
 
 struct ConversationContent {

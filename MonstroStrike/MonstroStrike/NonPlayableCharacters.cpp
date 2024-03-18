@@ -5,8 +5,8 @@
 #include "LevelHeaders.h"
 #include "MissionList.h"
 
-//DISCLAIMER: NOTE THAT IT IS ONLY 3 NOW UNLESS SUBJECT TO CHANGES
 static bool initialMissionsLoaded = false;
+//DISCLAIMER: NOTE THAT IT IS ONLY 3 NPC NOW UNLESS SUBJECT TO CHANGES
 
 namespace {
 	struct NonPlayableCharacters npcs[3];
@@ -17,11 +17,13 @@ namespace {
 
 	void CreateContentBarInstance(int num);
 
+	void CreateInfoDisplayBanner();
+
 	struct ConversationContent convBox;
 	
 	AEGfxTexture* npcContentBox;
 	AEGfxTexture* contentListBox; //The list of bars shown in content, like showing missions, crafting lists etc...
-
+	AEGfxTexture* infoDisplayBoxSprite;
 	
 	enum ConversationState {
 		
@@ -41,7 +43,18 @@ namespace {
 
 	std::vector<struct ContentBar> contentBarContainer;
 
-	MissionSystem theMissions;
+	struct ContentBar infoDisplayBox;
+
+	bool displayBoxActive = false;
+	bool confirmAcceptPrompt = false;
+
+	struct HoverMissionInfo {
+		const char* hoverMissionName;
+		const char* hoverMissionDetails;
+		size_t missionID;
+	} currentMissionInfo;
+
+	const char* confirmText;
 }
 
 void LoadNPC()
@@ -58,10 +71,11 @@ void LoadNPC()
 	convBox.conversationBoxSprite = AEGfxTextureLoad("Assets/ConversationBox.png");
 	npcContentBox = AEGfxTextureLoad("Assets/NPC_ContentScreen.png");
 	contentListBox = AEGfxTextureLoad("Assets/Contentbar.png");
+	infoDisplayBoxSprite = AEGfxTextureLoad("Assets/InfoContentBanner.png");
 
 	if (!initialMissionsLoaded)
 	{
-		theMissions.InitialMission();
+		missionSystem.InitialMission();
 		initialMissionsLoaded = true;
 	}
 }
@@ -107,6 +121,9 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 	npcs[1].exitingText = "Feel free to come back anytime. [Y] to continue";
 	npcs[2].exitingText = "Looking forward to your next visit! [Y] to continue";
 
+	confirmText = "Are you sure?";
+
+	displayBoxActive = false;
 }
 
 void UpdateNPC(Player* player)
@@ -168,7 +185,7 @@ void UpdateNPC(Player* player)
 
 				case NPC_QUEST_GIVER:
 					contentBarContainer.clear(); //Clean container
-					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
+					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
 					for (int i = 0; i < availableMissionsID.size(); i++)
 					{
 						CreateContentBarInstance(i);
@@ -198,27 +215,12 @@ void UpdateNPC(Player* player)
 				break;
 
 			case NPC_QUEST_GIVER:
-				if (AEInputCheckTriggered(AEVK_L))
-				{
-					theMissions.AcceptKillEnemyMission(1);
-
-					//Reset the content bars...
-					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
-					if (!availableMissionsID.empty())
-					{
-						contentBarContainer.clear();
-						for (int i = 0; i < availableMissionsID.size(); i++)
-						{
-							CreateContentBarInstance(i);
-						}
-					}
-				}
 
 				if (AEInputCheckTriggered(AEVK_J))
 				{
-					theMissions.MissionComplete(1);
+					missionSystem.MissionComplete(missionSystem.GetAcceptedMissionID());
 					//Reset the content bars...
-					availableMissionsID = theMissions.GetAvailableEnemyMissionsIDs();
+					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
 					if (!availableMissionsID.empty())
 					{
 						contentBarContainer.clear();
@@ -229,30 +231,73 @@ void UpdateNPC(Player* player)
 					}
 				}
 
-				for (int i = 0; i < availableMissionsID.size(); i++)
+				if (!confirmAcceptPrompt)
 				{
-					const KillEnemyMission* missionPtr = nullptr;
-					for (const KillEnemyMission& mission : theMissions.enemyMissions) {
-						if (mission.missionID == availableMissionsID[i]) {
-							missionPtr = &mission;
-							break;
+					displayBoxActive = false;
+					for (int i = 0; i < availableMissionsID.size(); i++)
+					{
+						const KillEnemyMission* missionPtr = nullptr;
+						for (const KillEnemyMission& mission : missionSystem.enemyMissions) {
+							if (mission.missionID == availableMissionsID[i]) {
+								missionPtr = &mission;
+								break;
+							}
+						}
+
+						if (AETestPointToRect(&mousePos, &contentBarContainer[i].position, contentBarContainer[i].size.x, contentBarContainer[i].size.y))
+						{
+							displayBoxActive = true;
+							if (missionPtr == nullptr)
+								return;
+
+							currentMissionInfo.hoverMissionName = missionPtr->missionName;
+							currentMissionInfo.hoverMissionDetails = missionPtr->missionDetails;
+							CreateInfoDisplayBanner(); //Update
+
+							if (AEInputCheckTriggered(AEVK_LBUTTON))
+							{
+								if (missionSystem.GetAcceptedMissionID() == -1)
+								{
+									currentMissionInfo.missionID = missionPtr->missionID;
+									confirmAcceptPrompt = true;
+								}
+								else
+								{
+									//Play Unavailable sound effect here, something like DE DEEE
+									std::cout << "Unavailable\n";
+								}
+							}
 						}
 					}
-
-					if (AETestPointToRect(&mousePos, &contentBarContainer[i].position, contentBarContainer[i].size.x, contentBarContainer[i].size.y))
+				}
+				else
+				{
+					if (AEInputCheckTriggered(AEVK_Y))
 					{
+						missionSystem.AcceptKillEnemyMission(currentMissionInfo.missionID);
+						//Reset the content bars...
+						availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
+						if (!availableMissionsID.empty())
+						{
+							contentBarContainer.clear();
+							for (int i = 0; i < availableMissionsID.size(); i++)
+							{
+								CreateContentBarInstance(i);
+							}
+						}
+						confirmAcceptPrompt = false;
+					}
+					else if (AEInputCheckTriggered(AEVK_N))
+					{
+						confirmAcceptPrompt = false;
 					}
 				}
 				break;
-
 			}
-
-			if (AEInputCheckTriggered(AEVK_ESCAPE))
+			if (AEInputCheckTriggered(AEVK_ESCAPE) && !confirmAcceptPrompt)
 			{
 				currentConvState = CONVERSATION_EXIT;
 			}
-
-
 			break;
 		case CONVERSATION_EXIT:
 			if (AEInputCheckTriggered(AEVK_Y))
@@ -342,6 +387,8 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 			//Available recipes
 			break;
 		case NPC_QUEST_GIVER:
+			const KillEnemyMission* missionPtr = nullptr;
+
 			for (size_t i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
 			{
 				f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
@@ -351,8 +398,7 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 				AEGfxSetTransform(contentBarContainer[i].transformation.m);
 				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
-				const KillEnemyMission* missionPtr = nullptr;
-				for (const KillEnemyMission& mission : theMissions.enemyMissions) {
+				for (const KillEnemyMission& mission : missionSystem.enemyMissions) {
 					if (mission.missionID == availableMissionsID[i]) {
 						missionPtr = &mission;
 						break;
@@ -360,18 +406,35 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 				}
 				if (missionPtr)
 				{
-					AEVec2 posText = {-0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
+					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
 					AEGfxPrint(fontID, missionPtr->missionName, posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
 				}
 			}
-			break;
-		default:
+
+			if (displayBoxActive)
+			{
+				AEGfxTextureSet(infoDisplayBoxSprite, 0, 0);
+				AEGfxSetTransform(infoDisplayBox.transformation.m);
+				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+				AEGfxPrint(fontID, "QUEST INFO", 0.7f , 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+				AEGfxPrint(fontID, currentMissionInfo.hoverMissionDetails, 0.63f, 0.f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+			}
 			break;
 		}
 
-		//Default for everyone else
-		AEGfxPrint(fontID, "Anything fancy?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f); //If possible want to improve, doesn't really like hardcoded values with no scalar...
-		AEGfxPrint(fontID, "[Esc] to exit", -0.98f, -0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		if (!confirmAcceptPrompt)
+		{
+			//Default for everyone else
+			AEGfxPrint(fontID, "Anything fancy?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f); //If possible want to improve, doesn't really like hardcoded values with no scalar...
+			AEGfxPrint(fontID, "[Esc] to exit", -0.98f, -0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		}
+		else
+		{
+			AEGfxPrint(fontID, "Are you sure?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f); 
+			AEGfxPrint(fontID, "[Y] to accept", -0.98f, -0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+			AEGfxPrint(fontID, "[N] to reject", -0.98f, -0.9f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		}
 		break;
 	case CONVERSATION_EXIT: //Say good bye
 		//The box itself
@@ -407,6 +470,7 @@ void FreeNPC()
 	AEGfxTextureUnload(convBox.conversationBoxSprite);
 	AEGfxTextureUnload(contentListBox);
 	AEGfxTextureUnload(npcContentBox);
+	AEGfxTextureUnload(infoDisplayBoxSprite);
 
 	collidedPlayer.clear();
 	availableMissionsID.clear();
@@ -482,5 +546,21 @@ namespace {
 		contBar.collisionBox.maximum.y = contBar.position.y + contBar.size.y * 0.5f;
 
 		contentBarContainer.push_back(contBar);
+	}
+
+	void CreateInfoDisplayBanner()
+	{
+		AEMtx33Rot(&infoDisplayBox.rotation, 0.f);
+
+		AEVec2Set(&infoDisplayBox.size, (f32)AEGfxGetWindowWidth() * 0.18f, (f32)AEGfxGetWindowHeight() * 0.95f);
+		AEMtx33Scale(&infoDisplayBox.scale, infoDisplayBox.size.x, infoDisplayBox.size.y);
+
+		AEVec2Set(&infoDisplayBox.position, screenPos.x + (f32)AEGfxGetWindowWidth() * 0.4f,
+			screenPos.y);
+		AEMtx33Trans(&infoDisplayBox.translation, infoDisplayBox.position.x, infoDisplayBox.position.y);
+
+		infoDisplayBox.transformation = { 0 };
+		AEMtx33Concat(&infoDisplayBox.transformation, &infoDisplayBox.rotation, &infoDisplayBox.scale);
+		AEMtx33Concat(&infoDisplayBox.transformation, &infoDisplayBox.translation, &infoDisplayBox.transformation);
 	}
 }

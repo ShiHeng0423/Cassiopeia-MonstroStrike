@@ -405,7 +405,6 @@ void Level1_Draw()
 		                                                inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
 			equipmentBackground.pos.x + x,
@@ -488,7 +487,7 @@ void Level1_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 #pragma endregion
-
+	missionSystem.PrintMissionText();
 	MapTransitionDraw();
 }
 

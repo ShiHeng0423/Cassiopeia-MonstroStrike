@@ -1,7 +1,6 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
 
-
 namespace {
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
@@ -162,11 +161,7 @@ void Lobby_Update()
 		next = GameStates::AREA1;
 	}
 
-	if (player->isConversation)
-	{
-
-	}
-	else
+	if (!player->isConversation)
 	{
 		menu->Update(cam);
 
@@ -265,7 +260,8 @@ void Lobby_Draw()
 	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
 	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
 
-	//Inventory images
+	//Print Mission Name
+	//Print 
 	//Inventory images
 	if (Inventory::inventoryOpen)
 	{
@@ -342,7 +338,11 @@ void Lobby_Draw()
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
 
+
+	missionSystem.PrintMissionText();
+
 	DrawConvBox(player->isConversation, *pWhiteSquareMesh);
+
 	MapTransitionDraw();
 
 }

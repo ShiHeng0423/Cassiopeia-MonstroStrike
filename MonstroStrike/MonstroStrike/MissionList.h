@@ -3,6 +3,8 @@
 
 struct KillEnemyMission {
 	const char* missionName;
+	const char* missionDetails;
+
 	bool completed;
 	bool accepted;
 	bool available;
@@ -12,7 +14,8 @@ struct KillEnemyMission {
 	int chargerToKill;
 	int flyToKill;
 
-	KillEnemyMission(int missionID, const char* name, int slimeTarg, int chargerTarg, int flyTarg, bool avail);
+	KillEnemyMission(int missionID, const char* name, int slimeTarg, int chargerTarg, int flyTarg, bool avail, 
+		const char* missionDetails);
 };
 
 struct MissionSystem {
@@ -21,7 +24,13 @@ struct MissionSystem {
 	
 	int nextMissionID;
 	
-	void CreateKillEnemyMission(const char* missionName, int targetSlime, int targetCharger, int targetFly, bool avail); //List numbers of enemy
+	int slimesKilled;
+	
+	int chargersKilled;
+	
+	int fliesKilled;
+
+	void CreateKillEnemyMission(const char* missionName, int targetSlime, int targetCharger, int targetFly, bool avail, const char* missionDetails); //List numbers of enemy
 	
 	void AcceptKillEnemyMission(int missionID);
 
@@ -32,5 +41,10 @@ struct MissionSystem {
 	std::vector<int>GetAvailableEnemyMissionsIDs();
 
 	void InitialMission(); //Called only once through out entire game
+
+	size_t GetAcceptedMissionID();
+
+	void PrintMissionText();
 };
 
+extern struct MissionSystem missionSystem;

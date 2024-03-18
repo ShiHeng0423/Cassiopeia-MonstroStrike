@@ -26,5 +26,6 @@
 
 #include "Inventory.h"
 #include "main.h"
+#include "MissionList.h"
 
 //Slapped it here first
