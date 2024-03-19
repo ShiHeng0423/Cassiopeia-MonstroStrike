@@ -625,94 +625,94 @@ namespace Inventory
 
 
 
-					// switch (item.Item.item_type)
-					// {
-					// case WEAPON:
-					//
-					// 	break;
-					//
-					// case ARMOUR:
-					//
-					// 	switch (item.Item.gear_loc)
-					// 	{
-					// 	case head:
-					//
-					// 		switch (item.Item.rarity)
-					// 		{
-					// 		case COMMON:
-					//
-					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 			break;
-					// 		case RARE:
-					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
-					// 			break;
-					// 		case EPIC:
-					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
-					// 			break;
-					//
-					// 	}
-					//
-					//
-					// 	
-					//
-					// 	break;
-					//
-					// case body:
-					// 	switch (item.Item.rarity)
-					// 	{
-					// 	case COMMON:
-					//
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 		break;
-					// 	case RARE:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
-					// 		break;
-					// 	case EPIC:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
-					// 		break;
-					// 	}
-					// 	break;
-					// case pants:
-					// 	switch (item.Item.rarity)
-					// 	{
-					// 	case COMMON:
-					//
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 		break;
-					// 	case RARE:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
-					// 		break;
-					// 	case EPIC:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
-					// 		break;
-					// 	}
-					// 	break;
-					// case boots:
-					// 	switch (item.Item.rarity)
-					// 	{
-					// 	case COMMON:
-					//
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 		break;
-					// 	case RARE:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
-					// 		break;
-					// 	case EPIC:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
-					// 		break;
-					// 	}
-					// 	break;
-					//
-					//
-					// 	}
-					//
-					//
-					// 	break;
-					// }
+					 switch (item.Item.item_type)
+					 {
+					 case WEAPON:
+					
+					 	break;
+					
+					 case ARMOUR:
+					
+					 	switch (item.Item.gear_loc)
+					 	{
+					 	case head:
+					
+					 		switch (item.Item.rarity)
+					 		{
+					 		case COMMON:
+					
+					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 			break;
+					 		case RARE:
+					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+					 			break;
+					 		case EPIC:
+					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+					 			break;
+					
+					 	}
+					
+					
+					 	
+					
+					 	break;
+					
+					 case body:
+					 	switch (item.Item.rarity)
+					 	{
+					 	case COMMON:
+					
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 		break;
+					 	case RARE:
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+					 		break;
+					 	case EPIC:
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		break;
+					 	}
+					 	break;
+					 case pants:
+					 	switch (item.Item.rarity)
+					 	{
+					 	case COMMON:
+					
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 		break;
+					 	case RARE:
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+					 		break;
+					 	case EPIC:
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		break;
+					 	}
+					 	break;
+					 case boots:
+					 	switch (item.Item.rarity)
+					 	{
+					 	case COMMON:
+					
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 		break;
+					 	case RARE:
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+					 		break;
+					 	case EPIC:
+					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		break;
+					 	}
+					 	break;
+					
+					
+					 	}
+					
+					
+					 	break;
+					 }
 						
 					Item equipping = item.Item;
 					Item blank;

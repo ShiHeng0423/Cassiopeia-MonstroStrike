@@ -32,8 +32,8 @@ void BackPauseMenu() { currScene = CurrentScene::PAUSE_SCENE; }
 
 PauseMenu_Manager::PauseMenu_Manager()
 {
-	pauseMenuBackgroundTex = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
-	buttonFrame = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
+	pauseMenuBackgroundTex = AEGfxTextureLoad("Assets/panelInset_beige.png");
+	buttonFrame = AEGfxTextureLoad("Assets/panel_brown.png");
 
 	AEGfxMeshStart();
 
@@ -62,7 +62,7 @@ void PauseMenu_Manager::Init(Camera* cam)
 	for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
 	{
 		pauseMenuButtons[i].pTex = buttonFrame;
-		AEVec2Set(&pauseMenuButtons[i].scale, 250.f, 80.f);
+		AEVec2Set(&pauseMenuButtons[i].scale, 400.f, 80.f);
 		AEVec2Set(&pauseMenuButtons[i].pos, cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y - 100.f * i + 100.f);
 
 		switch (i)
