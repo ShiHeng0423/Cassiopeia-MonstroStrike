@@ -175,6 +175,7 @@ void MissionSystem::PrintMissionText()
 			AEGfxPrint(fontID, goal,
 				-1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
 		}
+		delete[] concatenatedString;
 	}
 }
 
