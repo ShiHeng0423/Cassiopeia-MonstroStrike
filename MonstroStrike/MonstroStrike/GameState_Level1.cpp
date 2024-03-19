@@ -140,11 +140,11 @@ void Level1_Initialize()
 
 			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID)
 			{
-				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				player->obj.pos = {grids2D[rows][cols].position}; //Set position based on grid
 			}
 		}
 	}
-	player->obj.img.scale = { grids2D[0][0].size };
+	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 	//Need to place the objects one by one 
 	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);
@@ -249,6 +249,11 @@ void Level1_Update()
 	if (Inventory::inventoryOpen)
 	{
 		Inventory::OpenInventory();
+
+		if (Inventory::itemHover)
+		{
+			//Display item info
+		}
 	}
 
 	if (player->burningEffect)
@@ -405,7 +410,6 @@ void Level1_Draw()
 		                                                inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
 			equipmentBackground.pos.x + x,
@@ -414,8 +418,31 @@ void Level1_Draw()
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+		if (Inventory::itemHover)
+		{
+			AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(
+				itemDisplayBackground.pos.x + x,
+				itemDisplayBackground.pos.y + y, 0.f,
+				itemDisplayBackground.img.scale.x,
+				itemDisplayBackground.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+
 		for (ButtonGearUI button : inventoryButton)
 		{
+			//Filled slots
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
+			//Empty slots
 			if (button.Item.ID < 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
@@ -427,8 +454,9 @@ void Level1_Draw()
 		}
 
 
-		for (ButtonGearUI button : inventoryButton)
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
 		{
+			//Filled slots
 			if (button.Item.ID >= 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
@@ -437,23 +465,9 @@ void Level1_Draw()
 				                                                button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
-		}
 
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
+			//empty slots
 			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
-			if (button.Item.ID >= 0)
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
@@ -488,7 +502,7 @@ void Level1_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 #pragma endregion
-
+	missionSystem.PrintMissionText();
 	MapTransitionDraw();
 }
 
@@ -548,18 +562,24 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player
 				//Collision check
 				//Resolve + Vertical Collision only for entity x (wall or ground)
 				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
+					                                        gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
+					                         &player->collisionNormal, &player->obj.pos,
+					                         &player->velocity, &player->onFloor, &player->gravityForce,
+					                         &player->isFalling);
 				}
 
-				//Check horizontal box (Left arm -> Right arm)
+			//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
 				{
-					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity);
+					player->collisionNormal = AABBNormalize(player->boxArms,
+					                                        gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
+					                           &player->collisionNormal, &player->obj.pos,
+					                           &player->velocity);
 				}
 				break;
 			case MAP_TRANSITION_GRID:

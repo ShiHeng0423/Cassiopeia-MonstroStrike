@@ -48,7 +48,7 @@ void MapTransitionInit() //Call when enter a new level
 	transitionalImageOBJ.destPosition = { 0 }; //Final destination for the player to move against
 	transitionalImageOBJ.translation = { 0 };
 	transitionalImageOBJ.rotation = { 0 }; //Why I even have this?
-	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 1.5f, (f32)AEGfxGetWindowHeight() * 1.5f }; //Set both to fit window
+	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 1.85f, (f32)AEGfxGetWindowHeight() * 1.5f }; //Set both to fit window
 	transitionalImageOBJ.scale = { 0 }; //Set scale as size
 	transitionalImageOBJ.transformation = { 0 };
 	
@@ -88,8 +88,6 @@ void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, 
 
 void MapTransitionUpdate() //Update only when transition image is active
 {
-	//std::cout << transitionalImageOBJ.position.x  << " " << transitionalImageOBJ.position.y << " \n";
-	//std::cout << "Transit obj active: " << transitionalImageOBJ.active << "\n";
 	//Note to future self: Initial position need to get via min max XY of the entire map size
 	//Either that or get just outside camera view *Recommended
 	if (!transitionalImageOBJ.active)

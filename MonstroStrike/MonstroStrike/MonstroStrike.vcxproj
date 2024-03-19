@@ -99,7 +99,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Armor.cpp" />
-    <ClCompile Include="Armor_add.cpp" />
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Crafting.cpp" />
@@ -118,6 +117,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="GameState_SplashScreen.cpp" />
     <ClInclude Include="main.h" />
     <ClCompile Include="MapTransition.cpp" />
+    <ClCompile Include="MissionList.cpp" />
     <ClCompile Include="PauseMenuManager.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="TextPrinting.cpp" />
@@ -135,13 +135,13 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Armor.h" />
-    <ClInclude Include="Armor_add.h" />
     <ClInclude Include="AudioManager.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Crafting.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyUtils.h" />
     <ClInclude Include="GameState_GameLobby.h" />
+    <ClInclude Include="MissionList.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
