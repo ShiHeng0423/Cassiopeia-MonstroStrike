@@ -98,8 +98,19 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
 		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 
+<<<<<<< Updated upstream
 	}
 	
+=======
+	//This is the update for weapon equipped
+
+	if (AEInputCheckTriggered(AEVK_B))
+	{
+		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
+
+	}
+>>>>>>> Stashed changes
 	if (AEInputCheckTriggered(AEVK_N))
 	{
 		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
@@ -110,6 +121,11 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
 		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 	}
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
@@ -180,7 +196,6 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling);
 
-	//Player position update
 
 	player.prevPos = player.obj.pos;
 	player.prevcollisionBox = player.collisionBox;
@@ -290,8 +305,8 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		}
 	}
 	
-	
 
+<<<<<<< Updated upstream
 	
 	
 
@@ -315,4 +330,6 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	//	AEGfxSetCamPosition(desiredCamLocation.x + CAM_X_BOUNDARY, cam.y);
 	//}
 #pragma endregion
+=======
+>>>>>>> Stashed changes
 }

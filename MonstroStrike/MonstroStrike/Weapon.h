@@ -26,3 +26,4 @@ Weapon* createWeapon(const std::string& name, float x, float y);
 void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct Weapon*, f32);
 void UpdateWeaponHitBoxHeld (class Player* player, bool playerFacingRight, struct Weapon* playerEquip, f32);
 void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, class Player& player);
+void deleteWeapon(class Player* player);

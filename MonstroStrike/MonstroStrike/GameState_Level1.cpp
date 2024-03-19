@@ -671,6 +671,10 @@ void Level1_Draw()
 		                                                player->equippedWeapon->scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 		player->isAttacking = false; //Makes it so the hitbox despawns
+<<<<<<< Updated upstream
+=======
+	
+>>>>>>> Stashed changes
 	}
 
 #pragma endregion
@@ -844,8 +848,99 @@ void Level1_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
-	delete player->equippedWeapon;
+	deleteWeapon(player);
 	delete player;
 	delete cam;
 	delete menu;
 }
+<<<<<<< Updated upstream
+=======
+
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player)
+{
+	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
+
+	for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+	{
+		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+		for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+		{
+			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+				//Collision check
+				//Resolve + Vertical Collision only for entity x (wall or ground)
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+				}
+
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
+						&player->velocity);
+				}
+				break;
+			case MAP_TRANSITION_GRID:
+				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					//std::cout << "Collided\n";MainMenu_Song
+					if (!transitionalImageOBJ.active)
+					{
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
+					}
+				}
+				break;
+			case EMPTY:
+				break;
+			}
+			playerIndexX += 1;
+		}
+		playerIndexY += 1;
+	}
+}
+
+void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy)
+{
+	for (Enemy& tmpEnemy : enemy)
+	{
+
+		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
+
+		for (int i = 0; i <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		{
+			int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+			for (int j = 0; j <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			{
+
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) 
+				{
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
+						&tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
+						&tmpEnemy.isFalling);
+				}
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+				{
+					tmpEnemy.isCollision = true;
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveHorizontalCollision(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity);
+					tmpEnemy.loopIdle = false;
+				}
+
+
+			}
+		}
+	}
+}
+>>>>>>> Stashed changes
