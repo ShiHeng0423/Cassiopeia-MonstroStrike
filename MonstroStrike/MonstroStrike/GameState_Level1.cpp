@@ -368,6 +368,7 @@ void Level1_Draw()
 		                                                player->equippedWeapon.scale.x,
 		                                                player->equippedWeapon.scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+		player->isAttacking = false;
 	}
 
 #pragma endregion

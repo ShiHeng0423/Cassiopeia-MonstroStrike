@@ -104,6 +104,25 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
+
+	if (AEInputCheckTriggered(AEVK_B))
+	{
+		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
+
+	}
+	if (AEInputCheckTriggered(AEVK_N))
+	{
+		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_M))
+	{
+		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
+		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
+	}
+
+
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
