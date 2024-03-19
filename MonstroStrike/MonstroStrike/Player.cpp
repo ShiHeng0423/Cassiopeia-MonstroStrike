@@ -98,19 +98,10 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
 		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 
-<<<<<<< Updated upstream
 	}
-	
-=======
 	//This is the update for weapon equipped
 
-	if (AEInputCheckTriggered(AEVK_B))
-	{
-		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 
-	}
->>>>>>> Stashed changes
 	if (AEInputCheckTriggered(AEVK_N))
 	{
 		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
@@ -121,11 +112,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
 		std::cout << "Now equipped with a " << player.equippedWeapon->name << std::endl;
 	}
-<<<<<<< Updated upstream
-=======
 
-
->>>>>>> Stashed changes
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";
@@ -306,30 +293,10 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	}
 	
 
-<<<<<<< Updated upstream
+
 	
 	
 
 
-#pragma region Camera Section
-	//Camera region
-	//AEVec2 cam;
-	//AEGfxGetCamPosition(&cam.x, &cam.y);
 
-	////150.f refers to the cam boundary;
-	//if ((player.expectedLocation.x > cam.x + CAM_X_BOUNDARY) && player.isFacingRight)
-	//{
-	//	AEVec2 desiredCamLocation{cam.x + CAM_X_BOUNDARY, 0.f};
-	//	AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
-	//	AEGfxSetCamPosition(desiredCamLocation.x - CAM_X_BOUNDARY, cam.y);
-	//}
-	//else if ((player.expectedLocation.x < cam.x - CAM_X_BOUNDARY) && !player.isFacingRight)
-	//{
-	//	AEVec2 desiredCamLocation{cam.x - CAM_X_BOUNDARY, 0.f};
-	//	AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, CAM_FOLLOW_UP_SPEED_X);
-	//	AEGfxSetCamPosition(desiredCamLocation.x + CAM_X_BOUNDARY, cam.y);
-	//}
-#pragma endregion
-=======
->>>>>>> Stashed changes
 }

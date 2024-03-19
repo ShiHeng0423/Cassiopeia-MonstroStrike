@@ -671,10 +671,7 @@ void Level1_Draw()
 		                                                player->equippedWeapon->scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 		player->isAttacking = false; //Makes it so the hitbox despawns
-<<<<<<< Updated upstream
-=======
-	
->>>>>>> Stashed changes
+
 	}
 
 #pragma endregion
@@ -853,8 +850,7 @@ void Level1_Unload()
 	delete cam;
 	delete menu;
 }
-<<<<<<< Updated upstream
-=======
+
 
 void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player)
 {
@@ -943,4 +939,4 @@ void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Ene
 		}
 	}
 }
->>>>>>> Stashed changes
+
