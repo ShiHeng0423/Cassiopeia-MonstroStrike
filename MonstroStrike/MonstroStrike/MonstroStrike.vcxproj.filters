@@ -114,9 +114,6 @@
     <ClCompile Include="AudioManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Armor_add.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Armor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -231,9 +228,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AudioManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Armor_add.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Armor.h">

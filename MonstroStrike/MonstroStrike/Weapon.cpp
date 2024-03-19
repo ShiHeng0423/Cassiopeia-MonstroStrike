@@ -389,7 +389,7 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
     }
 }
 
-void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, Player& player)
+void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, class Player& player)
 {
     //wings
     if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) {

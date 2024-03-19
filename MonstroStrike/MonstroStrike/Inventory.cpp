@@ -29,6 +29,7 @@
 #include <cstdio>
 #include "rapidjson/writer.h"
 #include <fstream>
+#include <sstream>
 
 using namespace rapidjson;
 
@@ -48,6 +49,7 @@ using namespace rapidjson;
  ButtonGearUI inventoryButton[25];
 
  ButtonGearUI equipmentBackground;
+ ButtonGearUI itemDisplayBackground;
 
  AEGfxTexture* blank;
 
@@ -61,6 +63,7 @@ namespace Inventory
 	//std::vector<ButtonGearUI> equipmentDisplay[5];
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
+	bool itemHover;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -88,12 +91,15 @@ namespace Inventory
 				ifs.close();
 			}
 
-			printf("\nAccess items in Inventory:\n");
+			std::cout << "Access items in " << filepath << std::endl;
 			assert(json.IsObject());
 			// Document is a JSON value represents the root of DOM. Root can be either an object or array.
 
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
+
+			if (items.Size() == 0)
+				return inventory;
 
 			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
@@ -182,21 +188,18 @@ namespace Inventory
 	{
 		std::cout << "start writing JSON" << std::endl;
 
-		 Document json;
+		 Document json = nullptr;
 		 json.SetObject();
 
 		Value items( kArrayType);
 
-		// StringBuffer s;
-		// Writer<StringBuffer> writer(s);
-		//
-		// writer.StartObject();
-
 
 		for (const auto& item : inventory)
 		{
-			Value ind_item(kObjectType);
+			if(item.ID < 0)
+				continue;
 
+			Value ind_item(kObjectType);
 			ind_item.AddMember("UID", Value(item.UID.c_str(), json.GetAllocator()), json.GetAllocator());
 			ind_item.AddMember("ID", item.ID, json.GetAllocator());
 			ind_item.AddMember("name", Value(item.name.c_str(), json.GetAllocator()), json.GetAllocator());
@@ -240,20 +243,21 @@ namespace Inventory
 		std::cout << buffer.GetString() << std::endl;
 
 		
-		 std::ofstream ofs(filepath);
+		 std::ofstream ofs;
 
-
+		 ofs.open(filepath,std::fstream::out);
 
 		if (ofs.is_open())
 		{
 			ofs << buffer.GetString();
-			ofs.close();
 			std::cout << "Successfully wrote to the JSON file: " << filepath << std::endl;
 		}
 		else
 		{
 			std::cerr << "Failed to open the output JSON file: " << filepath << std::endl;
 		}
+
+		ofs.close();
 
 	}
 
@@ -281,25 +285,25 @@ namespace Inventory
 	}
 
 
-		void SwapInventory(Item& lhs, Item& rhs)
-		{
-			Item tmp = lhs;
-			lhs = rhs;
-			rhs = tmp;
+	void SwapInventory(Item& lhs, Item& rhs)
+	{
+		Item tmp = lhs;
+		lhs = rhs;
+		rhs = tmp;
 
-		}
+	}
 
-		// Function to get an item by its ID
-		Item GetItemById(int id) {
-			// Iterate through all items to find the one with the matching ID
-			for (const Item& item : allItems) {
-				if (item.ID == id) {
-					return item;
-				}
+	// Function to get an item by its ID
+	Item GetItemById(int id) {
+		// Iterate through all items to find the one with the matching ID
+		for (const Item& item : allItems) {
+			if (item.ID == id) {
+				return item;
 			}
-			// Return a default item if the ID is not found
-			return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,GL_NONE, true, 1,1 };
 		}
+		// Return a default item if the ID is not found
+		return Item{ "Unknown Item", -1, "Forbidden Fruit", "So black, it can't be seen, ever...", FOOD,UNIQUE,GL_NONE, true, 1,1 };
+	}
 
 
 
@@ -337,8 +341,8 @@ namespace Inventory
 			//button.isWeapon = false;
 			index++;
 		}
-		//Hover collision with button && hold left mouse button
 
+		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
 			s32 textX = 0;
@@ -357,13 +361,21 @@ namespace Inventory
 				{
 					if (button.img.pTex != blank)
 					{
-						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
 						snapBack = index;
+
+						//Display item's info on l_click
+						DisplayItemInfo(button.Item);
+						itemHover = true;
+
+
 						break;
 					}
 					//button.Ptr();
 				}
+				//Reset itemHover
+				itemHover = false;
+
 				index++;
 			}
 		}
@@ -486,9 +498,23 @@ namespace Inventory
 				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 				index++;
 			}
-	}
+		}
 	}
 
+	void DisplayItemInfo(const Item& item)
+	{
+		std::cout << "Display item info: "<< item.name << std::endl;
+		//set background
+
+		//set item position
+
+	}
+
+
+	void AddItem(const Item& item)
+	{
+		playerInventory.push_back(item);
+	}
 
 
 	void ItemPickup(Item& item)
@@ -602,6 +628,7 @@ namespace Inventory
 						item.Item = blank;
 						playerInventory[index].ID = -9999;
 						EquipToBody(equipping);
+						//equip amour
 						
 
 					
@@ -715,39 +742,48 @@ namespace Inventory
 	{
 		playerInventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
 		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
-		equippedGear = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
+		equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-
 		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-
-		Gear[0] = AEGfxTextureLoad("Assets/items/item_0.png");
-		Gear[1] = AEGfxTextureLoad("Assets/items/item_1.png");
-		Gear[2] = AEGfxTextureLoad("Assets/items/item_2.png");
-		Gear[3] = AEGfxTextureLoad("Assets/items/item_3.png");
-		Gear[4] = AEGfxTextureLoad("Assets/items/item_4.png");
-		Gear[5] = AEGfxTextureLoad("Assets/items/item_5.png");
-		Gear[6] = AEGfxTextureLoad("Assets/items/item_6.png");
-		Gear[7] = AEGfxTextureLoad("Assets/items/item_7.png");
-		Gear[8] = AEGfxTextureLoad("Assets/items/item_8.png");
-		Gear[9] = AEGfxTextureLoad("Assets/items/item_9.png");
-		Gear[10] = AEGfxTextureLoad("Assets/items/item_10.png");
-
+		itemDisplayBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
-
-		Item nothing;
-		nothing.ID = -999;
-
-		for (size_t i = 0; i < 5; ++i)
+		//Item images
+		for (size_t i = 0 ; i < fullInventoryList.size(); ++i)
 		{
-			equippedGear[i] = nothing;
-			equipmentDisplay[i].Item = nothing;
+			// Construct the file path for the texture
+			std::stringstream ss;
+			ss << "Assets/items/item_" << i << ".png";
+			std::string filePath = ss.str();
+
+			// Load the texture using the constructed file path
+			Gear[i] = AEGfxTextureLoad(filePath.c_str());
 		}
 
 
+		Item nothing {"", -999, "", "",
+			IT_NONE, IR_NONE, GL_NONE, 0,
+			false, 0, 0, 0};
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+			//fillup equippedGear vector with empty elements if less than maxslots occupied
+			if(equippedGear.size() < 5)
+			{
+				equippedGear.push_back(nothing);
+			}
+
+			if(equippedGear[i].ID < 0)
+			{
+				equipmentDisplay[i].Item = nothing;
+			}else
+			{
+				equipmentDisplay[i].Item = equippedGear[i];
+			}
+		}
 	}
 
 	void InitInventory()
@@ -763,10 +799,20 @@ namespace Inventory
 		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
 		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
 
+		//Item Info Display
+		AEVec2Set(&itemDisplayBackground.img.scale, 250.f, 500.f);
+		AEVec2Set(&itemDisplayBackground.pos, 375.f, 0.f);
+
 		index = 0;
 		for (ButtonGearUI& button : Inventory::equipmentDisplay)
 		{
-			button.img.pTex = blank;
+			if(button.Item.ID<0)
+			{
+				button.img.pTex = blank;
+			}else
+			{
+				button.img.pTex = Gear[button.Item.ID];
+			}
 			AEVec2Set(&button.img.scale, 60.f, 60.f);
 			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 			index++;
@@ -776,21 +822,21 @@ namespace Inventory
 
 	void SaveInventory()
 	{
-		WriteJsonFile(playerInventory, "./Assets/SaveFiles/saved_player_inventory.json");
+		WriteJsonFile(playerInventory, "Assets/SaveFiles/player_inventory.json");
+		WriteJsonFile(equippedGear, "Assets/SaveFiles/equipped_gears.json");
 	}
 
 	void FreeInventory()
 	{
 		AEGfxTextureUnload(blank);
+		AEGfxTextureUnload(inventoryBackground.img.pTex);
+		AEGfxTextureUnload(equipmentBackground.img.pTex);
+		AEGfxTextureUnload(itemDisplayBackground.img.pTex);
 
-
-		for (int i = 0; i <= 10; ++i)
+		//free item images
+		for (size_t i = 0; i < fullInventoryList.size(); ++i)
 		{
 			AEGfxTextureUnload(Gear[i]);
 		}
-
-
-		AEGfxTextureUnload(inventoryBackground.img.pTex);
-		AEGfxTextureUnload(equipmentBackground.img.pTex);
 	}
 }

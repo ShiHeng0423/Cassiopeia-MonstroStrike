@@ -1,7 +1,6 @@
 #include "Player.h"
 #include "AEEngine.h"
 #include "Physics.h"
-#include "Armor_add.h"
 #include "Weapon.h"
 #include "TriggerAttack.h"
 #include <iostream>
@@ -93,10 +92,11 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 
 	//Player Stats
-	f32 maxHealth = 500.f;
-	f32 currHealth = maxHealth;
-	f32 attack = 100.f;
-	f32 defence = 50.f;
+	player->maxHealth = 100.f;
+	player->currHealth = player->maxHealth;
+	player->attack = 100.f;
+	player->defence = 50.f;
+
 
 	return player;
 }
@@ -137,30 +137,54 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	//Start of armor equip
 	if (AEInputCheckTriggered(AEVK_1))
 	{
-		Player player;
-		Armor armor;
-		armor.armorType = Armor::Type::FIRST;
-		armor.leather.defense = 20;
-
-		player.equippedArmor = armor;
-		std::string armorName = "Leather Armor";
-
-		std::cout << "Equipped " << armorName << "!" << std::endl;
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
 	}
-
-	//std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
 	if (AEInputCheckTriggered(AEVK_2))
 	{
-		Player player;
-		Armor armor;
-		armor.armorType = Armor::Type::SECOND;
-		armor.leather.defense = 50;
-
-		player.equippedArmor = armor;
-		std::string armorName = "Steel Armor";
-
-		std::cout << "Equipped " << armorName << "!" << std::endl;
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+		std::cout << player.maxHealth << std::endl;
 	}
+	if (AEInputCheckTriggered(AEVK_3))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+		std::cout << player.maxHealth << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_4))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+		std::cout << player.maxHealth << std::endl;
+	}
+
+	if (AEInputCheckTriggered(AEVK_5))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_6))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_7))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
+	}
+
+	////std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
+	//if (AEInputCheckTriggered(AEVK_2))
+	//{
+	//	Player player;
+	//	Armor armor;
+	//	armor.armorType = Armor::Type::SECOND;
+	//	armor.leather.defense = 50;
+
+	//	player.equippedArmor = armor;
+	//	std::string armorName = "Steel Armor";
+
+	//	std::cout << "Equipped " << armorName << "!" << std::endl;
+	//}
 
 	// End of armor equip
 

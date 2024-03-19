@@ -1,7 +1,9 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
 
-namespace {
+
+namespace
+{
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
 	AEGfxVertexList* pMeshRed;
@@ -40,7 +42,7 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* 
 
 void Lobby_Load()
 {
-	player = PlayerInitialize("Assets/Border.png", { 0.f,0.f }, { 0.f,0.f }, { 40.f,0.f }, true);
+	player = PlayerInitialize("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	auto fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 
@@ -52,6 +54,7 @@ void Lobby_Load()
 	}
 
 	Inventory::LoadInventory();
+	Crafting::LoadRecipes();
 
 	LoadNPC();
 	ParticleLoad();
@@ -74,7 +77,6 @@ void Lobby_Load()
 
 void Lobby_Initialize()
 {
-
 	//Initializing grid data
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
 	{
@@ -132,7 +134,7 @@ void Lobby_Initialize()
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
 			case 97:
-				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				player->obj.pos = {grids2D[rows][cols].position}; //Set position based on grid
 				break;
 			default:
 				break;
@@ -140,11 +142,13 @@ void Lobby_Initialize()
 		}
 	}
 
-	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
+	player->obj.img.scale = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
 
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x, grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x, grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+	               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
+	               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
 
@@ -245,16 +249,16 @@ void Lobby_Draw()
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0, (int)player->currHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0, (int)player->maxHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	std::string str = std::to_string(hp);
+	std::string str = std::to_string((int)player->currHealth);
 	const char* pTextHP = str.c_str();
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
@@ -284,6 +288,42 @@ void Lobby_Draw()
 			equipmentBackground.img.scale.x,
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		//ItemInfoDisplay
+		if (Inventory::itemHover)
+		{
+			AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(
+				itemDisplayBackground.pos.x + x,
+				itemDisplayBackground.pos.y + y, 0.f,
+				itemDisplayBackground.img.scale.x,
+				itemDisplayBackground.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			f32 width, height;
+
+			auto pText = "Start";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2,
+			           -itemDisplayBackground.pos.y + y + 0.22f,
+			           0.5f, 1, 1, 1, 1);
+
+			auto pText1 = "Load";
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, -itemDisplayBackground.pos.x + x,
+			           -itemDisplayBackground.pos.y + y, 0.5f, 1, 1, 1, 1);
+
+			auto pText2 = "Credit";
+			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText2, -itemDisplayBackground.pos.x + x,
+			           -itemDisplayBackground.pos.y + y - 0.22f, 0.5f, 1, 1, 1, 1);
+
+			auto pText3 = "Controls";
+			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText3, -itemDisplayBackground.pos.x + x,
+			           -itemDisplayBackground.pos.y + y - 0.44f, 0.5f, 1, 1, 1, 1);
+		}
+
 
 		for (ButtonGearUI button : inventoryButton)
 		{
@@ -396,18 +436,24 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* 
 				//Collision check
 				//Resolve + Vertical Collision only for entity x (wall or ground)
 				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox)) {
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity, &player->onFloor, &player->gravityForce, &player->isFalling);
+				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
+				{
+					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
+					                                        gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
+					                         &player->collisionNormal, &player->obj.pos,
+					                         &player->velocity, &player->onFloor, &player->gravityForce,
+					                         &player->isFalling);
 				}
 
-				//Check horizontal box (Left arm -> Right arm)
+			//Check horizontal box (Left arm -> Right arm)
 				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
 				{
-					player->collisionNormal = AABBNormalize(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox, &player->collisionNormal, &player->obj.pos,
-						&player->velocity);
+					player->collisionNormal = AABBNormalize(player->boxArms,
+					                                        gridMap[playerIndexY][playerIndexX].collisionBox);
+					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
+					                           &player->collisionNormal, &player->obj.pos,
+					                           &player->velocity);
 				}
 				break;
 			case MAP_TRANSITION_GRID:
