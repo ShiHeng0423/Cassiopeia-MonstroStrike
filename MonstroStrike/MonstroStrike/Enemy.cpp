@@ -6,8 +6,6 @@
 
 
 
-
-
 void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 
 	Enemy enemy;
@@ -104,8 +102,11 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 	AEVec2Set(&enemy.spawnPoint, 0.f, 0.f);
 
-
 	enemy.gravityForce = 0.f;
+
+	//(Offsets)
+	f32 enemyWingScaleOffset = 30.f;
+	f32 enemyWingPosOffset = 70.f;
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
@@ -114,7 +115,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.health = 100;
+		enemy.maxHealth = 100;
+		enemy.health = enemy.maxHealth;
 		enemy.mass = 50.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
@@ -124,7 +126,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 300.f;
 		enemy.fireRate = 5.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.health = 100;
+		enemy.maxHealth = 100;
+		enemy.health = enemy.maxHealth;
 		enemy.mass = 100.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
@@ -135,7 +138,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.health = 100;
+		enemy.maxHealth = 100;
+		enemy.health = enemy.maxHealth;
 		enemy.mass = 100.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
@@ -151,15 +155,16 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 500.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.health = 100;
+		enemy.maxHealth = 100;
+		enemy.health = enemy.maxHealth;
 		enemy.mass = 150.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 
 		//wing1
 		enemy.wing1.isAlive = false;
-		enemy.wing1.Offset = 70.f;
+		enemy.wing1.Offset = enemyWingPosOffset;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x + 30.f, scale.y + 30.f); //set scale of the image
+		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
 		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
 		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
 		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
@@ -170,9 +175,9 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 		//wing2
 		enemy.wing2.isAlive = false;
-		enemy.wing2.Offset = -70.f;
+		enemy.wing2.Offset = -enemyWingPosOffset;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x + 30.f, scale.y + 30.f); //set scale of the image
+		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
 		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
 		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
 		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
