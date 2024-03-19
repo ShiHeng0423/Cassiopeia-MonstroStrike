@@ -49,6 +49,7 @@ using namespace rapidjson;
  ButtonGearUI inventoryButton[25];
 
  ButtonGearUI equipmentBackground;
+ ButtonGearUI itemDisplayBackground;
 
  AEGfxTexture* blank;
 
@@ -62,6 +63,7 @@ namespace Inventory
 	//std::vector<ButtonGearUI> equipmentDisplay[5];
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
+	bool itemHover;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -190,11 +192,6 @@ namespace Inventory
 		 json.SetObject();
 
 		Value items( kArrayType);
-
-		// StringBuffer s;
-		// Writer<StringBuffer> writer(s);
-		//
-		// writer.StartObject();
 
 
 		for (const auto& item : inventory)
@@ -344,8 +341,8 @@ namespace Inventory
 			//button.isWeapon = false;
 			index++;
 		}
-		//Hover collision with button && hold left mouse button
 
+		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
 			s32 textX = 0;
@@ -364,13 +361,21 @@ namespace Inventory
 				{
 					if (button.img.pTex != blank)
 					{
-						std::cout << button.Item.name << std::endl;
 						//snap origin of img to mouse pos
 						snapBack = index;
+
+						//Display item's info on l_click
+						DisplayItemInfo(button.Item);
+						itemHover = true;
+
+
 						break;
 					}
 					//button.Ptr();
 				}
+				//Reset itemHover
+				itemHover = false;
+
 				index++;
 			}
 		}
@@ -493,8 +498,18 @@ namespace Inventory
 				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 				index++;
 			}
+		}
 	}
+
+	void DisplayItemInfo(const Item& item)
+	{
+		std::cout << "Display item info: "<< item.name << std::endl;
+		//set background
+
+		//set item position
+
 	}
+
 
 	void AddItem(const Item& item)
 	{
@@ -613,6 +628,7 @@ namespace Inventory
 						item.Item = blank;
 						playerInventory[index].ID = -9999;
 						EquipToBody(equipping);
+						//equip amour
 						
 
 					
@@ -730,8 +746,8 @@ namespace Inventory
 
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-
 		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+		itemDisplayBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
@@ -783,6 +799,10 @@ namespace Inventory
 		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
 		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
 
+		//Item Info Display
+		AEVec2Set(&itemDisplayBackground.img.scale, 250.f, 500.f);
+		AEVec2Set(&itemDisplayBackground.pos, 375.f, 0.f);
+
 		index = 0;
 		for (ButtonGearUI& button : Inventory::equipmentDisplay)
 		{
@@ -811,9 +831,10 @@ namespace Inventory
 		AEGfxTextureUnload(blank);
 		AEGfxTextureUnload(inventoryBackground.img.pTex);
 		AEGfxTextureUnload(equipmentBackground.img.pTex);
+		AEGfxTextureUnload(itemDisplayBackground.img.pTex);
 
 		//free item images
-		for (size_t i = 0; i <= fullInventoryList.size(); ++i)
+		for (size_t i = 0; i < fullInventoryList.size(); ++i)
 		{
 			AEGfxTextureUnload(Gear[i]);
 		}

@@ -284,6 +284,42 @@ void Lobby_Draw()
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+		//ItemInfoDisplay
+		if (Inventory::itemHover)
+		{
+			AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(
+				itemDisplayBackground.pos.x + x,
+				itemDisplayBackground.pos.y + y, 0.f,
+				itemDisplayBackground.img.scale.x,
+				itemDisplayBackground.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			f32 width, height;
+
+			auto pText = "Start";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2,
+			           -itemDisplayBackground.pos.y + y + 0.22f,
+			           0.5f, 1, 1, 1, 1);
+
+			auto pText1 = "Load";
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, -itemDisplayBackground.pos.x + x,
+			           -itemDisplayBackground.pos.y + y, 0.5f, 1, 1, 1, 1);
+
+			auto pText2 = "Credit";
+			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText2, -itemDisplayBackground.pos.x + x,
+			           -itemDisplayBackground.pos.y + y - 0.22f, 0.5f, 1, 1, 1, 1);
+
+			auto pText3 = "Controls";
+			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText3, -itemDisplayBackground.pos.x + x,
+			           -itemDisplayBackground.pos.y + y - 0.44f, 0.5f, 1, 1, 1, 1);
+		}
+
+
 		for (ButtonGearUI button : inventoryButton)
 		{
 			if (button.Item.ID < 0)

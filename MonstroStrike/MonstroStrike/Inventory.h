@@ -98,6 +98,7 @@ extern Player* playerReference;
 extern ButtonGearUI inventoryBackground;
 extern ButtonGearUI inventoryButton[25];
 extern ButtonGearUI equipmentBackground;
+extern ButtonGearUI itemDisplayBackground;
 
 //Textures
 extern AEGfxTexture* Gear[25];
@@ -107,13 +108,9 @@ extern AEGfxTexture* blank;
 namespace Inventory
 {
 	extern bool inventoryOpen;
+	extern bool itemHover;
 	extern std::vector<Item> allItems; //list of all items in game
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
-
-
-	// const int inventory_size = 1000;
-	// const int inventory_height = 5;
-	// const int inventory_width = 5;
 
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
@@ -128,6 +125,8 @@ namespace Inventory
 	Item GetItemById(int id);
 
 	void OpenInventory();
+
+	void DisplayItemInfo(const Item&);
 
 	void AddItem(const Item& item);
 	void ItemPickUp(Item& item);
@@ -145,4 +144,3 @@ namespace Inventory
 
 }
 
-void Equip(int index, ButtonGearUI tmp);
