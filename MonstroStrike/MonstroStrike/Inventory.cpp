@@ -526,7 +526,7 @@ namespace Inventory
 	}
 
 	//Function to apply the effect of a consumable item on the player
-	void ApplyItemEffect(Player& player, const Item& item)
+	void ApplyItemEffect(class Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
 		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
@@ -577,7 +577,7 @@ namespace Inventory
 	}
 
 
-	void UseItem(int index, ButtonGearUI& item, Player& player)
+	void UseItem(int index, ButtonGearUI& item, class Player& player)
 	{
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
@@ -622,15 +622,104 @@ namespace Inventory
 					// {
 					// 	player.equipment.push_back(item.Item);
 						std::cout << "Equipped " << item.Item.name << std::endl;
-						Item equipping = item.Item;
-						Item blank;
-						blank.ID = -9999;
-						item.Item = blank;
-						playerInventory[index].ID = -9999;
-						EquipToBody(equipping);
-						//equip amour
-						
 
+
+
+					// switch (item.Item.item_type)
+					// {
+					// case WEAPON:
+					//
+					// 	break;
+					//
+					// case ARMOUR:
+					//
+					// 	switch (item.Item.gear_loc)
+					// 	{
+					// 	case head:
+					//
+					// 		switch (item.Item.rarity)
+					// 		{
+					// 		case COMMON:
+					//
+					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+					//
+					// 			break;
+					// 		case RARE:
+					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+					// 			break;
+					// 		case EPIC:
+					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+					// 			break;
+					//
+					// 	}
+					//
+					//
+					// 	
+					//
+					// 	break;
+					//
+					// case body:
+					// 	switch (item.Item.rarity)
+					// 	{
+					// 	case COMMON:
+					//
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					//
+					// 		break;
+					// 	case RARE:
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+					// 		break;
+					// 	case EPIC:
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					// 		break;
+					// 	}
+					// 	break;
+					// case pants:
+					// 	switch (item.Item.rarity)
+					// 	{
+					// 	case COMMON:
+					//
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					//
+					// 		break;
+					// 	case RARE:
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+					// 		break;
+					// 	case EPIC:
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					// 		break;
+					// 	}
+					// 	break;
+					// case boots:
+					// 	switch (item.Item.rarity)
+					// 	{
+					// 	case COMMON:
+					//
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					//
+					// 		break;
+					// 	case RARE:
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+					// 		break;
+					// 	case EPIC:
+					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					// 		break;
+					// 	}
+					// 	break;
+					//
+					//
+					// 	}
+					//
+					//
+					// 	break;
+					// }
+						
+					Item equipping = item.Item;
+					Item blank;
+					blank.ID = -9999;
+					item.Item = blank;
+					playerInventory[index].ID = -9999;
+					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
 						UpdatePlayerStats(player, equippedGear);

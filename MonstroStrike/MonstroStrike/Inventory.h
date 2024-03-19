@@ -21,6 +21,7 @@
 #include "AEEngine.h"
 #include "Player.h"
 #include "Utils.h"
+
 #include "rapidjson/document.h"
 // ---------------------------------------------------------------------------
 
@@ -134,8 +135,8 @@ namespace Inventory
 
 
 	void EquipToBody(Item obj);
-	void ApplyItemEffect(Player& player, const Item& item);
-	void UseItem(int index, ButtonGearUI& item, Player& player);
+	void ApplyItemEffect(class Player& player, const Item& item);
+	void UseItem(int index, ButtonGearUI& item, class Player& player);
 	
 	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems);
 	void SaveInventory();
