@@ -1,12 +1,12 @@
 #include "Player.h"
 #include "AEEngine.h"
 #include "Physics.h"
-#include "Armor_add.h"
 #include "Weapon.h"
 #include "TriggerAttack.h"
 #include <iostream>
 #include <chrono>
-#include <functional> 
+#include <queue>
+#include <functional>  // for std::function
 #define CAM_X_BOUNDARY (250.f)
 #define CAM_FOLLOW_UP_SPEED_X (0.05f)
 // Define a clock type for high-resolution time measurement
@@ -15,8 +15,7 @@ using Clock = std::chrono::high_resolution_clock;
 // Store the time point of the last input
 auto lastInputTime = Clock::now();
 auto currentTime = Clock::now();
-auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0;
-// Convert to seconds
+auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
 
 constexpr f32 comboWindowDuration = 1.0f;
 constexpr f32 PRESS_THRESHOLD = 0.5f;
@@ -26,28 +25,30 @@ bool undealtTriggerInput = false; // identifier
 bool isReleased = true;
 bool if_first_input = false;
 
+using AnimationFunction = std::function<void(Player&, float)>;
 
-bool isFirstInput = true;
 auto triggeredTime = Clock::now();
 auto releasedTime = Clock::now();
 auto comboTime = Clock::now();
 
-//#pragma region AnimationQueue
-//
+#pragma region AnimationQueue
+
+//std::queue<anima> con_anima;
 //
 //class anima
 //{
 // public:
 //	bool is_playing = false;
-//	void (*play_animation)(Player&);
+//	
 //
 //};
-//
-//std::queue<anima> con_anima;
-//
-//#pragma endregion
 
-Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
+
+#pragma endregion
+
+
+
+Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	//for every anima in the con_anima
 	//if there is an anima in the con_anima
@@ -62,7 +63,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 	AEVec2Set(&player->obj.img.scale, scale.x, scale.y);
 	AEVec2Set(&player->expectedLocation, 0.f, 0.f);
 
-	player->isFacingRight = true;
+	player->isFacingRight = isFacingRight;
 	player->lookAheadMutliplier = 50.f;
 	player->onFloor = true; //Set as false first, will be set as true when ground detected
 	player->isFalling = false;
@@ -79,27 +80,24 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale, AEVec2 location, AE
 	AEVec2Set(&player->collisionNormal, 0.f, 0.f);
 
 	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
-	//
+	AEVec2Set(&player->equippedWeapon.scale, 20.f, 20.f);
 	player->attackTime = 1.f;
 	player->isAttacking = false;
-	player->comboTrig = 0;
+	player->comboTrig= 0;
 	player->comboTime = 0.0f;
 	player->comboState = 0;
 	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
 
-	//Initializes weapon's position
-
-	//// change the hitbox
-	//AEVec2Set(&player->equippedWeapon->Scale, 30.f, 20.f);
 	player->burningEffect = false;
 	player->isConversation = false;
 
 
 	//Player Stats
-	f32 maxHealth = 500.f;
-	f32 currHealth = maxHealth;
-	f32 attack = 100.f;
-	f32 defence = 50.f;
+	player->maxHealth = 100.f;
+	player->currHealth = player->maxHealth;
+	player->attack = 100.f;
+	player->defence = 50.f;
+
 
 	return player;
 
@@ -124,14 +122,13 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = false;
 	}
-	//}
 
 	// Apply velocity constraints
 	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
 
 
 	// Calculate the desired location
-	AEVec2 desiredLocation{player.velocity.x * player.lookAheadMutliplier, 0.f};
+	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
 	AEVec2Add(&player.expectedLocation, &player.obj.pos, &desiredLocation);
 
 	//For friction
@@ -143,30 +140,54 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	//Start of armor equip
 	if (AEInputCheckTriggered(AEVK_1))
 	{
-		Player player;
-		Armor armor;
-		armor.armorType = Armor::Type::FIRST;
-		armor.leather.defense = 20;
-
-		player.equippedArmor = armor;
-		std::string armorName = "Leather Armor";
-
-		std::cout << "Equipped " << armorName << "!" << std::endl;
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
 	}
-
-	//std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
 	if (AEInputCheckTriggered(AEVK_2))
 	{
-		Player player;
-		Armor armor;
-		armor.armorType = Armor::Type::SECOND;
-		armor.leather.defense = 50;
-
-		player.equippedArmor = armor;
-		std::string armorName = "Steel Armor";
-
-		std::cout << "Equipped " << armorName << "!" << std::endl;
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+		std::cout << player.maxHealth << std::endl;
 	}
+	if (AEInputCheckTriggered(AEVK_3))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+		std::cout << player.maxHealth << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_4))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+		std::cout << player.maxHealth << std::endl;
+	}
+
+	if (AEInputCheckTriggered(AEVK_5))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_6))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
+	}
+	if (AEInputCheckTriggered(AEVK_7))
+	{
+		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+		std::cout << player.maxHealth << std::endl;
+	}
+
+	////std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
+	//if (AEInputCheckTriggered(AEVK_2))
+	//{
+	//	Player player;
+	//	Armor armor;
+	//	armor.armorType = Armor::Type::SECOND;
+	//	armor.leather.defense = 50;
+
+	//	player.equippedArmor = armor;
+	//	std::string armorName = "Steel Armor";
+
+	//	std::cout << "Equipped " << armorName << "!" << std::endl;
+	//}
 
 	// End of armor equip
 
@@ -177,8 +198,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		player.velocity.y = 700.f;
 	}
 
-	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling);
-	//Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 	//
 	//std::cout << "Player on floor: " << player.onFloor << std::endl;
 	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
@@ -216,7 +236,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	//Update player weapon hit box
 
 	/*Weapon hit box update only*/
-	
+
 
 	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
 	{
@@ -224,7 +244,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		undealtTriggerInput = true;
 		isReleased = false;
 		if_first_input = true;
-	
+
 	}
 	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 	{
@@ -237,7 +257,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		if (elapsedTime > comboWindowDuration)
 		{
 			player.isAttacking = false;
-			player.equippedWeapon->weaponHIT = false;
+			player.equippedWeapon.weaponHIT = false;
 			player.comboTime = 0.0f; // Reset combo time
 			player.comboState = 0;   // Reset combo state
 
@@ -252,13 +272,13 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		{
 			if (player.comboState == 2) //held
 			{
-		
-				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
-				player.isAttacking = true;
-			
 
-				
+				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
+				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
+				player.isAttacking = true;
+
+
+
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
@@ -268,7 +288,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		{
 
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, player.equippedWeapon, attackProgress);
+			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 			player.isAttacking = true;
 
 			if (player.comboState < 2)
@@ -281,7 +301,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 			else
 			{
-			
+
 				player.comboState = 0;
 				player.comboTime = 0.0f;
 
@@ -293,87 +313,86 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 		}
 	}
-	
-	
 
-		//else
-		//{
-		//	// Combo window expired + hold window
-		//	player.isAttacking = false;
-		//	player.equippedWeapon.weaponHIT = false;
-		//	player.comboTime = 0.0f; // Reset combo time
-		//	player.comboState = 0;   // Reset combo state
+	//else
+	//{
+	//	// Combo window expired + hold window
+	//	player.isAttacking = false;
+	//	player.equippedWeapon.weaponHIT = false;
+	//	player.comboTime = 0.0f; // Reset combo time
+	//	player.comboState = 0;   // Reset combo state
 
-		//}
+	//}
 
 
-		//
-		//else
-		//{
-		//	// No input, reset weapon position
-		//	player.equippedWeapon.position.x = player.obj.pos.x;
-		//	player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
-		//	player.attackTime = 1.f;
-		//}
+	//
+	//else
+	//{
+	//	// No input, reset weapon position
+	//	player.equippedWeapon.position.x = player.obj.pos.x;
+	//	player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
+	//	player.attackTime = 1.f;
+	//}
 
-		//if (holding_down)
-		//{
-		//	//auto currentTime = Clock::now();
-		//	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
+	//if (holding_down)
+	//{
+	//	//auto currentTime = Clock::now();
+	//	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
 
-		//	lastInputTime = currentTime; // Update last input time
-		//	// Update hit box triggered
-		//	if (player.comboTime <= comboWindowDuration)
-		//	{
-		//		// Combo is within the window
-		//		player.attackTime -= AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
-		//		f32 attackProgress = 1.0f - (player.attackTime / 1.f);
-		//		UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-		//		// Use elapsedTime for all time-related calculations
-		//		
-		//		if (player.comboState != 3)
-		//		{
-		//			player.comboState++;
-		//			player.comboTime += elapsedTime;
-		//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-		//			holding_down = false;
-		//		}
+	//	lastInputTime = currentTime; // Update last input time
+	//	// Update hit box triggered
+	//	if (player.comboTime <= comboWindowDuration)
+	//	{
+	//		// Combo is within the window
+	//		player.attackTime -= AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
+	//		f32 attackProgress = 1.0f - (player.attackTime / 1.f);
+	//		UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
+	//		// Use elapsedTime for all time-related calculations
+	//		
+	//		if (player.comboState != 3)
+	//		{
+	//			player.comboState++;
+	//			player.comboTime += elapsedTime;
+	//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
+	//			holding_down = false;
+	//		}
 
-		//		else
-		//		{
-		//			player.comboState = 0;
-		//			player.comboTime = 0.0f;
-		//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-		//			holding_down = false;
-		//		}
-
-
-		//	}
-		//	else if (player.comboTime > comboWindowDuration * 2 / 3 )
-		//	{
-		//		std::cout << "Left mouse button held for " << elapsedTime << " seconds." << std::endl;
-		//		player.isAttacking = false;
-		//		player.equippedWeapon.weaponHIT = false;
-		//		player.comboTime = 0.0f; // Reset combo time
-		//		player.comboState = 0;   // Reset combo state
+	//		else
+	//		{
+	//			player.comboState = 0;
+	//			player.comboTime = 0.0f;
+	//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
+	//			holding_down = false;
+	//		}
 
 
-		//	}
-		//	else
-		//	{
-		//		// Combo window expired
-		//		player.isAttacking = false;
-		//		player.equippedWeapon.weaponHIT = false;
-		//		player.comboTime = 0.0f; // Reset combo time
-		//		player.comboState = 0;   // Reset combo state
+	//	}
+	//	else if (player.comboTime > comboWindowDuration * 2 / 3 )
+	//	{
+	//		std::cout << "Left mouse button held for " << elapsedTime << " seconds." << std::endl;
+	//		player.isAttacking = false;
+	//		player.equippedWeapon.weaponHIT = false;
+	//		player.comboTime = 0.0f; // Reset combo time
+	//		player.comboState = 0;   // Reset combo state
 
-		//	}
-		//}
-		//else
-		//{
-		//		// No input, reset weapon position
-		//		player.equippedWeapon.position.x = player.obj.pos.x;
-		//		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
-		//		player.attackTime = 1.f;
-		//}
+
+
+	//	}
+	//	else
+	//	{
+	//		// Combo window expired
+	//		player.isAttacking = false;
+	//		player.equippedWeapon.weaponHIT = false;
+	//		player.comboTime = 0.0f; // Reset combo time
+	//		player.comboState = 0;   // Reset combo state
+
+	//	}
+	//}
+	//else
+	//{
+	//		// No input, reset weapon position
+	//		player.equippedWeapon.position.x = player.obj.pos.x;
+	//		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
+	//		player.attackTime = 1.f;
+	//}
 }

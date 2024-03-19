@@ -2,8 +2,11 @@
 #include "Utils.h"
 #include "Player.h"
 #include "CollisionShape.h"
+#include "TransformMatrix.h"
+#include "AEEngine.h"
+#include "Physics.h"
 #include <vector>
-
+#include <iostream>
 
 
 
@@ -69,29 +72,32 @@ struct EnemyPart {
 
 struct Enemy {
 
-	EnemyPart wing1, wing2;
+	EnemyPart wing1, wing2;		
 	Object obj;
 	AEGfxTexture* angryTex;
 
 	AEVec2 startingPosition;	//startinglocation whr enemy spawns
 	AEVec2 lastPosition;		//only used by flying enemy
 	AEVec2 wayPoint;			//wayPoints are for enemy idle back n forth points
-	s8 targetPosition;		//some enemies need target a specific location
+	s8 targetPosition;			//some enemies need target a specific location
 	bool loopIdle;
 
-	s8 enemyCurrent;
-	s8 enemyNext;
-	s8 enemyType;
+	s8 enemyCurrent;			//enemy current state
+	s8 enemyNext;				//enemy next state
+	s8 enemyType;				//Type of enemy eg.charger,boss
 	
-	s8 attackState;
+	s8 attackState;				//only the boss use it
 	
-	bool isAlive;
-	bool isShooting;
-	bool isCollision;
-	bool isFlying;
-	bool isFalling;
-	bool isCollidedWithPlayer;
-	bool isRecoil;
+	bool isAlive;				//alive or dead
+	bool isAttacking;			//in attack mode or not	
+	bool isCollision;			
+	bool isFlying;				//won't be affected by gravity	
+	bool isFalling;				//for gravity function
+	bool isCollidedWithPlayer;	//ideally use it to check AABB collision with player
+	bool isRecoil;				//only the charger uses it
+	bool hasDealtDmg;			//use to make enemy only deal 1 instance of dmg
+
+	bool isVisible;
 
 	f32 timePassed;				//use to "pause" the enemy 
 
@@ -109,10 +115,9 @@ struct Enemy {
 	AEVec2 velocity;			//speed is the scalar of the velocity
 //(stats)----------------------------------------------
 
-	f32 stuckTimer; 
-	bool onFloor; //Added to check entity on floor, hence can jump
-	//Gravity affection
-	AEVec2 collisionNormal; 
+	f32 stuckTimer;				//only fly enemy uses it
+	bool onFloor;				//Added to check entity on floor, hence can jump
+	AEVec2 collisionNormal;		//check with direction is the collision from
 
 	//Collision boxes
 	AABB collisionBox;
@@ -133,6 +138,10 @@ void FreeEnemy(std::vector<Enemy>& vecEnemy);
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
 void EnemyUpdateChoose(Enemy& enemy, class Player& player);
 
+//the functions to use in levels
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player);
+void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB);
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh);
 
 
 

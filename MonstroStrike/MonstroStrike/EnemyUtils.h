@@ -1,10 +1,12 @@
-#ifndef ENEMY_UTILS_H
-#define ENEMY_UTILS_H
+#pragma once
 #include "AEEngine.h"
 #include "Utils.h"
 #include "Player.h"
 #include "CollisionShape.h"
+#include "TransformMatrix.h"
 #include <vector>
+#include <iostream>
+#include <cmath> // For abs function
 
 extern AEGfxTexture* bulletTex;
 
@@ -24,4 +26,3 @@ bool ReachedPos(Enemy& enemy, AEVec2 wayPoint);
 //(EnemyUtils)-------------------------------------------------------------------------
 
 
-#endif ENEMY_UTILS_H

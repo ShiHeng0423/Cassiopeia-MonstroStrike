@@ -1,10 +1,6 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
-#include "Player.h"
-#include "AEEngine.h"
-#include "Physics.h"
 
-#include <iostream>
 
 
 void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
@@ -30,6 +26,13 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		}
 		enemy.speed = 120.f;
 		enemy.isRecoil = true;
+		if (!enemy.hasDealtDmg) {
+			enemy.hasDealtDmg = true;
+			std::cout << "Hit!\n";
+		}
+	}
+	else {
+		enemy.hasDealtDmg = false;
 	}
 
 	// If the enemy is in recoil state, move towards the wayPoint until reached or collision occurs
@@ -65,7 +68,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 			if (enemy.targetPosition == ENEMY_DEFAULT) {
 				enemy.targetPosition = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
 			}
-			enemy.isShooting = true;
+			enemy.isAttacking = true;
 			enemy.isCollision = false;
 			if (enemy.timePassed >= 1.0f) {
 				enemy.timePassed = 0.0f;
@@ -78,7 +81,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 			if (enemy.isCollision) {
 				// Reset enemy state after collision
 				enemy.isCollision = false;
-				enemy.isShooting = false;
+				enemy.isAttacking = false;
 				enemy.targetPosition = ENEMY_DEFAULT;
 				enemy.timePassed = 0.0f;
 				enemy.speed = 80.f;

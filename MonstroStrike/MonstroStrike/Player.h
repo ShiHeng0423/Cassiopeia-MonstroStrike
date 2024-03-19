@@ -1,10 +1,11 @@
 #pragma once
 #include "Utils.h"
-#include "Armor_add.h"
 #include "Weapon.h"
 #include "CollisionShape.h" //To add AABB boxes
-#include "Armor_add.h"
+#include "Armor.h"
 #include "Weapon.h"
+
+f32 const PlayerMaxBasehealth = 100.f;
 
 class Player {
 
@@ -26,9 +27,9 @@ public:
 	AEVec2 collisionNormal;
 	f32 lookAheadMutliplier;
 
-	Armor equippedArmor;
+	Armor_System::Armor equippedArmor;
 
-	Weapon *equippedWeapon;
+	Weapon equippedWeapon;
 	//Gravity affection
 	f32 mass;
 	
@@ -52,6 +53,8 @@ public:
 	f32 defence;
 
 	bool isConversation;
+
+	Armor_System::Armor piece[4];
 };
 
 Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 

@@ -1,11 +1,9 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
-#include "Player.h"
-#include "AEEngine.h"
 
 
 
-#include <iostream>
+
 
 
 void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
@@ -68,7 +66,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 
 			if (enemy.timePassed >= 1.0f) {
 				enemy.timePassed = 0.0f;
-				enemy.isShooting = true;
+				enemy.isAttacking = true;
 				enemy.speed = 80.f;
 				enemy.enemyNext = ENEMY_ATTACK;
 			}

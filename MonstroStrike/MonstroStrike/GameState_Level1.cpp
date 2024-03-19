@@ -215,7 +215,7 @@ void Level1_Update()
 		{
 			if (enemy.isAlive)
 			{
-				CheckWeaponCollision(player->equippedWeapon, enemy, *player);
+				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
 			}
 		}
 	}
@@ -223,18 +223,25 @@ void Level1_Update()
 #pragma endregion
 
 #pragma region EnemyUpdate
-	for (Enemy& enemy : vecEnemy)
-	{
-		if (enemy.isAlive)
-		{
-			EnemyUpdateChoose(enemy, *player);
-		}
-	}
+	AllEnemyUpdate(vecEnemy, *player);
 #pragma endregion
 
 #pragma region GridSystem
 	CheckPlayerGridCollision(grids2D, player);
-	CheckEnemyGridCollision(grids2D, vecEnemy);
+	//CheckEnemyGridCollision(grids2D, vecEnemy);
+
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
+	{
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
+		{
+			switch (grids2D[rows][cols].typeOfGrid)
+			{
+			case NORMAL_GROUND:
+				AllEnemyNBulletCollisionCheck(vecEnemy, grids2D[rows][cols].collisionBox);
+				break;
+			}
+		}
+	}
 #pragma endregion
 
 #pragma region InventorySystem
@@ -349,80 +356,17 @@ void Level1_Draw()
 	                                                player->obj.img.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	for (Enemy& enemy : vecEnemy)
-	{
-		if (enemy.isAlive)
-		{
-			if (enemy.isShooting)
-			{
-				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-				AEGfxTextureSet(enemy.angryTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
-				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
-			}
-			else
-			{
-				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
-				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
-				                                                enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				DrawBullets(enemy, pWhiteSquareMesh); //drawing bullets
-			}
-
-
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive)
-			{
-				if (enemy.isShooting)
-				{
-					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-				}
-				else
-				{
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				}
-
-
-				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f,
-				                                                enemy.wing1.obj.img.scale.x,
-				                                                enemy.wing1.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive)
-			{
-				if (enemy.isShooting)
-				{
-					AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 0.0f);
-				}
-				else
-				{
-					AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-				}
-
-				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f,
-				                                                enemy.wing2.obj.img.scale.x,
-				                                                enemy.wing2.obj.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-	}
+	//drawing enemy
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 	if (player->isAttacking)
 	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon->position.x,
-		                                                player->equippedWeapon->position.y, 0.f,
-		                                                player->equippedWeapon->scale.x,
-		                                                player->equippedWeapon->scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
+		                                                player->equippedWeapon.position.y, 0.f,
+		                                                player->equippedWeapon.scale.x,
+		                                                player->equippedWeapon.scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 	}
 
@@ -599,7 +543,6 @@ void Level1_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 
-	delete player->equippedWeapon;
 	delete player;
 	delete cam;
 	delete menu;
@@ -661,40 +604,49 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player
 
 void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy)
 {
-	for (Enemy& tmp : enemy)
+	for (Enemy& tmpEnemy : enemy)
 	{
-		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmp.obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
+
+		for (int i = 0; i <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
-			int enemyIndexX = (int)((tmp.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(tmp.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+			for (int j = 0; j <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
-				switch (gridMap[enemyIndexY][enemyIndexX].typeOfGrid)
-				{
-				case NORMAL_GROUND:
-					if (AABBvsAABB(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox))
-					{
-						tmp.collisionNormal = AABBNormalize(tmp.boxHeadFeet,
-						                                    gridMap[enemyIndexY][enemyIndexX].collisionBox);
-						ResolveVerticalCollision(tmp.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
-						                         &tmp.collisionNormal, &tmp.obj.pos,
-						                         &tmp.velocity, &tmp.onFloor, &tmp.gravityForce, &tmp.isFalling);
-					}
 
-					if (AABBvsAABB(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
-					{
-						tmp.collisionNormal =
-							AABBNormalize(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
-						ResolveHorizontalCollision(tmp.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox,
-						                           &tmp.collisionNormal, &tmp.obj.pos,
-						                           &tmp.velocity);
-					}
-					break;
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) 
+				{
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
+						&tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
+						&tmpEnemy.isFalling);
 				}
-				enemyIndexX += 1;
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+				{
+					tmpEnemy.isCollision = true;
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveHorizontalCollision(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity);
+					tmpEnemy.loopIdle = false;
+				}
+
+				//if (tmpEnemy.enemyType == ENEMY_FLY || tmpEnemy.enemyType == ENEMY_BOSS1)
+				//{
+				//	for (Bullet& bullet : tmpEnemy.bullets)
+				//	{
+				//		if (AABBvsAABB(bullet.collisionBox, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+				//		{
+				//			bullet.lifeTime = 0; //makes bullet erase
+				//		}
+				//	}
+				//}
 			}
-			enemyIndexY += 1;
 		}
 	}
 }
