@@ -45,6 +45,8 @@ struct MissionSystem {
 	size_t GetAcceptedMissionID();
 
 	void PrintMissionText();
+
+	void CleanMemory();
 };
 
 extern struct MissionSystem missionSystem;

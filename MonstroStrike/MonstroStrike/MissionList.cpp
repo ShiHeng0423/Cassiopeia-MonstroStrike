@@ -177,3 +177,8 @@ void MissionSystem::PrintMissionText()
 		}
 	}
 }
+
+void MissionSystem::CleanMemory()
+{
+	enemyMissions.clear();
+}

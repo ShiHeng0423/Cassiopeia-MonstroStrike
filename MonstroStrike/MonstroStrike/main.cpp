@@ -67,7 +67,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			AESysFrameStart();
 			fpUpdate();
 			fpDraw();
-			MapTransitionDraw();
 
 			if (0 == AESysDoesWindowExist())
 				next = GameStates::QUIT;
@@ -82,6 +81,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
 	MapTransitionUnload();//Unload Map Transition image here
 	AEGfxDestroyFont(fontID);
+	missionSystem.CleanMemory();
 	delete audioManager;
 	// free the system
 	AESysExit();
