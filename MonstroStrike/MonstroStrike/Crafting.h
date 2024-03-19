@@ -15,28 +15,39 @@
 #include <crtdbg.h> // To check for memory leaks
 #include <string>
 #include <fstream>
+#include <cstdio>
 #include <vector>
-#pragma once
+
 
 #include "AEEngine.h"
 #include "Inventory.h"
 
 #include "rapidjson/document.h"
+#include "rapidjson/filereadstream.h"
+#include "rapidjson/istreamwrapper.h"
+#pragma once
 
+struct MaterialRequirement
+{
+	int mat_ID;
+	int mat_quantity;
+};
 
 struct Recipe
 {
-	int id;
-	std::string name;
-	std::vector<Item> requirement;
-	std::vector<int> qty;
-	Item product;
+	int item_id;
+	std::pair<MaterialRequirement, MaterialRequirement> mat_requirements;
 };
 
 
 namespace Crafting
 {
-	std::vector<Recipe> ReadRecipes(const std::string filepath);
+	extern std::vector<Recipe> recipeList;
+
+	std::vector<Recipe> ReadRecipes(const std::string& filepath);
 	bool Can_Craft(const Recipe recipe, const std::vector<Item> Inventory);
-	void Craft_Item(std::vector<Item>& Inventory);
+	void Craft_Item(const Recipe recipe, std::vector<Item>& Inventory);
+
+
+	void LoadRecipes();
 }

@@ -45,7 +45,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 	switch (enemy.enemyCurrent)
 	{
 	case ENEMY_IDLE:
-		if (enemy.health != 100) {
+		if (enemy.health != enemy.maxHealth) {
 			enemy.timePassed = 0.f;
 			enemy.enemyNext = ENEMY_TRANSITION;
 

@@ -61,7 +61,7 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 		}
 		else
 		{
-			lookbackTimer -= AEFrameRateControllerGetFrameTime();
+			lookbackTimer -= (f32)AEFrameRateControllerGetFrameTime();
 			if (cameraOnHold && lookbackTimer <= 0.f)
 			{
 				cameraOnHold = false;
