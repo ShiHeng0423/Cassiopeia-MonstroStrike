@@ -126,6 +126,9 @@
     <ClCompile Include="TextPrinting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MissionList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h">
@@ -234,6 +237,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MissionList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

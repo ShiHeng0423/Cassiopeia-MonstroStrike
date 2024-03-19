@@ -7,6 +7,7 @@
 #include <chrono>
 #include <queue>
 #include <functional>  // for std::function
+
 #define CAM_X_BOUNDARY (250.f)
 #define CAM_FOLLOW_UP_SPEED_X (0.05f)
 // Define a clock type for high-resolution time measurement
@@ -45,8 +46,6 @@ auto comboTime = Clock::now();
 
 
 #pragma endregion
-
-
 
 Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
@@ -100,13 +99,11 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 
 
 	return player;
-
 }
 
 
 void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
-
 	if (player.isFalling)
 	{
 		std::cout << "FELL\n";

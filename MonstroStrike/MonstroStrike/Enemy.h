@@ -65,7 +65,7 @@ struct EnemyPart {
 	f32 Offset;
 	f32 fireRate;
 	f32 timeSinceLastFire;
-	f32 health;
+	int health;
 
 };
 
@@ -107,7 +107,8 @@ struct Enemy {
 	f32 shootingRange;
 	f32 fireRate;
 	f32 timeSinceLastFire;
-	f32 health;
+	int health;
+	int maxHealth;
 
 	//Gravity affection
 	f32 mass;
