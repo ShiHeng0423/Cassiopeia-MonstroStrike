@@ -143,7 +143,6 @@ void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct
             yHitOffset = 27.0f;
             xScale = 45.0f;
             yScale = 55.0f;
-
             //Initializes weapon's position
             playerEquip->position.x = player->obj.pos.x;
             playerEquip->position.y = player->obj.pos.y;
@@ -385,7 +384,7 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
             yHitOffset = 30.0f;
             xScale = 80.0f;
             yScale = 70.0f;
-            xScaler = 0.7f;
+            xScaler = 0.8f;
 
             //Initializes weapon's position
             playerEquip->position.x = player->obj.pos.x;
@@ -461,7 +460,7 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
     }
     else
     {
-        std::cout << "Placeholder";
+       
 
     }
 }
