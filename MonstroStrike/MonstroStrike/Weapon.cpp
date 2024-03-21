@@ -488,7 +488,7 @@ void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, cl
         theEnemy.health -= playerEquip->damage;
         std::cout << "Attack landed" << std::endl;
         std::cout << theEnemy.health << std::endl;
-        std::cout << theEnemy.enemyType << std::endl;
+
 
         playerEquip->weaponHIT = true;
     }
