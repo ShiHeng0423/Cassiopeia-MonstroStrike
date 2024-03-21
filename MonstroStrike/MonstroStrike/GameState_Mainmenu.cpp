@@ -383,9 +383,17 @@ void Mainmenu_Draw()
 
 		f32 width, height;
 
-		const char* pText = "Back";
+		const char* pText = "BGM";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
+
+		const char* pText1 = "SFX";
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
+
+		const char* pText2 = "Back";
+		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
 	}
 	case CurrentScene::QUIT_SCENE:
