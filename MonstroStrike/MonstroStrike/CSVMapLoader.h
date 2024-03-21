@@ -6,24 +6,14 @@
 #include "GridTypesList.h"
 
 enum {
-	//Level 1  Design A
-	MAP_ROW_SIZE = 25,
-	MAP_COLUMN_SIZE = 70,
-
-	//Level 1  Design B
-	//MAP_ROW_SIZE = 60,
-	//MAP_COLUMN_SIZE = 30,
-
-	//checkpoint room design
-	//MAP_ROW_SIZE = 22,
-	//MAP_COLUMN_SIZE = 40,
+	//Level 1 part A
+	MAP_ROW_SIZE = 50,
+	MAP_COLUMN_SIZE = 98, 
 
 	//Lobby Level
 	MAP_ROW_LOBBY_SIZE = 25,
 	MAP_COLUMN_LOBBY_SIZE = 65, //Shares the same column amount
 
-
-	//boss design
 };
 
 //Reminder to add name space
