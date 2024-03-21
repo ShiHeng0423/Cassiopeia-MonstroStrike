@@ -513,6 +513,7 @@ namespace Inventory
 
 	void AddItem(const Item& item)
 	{
+		//check if got existing ID, item++
 		playerInventory.push_back(item);
 	}
 
