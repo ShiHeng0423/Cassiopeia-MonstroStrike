@@ -4,6 +4,9 @@
 #include <algorithm>
 #include "LevelHeaders.h"
 #include "MissionList.h"
+#include "Inventory.h"
+#include "Crafting.h"
+
 
 static bool initialMissionsLoaded = false;
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NPC NOW UNLESS SUBJECT TO CHANGES
@@ -37,6 +40,9 @@ namespace {
 
 	AEVec2 mousePos{ 0,0 };
 	
+	f32 yScale;
+
+
 	std::vector<std::pair<f32, s16>>collidedPlayer;
 	
 	std::vector<int> availableMissionsID;
@@ -48,13 +54,17 @@ namespace {
 	bool displayBoxActive = false;
 	bool confirmAcceptPrompt = false;
 
-	struct HoverMissionInfo {
-		const char* hoverMissionName;
+	struct HoverContentInfo {
+		const char* hoverContentName;
 		const char* hoverMissionDetails;
 		size_t missionID;
 	} currentMissionInfo;
 
 	const char* confirmText;
+
+	const Recipe* recipePtr = nullptr;
+	const KillEnemyMission* missionPtr = nullptr;
+
 }
 
 void LoadNPC()
@@ -181,8 +191,13 @@ void UpdateNPC(Player* player)
 				case NPC_BLACKSMITH_A:
 					break;
 				case NPC_BLACKSMITH_B:
+					contentBarContainer.clear();
+					for (int i = 0; i < Crafting::recipeList.size(); i++)
+					{
+						CreateContentBarInstance(i);
+						std::cout << i << std::endl;
+					}
 					break;
-
 				case NPC_QUEST_GIVER:
 					contentBarContainer.clear(); //Clean container
 					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
@@ -212,25 +227,35 @@ void UpdateNPC(Player* player)
 			case NPC_BLACKSMITH_A:
 				break;
 			case NPC_BLACKSMITH_B:
-				break;
-
-			case NPC_QUEST_GIVER:
-
-				if (AEInputCheckTriggered(AEVK_J))
+				if (!confirmAcceptPrompt)
 				{
-					missionSystem.MissionComplete(missionSystem.GetAcceptedMissionID());
-					//Reset the content bars...
-					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
-					if (!availableMissionsID.empty())
-					{
-						contentBarContainer.clear();
-						for (int i = 0; i < availableMissionsID.size(); i++)
-						{
-							CreateContentBarInstance(i);
-						}
-					}
-				}
+					displayBoxActive = false;
 
+					for (int i = 0; i < Crafting::recipeList.size(); i++)
+					{
+						for (const Recipe& recipe : Crafting::recipeList)
+						{
+							if (recipe.item_id == Crafting::recipeList[i].item_id)
+							{
+								recipePtr = &recipe;
+								break;
+							}
+						}
+
+						if (AETestPointToRect(&mousePos, &contentBarContainer[i].position, contentBarContainer[i].size.x, contentBarContainer[i].size.y))
+						{
+							displayBoxActive = true;
+							if (recipePtr == nullptr)
+								return;
+
+							CreateInfoDisplayBanner(); //Update
+						}
+
+					}
+
+				}
+				break;
+			case NPC_QUEST_GIVER:
 				if (!confirmAcceptPrompt)
 				{
 					displayBoxActive = false;
@@ -250,7 +275,7 @@ void UpdateNPC(Player* player)
 							if (missionPtr == nullptr)
 								return;
 
-							currentMissionInfo.hoverMissionName = missionPtr->missionName;
+							currentMissionInfo.hoverContentName = missionPtr->missionName;
 							currentMissionInfo.hoverMissionDetails = missionPtr->missionDetails;
 							CreateInfoDisplayBanner(); //Update
 
@@ -384,14 +409,37 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 			//Available recipes
 			break;
 		case NPC_BLACKSMITH_B:
+			for (int i = 0; i < Crafting::recipeList.size(); i++)
+			{
+				yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
+
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+				AEGfxTextureSet(contentListBox, 0, 0);
+				AEGfxSetTransform(contentBarContainer[i].transformation.m); 
+				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+				for (const Recipe& recipe : Crafting::recipeList)
+				{
+					if (recipe.item_id == Crafting::recipeList[i].item_id)
+					{
+						recipePtr = &recipe;
+						break;
+					}
+				}
+
+				if (recipePtr)
+				{
+					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
+					AEGfxPrint(fontID, fullInventoryList[recipePtr->item_id].name.c_str(), posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
+				}
+			}
 			//Available recipes
 			break;
 		case NPC_QUEST_GIVER:
-			const KillEnemyMission* missionPtr = nullptr;
 
-			for (size_t i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
+			for (int i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
 			{
-				f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
+				yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
 
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(contentListBox, 0, 0);

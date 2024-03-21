@@ -381,7 +381,6 @@ void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct
 
         }
     }
-
     else
     {
         std::cout << "Placeholder";
