@@ -95,6 +95,8 @@ extern s16 snapBack;
 extern Player* playerReference;
 
 
+
+
 //Display
 extern ButtonGearUI inventoryBackground;
 extern ButtonGearUI inventoryButton[25];
@@ -113,6 +115,9 @@ namespace Inventory
 	extern std::vector<Item> allItems; //list of all items in game
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
 
+	//AEGfxVertexList* pWhiteSquareMesh;
+	extern Item displayItem;
+
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
@@ -127,7 +132,7 @@ namespace Inventory
 
 	void OpenInventory();
 
-	void DisplayItemInfo(const Item&);
+	//void DisplayItemInfo(const Item&);
 
 	void AddItem(const Item& item);
 	void ItemPickUp(Item& item);

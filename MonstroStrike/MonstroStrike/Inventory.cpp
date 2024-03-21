@@ -31,6 +31,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "main.h"
+
 using namespace rapidjson;
 
  std::vector< Item> playerInventory;
@@ -52,8 +54,11 @@ using namespace rapidjson;
  ButtonGearUI itemDisplayBackground;
 
  AEGfxTexture* blank;
+ 
 
  int playerInventoryCount;
+
+#define INVALID_ITEM = -999;
 
 namespace Inventory
 {
@@ -64,6 +69,7 @@ namespace Inventory
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 	bool itemHover;
+	Item displayItem;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -365,8 +371,9 @@ namespace Inventory
 						snapBack = index;
 
 						//Display item's info on l_click
-						DisplayItemInfo(button.Item);
+						//DisplayItemInfo(button.Item);
 						itemHover = true;
+						displayItem = button.Item;
 
 
 						break;
@@ -375,6 +382,8 @@ namespace Inventory
 				}
 				//Reset itemHover
 				itemHover = false;
+				displayItem = {"",-9};
+				 //{"", -9, "invalid item", "",0, 0,5,0,false,0,0,0 };
 
 				index++;
 			}
@@ -501,14 +510,6 @@ namespace Inventory
 		}
 	}
 
-	void DisplayItemInfo(const Item& item)
-	{
-		std::cout << "Display item info: "<< item.name << std::endl;
-		//set background
-
-		//set item position
-
-	}
 
 
 	void AddItem(const Item& item)
@@ -890,8 +891,8 @@ namespace Inventory
 		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
 
 		//Item Info Display
-		AEVec2Set(&itemDisplayBackground.img.scale, 250.f, 500.f);
-		AEVec2Set(&itemDisplayBackground.pos, 375.f, 0.f);
+		AEVec2Set(&itemDisplayBackground.img.scale, 400.f, 500.f);
+		AEVec2Set(&itemDisplayBackground.pos, 450.f, 0.f);
 
 		index = 0;
 		for (ButtonGearUI& button : Inventory::equipmentDisplay)
