@@ -636,16 +636,7 @@ void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Ene
 					tmpEnemy.loopIdle = false;
 				}
 
-				//if (tmpEnemy.enemyType == ENEMY_FLY || tmpEnemy.enemyType == ENEMY_BOSS1)
-				//{
-				//	for (Bullet& bullet : tmpEnemy.bullets)
-				//	{
-				//		if (AABBvsAABB(bullet.collisionBox, gridMap[enemyIndexY][enemyIndexX].collisionBox))
-				//		{
-				//			bullet.lifeTime = 0; //makes bullet erase
-				//		}
-				//	}
-				//}
+		
 			}
 		}
 	}

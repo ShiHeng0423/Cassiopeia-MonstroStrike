@@ -288,13 +288,10 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		{
 			if (player.comboState == 2) //held
 			{
-
 				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
+				player.comboState = 0;
 				player.isAttacking = true;
-
-
-
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
@@ -302,26 +299,20 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		}
 		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 		{
-
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 			player.isAttacking = true;
 
 			if (player.comboState < 2)
 			{
-
 				player.comboState++;
 				player.comboTime += (float)elapsedTime;
-
 			}
 
 			else
 			{
-
 				player.comboState = 0;
 				player.comboTime = 0.0f;
-
-
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
@@ -330,85 +321,4 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		}
 	}
 
-	//else
-	//{
-	//	// Combo window expired + hold window
-	//	player.isAttacking = false;
-	//	player.equippedWeapon.weaponHIT = false;
-	//	player.comboTime = 0.0f; // Reset combo time
-	//	player.comboState = 0;   // Reset combo state
-
-	//}
-
-
-	//
-	//else
-	//{
-	//	// No input, reset weapon position
-	//	player.equippedWeapon.position.x = player.obj.pos.x;
-	//	player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
-	//	player.attackTime = 1.f;
-	//}
-
-	//if (holding_down)
-	//{
-	//	//auto currentTime = Clock::now();
-	//	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
-
-	//	lastInputTime = currentTime; // Update last input time
-	//	// Update hit box triggered
-	//	if (player.comboTime <= comboWindowDuration)
-	//	{
-	//		// Combo is within the window
-	//		player.attackTime -= AEFrameRateControllerGetFrameTime() * 3.f; //Constant here is speed scaling
-	//		f32 attackProgress = 1.0f - (player.attackTime / 1.f);
-	//		UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-	//		// Use elapsedTime for all time-related calculations
-	//		
-	//		if (player.comboState != 3)
-	//		{
-	//			player.comboState++;
-	//			player.comboTime += elapsedTime;
-	//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-	//			holding_down = false;
-	//		}
-
-	//		else
-	//		{
-	//			player.comboState = 0;
-	//			player.comboTime = 0.0f;
-	//			std::cout << "Left mouse button triggered for " << elapsedTime << " seconds." << std::endl;
-	//			holding_down = false;
-	//		}
-
-
-	//	}
-	//	else if (player.comboTime > comboWindowDuration * 2 / 3 )
-	//	{
-	//		std::cout << "Left mouse button held for " << elapsedTime << " seconds." << std::endl;
-	//		player.isAttacking = false;
-	//		player.equippedWeapon.weaponHIT = false;
-	//		player.comboTime = 0.0f; // Reset combo time
-	//		player.comboState = 0;   // Reset combo state
-
-
-
-	//	}
-	//	else
-	//	{
-	//		// Combo window expired
-	//		player.isAttacking = false;
-	//		player.equippedWeapon.weaponHIT = false;
-	//		player.comboTime = 0.0f; // Reset combo time
-	//		player.comboState = 0;   // Reset combo state
-
-	//	}
-	//}
-	//else
-	//{
-	//		// No input, reset weapon position
-	//		player.equippedWeapon.position.x = player.obj.pos.x;
-	//		player.equippedWeapon.position.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
-	//		player.attackTime = 1.f;
-	//}
 }
