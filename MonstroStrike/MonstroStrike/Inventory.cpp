@@ -31,6 +31,7 @@
 #include <fstream>
 #include <sstream>
 
+#include "Crafting.h"
 #include "main.h"
 
 using namespace rapidjson;
@@ -58,7 +59,7 @@ using namespace rapidjson;
 
  int playerInventoryCount;
 
-#define INVALID_ITEM = -999;
+
 
 namespace Inventory
 {
@@ -382,8 +383,8 @@ namespace Inventory
 				}
 				//Reset itemHover
 				itemHover = false;
-				displayItem = {"",-9};
-				 //{"", -9, "invalid item", "",0, 0,5,0,false,0,0,0 };
+				displayItem = { "",-9 };
+				//{"", -9, "invalid item", "",0, 0,5,0,false,0,0,0 };
 
 				index++;
 			}
@@ -508,6 +509,22 @@ namespace Inventory
 				index++;
 			}
 		}
+
+		if(AEInputCheckTriggered(AEVK_LALT))
+		{
+			Recipe dummy = Crafting::recipeList[0];
+
+			int reqloc1 = 0;
+			int reqloc2 = 0;
+
+			if(Crafting::Can_Craft(dummy, playerInventory, reqloc1, reqloc2))
+			{
+				std::cout << "Can craft" << fullInventoryList[dummy.item_id].name << std::endl;
+
+				Crafting::Craft_Item(dummy, playerInventory, reqloc1, reqloc2);
+			}
+		}
+
 	}
 
 

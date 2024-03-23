@@ -108,6 +108,8 @@ extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
 
+#define INVALID_ITEM = -999;
+
 namespace Inventory
 {
 	extern bool inventoryOpen;

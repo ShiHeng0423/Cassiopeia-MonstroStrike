@@ -85,6 +85,8 @@ namespace Crafting
 	{
 		bool first_good = false;
 		bool second_good = false;
+		loc1 INVALID_ITEM
+		loc2 INVALID_ITEM
 
 		int index = 0;
 		for (auto item : Inventory)
