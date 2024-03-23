@@ -285,7 +285,7 @@ namespace Inventory
 			for(size_t i = inventory.size() ; i < 25 ; i++)
 			{
 				Item emptyItemSlot;
-				emptyItemSlot.ID = -99;
+				emptyItemSlot.ID = INVALID_ITEM;
 				button[i].Item = emptyItemSlot;
 			}
 		}
@@ -336,7 +336,7 @@ namespace Inventory
 				if (button.Item.quantity <= 0)
 				{
 					Item blank;
-					blank.ID = -9999;
+					blank.ID = INVALID_ITEM;
 					button.Item = blank;
 				}
 				else
@@ -531,8 +531,30 @@ namespace Inventory
 
 	void AddItem(const Item& item)
 	{
-		//check if got existing ID, item++
-		playerInventory.push_back(item);
+		
+		if(item.stackable)
+		{
+			for (auto& playeritem : playerInventory)
+			{
+				//check if got existing ID, item++
+				if ((playeritem.ID == item.ID))
+				{
+					playeritem.quantity++;
+					return;
+				}
+			}
+		}else
+		{
+			for (auto& playeritem : playerInventory)
+			{
+				if(playeritem.ID < 0)
+				{
+					playeritem = item;
+					return;
+				}
+			}
+			playerInventory.push_back(item);
+		}
 	}
 
 
@@ -735,9 +757,9 @@ namespace Inventory
 						
 					Item equipping = item.Item;
 					Item blank;
-					blank.ID = -9999;
+					blank.ID = INVALID_ITEM
 					item.Item = blank;
-					playerInventory[index].ID = -9999;
+					playerInventory[index].ID  = INVALID_ITEM
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
@@ -758,7 +780,7 @@ namespace Inventory
 	{
 		Item backup[5];
 		for(int i = 0; i< 5; ++i)
-		backup[i].ID = -9999;
+		backup[i].ID = INVALID_ITEM;
 
 
 			switch (obj.gear_loc)
@@ -837,7 +859,7 @@ namespace Inventory
 		//Assign the previously equipped item to empty inventory slot
 		for (auto& inventory : playerInventory)
 		{
-			if (inventory.ID < 0) //check for -99 id
+			if (inventory.ID < 0) //check for invalid item id
 			{
 				
 				inventory = backup[obj.gear_loc];

@@ -85,8 +85,12 @@ namespace Crafting
 	{
 		bool first_good = false;
 		bool second_good = false;
-		loc1 INVALID_ITEM
-		loc2 INVALID_ITEM
+		loc1 = INVALID_ITEM
+		loc2 = INVALID_ITEM
+
+		//check if inventory capacity is full
+		if (playerInventory.size() + 1 > 25)
+			return false;
 
 		int index = 0;
 		for (auto item : Inventory)

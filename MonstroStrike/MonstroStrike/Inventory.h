@@ -108,7 +108,7 @@ extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
 
-#define INVALID_ITEM = -999;
+#define INVALID_ITEM -999;
 
 namespace Inventory
 {
