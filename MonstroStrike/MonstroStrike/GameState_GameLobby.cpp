@@ -52,7 +52,7 @@ void Lobby_Load()
 		PrintMap(gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE);
 		//Just for checking if the map data is stored properly
 	}
-
+	playerReference = player;
 	Inventory::LoadInventory();
 	Crafting::LoadRecipes();
 
