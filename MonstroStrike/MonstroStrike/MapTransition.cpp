@@ -88,11 +88,8 @@ void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, 
 
 void MapTransitionUpdate() //Update only when transition image is active
 {
-	//Note to future self: Initial position need to get via min max XY of the entire map size
-	//Either that or get just outside camera view *Recommended
 	if (!transitionalImageOBJ.active)
 	{
-		//std::cout << "Inactive obj\n";
 		return;
 	}
 
@@ -171,10 +168,8 @@ void MapTransitionUpdate() //Update only when transition image is active
 	case TRANSITION_UPDATE:
 
 		//std::cout << AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) << std::endl;
-		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 20.f)
+		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 45.f)
 		{
-			//std::cout << transitionalImageOBJ.position.x <<  " " << transitionalImageOBJ.position.y << std::endl;
-			//std::cout << transitionalImageOBJ.velocity.x << " " << transitionalImageOBJ.velocity.y << std::endl;
 			AEVec2 finalVelocity;
 			//Update velocity
 			AEVec2Scale(&finalVelocity, &transitionalImageOBJ.velocity, (f32)AEFrameRateControllerGetFrameTime());

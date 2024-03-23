@@ -268,10 +268,8 @@ void UpdateNPC(Player* player)
 										loc2 = i;
 									}
 								}
-
 								if (Crafting::Can_Craft(*recipePtr, playerInventory, loc1, loc2))
 								{
-									std::cout << "Can craft\n";
 									confirmAcceptPrompt = true;
 								}
 								else

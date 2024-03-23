@@ -6,9 +6,14 @@
 #include "GridTypesList.h"
 
 enum {
-	//Level 1 part A
-	MAP_ROW_SIZE = 50,
-	MAP_COLUMN_SIZE = 98, 
+	//Level 1 type A
+	MAP_ROW_SIZE = 25,
+	MAP_COLUMN_SIZE = 70, 
+
+	//Level 1 type B
+
+	MAP_ROW_SIZE_2 = 60,
+	MAP_COLUMN_SIZE_2 = 30,
 
 	//Lobby Level
 	MAP_ROW_LOBBY_SIZE = 25,

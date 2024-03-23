@@ -61,9 +61,9 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 		thePlatform.startPoint = thePlatform.position;
 
 		//End Point X Axis
-		thePlatform.endPoint.x = thePlatform.startPoint.x + 200.f;
+		thePlatform.endPoint.x = thePlatform.startPoint.x - 200.f;
 		//End Point Y Axis
-		thePlatform.endPoint.y = thePlatform.position.y - 100.f;
+		thePlatform.endPoint.y = thePlatform.position.y - 200.f;
 
 		//Setting Velocity
 		AEVec2Set(&thePlatform.velocity, thePlatform.endPoint.x - thePlatform.startPoint.x, thePlatform.endPoint.y - thePlatform.startPoint.y);

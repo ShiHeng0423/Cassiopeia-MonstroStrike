@@ -115,11 +115,29 @@ void Level1_Initialize()
 			case 1:
 				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
 				break;
+			case 91:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_1;
+				break;
+			case 92:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_2;
+				break;
+			case 93:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_3;
+				break;
+			case 94:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_4;
+				break;
+			case 95:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_1;
+				break;
+			case 96:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_2;
+				break;
 			case 97:
-				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_3;
 				break;
 			case 98:
-				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_4;
 				break;
 			default:
 				grids2D[rows][cols].typeOfGrid = NONE;
@@ -138,9 +156,18 @@ void Level1_Initialize()
 
 			InitializeGrid(grids2D[rows][cols]);
 
-			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID)
+			//Check if previous zone is the next zone
+
+			//Previous zone is lobby
+			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1 && previous == GAME_LOBBY)
 			{
-				player->obj.pos = {grids2D[rows][cols].position}; //Set position based on grid
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+			}
+			//Previous zone is level 1 part B
+			else if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_2 && previous == AREA1_B)
+			{
+				//Set initial player position at pos grid 2
+				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
 			}
 		}
 	}
@@ -149,7 +176,7 @@ void Level1_Initialize()
 	//Need to place the objects one by one 
 	CreatePlatform(1200.f, -300.f, 140.f, 30.f, 3.f, HORIZONTAL_MOVING_PLATFORM, platformVectors);
 	CreatePlatform(1200.f, 0.f, 140.f, 30.f, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
-	CreatePlatform(1400.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
+	CreatePlatform(1700.f, 0.f, 140.f, 30.f, 2.f, DIAGONAL_PLATFORM, platformVectors);
 #pragma endregion
 
 	cam = new Camera(player->obj.pos);
@@ -583,7 +610,7 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player
 					                           &player->velocity);
 				}
 				break;
-			case MAP_TRANSITION_GRID:
+			case MAP_TRANSITION_GRID_1:
 				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
 				{
 					//std::cout << "Collided\n";MainMenu_Song

@@ -102,11 +102,31 @@ void Lobby_Initialize()
 			case 12:
 				grids2D[rows][cols].typeOfGrid = NPC_QUEST_GIVER_POS;
 				break;
-			case 97:
-				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
+			case 91:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_1;
 				break;
+			case 92:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_2;
+				break;
+			case 93:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_3;
+				break;
+			case 94:
+				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID_4;
+				break;
+			case 95:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_1;
+				break;
+			case 96:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_2;
+				break;
+
+			case 97:
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_3;
+				break;
+
 			case 98:
-				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
+				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID_4;
 				break;
 			default:
 				grids2D[rows][cols].typeOfGrid = NONE;
@@ -133,7 +153,7 @@ void Lobby_Initialize()
 			case 12:
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
-			case 97:
+			case PLAYER_POS_GRID_1:
 				player->obj.pos = {grids2D[rows][cols].position}; //Set position based on grid
 				break;
 			default:
@@ -460,7 +480,7 @@ void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* 
 					                           &player->velocity);
 				}
 				break;
-			case MAP_TRANSITION_GRID:
+			case MAP_TRANSITION_GRID_1:
 				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
 				{
 					//std::cout << "Collided\n";MainMenu_Song
