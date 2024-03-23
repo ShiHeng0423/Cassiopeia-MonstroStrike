@@ -58,7 +58,9 @@ namespace {
 		const char* hoverContentName;
 		const char* hoverMissionDetails;
 		size_t missionID;
-	} currentMissionInfo;
+
+		Recipe theRecipe;
+	} currentMissionInfo, currentCraftingInfo;
 
 	const char* confirmText;
 
@@ -195,7 +197,6 @@ void UpdateNPC(Player* player)
 					for (int i = 0; i < Crafting::recipeList.size(); i++)
 					{
 						CreateContentBarInstance(i);
-						std::cout << i << std::endl;
 					}
 					break;
 				case NPC_QUEST_GIVER:
@@ -249,10 +250,40 @@ void UpdateNPC(Player* player)
 								return;
 
 							CreateInfoDisplayBanner(); //Update
+
+							currentCraftingInfo.theRecipe = *recipePtr;
+							if (AEInputCheckTriggered(AEVK_LBUTTON))
+							{
+								//if (Crafting::Can_Craft(*recipePtr, ))
+								//{
+								//	confirmAcceptPrompt = true;
+								//}
+								//else
+								//{
+								//	//Play Unavailable sound effect here, something like DE DEEE
+								//	std::cout << "Unavailable\n";
+								//}
+							}
 						}
-
 					}
-
+				}
+				else
+				{
+					if (AEInputCheckTriggered(AEVK_Y))
+					{/*
+						Crafting::Craft_Item(currentCraftingInfo.theRecipe, )*/
+						//Reset the content bars...
+						contentBarContainer.clear();
+						for (int i = 0; i < Crafting::recipeList.size(); i++)
+						{
+							CreateContentBarInstance(i);
+						}
+						confirmAcceptPrompt = false;
+					}
+					else if (AEInputCheckTriggered(AEVK_N))
+					{
+						confirmAcceptPrompt = false;
+					}
 				}
 				break;
 			case NPC_QUEST_GIVER:
@@ -432,6 +463,23 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
 					AEGfxPrint(fontID, fullInventoryList[recipePtr->item_id].name.c_str(), posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
 				}
+
+				if (displayBoxActive && recipePtr != nullptr)
+				{
+					AEGfxTextureSet(infoDisplayBoxSprite, 0, 0);
+					AEGfxSetTransform(infoDisplayBox.transformation.m);
+					AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+					std::string firstMatName = fullInventoryList[recipePtr->mat_requirements.first.mat_ID].name;
+					firstMatName += " x" + std::to_string(recipePtr->mat_requirements.first.mat_quantity);
+					std::string secondMatName = fullInventoryList[recipePtr->mat_requirements.second.mat_ID].name;
+					secondMatName += " x" + std::to_string(recipePtr->mat_requirements.second.mat_quantity);
+
+					AEGfxPrint(fontID, "MATERIALS", 0.7f, 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+					AEGfxPrint(fontID, firstMatName.c_str(), 0.625f, 0.7f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+					AEGfxPrint(fontID, secondMatName.c_str(), 0.625f, 0.5f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+				}
+
 			}
 			//Available recipes
 			break;
