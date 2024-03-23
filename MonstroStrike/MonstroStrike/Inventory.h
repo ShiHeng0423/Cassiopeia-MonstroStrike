@@ -95,6 +95,8 @@ extern s16 snapBack;
 extern Player* playerReference;
 
 
+
+
 //Display
 extern ButtonGearUI inventoryBackground;
 extern ButtonGearUI inventoryButton[25];
@@ -106,12 +108,17 @@ extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
 
+#define INVALID_ITEM = -999;
+
 namespace Inventory
 {
 	extern bool inventoryOpen;
 	extern bool itemHover;
 	extern std::vector<Item> allItems; //list of all items in game
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
+
+	//AEGfxVertexList* pWhiteSquareMesh;
+	extern Item displayItem;
 
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
@@ -127,7 +134,7 @@ namespace Inventory
 
 	void OpenInventory();
 
-	void DisplayItemInfo(const Item&);
+	//void DisplayItemInfo(const Item&);
 
 	void AddItem(const Item& item);
 	void ItemPickUp(Item& item);

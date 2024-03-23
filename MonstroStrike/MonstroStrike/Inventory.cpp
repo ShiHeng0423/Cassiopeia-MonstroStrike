@@ -31,6 +31,9 @@
 #include <fstream>
 #include <sstream>
 
+#include "Crafting.h"
+#include "main.h"
+
 using namespace rapidjson;
 
  std::vector< Item> playerInventory;
@@ -52,8 +55,11 @@ using namespace rapidjson;
  ButtonGearUI itemDisplayBackground;
 
  AEGfxTexture* blank;
+ 
 
  int playerInventoryCount;
+
+
 
 namespace Inventory
 {
@@ -64,6 +70,7 @@ namespace Inventory
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 	bool itemHover;
+	Item displayItem;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -365,8 +372,9 @@ namespace Inventory
 						snapBack = index;
 
 						//Display item's info on l_click
-						DisplayItemInfo(button.Item);
+						//DisplayItemInfo(button.Item);
 						itemHover = true;
+						displayItem = button.Item;
 
 
 						break;
@@ -375,6 +383,8 @@ namespace Inventory
 				}
 				//Reset itemHover
 				itemHover = false;
+				displayItem = { "",-9 };
+				//{"", -9, "invalid item", "",0, 0,5,0,false,0,0,0 };
 
 				index++;
 			}
@@ -499,20 +509,29 @@ namespace Inventory
 				index++;
 			}
 		}
+
+		if(AEInputCheckTriggered(AEVK_LALT))
+		{
+			Recipe dummy = Crafting::recipeList[0];
+
+			int reqloc1 = 0;
+			int reqloc2 = 0;
+
+			if(Crafting::Can_Craft(dummy, playerInventory, reqloc1, reqloc2))
+			{
+				std::cout << "Can craft" << fullInventoryList[dummy.item_id].name << std::endl;
+
+				Crafting::Craft_Item(dummy, playerInventory, reqloc1, reqloc2);
+			}
+		}
+
 	}
 
-	void DisplayItemInfo(const Item& item)
-	{
-		std::cout << "Display item info: "<< item.name << std::endl;
-		//set background
-
-		//set item position
-
-	}
 
 
 	void AddItem(const Item& item)
 	{
+		//check if got existing ID, item++
 		playerInventory.push_back(item);
 	}
 
@@ -889,8 +908,8 @@ namespace Inventory
 		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
 
 		//Item Info Display
-		AEVec2Set(&itemDisplayBackground.img.scale, 250.f, 500.f);
-		AEVec2Set(&itemDisplayBackground.pos, 375.f, 0.f);
+		AEVec2Set(&itemDisplayBackground.img.scale, 400.f, 500.f);
+		AEVec2Set(&itemDisplayBackground.pos, 450.f, 0.f);
 
 		index = 0;
 		for (ButtonGearUI& button : Inventory::equipmentDisplay)

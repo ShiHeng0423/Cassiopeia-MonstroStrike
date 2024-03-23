@@ -11,7 +11,8 @@
 static bool initialMissionsLoaded = false;
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NPC NOW UNLESS SUBJECT TO CHANGES
 
-namespace {
+namespace
+{
 	struct NonPlayableCharacters npcs[3];
 
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType);
@@ -23,13 +24,13 @@ namespace {
 	void CreateInfoDisplayBanner();
 
 	struct ConversationContent convBox;
-	
+
 	AEGfxTexture* npcContentBox;
 	AEGfxTexture* contentListBox; //The list of bars shown in content, like showing missions, crafting lists etc...
 	AEGfxTexture* infoDisplayBoxSprite;
-	
-	enum ConversationState {
-		
+
+	enum ConversationState
+	{
 		CONVERSATION_OUTSIDE = 0,
 		CONVERSATION_ENTRY,
 		CONVERSATION_CONTENT,
@@ -38,7 +39,7 @@ namespace {
 
 	AEVec2 screenPos;
 
-	AEVec2 mousePos{ 0,0 };
+	AEVec2 mousePos{0,0};
 	
 	f32 yScale;
 
@@ -54,8 +55,9 @@ namespace {
 	bool displayBoxActive = false;
 	bool confirmAcceptPrompt = false;
 
-	struct HoverContentInfo {
-		const char* hoverContentName;
+	struct HoverMissionInfo
+	{
+		const char* hoverMissionName;
 		const char* hoverMissionDetails;
 		size_t missionID;
 
@@ -97,7 +99,8 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 	for (int i = 0; i < allocatedPositions.size(); i++)
 	{
 		AEVec2 pos = allocatedPositions[i];
-		switch (i) {
+		switch (i)
+		{
 		case 0:
 			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_BLACKSMITH_A);
 			break;
@@ -113,10 +116,10 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 			break;
 		}
 	}
-	
+
 	AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
 	CreateConvBoxInstance(screenPos.x, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.3725f,
-		(f32)AEGfxGetWindowWidth(), (f32)AEGfxGetWindowHeight() * 0.25f, convBox);
+	                      (f32)AEGfxGetWindowWidth(), (f32)AEGfxGetWindowHeight() * 0.25f, convBox);
 
 	currentConvState = CONVERSATION_OUTSIDE; //Not in conversation
 
@@ -149,19 +152,19 @@ void UpdateNPC(Player* player)
 		case NPC_BLACKSMITH_A:
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
+				collidedPlayer.push_back({AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		case NPC_BLACKSMITH_B:
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
+				collidedPlayer.push_back({AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		case NPC_QUEST_GIVER:
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
+				collidedPlayer.push_back({AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
 			}
 			break;
 		default:
@@ -226,6 +229,7 @@ void UpdateNPC(Player* player)
 			switch (collidedPlayer[0].second)
 			{
 			case NPC_BLACKSMITH_A:
+				//fullInventoryList[recipe.mat_requirements.first.mat_ID].name;
 				break;
 			case NPC_BLACKSMITH_B:
 				if (!confirmAcceptPrompt)
@@ -293,14 +297,17 @@ void UpdateNPC(Player* player)
 					for (int i = 0; i < availableMissionsID.size(); i++)
 					{
 						const KillEnemyMission* missionPtr = nullptr;
-						for (const KillEnemyMission& mission : missionSystem.enemyMissions) {
-							if (mission.missionID == availableMissionsID[i]) {
+						for (const KillEnemyMission& mission : missionSystem.enemyMissions)
+						{
+							if (mission.missionID == availableMissionsID[i])
+							{
 								missionPtr = &mission;
 								break;
 							}
 						}
 
-						if (AETestPointToRect(&mousePos, &contentBarContainer[i].position, contentBarContainer[i].size.x, contentBarContainer[i].size.y))
+						if (AETestPointToRect(&mousePos, &contentBarContainer[i].position,
+						                      contentBarContainer[i].size.x, contentBarContainer[i].size.y))
 						{
 							displayBoxActive = true;
 							if (missionPtr == nullptr)
@@ -386,11 +393,12 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 	AEMtx33 transformation, scale, rotation, translation;
 
 	if (inConv)
-	{ 
+	{
 		//Drawing NPC portrait
 		AEMtx33Rot(&rotation, 0.f);
 		AEMtx33Scale(&scale, AEGfxGetWindowWidth() * 0.25f, AEGfxGetWindowHeight() * 0.75f);
-		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f, screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
+		AEMtx33Trans(&translation, screenPos.x - (f32)AEGfxGetWindowWidth() * 0.4f,
+		             screenPos.y - (f32)AEGfxGetWindowHeight() * 0.25f);
 
 		AEMtx33Concat(&transformation, &rotation, &scale);
 		AEMtx33Concat(&transformation, &translation, &transformation);
@@ -415,9 +423,11 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		AEGfxSetTransform(convBox.transformation.m);
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
-		//Print name and text
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f); //name 
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].openingText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f); //text
+	//Print name and text
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f,
+		           convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f); //name 
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].openingText, -0.9f,
+		           convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f); //text
 		break;
 	case CONVERSATION_CONTENT: //After pressing Y and enter quest lists / crafting lists
 
@@ -494,16 +504,21 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 				AEGfxSetTransform(contentBarContainer[i].transformation.m);
 				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
-				for (const KillEnemyMission& mission : missionSystem.enemyMissions) {
-					if (mission.missionID == availableMissionsID[i]) {
+				for (const KillEnemyMission& mission : missionSystem.enemyMissions)
+				{
+					if (mission.missionID == availableMissionsID[i])
+					{
 						missionPtr = &mission;
 						break;
 					}
 				}
 				if (missionPtr)
 				{
-					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
-					AEGfxPrint(fontID, missionPtr->missionName, posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
+					AEVec2 posText = {
+						-0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f
+					};
+					AEGfxPrint(fontID, missionPtr->missionName, posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f,
+					           0.f, 0.f, 0.f, 1.f);
 				}
 			}
 
@@ -513,7 +528,7 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 				AEGfxSetTransform(infoDisplayBox.transformation.m);
 				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
-				AEGfxPrint(fontID, "QUEST INFO", 0.7f , 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+				AEGfxPrint(fontID, "QUEST INFO", 0.7f, 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 				AEGfxPrint(fontID, currentMissionInfo.hoverMissionDetails, 0.63f, 0.f, 0.3f, 0.f, 0.f, 0.f, 1.f);
 			}
 			break;
@@ -522,12 +537,13 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		if (!confirmAcceptPrompt)
 		{
 			//Default for everyone else
-			AEGfxPrint(fontID, "Anything fancy?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f); //If possible want to improve, doesn't really like hardcoded values with no scalar...
+			AEGfxPrint(fontID, "Anything fancy?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+			//If possible want to improve, doesn't really like hardcoded values with no scalar...
 			AEGfxPrint(fontID, "[Esc] to exit", -0.98f, -0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 		}
 		else
 		{
-			AEGfxPrint(fontID, "Are you sure?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f); 
+			AEGfxPrint(fontID, "Are you sure?", -0.98f, -0.7f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 			AEGfxPrint(fontID, "[Y] to accept", -0.98f, -0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 			AEGfxPrint(fontID, "[N] to reject", -0.98f, -0.9f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 		}
@@ -544,15 +560,16 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 		AEGfxSetTransform(convBox.transformation.m);
 		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 
-		//Print name and text
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f);
-		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].exitingText, -0.9f, convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
+	//Print name and text
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].npcName, -0.9f,
+		           convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.2f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+		AEGfxPrint(fontID, npcs[collidedPlayer[0].second].exitingText, -0.9f,
+		           convBox.position.y / (f32)AEGfxGetWindowHeight() - 0.4f, 0.5f, 0.f, 0.f, 0.f, 1.f);
 		break;
-	case CONVERSATION_OUTSIDE: 
+	case CONVERSATION_OUTSIDE:
 	default:
 		break;
 	}
-	
 }
 
 void FreeNPC()
@@ -573,10 +590,11 @@ void FreeNPC()
 	contentBarContainer.clear();
 }
 
-namespace {
+namespace
+{
 	void CreateNPCInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, NonPlayableCharacters& npc, NpcTypes npcType)
 	{
-		npc.rotation = { 0 };
+		npc.rotation = {0};
 		AEMtx33Rot(&npc.rotation, 0.f);
 
 		AEVec2Set(&npc.size, xSize, ySize);
@@ -585,7 +603,7 @@ namespace {
 		AEVec2Set(&npc.position, xPos, yPos);
 		AEMtx33Trans(&npc.translation, npc.position.x, npc.position.y);
 
-		npc.transformation = { 0 };
+		npc.transformation = {0};
 		AEMtx33Concat(&npc.transformation, &npc.rotation, &npc.scale);
 		AEMtx33Concat(&npc.transformation, &npc.translation, &npc.transformation);
 
@@ -602,7 +620,7 @@ namespace {
 
 	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& convBox)
 	{
-		convBox.rotate = { 0 };
+		convBox.rotate = {0};
 		AEMtx33Rot(&convBox.rotation, 0.f);
 
 		AEVec2Set(&convBox.size, xSize, ySize);
@@ -611,7 +629,7 @@ namespace {
 		AEVec2Set(&convBox.position, xPos, yPos);
 		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
 
-		convBox.transformation = { 0 };
+		convBox.transformation = {0};
 		AEMtx33Concat(&convBox.transformation, &convBox.rotation, &convBox.scale);
 		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
 		//No need collision box
@@ -623,15 +641,15 @@ namespace {
 		f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
 
 		AEMtx33Rot(&contBar.rotation, 0.f);
-		
+
 		AEVec2Set(&contBar.size, (f32)AEGfxGetWindowWidth() * 0.55f, yScale);
-		AEMtx33Scale(&contBar.scale, contBar.size.x , contBar.size.y);
-		
-		AEVec2Set(&contBar.position, screenPos.x * 1.02f, 
-			(screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - yScale * 0.8f) - yScale * num * 1.1f);
+		AEMtx33Scale(&contBar.scale, contBar.size.x, contBar.size.y);
+
+		AEVec2Set(&contBar.position, screenPos.x * 1.02f,
+		          (screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - yScale * 0.8f) - yScale * num * 1.1f);
 		AEMtx33Trans(&contBar.translation, contBar.position.x, contBar.position.y);
 
-		contBar.transformation = { 0 };
+		contBar.transformation = {0};
 		AEMtx33Concat(&contBar.transformation, &contBar.rotation, &contBar.scale);
 		AEMtx33Concat(&contBar.transformation, &contBar.translation, &contBar.transformation);
 
@@ -652,10 +670,10 @@ namespace {
 		AEMtx33Scale(&infoDisplayBox.scale, infoDisplayBox.size.x, infoDisplayBox.size.y);
 
 		AEVec2Set(&infoDisplayBox.position, screenPos.x + (f32)AEGfxGetWindowWidth() * 0.4f,
-			screenPos.y);
+		          screenPos.y);
 		AEMtx33Trans(&infoDisplayBox.translation, infoDisplayBox.position.x, infoDisplayBox.position.y);
 
-		infoDisplayBox.transformation = { 0 };
+		infoDisplayBox.transformation = {0};
 		AEMtx33Concat(&infoDisplayBox.transformation, &infoDisplayBox.rotation, &infoDisplayBox.scale);
 		AEMtx33Concat(&infoDisplayBox.transformation, &infoDisplayBox.translation, &infoDisplayBox.transformation);
 	}

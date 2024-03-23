@@ -175,8 +175,8 @@ void Lobby_Update()
 		if (currScene == CurrentScene::MAIN_SCENE)
 			PlayerUpdate(*player, Inventory::inventoryOpen);
 		cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
-			grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
-			grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+		               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
+		               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 		CheckPlayerGridCollision(grids2D, player);
 
@@ -249,12 +249,14 @@ void Lobby_Draw()
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0, (int)player->currHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0,
+	                                                (int)player->currHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0, (int)player->maxHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0,
+	                                                (int)player->maxHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -289,9 +291,62 @@ void Lobby_Draw()
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+
 		//ItemInfoDisplay
 		if (Inventory::itemHover)
 		{
+			//Inventory::DisplayItemInfo(Inventory::displayItem);
+
 			AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
 			AEGfxSetTransform(ObjectTransformationMatrixSet(
 				itemDisplayBackground.pos.x + x,
@@ -302,76 +357,26 @@ void Lobby_Draw()
 
 			f32 width, height;
 
-			auto pText = "Start";
+			auto pText = Inventory::displayItem.name.c_str();
 			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2,
-			           -itemDisplayBackground.pos.y + y + 0.22f,
-			           0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText, 0.75f - width * 0.5f,
+			           0.5f - height * 0.5f,
+			           0.25f, 1, 1, 1, 1);
 
 			auto pText1 = "Load";
 			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -itemDisplayBackground.pos.x + x,
-			           -itemDisplayBackground.pos.y + y, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText1, -width / 2,
+			           -height / 2, 0.5f, 1, 1, 1, 1);
 
 			auto pText2 = "Credit";
 			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, -itemDisplayBackground.pos.x + x,
-			           -itemDisplayBackground.pos.y + y - 0.22f, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText2, -width / 2,
+			           -height / 2, 0.5f, 1, 1, 1, 1);
 
 			auto pText3 = "Controls";
 			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText3, -itemDisplayBackground.pos.x + x,
-			           -itemDisplayBackground.pos.y + y - 0.44f, 0.5f, 1, 1, 1, 1);
-		}
-
-
-		for (ButtonGearUI button : inventoryButton)
-		{
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-
-
-		for (ButtonGearUI button : inventoryButton)
-		{
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+			AEGfxPrint(fontID, pText3, -width / 2,
+			           -height / 2, 0.5f, 1, 1, 1, 1);
 		}
 	}
 
@@ -384,7 +389,6 @@ void Lobby_Draw()
 	DrawConvBox(player->isConversation, *pWhiteSquareMesh);
 
 	MapTransitionDraw();
-
 }
 
 void Lobby_Free()
