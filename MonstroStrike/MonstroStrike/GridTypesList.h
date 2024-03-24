@@ -15,6 +15,11 @@ enum GridTypes
     NPC_BLACKSMITH_B_POS = 11,
     NPC_QUEST_GIVER_POS = 12,
 
+    //Enemy positions grid
+    ENEMY_CHARGER_POS = 20,
+    ENEMY_FLY_POS = 21,
+    ENEMY_SLIME_POS = 22,
+
     //Player positions
     PLAYER_POS_GRID_1 = 91,
     PLAYER_POS_GRID_2 = 92,
