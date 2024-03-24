@@ -1,6 +1,7 @@
 #include "EnemyUtils.h"
 
 
+AEGfxTexture* bulletTex;
 
 void MoveTowards(Enemy& enemy, AEVec2 targetPosition) {
 

@@ -48,7 +48,7 @@ void MapTransitionInit() //Call when enter a new level
 	transitionalImageOBJ.destPosition = { 0 }; //Final destination for the player to move against
 	transitionalImageOBJ.translation = { 0 };
 	transitionalImageOBJ.rotation = { 0 }; //Why I even have this?
-	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 1.85f, (f32)AEGfxGetWindowHeight() * 1.5f }; //Set both to fit window
+	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 2.25f, (f32)AEGfxGetWindowHeight() * 2.25f };
 	transitionalImageOBJ.scale = { 0 }; //Set scale as size
 	transitionalImageOBJ.transformation = { 0 };
 	
@@ -116,12 +116,12 @@ void MapTransitionUpdate() //Update only when transition image is active
 			case TRANSITION_LEFT: //Play left animation
 				transitionalImageOBJ.velocity.x = -transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { transitPos.x - AEGfxGetWindowWidth() * 1.75f, transitPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x - AEGfxGetWindowWidth() * 2.f, transitPos.y };
 				break;
 			case TRANSITION_RIGHT: //Play right animation
 				transitionalImageOBJ.velocity.x = transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { transitPos.x + AEGfxGetWindowWidth() * 1.75f, transitPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x + AEGfxGetWindowWidth() * 2.f, transitPos.y };
 				break;
 			default:
 				std::cerr << "Cannot find animation to play\n";

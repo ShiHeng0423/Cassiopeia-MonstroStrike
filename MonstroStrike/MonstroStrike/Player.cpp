@@ -7,6 +7,7 @@
 #include <chrono>
 #include <queue>
 #include <functional>  // for std::function
+#include "MapTransition.h"
 
 #define CAM_X_BOUNDARY (250.f)
 #define CAM_FOLLOW_UP_SPEED_X (0.05f)
@@ -319,6 +320,15 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 
 		}
+	}
+
+}
+
+void OnPlayerDeath() {
+	//Return to lobby
+	if (!transitionalImageOBJ.active)
+	{
+		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
 	}
 
 }

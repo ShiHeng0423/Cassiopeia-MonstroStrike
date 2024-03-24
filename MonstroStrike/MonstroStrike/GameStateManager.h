@@ -3,7 +3,7 @@ enum GameStates {
 	SPLASHSCREEN = 0,
 	MAINMENU,
 	GAME_LOBBY,
-	AREA1,
+	AREA1_A,
 	AREA1_B,
 	AREA1_C,
 	AREA1_D,

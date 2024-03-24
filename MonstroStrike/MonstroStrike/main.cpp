@@ -76,6 +76,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		}
 		fpFree();
 		fpUnload();
+		previous = current;
 		current = next;
 	}
 

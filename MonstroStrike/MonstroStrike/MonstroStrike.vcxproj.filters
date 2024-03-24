@@ -16,6 +16,12 @@
     <Filter Include="Header Files\RapidJason Header">
       <UniqueIdentifier>{2005c6e5-a603-40af-8aba-1024d2151f42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GameLevels">
+      <UniqueIdentifier>{36aaba14-9c38-48d0-bf6c-d3a26f44bd38}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GameLevels">
+      <UniqueIdentifier>{a4bc3268-d6a4-4f49-9036-523ad14766a8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -75,12 +81,6 @@
     <ClCompile Include="GameState_Mainmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Level1.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState_GameLobby.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="EnemyUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,18 +129,33 @@
     <ClCompile Include="MissionList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameState_Level1.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_GameLobby.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_B.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_C.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_D.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_E.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_F.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_Level1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameStateManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState_GameLobby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -242,15 +257,54 @@
     <ClInclude Include="MissionList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GameState_GameLobby.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Level1.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Level1_B.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Level1_C.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Level1_D.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Level1_E.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Level1_F.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameStateHeaders.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Assets\GameMap.csv">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="..\Assets\GameMap_Lobby.csv">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Assets\player_inventory.json" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_A.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMaps\GameMap_Level1_B.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMaps\GameMap_Level1_C.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMaps\GameMap_Level1_D.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMaps\GameMap_Level1_E.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMaps\GameMap_Level1_F.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\GameMaps\GameMap_Lobby.csv">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rapidjson\allocators.h">

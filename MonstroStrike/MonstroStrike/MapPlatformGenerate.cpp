@@ -48,7 +48,7 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 		//End Point X Axis
 		thePlatform.endPoint.x = thePlatform.startPoint.x;
 		//End Point Y Axis
-		thePlatform.endPoint.y = thePlatform.position.y - 100.f;
+		thePlatform.endPoint.y = thePlatform.position.y - 300.f;
 
 		//Setting Velocity
 		AEVec2Set(&thePlatform.velocity, thePlatform.endPoint.x - thePlatform.startPoint.x, thePlatform.endPoint.y - thePlatform.startPoint.y);
@@ -61,9 +61,9 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 		thePlatform.startPoint = thePlatform.position;
 
 		//End Point X Axis
-		thePlatform.endPoint.x = thePlatform.startPoint.x - 200.f;
+		thePlatform.endPoint.x = thePlatform.startPoint.x - 100.f;
 		//End Point Y Axis
-		thePlatform.endPoint.y = thePlatform.position.y - 200.f;
+		thePlatform.endPoint.y = thePlatform.position.y - 400.f;
 
 		//Setting Velocity
 		AEVec2Set(&thePlatform.velocity, thePlatform.endPoint.x - thePlatform.startPoint.x, thePlatform.endPoint.y - thePlatform.startPoint.y);
@@ -128,8 +128,8 @@ void PlatformCollision(Platforms& movingObject, Player& player)
 		ResolveVerticalCollision(player.boxHeadFeet, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
 			&player.velocity, &player.onFloor, &player.gravityForce, &player.isFalling);
 
-		collided = true;
-
+		player.obj.pos.x += movingObject.velocity.x;
+		player.obj.pos.y += movingObject.velocity.y;
 	}
 
 	//Check horizontal box (Left arm -> Right arm)
@@ -138,14 +138,8 @@ void PlatformCollision(Platforms& movingObject, Player& player)
 
 		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
 			&player.velocity);
-		collided = true;
 	}
 
-	if (collided)
-	{
-		player.obj.pos.x += movingObject.velocity.x;
-		player.obj.pos.y += movingObject.velocity.y;
-	}
 }
 
 void PlatformCollision(Platforms& movingObject, Enemy& enemy)
