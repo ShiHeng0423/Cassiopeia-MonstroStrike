@@ -8,6 +8,7 @@
 #include <queue>
 #include <functional>  // for std::function
 #include "MapTransition.h"
+#include "ParticleSystem.h"
 
 #define CAM_X_BOUNDARY (250.f)
 #define CAM_FOLLOW_UP_SPEED_X (0.05f)
@@ -34,17 +35,6 @@ auto releasedTime = Clock::now();
 auto comboTime = Clock::now();
 
 #pragma region AnimationQueue
-
-//std::queue<anima> con_anima;
-//
-//class anima
-//{
-// public:
-//	bool is_playing = false;
-//	
-//
-//};
-
 
 #pragma endregion
 
@@ -102,7 +92,6 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	return player;
 }
 
-
 void PlayerUpdate(Player& player, bool isInventoryOpen)
 {
 
@@ -132,10 +121,14 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
 	{
 		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+		ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
+			player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, TEST_2, &player);
 		player.isFacingRight = true;
 	}
 	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
+		ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
+			player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, TEST_2, &player);
 		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = false;
 	}
@@ -216,12 +209,6 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
-	//
-	//std::cout << "Player on floor: " << player.onFloor << std::endl;
-	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
-	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
-
-	//Player position update
 
 	player.prevPos = player.obj.pos;
 	player.prevcollisionBox = player.collisionBox;
@@ -321,7 +308,6 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 
 		}
 	}
-
 }
 
 void OnPlayerDeath() {

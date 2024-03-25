@@ -14,7 +14,7 @@ enum {
 
 	//Level 1 type B
 	MAP_ROW_SIZE_2 = 60,
-	MAP_COLUMN_SIZE_2 = 30,
+	MAP_COLUMN_SIZE_2 = 40,
 
 	//Lobby Level
 	MAP_ROW_LOBBY_SIZE = 25,
@@ -57,6 +57,5 @@ void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols);
 void InitializeGrid(Grids2D& theGrids);
 
 void SetGridTypes(Grids2D** grids2D, const std::vector<std::vector<MapCell>>& gameMap, int numRows, int numCols);
-
 
 void RenderGrids(Grids2D** grids2D, int numRows, int numCols, AEGfxVertexList& mesh);

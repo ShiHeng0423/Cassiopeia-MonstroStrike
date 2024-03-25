@@ -27,13 +27,7 @@ void MissionSystem::InitialMission()
 void MissionSystem::CreateKillEnemyMission(const char* missionName, int targetSlime, int targetCharger, int targetFly,
                                            bool avail, const char* missionDetails)
 {
-	enemyMissions.push_back(KillEnemyMission(nextMissionID++, missionName, targetSlime, targetCharger, targetFly, avail,
-	                                         missionDetails));
-	std::cout << "Mission name: " << missionName << " with the goal of killing " << targetSlime <<
-		" amount of slimes, " << targetCharger << " amount of chargers, and " << targetFly <<
-		" of Flys have been added\n";
-
-	std::cout << missionDetails << std::endl;
+	enemyMissions.push_back(KillEnemyMission(nextMissionID++, missionName, targetSlime, targetCharger, targetFly, avail, missionDetails));
 
 	if (avail)
 	{
@@ -76,8 +70,6 @@ void MissionSystem::MissionComplete(int missionID) //Please check if clear condi
 			mission.accepted = false;
 
 			missionSystem.chargersKilled = missionSystem.fliesKilled = missionSystem.slimesKilled = 0; //Reset
-
-			std::cout << "Mission " << mission.missionName << " has been completed\n";
 
 			//Here to add clear rewards
 			switch (missionID)
@@ -130,7 +122,7 @@ void MissionSystem::PrintMissionText()
 {
 	if (missionSystem.GetAcceptedMissionID() != -1)
 	{
-		auto missionBegin = "Mission: ";
+		const char* missionBegin = "Mission: ";
 		const char* missionName = missionSystem.enemyMissions[missionSystem.GetAcceptedMissionID()].missionName;
 
 		// Calculate the length of the concatenated string, including null terminators

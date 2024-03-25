@@ -75,13 +75,13 @@ namespace {
 void LoadNPC()
 {
 	//Texture loading
-	npcs[0].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
+	npcs[0].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Cleric_Portrait.png");
 	npcs[1].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
-	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/border.png");
+	npcs[2].pTexPortrait = AEGfxTextureLoad("Assets/NPCs/NPC_QuestReceptionist_Portrait.png");
 
-	npcs[0].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_A_Portrait.png");
+	npcs[0].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_Cleric_Portrait.png");
 	npcs[1].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
-	npcs[2].pTexSprite = AEGfxTextureLoad("Assets/SubaDuck.png");
+	npcs[2].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_QuestReceptionist_Portrait.png");
 
 	convBox.conversationBoxSprite = AEGfxTextureLoad("Assets/ConversationBox.png");
 	npcContentBox = AEGfxTextureLoad("Assets/NPC_ContentScreen.png");
@@ -124,17 +124,17 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 	currentConvState = CONVERSATION_OUTSIDE; //Not in conversation
 
 	//Initialize the names, texts etc
-	npcs[0].npcName = "Tom, Armor Blacksmith";
+	npcs[0].npcName = "Alice, Cleric";
 	npcs[1].npcName = "Jack, Weapon Blacksmith";
 	npcs[2].npcName = "Marie, Quest Counter";
 
-	npcs[0].openingText = "Heya chump, looking for some armors? [Y/N]";
+	npcs[0].openingText = "Do you require some healing? [Y/N]";
 	npcs[1].openingText = "It is too dangerous to go alone, craft some weapons from me.[Y/N]";
-	npcs[2].openingText = "Good day, are there any quests that caught your eye? [Y/N]";
+	npcs[2].openingText = "Any quests that caught your eye? [Y/N]";
 
-	npcs[0].exitingText = "Storm through, brave soldier. [Y] to continue";
+	npcs[0].exitingText = "May lord be with you. [Y] to continue";
 	npcs[1].exitingText = "Feel free to come back anytime. [Y] to continue";
-	npcs[2].exitingText = "Looking forward to your next visit! [Y] to continue";
+	npcs[2].exitingText = "See you... [Y] to continue";
 
 	confirmText = "Are you sure?";
 
@@ -188,14 +188,17 @@ void UpdateNPC(Player* player)
 		case CONVERSATION_ENTRY:
 			if (AEInputCheckTriggered(AEVK_Y))
 			{
-				//Activate next conversation
-				currentConvState = CONVERSATION_CONTENT;
 
 				switch (collidedPlayer[0].second)
 				{
 				case NPC_BLACKSMITH_A:
+					//Heals the player
+					//Plays healing sound effect
+					currentConvState = CONVERSATION_EXIT;
 					break;
 				case NPC_BLACKSMITH_B:
+					//Activate next conversation
+					currentConvState = CONVERSATION_CONTENT;
 					contentBarContainer.clear();
 					for (int i = 0; i < Crafting::recipeList.size(); i++)
 					{
@@ -203,6 +206,8 @@ void UpdateNPC(Player* player)
 					}
 					break;
 				case NPC_QUEST_GIVER:
+					//Activate next conversation
+					currentConvState = CONVERSATION_CONTENT;
 					contentBarContainer.clear(); //Clean container
 					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
 					for (int i = 0; i < availableMissionsID.size(); i++)
@@ -345,7 +350,7 @@ void UpdateNPC(Player* player)
 				{
 					if (AEInputCheckTriggered(AEVK_Y))
 					{
-						missionSystem.AcceptKillEnemyMission(currentMissionInfo.missionID);
+						missionSystem.AcceptKillEnemyMission((size_t)currentMissionInfo.missionID);
 						//Reset the content bars...
 						availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
 						if (!availableMissionsID.empty())

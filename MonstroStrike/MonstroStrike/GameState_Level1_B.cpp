@@ -260,15 +260,6 @@ void Level1_B_Update()
 #pragma endregion
 
 #pragma region ParticleSystem
-
-	if (AEInputCheckTriggered(AEVK_U))
-	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 5.f, 5.f, PI / 3, ParticleType::TEST);
-	}
-	if (AEInputCheckTriggered(AEVK_H))
-	{
-		ParticleEmit(5, player->obj.pos.x, player->obj.pos.y, 20.f, 20.f, PI / 4, ParticleType::TEST);
-	}
 	ParticleUpdate();
 
 #pragma endregion
