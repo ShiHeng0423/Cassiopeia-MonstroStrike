@@ -68,7 +68,7 @@ namespace Inventory
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 	bool itemHover;
-	Item displayItem;
+	ButtonGearUI displayItem;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -129,12 +129,12 @@ namespace Inventory
 
 
 				// std::cout << newItem.UID << std::endl;
-				 std::cout << "ID: " << newItem.ID << std::endl;
-				 std::cout << newItem.name << std::endl;
+				// std::cout << "ID: " << newItem.ID << std::endl;
+				// std::cout << newItem.name << std::endl;
 				// std::cout << newItem.description << std::endl;
 				// std::cout << newItem.item_type << std::endl;
 				// std::cout << "enum" << newItem.rarity << std::endl;
-				 std::cout << "Quantity: "<<newItem.quantity << std::endl;
+				//std::cout << "Quantity: "<<newItem.quantity << std::endl;
 				// std::cout << newItem.stackable << std::endl;
 				// std::cout << newItem.attack << std::endl;
 				// std::cout << newItem.defence << std::endl;
@@ -245,7 +245,7 @@ namespace Inventory
 
 		json.Accept(writer);
 
-		std::cout << buffer.GetString() << std::endl;
+		//std::cout << buffer.GetString() << std::endl;
 
 		
 		 std::ofstream ofs;
@@ -357,7 +357,7 @@ namespace Inventory
 		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
-			std::cout << playerInventoryCount << std::endl;
+			std::cout << "Inventory Count: "<< playerInventoryCount << std::endl;
 
 
 			s32 textX = 0;
@@ -382,7 +382,7 @@ namespace Inventory
 						//Display item's info on l_click
 						//DisplayItemInfo(button.Item);
 						itemHover = true;
-						displayItem = button.Item;
+						displayItem = button;
 
 
 						break;
@@ -391,7 +391,7 @@ namespace Inventory
 				}
 				//Reset itemHover
 				itemHover = false;
-				displayItem = { "",-9 };
+				displayItem.img.pTex = blank;
 				//{"", -9, "invalid item", "",0, 0,5,0,false,0,0,0 };
 
 				index++;
@@ -468,7 +468,7 @@ namespace Inventory
 				}
 			}
 		}
-
+		
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
@@ -512,10 +512,18 @@ namespace Inventory
 				{
 					button.img.pTex = Gear[button.Item.ID];
 				}
-				AEVec2Set(&button.img.scale, 60.f, 60.f);
-				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+				//Set scale
+				AEVec2Set(&button.img.scale, 90.f, 90.f);
 				index++;
 			}
+			//Set custom position
+			AEVec2Set(&equipmentDisplay[0].pos, -550.f, -60.f);
+			AEVec2Set(&equipmentDisplay[1].pos, -350.f, -60.f);
+
+			AEVec2Set(&equipmentDisplay[2].pos, -450.f, -100.f);
+
+			AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+			AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
 		}
 
 	}
@@ -562,20 +570,26 @@ namespace Inventory
 	}
 
 	//Function to apply the effect of a consumable item on the player
-	void ApplyItemEffect(class Player& player, const Item& item)
+	void ApplyConsumableEffect(class Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
 		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
 		{
 			// Apply the effect of the item on the player
 
-			// player.max_health += static_cast<f32> (item.health);
+			 player.currHealth += static_cast<f32> (item.health);
 			// player.attack += static_cast<f32> (item.attack);
 			// player.defence += static_cast<f32> (item.defence);
 			//
 			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
 			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
 			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
+
+			//Cap player hp
+			 if(playerReference->currHealth > playerReference->maxHealth)
+			 {
+				 playerReference->currHealth = playerReference->maxHealth;
+			 }
 
 		}
 		else
@@ -586,30 +600,20 @@ namespace Inventory
 
 
 	// Function to update the player's stats after equipping or unequipping items
-	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
+	void ApplyWeaponEffect(Player& player, Item Weapon)
 	{
 		// Reset player's stats to base values
 		// player.hp = player.maxHp;
 		// player.attack = 0;
 		// player.defence = 0;
 
-		// Iterate through equipped items and update player's stats accordingly
-		for (const auto& item : equippedItems)
-		{
-			// Update player's attack based on equipped weapon(s)
-			if (item.item_type == Item_Type::WEAPON)
+
+			if (Weapon.item_type != WEAPON)
 			{
-				//player.attack += item.attack;
+				return;
 			}
-			// Update player's defence based on equipped armor(s)
-			else if (item.item_type == Item_Type::ARMOUR)
-			{
-				//player.health += item.health;
-				//player.defence += item.defence;
-			}
-			// Apply other effects of equipped items as needed
-			// For example: increase player's maxHp, mana, agility, etc.
-		}
+
+		
 	}
 
 
@@ -637,7 +641,7 @@ namespace Inventory
 						std::cout << "Consumed " << item.Item.name << std::endl;
 
 						// Apply item effect
-						ApplyItemEffect(player, item.Item);
+						ApplyConsumableEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
 						playerInventory[index].quantity -= 1;
@@ -756,7 +760,7 @@ namespace Inventory
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-						UpdatePlayerStats(player, equippedGear);
+						ApplyWeaponEffect(player, equippedGear);
 
 				}
 			
@@ -921,8 +925,8 @@ namespace Inventory
 		snapBack = -1;
 
 		//Display inventory
-		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
-		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
+		AEVec2Set(&equipmentBackground.img.scale, 400.f, 500.f);
+		AEVec2Set(&equipmentBackground.pos, -450.f, 0.f);
 
 		//Item Info Display
 		AEVec2Set(&itemDisplayBackground.img.scale, 400.f, 500.f);
@@ -938,10 +942,19 @@ namespace Inventory
 			{
 				button.img.pTex = Gear[button.Item.ID];
 			}
-			AEVec2Set(&button.img.scale, 60.f, 60.f);
-			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+			//Set scale
+			AEVec2Set(&button.img.scale, 90.f, 90.f);
 			index++;
 		}
+		//Set custom position
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f,  -60.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f,  -60.f);
+
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -100.f);
+
+		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+
 
 	}
 

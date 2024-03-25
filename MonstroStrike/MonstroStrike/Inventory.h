@@ -119,7 +119,7 @@ namespace Inventory
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
 
 	//AEGfxVertexList* pWhiteSquareMesh;
-	extern Item displayItem;
+	extern ButtonGearUI displayItem;
 
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
@@ -141,14 +141,13 @@ namespace Inventory
 	void ItemPickUp(Item& item);
 	void ItemDrop();
 
-
-	void EquipToBody(Item obj);
-	void ApplyItemEffect(class Player& player, const Item& item);
 	void UseItem(int index, ButtonGearUI& item, class Player& player);
-	
-	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems);
-	void SaveInventory();
+	void EquipToBody(Item obj);
 
+	void ApplyConsumableEffect(class Player& player, const Item& item);
+	void ApplyWeaponEffect(Player& player, const std::vector<Item>& equippedItems);
+
+	void SaveInventory();
 	void FreeInventory();
 
 }
