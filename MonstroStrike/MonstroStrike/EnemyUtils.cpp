@@ -134,3 +134,8 @@ bool ReachedPos(Enemy& enemy, AEVec2 wayPoint) {
 	}
 }
 
+//void Draw_Enemy_HealthBar(Enemy& enemy, AEGfxVertexList* healthbar) {
+//
+//	AEGfxSetTransform(ObjectTransformationMatrixSet( enemy.obj.pos.x , enemy.obj.pos.y, 0, enemy.health * 2.f, 80.f).m);
+//	AEGfxMeshDraw(healthbar, AE_GFX_MDM_TRIANGLES);
+//}

@@ -323,10 +323,9 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 	for (Enemy& enemy : vecEnemyVar) {
 		if (enemy.isAlive) {
 
-
 			if (enemy.isAttacking) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.angryTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
@@ -336,7 +335,7 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			else
 			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
 					enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
@@ -347,17 +346,50 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 
 
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
+
+			//healthbar
+			// Calculate health bar position and size
+			float healthBarWidth = 80.0f; //  width of health bar
+			float healthBarHeight = 10.0f; //  height of health bar
+			float healthBarX = enemy.obj.pos.x; // Center the health bar horizontally
+			float healthBarY = enemy.obj.pos.y + 40.0f; // offset above the enemy
+
+			// Calculate percentage of health remaining
+			float healthPercentage = static_cast<float>(enemy.health) / static_cast<float>(enemy.maxHealth);
+
+			// Calculate the width of the health bar based on the health percentage
+			float remainingWidth = healthBarWidth * healthPercentage;
+
+			// Draw health bar background
+			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxTextureSet(0, 0, 0);
+			AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 1.0f); // Red color for background
+			AEGfxSetTransform(ObjectTransformationMatrixSet(healthBarX, healthBarY, 0.f, healthBarWidth, healthBarHeight).m);
+			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+			
+			// Draw health bar with remaining health
+			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxTextureSet(0, 0, 0);
+			AEGfxSetColorToAdd(0.0f, 1.0f, 0.0f, 1.0f); // Green color for remaining health
+			AEGfxSetTransform(ObjectTransformationMatrixSet(healthBarX, healthBarY, 0.f, remainingWidth, healthBarHeight).m);
+			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			//reset
+			AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 	}
 }

@@ -28,7 +28,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		enemy.isRecoil = true;
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
-			std::cout << "Hit!\n";
+			enemy.health -= 10;
 		}
 	}
 	else {
