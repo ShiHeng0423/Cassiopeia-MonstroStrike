@@ -1,6 +1,7 @@
 #include "ParticleSystem.h"
 #include <iostream>
 #include <random>
+#include "CSVMapLoader.h"
 
 namespace {
 	std::vector<AEGfxTexture*> particleTextureList;
@@ -131,7 +132,7 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 
 			allParticles[index].textureIndex = 0;
 			break;
-		case ParticleType::TEST_2:
+		case ParticleType::PARTICLE_TRAILING:
 			{
 			f32 offsetDistance = player->obj.img.scale.x * 0.2f;
 
@@ -145,6 +146,20 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 			allParticles[index].textureIndex = 0; 
 			}	
 			break;
+		case ParticleType::PARTICLE_JUMP:
+		{
+			// Calculate offset distance from the player position
+			f32 offsetDistance = player->obj.img.scale.x * 0.5f;
+
+			allParticles[index].velocity.x = (AERandFloat() * 2.0f - 1.0f) * (GRID_SIZE * 2.f); //Split
+
+			// Initial positions with offset
+			allParticles[index].position.x = player->obj.pos.x;
+			allParticles[index].position.y = player->obj.pos.y - offsetDistance;
+
+			allParticles[index].textureIndex = 0;
+		}
+		break;
 		default:
 			break;
 		}
@@ -218,6 +233,8 @@ void ParticlesDeactivate(int index)
 			allParticles[index].particleType = ParticleType::TEST;
 			allParticles[index].alpha = 1.f;
 			allParticles[index].rotate = 0.f;
+			allParticles[index].velocity = { 0.f };
+
 			allParticles[index].lifeTime = allParticles[index].maximumLifeTime;
 
 			inactiveParticles.push_back(index);

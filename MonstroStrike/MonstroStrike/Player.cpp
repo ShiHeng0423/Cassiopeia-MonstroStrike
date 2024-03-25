@@ -38,6 +38,9 @@ auto comboTime = Clock::now();
 
 #pragma endregion
 
+
+static f32 particleEmissionRate = 0.f;
+
 Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	//for every anima in the con_anima
@@ -112,23 +115,34 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
 	}
 
-
-	if (player.isFalling)
-	{
-		std::cout << "FELL\n";
-	}
-
 	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
 	{
 		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
-		ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
-			player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, TEST_2, &player);
+		if (particleEmissionRate > 0.1f)
+		{
+			particleEmissionRate = 0.f;
+			ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
+				player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, &player);
+		}
+		else
+		{
+			particleEmissionRate += (f32)AEFrameRateControllerGetFrameTime();
+		}
+
 		player.isFacingRight = true;
 	}
 	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
-		ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
-			player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, TEST_2, &player);
+		if (particleEmissionRate > 0.05f)
+		{
+			particleEmissionRate = 0.f;
+			ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
+				player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, &player);
+		}
+		else
+		{
+			particleEmissionRate += (f32)AEFrameRateControllerGetFrameTime();
+		}
 		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		player.isFacingRight = false;
 	}
@@ -206,6 +220,8 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 	{
 		player.onFloor = false;
 		player.velocity.y = 700.f;
+		ParticleEmit(10, player.obj.pos.x, player.obj.pos.y,
+			player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_JUMP, &player);
 	}
 
 	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to

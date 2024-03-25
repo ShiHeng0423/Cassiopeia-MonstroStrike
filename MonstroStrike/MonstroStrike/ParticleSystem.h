@@ -9,7 +9,8 @@ enum {
 
 enum ParticleType {
 	TEST = 0,
-	TEST_2
+	PARTICLE_TRAILING,
+	PARTICLE_JUMP,
 };
 
 struct Particles
