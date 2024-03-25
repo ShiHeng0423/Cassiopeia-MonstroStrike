@@ -51,7 +51,7 @@ void Lobby_Load()
 		PrintMap(gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE);
 		//Just for checking if the map data is stored properly
 	}
-
+	playerReference = player;
 	Inventory::LoadInventory();
 	Crafting::LoadRecipes();
 
