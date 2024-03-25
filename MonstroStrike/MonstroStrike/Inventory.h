@@ -90,7 +90,7 @@ extern std::vector< Item> fullInventoryList;
 extern std::vector< Item> equippedGear;
 
 //Misc
-extern int Player_Inventory_Count;
+extern int playerInventoryCount;
 extern s16 snapBack;
 extern Player* playerReference;
 
@@ -108,7 +108,8 @@ extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
 
-#define INVALID_ITEM -999;
+#define INVALID_ITEM -999
+#define MAX_INVENTORY_SIZE 25
 
 namespace Inventory
 {

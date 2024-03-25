@@ -40,8 +40,6 @@ using namespace rapidjson;
  std::vector< Item> fullInventoryList;
 
 
- int Player_Inventory_Count;
-
  AEGfxTexture* Gear[25];
  s16 snapBack = -1;
 
@@ -273,13 +271,18 @@ namespace Inventory
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
-		playerInventoryCount = 0;
-		for(size_t i=0; i<inventory.size(); ++i)
+		
+		int count = 0;
+
+		for(size_t i=0; i< inventory.size(); ++i)
 		{
 			button[i].Item = inventory[i];
-			playerInventoryCount++;
+
+			if(inventory[i].ID >= 0)
+			count++;
 			
 		}
+
 		if(inventory.size()<25)
 		{
 			for(size_t i = inventory.size() ; i < 25 ; i++)
@@ -289,6 +292,8 @@ namespace Inventory
 				button[i].Item = emptyItemSlot;
 			}
 		}
+
+		playerInventoryCount = count;
 	}
 
 
@@ -352,6 +357,9 @@ namespace Inventory
 		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
+			std::cout << playerInventoryCount << std::endl;
+
+
 			s32 textX = 0;
 			s32 textY = 0;
 
@@ -435,7 +443,7 @@ namespace Inventory
 								playerInventory.resize(index + 1);
 								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
-									playerInventory[x].ID = -9999;
+									playerInventory[x].ID = INVALID_ITEM;
 								}
 							}
 							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
@@ -510,21 +518,6 @@ namespace Inventory
 			}
 		}
 
-		if(AEInputCheckTriggered(AEVK_LALT))
-		{
-			Recipe dummy = Crafting::recipeList[0];
-
-			int reqloc1 = 0;
-			int reqloc2 = 0;
-
-			if(Crafting::Can_Craft(dummy, playerInventory, reqloc1, reqloc2))
-			{
-				std::cout << "Can craft" << fullInventoryList[dummy.item_id].name << std::endl;
-
-				Crafting::Craft_Item(dummy, playerInventory, reqloc1, reqloc2);
-			}
-		}
-
 	}
 
 
@@ -555,6 +548,8 @@ namespace Inventory
 			}
 			playerInventory.push_back(item);
 		}
+
+		UpdateInventory(playerInventory, inventoryButton);
 	}
 
 
@@ -623,8 +618,6 @@ namespace Inventory
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
 
-		const int MAX_INVENTORY_SIZE = 25;
-		const int MAX_EQUIPPED_ITEMS = 5;
 
 		// Check if the item is available in the player's inventory
 		if (index >= 0 && index < MAX_INVENTORY_SIZE)
@@ -757,9 +750,9 @@ namespace Inventory
 						
 					Item equipping = item.Item;
 					Item blank;
-					blank.ID = INVALID_ITEM
+					blank.ID = INVALID_ITEM;
 					item.Item = blank;
-					playerInventory[index].ID  = INVALID_ITEM
+					playerInventory[index].ID = INVALID_ITEM;
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
@@ -894,7 +887,7 @@ namespace Inventory
 		}
 
 
-		Item nothing {"", -999, "", "",
+		Item emptySpace {"", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
 			false, 0, 0, 0};
 
@@ -903,12 +896,12 @@ namespace Inventory
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
 			if(equippedGear.size() < 5)
 			{
-				equippedGear.push_back(nothing);
+				equippedGear.push_back(emptySpace);
 			}
 
 			if(equippedGear[i].ID < 0)
 			{
-				equipmentDisplay[i].Item = nothing;
+				equipmentDisplay[i].Item = emptySpace;
 			}else
 			{
 				equipmentDisplay[i].Item = equippedGear[i];
@@ -918,6 +911,8 @@ namespace Inventory
 
 	void InitInventory()
 	{
+		UpdateInventory(playerInventory, inventoryButton);
+
 		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
 		inventoryOpen = false;

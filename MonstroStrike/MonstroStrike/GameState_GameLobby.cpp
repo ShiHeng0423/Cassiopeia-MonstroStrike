@@ -359,19 +359,22 @@ void Lobby_Draw()
 
 			auto pText = Inventory::displayItem.name.c_str();
 			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, 0.75f - width * 0.5f,
-			           0.5f - height * 0.5f,
+			AEGfxPrint(fontID, pText, 0.6f - width * 0.5f,
+			           0.45f - height * 0.5f,
+			           0.35f, 1, 1, 1, 1);
+
+			auto quantityString = "Qty: " + std::to_string(Inventory::displayItem.quantity);
+			const char* pText1 = quantityString.c_str();
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, 0.3f,
+			           0.32f - height * 0.5f,
 			           0.25f, 1, 1, 1, 1);
 
-			auto pText1 = "Load";
-			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -width / 2,
-			           -height / 2, 0.5f, 1, 1, 1, 1);
-
-			auto pText2 = "Credit";
+			auto pText2 = Inventory::displayItem.description.c_str();
 			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, -width / 2,
-			           -height / 2, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText2, 0.6f - width * 0.5f,
+			           0.f - height * 0.5f,
+			           0.25f, 1, 1, 1, 1);
 
 			auto pText3 = "Controls";
 			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
