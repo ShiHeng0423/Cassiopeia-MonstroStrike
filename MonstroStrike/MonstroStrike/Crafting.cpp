@@ -85,6 +85,18 @@ namespace Crafting
 	{
 		bool first_good = false;
 		bool second_good = false;
+		loc1 = INVALID_ITEM;
+		loc2 = INVALID_ITEM;
+
+		std::cout << playerInventoryCount << std::endl;
+
+		//check if inventory capacity is full
+		if (playerInventoryCount + 1 > 25)
+		{
+			std::cout << "Inventory full!" << std::endl;
+			return false;
+		}
+
 
 		int index = 0;
 		for (auto item : Inventory)
@@ -123,6 +135,8 @@ namespace Crafting
 		Inventory[loc2].quantity -= recipe.mat_requirements.second.mat_quantity;
 
 		Inventory::AddItem(fullInventoryList[recipe.item_id]);
+
+		std::cout << "Crafted: " << fullInventoryList[recipe.item_id].name << std::endl;
 	}
 
 

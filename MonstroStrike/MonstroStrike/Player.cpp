@@ -78,7 +78,7 @@ Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AE
 	AEVec2Set(&player->boxHeadFeet.maximum, 0.f, 0.f);
 	AEVec2Set(&player->collisionNormal, 0.f, 0.f);
 
-	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
+	player->equippedWeapon = createWeapon("Short-Sword", location.x,location.y);
 	AEVec2Set(&player->equippedWeapon.scale, 20.f, 20.f);
 	player->attackTime = 1.f;
 	player->isAttacking = false;

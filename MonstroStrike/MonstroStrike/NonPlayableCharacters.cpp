@@ -4,6 +4,9 @@
 #include <algorithm>
 #include "LevelHeaders.h"
 #include "MissionList.h"
+#include "Inventory.h"
+#include "Crafting.h"
+
 
 static bool initialMissionsLoaded = false;
 //DISCLAIMER: NOTE THAT IT IS ONLY 3 NPC NOW UNLESS SUBJECT TO CHANGES
@@ -37,6 +40,9 @@ namespace {
 
 	AEVec2 mousePos{ 0,0 };
 	
+	f32 yScale;
+
+
 	std::vector<std::pair<f32, s16>>collidedPlayer;
 	
 	std::vector<int> availableMissionsID;
@@ -48,13 +54,22 @@ namespace {
 	bool displayBoxActive = false;
 	bool confirmAcceptPrompt = false;
 
-	struct HoverMissionInfo {
-		const char* hoverMissionName;
+	int loc1 = -1;
+	int loc2 = -1;
+
+	struct HoverContentInfo {
+		const char* hoverContentName;
 		const char* hoverMissionDetails;
 		size_t missionID;
-	} currentMissionInfo;
+
+		Recipe theRecipe;
+	} currentMissionInfo, currentCraftingInfo;
 
 	const char* confirmText;
+
+	const Recipe* recipePtr = nullptr;
+	const KillEnemyMission* missionPtr = nullptr;
+
 }
 
 void LoadNPC()
@@ -181,8 +196,12 @@ void UpdateNPC(Player* player)
 				case NPC_BLACKSMITH_A:
 					break;
 				case NPC_BLACKSMITH_B:
+					contentBarContainer.clear();
+					for (int i = 0; i < Crafting::recipeList.size(); i++)
+					{
+						CreateContentBarInstance(i);
+					}
 					break;
-
 				case NPC_QUEST_GIVER:
 					contentBarContainer.clear(); //Clean container
 					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
@@ -206,31 +225,85 @@ void UpdateNPC(Player* player)
 			AEInputGetCursorPosition(&x, &y);
 			mousePos.x = screenPos.x - AEGfxGetWindowWidth() * 0.5f + x;
 			mousePos.y = screenPos.y + AEGfxGetWindowHeight() * 0.5f - y;
-
 			switch (collidedPlayer[0].second)
 			{
 			case NPC_BLACKSMITH_A:
 				break;
 			case NPC_BLACKSMITH_B:
-				break;
-
-			case NPC_QUEST_GIVER:
-
-				if (AEInputCheckTriggered(AEVK_J))
+				if (!confirmAcceptPrompt)
 				{
-					missionSystem.MissionComplete(missionSystem.GetAcceptedMissionID());
-					//Reset the content bars...
-					availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
-					if (!availableMissionsID.empty())
+					displayBoxActive = false;
+
+					for (int i = 0; i < Crafting::recipeList.size(); i++)
 					{
-						contentBarContainer.clear();
-						for (int i = 0; i < availableMissionsID.size(); i++)
+						for (const Recipe& recipe : Crafting::recipeList)
 						{
-							CreateContentBarInstance(i);
+							if (recipe.item_id == Crafting::recipeList[i].item_id)
+							{
+								recipePtr = &recipe;
+								break;
+							}
+						}
+
+						if (AETestPointToRect(&mousePos, &contentBarContainer[i].position, contentBarContainer[i].size.x, contentBarContainer[i].size.y))
+						{
+							displayBoxActive = true;
+							if (recipePtr == nullptr)
+								return;
+
+							CreateInfoDisplayBanner(); //Update
+
+							currentCraftingInfo.theRecipe = *recipePtr;
+							if (AEInputCheckTriggered(AEVK_LBUTTON))
+							{
+
+								for (int i = 0; i < playerInventory.size(); i++)
+								{
+									if (playerInventory[i].ID == recipePtr->mat_requirements.first.mat_ID)
+									{
+										loc1 = i;
+									}
+									if (playerInventory[i].ID == recipePtr->mat_requirements.second.mat_ID)
+									{
+										loc2 = i;
+									}
+								}
+
+								if (Crafting::Can_Craft(*recipePtr, playerInventory, loc1, loc2))
+								{
+									std::cout << "Can craft\n";
+									confirmAcceptPrompt = true;
+								}
+								else
+								{
+									//Play Unavailable sound effect here, something like DE DEEE
+									std::cout << "Unavailable\n";
+								}
+							}
 						}
 					}
 				}
+				else
+				{
+					if (AEInputCheckTriggered(AEVK_Y))
+					{
+						Crafting::Craft_Item(currentCraftingInfo.theRecipe, playerInventory, loc1, loc2);
 
+						//Reset the content bars...
+						contentBarContainer.clear();
+						for (int i = 0; i < Crafting::recipeList.size(); i++)
+						{
+							CreateContentBarInstance(i);
+						}
+						confirmAcceptPrompt = false;
+					}
+					else if (AEInputCheckTriggered(AEVK_N))
+					{
+						confirmAcceptPrompt = false;
+					}
+				}
+				break;
+			case NPC_QUEST_GIVER:
 				if (!confirmAcceptPrompt)
 				{
 					displayBoxActive = false;
@@ -250,7 +323,7 @@ void UpdateNPC(Player* player)
 							if (missionPtr == nullptr)
 								return;
 
-							currentMissionInfo.hoverMissionName = missionPtr->missionName;
+							currentMissionInfo.hoverContentName = missionPtr->missionName;
 							currentMissionInfo.hoverMissionDetails = missionPtr->missionDetails;
 							CreateInfoDisplayBanner(); //Update
 
@@ -384,14 +457,54 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 			//Available recipes
 			break;
 		case NPC_BLACKSMITH_B:
+			for (int i = 0; i < Crafting::recipeList.size(); i++)
+			{
+				yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
+
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+				AEGfxTextureSet(contentListBox, 0, 0);
+				AEGfxSetTransform(contentBarContainer[i].transformation.m); 
+				AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+				for (const Recipe& recipe : Crafting::recipeList)
+				{
+					if (recipe.item_id == Crafting::recipeList[i].item_id)
+					{
+						recipePtr = &recipe;
+						break;
+					}
+				}
+
+				if (recipePtr)
+				{
+					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f };
+					AEGfxPrint(fontID, fullInventoryList[recipePtr->item_id].name.c_str(), posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
+				}
+
+				if (displayBoxActive && recipePtr != nullptr)
+				{
+					AEGfxTextureSet(infoDisplayBoxSprite, 0, 0);
+					AEGfxSetTransform(infoDisplayBox.transformation.m);
+					AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+
+					std::string firstMatName = fullInventoryList[recipePtr->mat_requirements.first.mat_ID].name;
+					firstMatName += " x" + std::to_string(recipePtr->mat_requirements.first.mat_quantity);
+					std::string secondMatName = fullInventoryList[recipePtr->mat_requirements.second.mat_ID].name;
+					secondMatName += " x" + std::to_string(recipePtr->mat_requirements.second.mat_quantity);
+
+					AEGfxPrint(fontID, "MATERIALS", 0.7f, 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+					AEGfxPrint(fontID, firstMatName.c_str(), 0.625f, 0.7f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+					AEGfxPrint(fontID, secondMatName.c_str(), 0.625f, 0.5f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+				}
+
+			}
 			//Available recipes
 			break;
 		case NPC_QUEST_GIVER:
-			const KillEnemyMission* missionPtr = nullptr;
 
-			for (size_t i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
+			for (int i = 0; i < availableMissionsID.size(); i++) //Should draw maximum number of boxes...
 			{
-				f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
+				yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
 
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(contentListBox, 0, 0);
