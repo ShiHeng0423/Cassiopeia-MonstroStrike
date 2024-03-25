@@ -4,11 +4,16 @@
 #include "Player.h"
 #include "CollisionShape.h"
 #include "TransformMatrix.h"
+#include "Inventory.h"
 #include <vector>
 #include <iostream>
 #include <cmath> // For abs function
 
 extern AEGfxTexture* bulletTex;
+extern AEGfxTexture* enemyJumperDropTex;
+extern AEGfxTexture* enemyChargerDropTex;
+extern AEGfxTexture* enemyFlyDropTex;
+extern AEGfxTexture* enemyBoss1DropTex;
 
 //(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(Enemy& movingEntity, AEVec2 targetPosition);
@@ -23,6 +28,8 @@ bool AreAligned(AEVec2 playerPosition, AEVec2 enemyPosition);	//checks if player
 void Jump(Enemy& enemy, f32 value);
 void IsStuck(Enemy& enemy);
 bool ReachedPos(Enemy& enemy, AEVec2 wayPoint);
+void EnemyLootSpawn(Enemy& enemy, std::vector<EnemyDrops>& vecCollectables);
+void DrawEnemyLoot(std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pWhiteSquareMesh);
 //(EnemyUtils)-------------------------------------------------------------------------
 
 

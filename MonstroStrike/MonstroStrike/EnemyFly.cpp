@@ -7,7 +7,7 @@
 
 
 
-void ENEMY_FLY_Update(Enemy& enemy, class Player& player)
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
@@ -19,6 +19,7 @@ void ENEMY_FLY_Update(Enemy& enemy, class Player& player)
 
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
 	}
 

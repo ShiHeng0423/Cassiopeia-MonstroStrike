@@ -23,8 +23,6 @@ void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Angry.png");
 		break;
-	case ENEMY_PASSIVE:
-		break;
 	case ENEMY_BOSS1:
 
 		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
@@ -143,9 +141,6 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.mass = 100.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
-	case ENEMY_PASSIVE:
-
-		break;
 	case ENEMY_BOSS1:
 		//main body
 		enemy.attackState = ENEMY_ATTACK_CHOOSING;
@@ -199,7 +194,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 
 
-void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
+void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
 //(update bullet)---------------------------------------------------------------------------------------
 	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
@@ -220,7 +215,25 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 		}
 	}
 //(update bullet)---------------------------------------------------------------------------------------
-	
+
+//(update drops)---------------------------------------------------------------------------------------
+	std::vector<EnemyDrops>::iterator it = vecCollectables.begin();
+
+	// Iterate over the vector
+	while (it != vecCollectables.end()) {
+		// Check collision
+		if (AABBvsAABB(it->collisionBox, player.collisionBox)) {
+			// Erase the element
+			it = vecCollectables.erase(it);
+			//addit to inventory
+			//here
+		}
+		else {
+			// Move to the next element
+			++it;
+		}
+	}
+//(update drops)---------------------------------------------------------------------------------------
 
 
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
@@ -236,20 +249,16 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
-		ENEMY_JUMPER_Update(enemy, player);
+		ENEMY_JUMPER_Update(enemy, player, vecCollectables);
 		break;
 	case ENEMY_CHARGER:
-		ENEMY_CHARGER_Update(enemy, player);
+		ENEMY_CHARGER_Update(enemy, player, vecCollectables);
 		break;
 	case ENEMY_FLY:
-		ENEMY_FLY_Update(enemy, player);
-		break;
-	case ENEMY_PASSIVE:
+		ENEMY_FLY_Update(enemy, player, vecCollectables);
 		break;
 	case ENEMY_BOSS1:
-		ENEMY_BOSS_Update(enemy, player);
-		break;
-	default:
+		ENEMY_BOSS_Update(enemy, player, vecCollectables);
 		break;
 	}
 
@@ -273,12 +282,12 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 	enemy.boxArms.maximum.x += horizontalOffset;
 }
 
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player) {
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
 	for (Enemy& enemy : vecEnemyVar)
 	{
 		if (enemy.isAlive)
 		{
-			EnemyUpdateChoose(enemy, player);
+			EnemyUpdateChoose(enemy, player, vecCollectables);
 		}
 	}
 }
@@ -319,7 +328,7 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 	}
 }
 
-void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh) {
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh, std::vector<EnemyDrops>& vecCollectables) {
 	for (Enemy& enemy : vecEnemyVar) {
 		if (enemy.isAlive) {
 
@@ -392,4 +401,6 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 	}
+
+	DrawEnemyLoot(vecCollectables, pWhitesqrMesh);
 }

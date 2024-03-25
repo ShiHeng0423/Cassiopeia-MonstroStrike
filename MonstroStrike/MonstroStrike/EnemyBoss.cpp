@@ -6,7 +6,7 @@
 
 
 
-void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
+void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
 	//f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
@@ -15,6 +15,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 //health check
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
 	}
 	if (enemy.wing1.health <= 0)

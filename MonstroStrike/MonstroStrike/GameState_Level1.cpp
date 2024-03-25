@@ -15,6 +15,7 @@ namespace
 	std::vector<struct Platforms> platformVectors;
 
 	std::vector<Enemy> vecEnemy; //enemy container
+	std::vector<EnemyDrops> vecCollect;
 
 	Player* player;
 
@@ -44,6 +45,10 @@ namespace
 
 
 AEGfxTexture* bulletTex = nullptr;
+AEGfxTexture* enemyJumperDropTex = nullptr;
+AEGfxTexture* enemyChargerDropTex = nullptr;
+AEGfxTexture* enemyFlyDropTex = nullptr;
+AEGfxTexture* enemyBoss1DropTex = nullptr;
 
 s16 playerGridMinX;
 s16 playerGridMinY;
@@ -65,6 +70,10 @@ void Level1_Load()
 	Enemy_Load(ENEMY_FLY, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
+	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
+	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
+	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 
 	player = PlayerInitialize("Assets/Border.png", {AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f},
 	                          {0, -100}, {40.f, 0.f}, true);
@@ -223,7 +232,7 @@ void Level1_Update()
 #pragma endregion
 
 #pragma region EnemyUpdate
-	AllEnemyUpdate(vecEnemy, *player);
+	AllEnemyUpdate(vecEnemy, *player, vecCollect);
 #pragma endregion
 
 #pragma region GridSystem
@@ -357,7 +366,7 @@ void Level1_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//drawing enemy
-	AllEnemyDraw(vecEnemy, pWhiteSquareMesh);
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
@@ -513,6 +522,8 @@ void Level1_Free()
 	//Free Enemy Vector
 	vecEnemy.clear();
 	vecEnemy.resize(0);
+	vecCollect.clear();
+	vecCollect.resize(0);
 
 	//Free vectors
 	gameMap.clear();
@@ -532,7 +543,10 @@ void Level1_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
-
+	AEGfxTextureUnload(enemyJumperDropTex);
+	AEGfxTextureUnload(enemyChargerDropTex);
+	AEGfxTextureUnload(enemyFlyDropTex);
+	AEGfxTextureUnload(enemyBoss1DropTex);
 
 	AEGfxTextureUnload(player->obj.img.pTex);
 
