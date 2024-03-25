@@ -760,7 +760,7 @@ namespace Inventory
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-						ApplyWeaponEffect(player, equippedGear);
+						//ApplyWeaponEffect(player, equippedGear);
 
 				}
 			

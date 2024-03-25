@@ -232,7 +232,8 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 				holder = fullInventoryList[18];
 				break;
 			case ENEMY_CHARGER_DROP:
-				holder = fullInventoryList[18];
+				holder = fullInventoryList[12];
+				std::cout << "Charger item collected\n";
 				break;
 
 			}
