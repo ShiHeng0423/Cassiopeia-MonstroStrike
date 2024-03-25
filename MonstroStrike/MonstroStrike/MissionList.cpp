@@ -18,7 +18,7 @@ KillEnemyMission::KillEnemyMission(int missionID, const char* name, int slimeTar
 
 void MissionSystem::InitialMission()
 {
-	CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 5, 5, true, "Defeat 5 flies!");
+	CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 0, 5, true, "Defeat 5 flies!");
 	CreateKillEnemyMission("Slimy disaster", 5, 0, 0, true, "Defeat 5 slimes!");
 	CreateKillEnemyMission("Rampaging nightmare", 0, 5, 0, true, "Defeat 5 chargers!");
 }
@@ -76,12 +76,14 @@ void MissionSystem::MissionComplete(int missionID) //Please check if clear condi
 			{
 			case 0: //Need to know which mission ID is which mission
 				//Add new mission / add rewards to give
+				CreateKillEnemyMission("Airborne annoyance", 0, 10, 0, true, "Defeat 10 flyers!");
 				break;
 			case 1:
 				//call add item here
-				CreateKillEnemyMission("Rampaging nightmare strike again", 0, 15, 0, true, "Defeat 10 chargers!");
+				CreateKillEnemyMission("Sticky situation", 0, 10, 0, true, "Defeat 10 slimes!");
 				break;
 			case 2:
+				CreateKillEnemyMission("Rampaging nightmare strike again", 0, 10, 0, true, "Defeat 10 chargers!");
 				break;
 			}
 			return;
@@ -103,7 +105,6 @@ std::vector<int> MissionSystem::GetAvailableEnemyMissionsIDs()
 		if (mission.available)
 			availableIDs.push_back(mission.missionID);
 	}
-
 	return availableIDs;
 }
 

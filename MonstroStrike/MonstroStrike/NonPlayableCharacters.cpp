@@ -83,10 +83,10 @@ void LoadNPC()
 	npcs[1].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_Blacksmith_B_Portrait.png");
 	npcs[2].pTexSprite = AEGfxTextureLoad("Assets/NPCs/NPC_QuestReceptionist_Portrait.png");
 
-	convBox.conversationBoxSprite = AEGfxTextureLoad("Assets/ConversationBox.png");
-	npcContentBox = AEGfxTextureLoad("Assets/NPC_ContentScreen.png");
-	contentListBox = AEGfxTextureLoad("Assets/Contentbar.png");
-	infoDisplayBoxSprite = AEGfxTextureLoad("Assets/InfoContentBanner.png");
+	convBox.conversationBoxSprite = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/ConversationBox.png");
+	npcContentBox = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/NPC_ContentScreen.png");
+	contentListBox = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/Contentbar.png");
+	infoDisplayBoxSprite = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/InfoContentBanner.png");
 
 	if (!initialMissionsLoaded)
 	{
