@@ -268,7 +268,8 @@ void Lobby_Draw()
 
 	//Print Mission Name
 	//Print 
-	//Inventory images
+
+#pragma region InventoryDraw
 	if (Inventory::inventoryOpen)
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -294,51 +295,44 @@ void Lobby_Draw()
 
 		for (ButtonGearUI button : inventoryButton)
 		{
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+			AEGfxTextureSet(button.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+			                                                button.pos.y + y, 0.f,
+			                                                button.img.scale.x, button.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
+		std::string playerStatsHeader = "Player Stats: ";
+		auto pStats = playerStatsHeader.c_str();
+		AEGfxGetPrintSize(fontID, pStats, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pStats, -0.75f,
+		           0.45f - height * 0.5f,
+		           0.35f, 1, 1, 1, 1);
 
-		for (ButtonGearUI button : inventoryButton)
-		{
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
+
+		auto playerHealth = "Health: " + std::to_string(PlayerMaxBasehealth) + " + (" + std::to_string(
+			playerReference->maxHealth) + ")";
+		const char* pHealthText = playerHealth.c_str();
+		AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pHealthText, -0.75f,
+		           0.3f - height * 0.5f,
+		           0.35f, 1, 1, 1, 1);
+
+		auto playerAttack = "Attack: " + std::to_string(playerReference->attack);
+		const char* pAttackText = playerAttack.c_str();
+		AEGfxGetPrintSize(fontID, pAttackText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pAttackText, -0.75f,
+		           0.1f - height * 0.5f,
+		           0.35f, 1, 1, 1, 1);
+
 
 		for (ButtonGearUI button : Inventory::equipmentDisplay)
 		{
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+			AEGfxTextureSet(button.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+			                                                button.pos.y + y, 0.f,
+			                                                button.img.scale.x, button.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 
@@ -357,31 +351,86 @@ void Lobby_Draw()
 
 			f32 width, height;
 
-			auto pText = Inventory::displayItem.name.c_str();
+			auto pText = Inventory::displayItem.Item.name.c_str();
 			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, 0.6f - width * 0.5f,
+			AEGfxPrint(fontID, pText, 0.35f,
 			           0.45f - height * 0.5f,
-			           0.35f, 1, 1, 1, 1);
+			           0.4f, 1, 1, 1, 1);
 
-			auto quantityString = "Qty: " + std::to_string(Inventory::displayItem.quantity);
+			auto quantityString = "Qty: " + std::to_string(Inventory::displayItem.Item.quantity);
 			const char* pText1 = quantityString.c_str();
 			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, 0.3f,
-			           0.32f - height * 0.5f,
-			           0.25f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText1, 0.35f,
+			           0.35f - height * 0.5f,
+			           0.35f, 1, 1, 1, 1);
 
-			auto pText2 = Inventory::displayItem.description.c_str();
-			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, 0.6f - width * 0.5f,
+			AEGfxTextureSet(blank, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+			                                                90.f + y, 0.f,
+			                                                Inventory::displayItem.img.scale.x * 2,
+			                                                Inventory::displayItem.img.scale.y * 2).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			AEGfxTextureSet(Inventory::displayItem.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+			                                                90.f + y, 0.f,
+			                                                Inventory::displayItem.img.scale.x * 2,
+			                                                Inventory::displayItem.img.scale.y * 2).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			std::string descriptionHeader = "Description: ";
+			auto pDescription = descriptionHeader.c_str();
+			AEGfxGetPrintSize(fontID, pDescription, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pDescription, 0.35f,
 			           0.f - height * 0.5f,
-			           0.25f, 1, 1, 1, 1);
+			           0.35f, 1, 1, 1, 1);
 
-			auto pText3 = "Controls";
-			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText3, -width / 2,
-			           -height / 2, 0.5f, 1, 1, 1, 1);
+			auto pText2 = Inventory::displayItem.Item.description.c_str();
+			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText2, 0.35f,
+			           -0.1f - height * 0.5f,
+			           0.35f, 1, 1, 1, 1);
+
+			if (Inventory::displayItem.Item.item_type != MATERIAL)
+			{
+				if ((Inventory::displayItem.Item.item_type == FOOD) || (Inventory::displayItem.Item.item_type ==
+					POTION))
+				{
+					auto healthString = "Healing Amount: " + std::to_string(Inventory::displayItem.Item.health);
+					const char* pText3 = healthString.c_str();
+					AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText3, 0.35f,
+					           -0.25f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+
+					auto attackString = "Atk Buff: " + std::to_string(Inventory::displayItem.Item.attack);
+					const char* pText4 = attackString.c_str();
+					AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText4, 0.35f,
+					           -0.35f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+				}
+				else
+				{
+					auto healthString = "Bonus HP: " + std::to_string(Inventory::displayItem.Item.health);
+					const char* pText3 = healthString.c_str();
+					AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText3, 0.35f,
+					           -0.25f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+
+					auto attackString = "Bonus Atk: " + std::to_string(Inventory::displayItem.Item.attack);
+					const char* pText4 = attackString.c_str();
+					AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText4, 0.35f,
+					           -0.35f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+				}
+			}
 		}
 	}
+#pragma endregion
 
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
