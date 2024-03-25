@@ -15,7 +15,7 @@ enum {
 	MAP_COLUMN_LOBBY_SIZE = 65, //Shares the same column amount
 
 	//Boss level
-	MAP_ROW_BOSS_SIZE = 36,
+	MAP_ROW_BOSS_SIZE = 34,
 	MAP_COLUMN_BOSS_SIZE = 52,
 };
 

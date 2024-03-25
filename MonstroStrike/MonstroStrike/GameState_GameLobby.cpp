@@ -10,7 +10,7 @@ namespace
 	AEGfxVertexList* pMeshGrey;
 	AEGfxVertexList* pWhiteSquareMesh;
 
-	Grids2D grids2D[MAP_ROW_BOSS_SIZE][MAP_COLUMN_BOSS_SIZE]; //Initializing map
+	Grids2D grids2D[MAP_ROW_SIZE][MAP_COLUMN_SIZE]; //Initializing map
 	std::vector<std::vector<MapCell>> gameMap; //Map for this level
 	std::vector<AEVec2> NPCPositions;
 
@@ -37,19 +37,18 @@ namespace
 	f64 timer = 0.f;
 }
 
-
-void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_BOSS_SIZE], Player* player);
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player);
 
 void Lobby_Load()
 {
 	player = PlayerInitialize("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMap_BossStage.csv"; //Change name as per level
+	auto fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
 
 	//Load map
-	if (MapLoader(fileName, gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE))
+	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
-		PrintMap(gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE);
+		PrintMap(gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE);
 		//Just for checking if the map data is stored properly
 	}
 
@@ -78,9 +77,9 @@ void Lobby_Load()
 void Lobby_Initialize()
 {
 	//Initializing grid data
-	for (s16 rows = 0; rows < MAP_ROW_BOSS_SIZE; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_BOSS_SIZE; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
 		{
 			switch (gameMap[rows][cols].symbol) //For checking the map symbol from the csv file
 			{
@@ -116,9 +115,9 @@ void Lobby_Initialize()
 	}
 
 	//For Initializing the grids and positions
-	for (s16 rows = 0; rows < MAP_ROW_BOSS_SIZE; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_BOSS_SIZE; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
 		{
 			grids2D[rows][cols].rowIndex = rows;
 			grids2D[rows][cols].colIndex = cols;
@@ -147,8 +146,8 @@ void Lobby_Initialize()
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
 	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
-	               grids2D[0][MAP_COLUMN_BOSS_SIZE - 1].collisionBox.maximum.x,
-	               grids2D[MAP_ROW_BOSS_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+	               grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x,
+	               grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
 	InitializeNPC(NPCPositions);
 
@@ -175,8 +174,8 @@ void Lobby_Update()
 		if (currScene == CurrentScene::MAIN_SCENE)
 			PlayerUpdate(*player, Inventory::inventoryOpen);
 		cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
-			grids2D[0][MAP_COLUMN_BOSS_SIZE - 1].collisionBox.maximum.x,
-			grids2D[MAP_ROW_BOSS_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+			grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x,
+			grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 		CheckPlayerGridCollision(grids2D, player);
 
@@ -212,9 +211,9 @@ void Lobby_Draw()
 
 	//For Grid Drawing
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	for (s16 rows = 0; rows < MAP_ROW_BOSS_SIZE; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_BOSS_SIZE; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_SIZE; cols++)
 		{
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
@@ -421,7 +420,7 @@ void Lobby_Unload()
 	delete menu;
 }
 
-void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_BOSS_SIZE], Player* player)
+void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], Player* player)
 {
 	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
