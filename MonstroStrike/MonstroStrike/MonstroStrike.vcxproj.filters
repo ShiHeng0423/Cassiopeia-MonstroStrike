@@ -33,9 +33,6 @@
     <ClCompile Include="TriggerAttack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TransformMatrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TextPrinting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -155,9 +152,6 @@
     <ClInclude Include="TriggerAttack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TransformMatrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TextPrinting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -250,7 +244,18 @@
     <None Include="..\Assets\GameMap_Lobby.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Assets\player_inventory.json" />
+    <None Include="..\Assets\SaveFiles\equipped_gears.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\SaveFiles\full_item_list.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\SaveFiles\player_inventory.json">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\SaveFiles\recipe_list.json">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rapidjson\allocators.h">

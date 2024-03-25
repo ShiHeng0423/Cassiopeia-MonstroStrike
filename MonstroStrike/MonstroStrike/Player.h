@@ -11,8 +11,10 @@ class Player {
 
 public:
 
-	//Player();
-	//~Player();
+	Player(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight);
+	~Player();
+
+	void Update(bool isInventoryOpen);
 
 	Object obj;
 	AEVec2 prevPos;
@@ -54,8 +56,8 @@ public:
 
 	bool isConversation;
 
-	Armor_System::Armor piece[4];
+	Armor_System::Armor_Set armorSet;
+	Weapon_System::Weapon wp;
+	Status_Effect_System::Armor_Status_Effect armorExtraEffect;
+	Status_Effect_System::Weapon_Status_Effect weaponExtraEffect;
 };
-
-Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
-void PlayerUpdate(Player& player, bool isInventoryOpen);

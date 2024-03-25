@@ -46,279 +46,225 @@ auto comboTime = Clock::now();
 
 
 #pragma endregion
-
-Player* PlayerInitialize(const char* filename, AEVec2 scale ,AEVec2 location, AEVec2 speed, bool isFacingRight)
+Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
-	//for every anima in the con_anima
-	//if there is an anima in the con_anima
-	//execute the function pointer (play_animation)
+	obj.pTex = AEGfxTextureLoad(filename);
+	obj.speed = speed;
 
-	Player *player = new Player;
-	player->obj.img.pTex = AEGfxTextureLoad(filename);
-	player->obj.speed = speed;
+	AEVec2Set(&obj.pos, location.x, location.y);
+	AEVec2Set(&velocity, 0.f, 0.f); //Begin with no velocity
+	AEVec2Set(&obj.scale, scale.x, scale.y);
+	AEVec2Set(&expectedLocation, 0.f, 0.f);
 
-	AEVec2Set(&player->obj.pos, location.x, location.y);
-	AEVec2Set(&player->velocity, 0.f, 0.f); //Begin with no velocity
-	AEVec2Set(&player->obj.img.scale, scale.x, scale.y);
-	AEVec2Set(&player->expectedLocation, 0.f, 0.f);
-
-	player->isFacingRight = isFacingRight;
-	player->lookAheadMutliplier = 50.f;
-	player->onFloor = true; //Set as false first, will be set as true when ground detected
-	player->isFalling = false;
-	player->mass = 60.f;
+	isFacingRight = isFacingRight;
+	lookAheadMutliplier = 50.f;
+	onFloor = true; //Set as false first, will be set as true when ground detected
+	isFalling = false;
+	mass = 60.f;
 
 	//Initializing collision box starting position
-	player->collisionBox.minimum.x = player->obj.pos.x - player->obj.img.scale.x * 0.5f;
-	player->collisionBox.minimum.y = player->obj.pos.y - player->obj.img.scale.y * 0.5f;
-	player->collisionBox.maximum.x = player->obj.pos.x + player->obj.img.scale.x * 0.5f;
-	player->collisionBox.maximum.y = player->obj.pos.y + player->obj.img.scale.y * 0.5f;
+	collisionBox.minimum.x = obj.pos.x - obj.scale.x * 0.5f;
+	collisionBox.minimum.y = obj.pos.y - obj.scale.y * 0.5f;
+	collisionBox.maximum.x = obj.pos.x + obj.scale.x * 0.5f;
+	collisionBox.maximum.y = obj.pos.y + obj.scale.y * 0.5f;
 
-	AEVec2Set(&player->boxArms.maximum, 0.f, 0.f);
-	AEVec2Set(&player->boxHeadFeet.maximum, 0.f, 0.f);
-	AEVec2Set(&player->collisionNormal, 0.f, 0.f);
+	AEVec2Set(&boxArms.maximum, 0.f, 0.f);
+	AEVec2Set(&boxHeadFeet.maximum, 0.f, 0.f);
+	AEVec2Set(&collisionNormal, 0.f, 0.f);
 
-	player->equippedWeapon = createWeapon("Sword", location.x,location.y);
-	AEVec2Set(&player->equippedWeapon.scale, 20.f, 20.f);
-	player->attackTime = 1.f;
-	player->isAttacking = false;
-	player->comboTrig= 0;
-	player->comboTime = 0.0f;
-	player->comboState = 0;
-	//std::cout << "Player has been equipped with a " << player->equippedWeapon.name << std::endl;
+	equippedWeapon = createWeapon("Broad-Sword", location.x, location.y);
+	AEVec2Set(&equippedWeapon.scale, 20.f, 20.f);
+	attackTime = 1.f;
+	isAttacking = false;
+	comboTrig = 0;
+	comboTime = 0.0f;
+	comboState = 0;
+	//std::cout << "Player has been equipped with a " << equippedWeapon.name << std::endl;
 
-	player->burningEffect = false;
-	player->isConversation = false;
+	burningEffect = false;
+	isConversation = false;
 
 
 	//Player Stats
-	player->maxHealth = 100.f;
-	player->currHealth = player->maxHealth;
-	player->attack = 100.f;
-	player->defence = 50.f;
+	maxHealth = 100.f;
+	currHealth = maxHealth;
+	attack = 100.f;
+	defence = 50.f;
 
-
-	return player;
+	weaponExtraEffect = Status_Effect_System::NONE_WEAPON_EFFECT;
+	armorExtraEffect = Status_Effect_System::NONE_ARMOR_EFFECT;
 }
 
-
-void PlayerUpdate(Player& player, bool isInventoryOpen)
+Player::~Player()
 {
+	AEGfxTextureUnload(obj.pTex);
+}
 
-	if (AEInputCheckTriggered(AEVK_B))
-	{
-		player.equippedWeapon = createWeapon("Short-Sword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
+void Player::Update(bool isInventoryOpen)
+{
+	//if (AEInputCheckTriggered(AEVK_B))
+	//{
+	//	equippedWeapon = createWeapon("Short-Sword", expectedLocation.x, expectedLocation.y);
+	//	std::cout << "Now equipped with a " << equippedWeapon.name << std::endl;
 
-	}
-	if (AEInputCheckTriggered(AEVK_N))
-	{
-		player.equippedWeapon = createWeapon("Broad-Sword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_M))
-	{
-		player.equippedWeapon = createWeapon("GreatSword", player.expectedLocation.x, player.expectedLocation.y);
-		std::cout << "Now equipped with a " << player.equippedWeapon.name << std::endl;
-	}
+	//}
+	//if (AEInputCheckTriggered(AEVK_N))
+	//{
+	//	equippedWeapon = createWeapon("Broad-Sword", expectedLocation.x, expectedLocation.y);
+	//	std::cout << "Now equipped with a " << equippedWeapon.name << std::endl;
+	//}
+	//if (AEInputCheckTriggered(AEVK_M))
+	//{
+	//	equippedWeapon = createWeapon("GreatSword", expectedLocation.x, expectedLocation.y);
+	//	std::cout << "Now equipped with a " << equippedWeapon.name << std::endl;
+	//}
 
 
-	if (player.isFalling)
+	if (isFalling)
 	{
 		std::cout << "FELL\n";
 	}
 
 	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
 	{
-		player.velocity.x += player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
-		player.isFacingRight = true;
+		velocity.x += obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+		isFacingRight = true;
 	}
 	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
-		player.velocity.x -= player.obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
-		player.isFacingRight = false;
+		velocity.x -= obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
+		isFacingRight = false;
 	}
 
 	// Apply velocity constraints
-	player.velocity.x = AEClamp(player.velocity.x, -5.f, 5.f);
+	velocity.x = AEClamp(velocity.x, -5.f, 5.f);
 
 
 	// Calculate the desired location
-	AEVec2 desiredLocation{ player.velocity.x * player.lookAheadMutliplier , 0.f };
-	AEVec2Add(&player.expectedLocation, &player.obj.pos, &desiredLocation);
+	AEVec2 desiredLocation{ velocity.x * lookAheadMutliplier , 0.f };
+	AEVec2Add(&expectedLocation, &obj.pos, &desiredLocation);
 
 	//For friction
-	if (player.onFloor) //Means confirm on floor
+	if (onFloor) //Means confirm on floor
 	{
-		player.velocity.x *= 0.85f; //Friction application
+		velocity.x *= 0.85f; //Friction application
 	}
-
-	//Start of armor equip
-	if (AEInputCheckTriggered(AEVK_1))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
-		std::cout << player.maxHealth << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_2))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
-		std::cout << player.maxHealth << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_3))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
-		std::cout << player.maxHealth << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_4))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
-		std::cout << player.maxHealth << std::endl;
-	}
-
-	if (AEInputCheckTriggered(AEVK_5))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
-		std::cout << player.maxHealth << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_6))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
-		std::cout << player.maxHealth << std::endl;
-	}
-	if (AEInputCheckTriggered(AEVK_7))
-	{
-		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
-		std::cout << player.maxHealth << std::endl;
-	}
-
-	////std::cout << "FPS: " << AEFrameRateControllerGetFrameRate() << std::endl;
-	//if (AEInputCheckTriggered(AEVK_2))
-	//{
-	//	Player player;
-	//	Armor armor;
-	//	armor.armorType = Armor::Type::SECOND;
-	//	armor.leather.defense = 50;
-
-	//	player.equippedArmor = armor;
-	//	std::string armorName = "Steel Armor";
-
-	//	std::cout << "Equipped " << armorName << "!" << std::endl;
-	//}
-
-	// End of armor equip
 
 	//For jumping
-	if (AEInputCheckTriggered(VK_SPACE) && player.onFloor && !isInventoryOpen)
+	if (AEInputCheckTriggered(VK_SPACE) && onFloor && !isInventoryOpen)
 	{
-		player.onFloor = false;
-		player.velocity.y = 700.f;
+		onFloor = false;
+		velocity.y = 700.f;
 	}
 
-	ApplyGravity(&player.velocity, player.mass, &player.onFloor, &player.gravityForce, &player.isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&velocity, mass, &onFloor, &gravityForce, &isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 	//
-	//std::cout << "Player on floor: " << player.onFloor << std::endl;
-	//std::cout << "Player vel y: " << fabsf(player.velocity.y) << std::endl;
-	//std::cout << "Player gravity force: " << player.gravityForce << std::endl;
+	//std::cout << "Player on floor: " << onFloor << std::endl;
+	//std::cout << "Player vel y: " << fabsf(velocity.y) << std::endl;
+	//std::cout << "Player gravity force: " << gravityForce << std::endl;
 
 	//Player position update
 
-	player.prevPos = player.obj.pos;
-	player.prevcollisionBox = player.collisionBox;
-	player.obj.pos.y += player.velocity.y * (f32)AEFrameRateControllerGetFrameTime();
-	player.obj.pos.x += player.velocity.x;
+	prevPos = obj.pos;
+	prevcollisionBox = collisionBox;
+	obj.pos.y += velocity.y * (f32)AEFrameRateControllerGetFrameTime();
+	obj.pos.x += velocity.x;
 
 	//Resetting main AABB box...
-	player.collisionBox.minimum.x = player.obj.pos.x - player.obj.img.scale.x * 0.5f;
-	player.collisionBox.minimum.y = player.obj.pos.y - player.obj.img.scale.y * 0.5f;
-	player.collisionBox.maximum.x = player.obj.pos.x + player.obj.img.scale.x * 0.5f;
-	player.collisionBox.maximum.y = player.obj.pos.y + player.obj.img.scale.y * 0.5f;
+	collisionBox.minimum.x = obj.pos.x - obj.scale.x * 0.5f;
+	collisionBox.minimum.y = obj.pos.y - obj.scale.y * 0.5f;
+	collisionBox.maximum.x = obj.pos.x + obj.scale.x * 0.5f;
+	collisionBox.maximum.y = obj.pos.y + obj.scale.y * 0.5f;
 
 	//Vertical
-	f32 verticalOffset = player.obj.img.scale.y * 0.025f;
+	f32 verticalOffset = obj.scale.y * 0.025f;
 
 	// Vertical box
-	player.boxHeadFeet = player.collisionBox;
-	player.boxHeadFeet.minimum.y -= verticalOffset;
-	player.boxHeadFeet.maximum.y += verticalOffset;
+	boxHeadFeet = collisionBox;
+	boxHeadFeet.minimum.y -= verticalOffset;
+	boxHeadFeet.maximum.y += verticalOffset;
 
-	f32 horizontalOffset = player.obj.img.scale.x * 0.025f;
+	f32 horizontalOffset = obj.scale.x * 0.025f;
 
 	// Horizontal box
-	player.boxArms = player.collisionBox;
-	player.boxArms.minimum.x -= horizontalOffset;
-	player.boxArms.maximum.x += horizontalOffset;
+	boxArms = collisionBox;
+	boxArms.minimum.x -= horizontalOffset;
+	boxArms.maximum.x += horizontalOffset;
 
-	//std::cout << "Collision Normal Y: " << player.collisionNormal.y << std::endl;
+	//std::cout << "Collision Normal Y: " << collisionNormal.y << std::endl;
 	//Update player weapon hit box
 
 	/*Weapon hit box update only*/
 
-
-	if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
+	if (wp.rarity < Weapon_System::NO_GRADE)
 	{
-		triggeredTime = Clock::now();
-		undealtTriggerInput = true;
-		isReleased = false;
-		if_first_input = true;
-
-	}
-	if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
-	{
-		isReleased = true;
-	}
-	//reset
-	if (!undealtTriggerInput)
-	{
-		elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - comboTime).count() / 1000.0; // Convert to seconds
-		if (elapsedTime > comboWindowDuration)
+		if (AEInputCheckTriggered(AEVK_LBUTTON) && !isInventoryOpen)
 		{
-			player.isAttacking = false;
-			player.equippedWeapon.weaponHIT = false;
-			player.comboTime = 0.0f; // Reset combo time
-			player.comboState = 0;   // Reset combo state
+			triggeredTime = Clock::now();
+			undealtTriggerInput = true;
+			isReleased = false;
+			if_first_input = true;
 
 		}
-
-	}
-	if (undealtTriggerInput)
-	{
-		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
-			1000.0; // Convert to seconds
-		if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
+		if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 		{
-			if (player.comboState == 2) //held
+			isReleased = true;
+		}
+		//reset
+		if (!undealtTriggerInput)
+		{
+			::elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
+			if (::elapsedTime > comboWindowDuration)
 			{
-				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-				player.comboState = 0;
-				player.isAttacking = true;
+				isAttacking = false;
+				equippedWeapon.weaponHIT = false;
+				comboTime = 0.0f; // Reset combo time
+				comboState = 0;   // Reset combo state
+
 			}
-			comboTime = Clock::now();
-			undealtTriggerInput = false;
 
 		}
-		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
+		if (undealtTriggerInput)
 		{
-			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-			player.isAttacking = true;
-
-			if (player.comboState < 2)
+			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
+				1000.0; // Convert to seconds
+			if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
 			{
-				player.comboState++;
-				player.comboTime += (float)elapsedTime;
-			}
+				if (comboState == 2) //held
+				{
+					f32 attackProgress = 1.0f - (attackTime / comboWindowDuration);
+					UpdateWeaponHitBoxHeld(this, isFacingRight, &equippedWeapon, attackProgress);
+					comboState = 0;
+					isAttacking = true;
+				}
+				::comboTime = Clock::now();
+				undealtTriggerInput = false;
 
-			else
+			}
+			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 			{
-				player.comboState = 0;
-				player.comboTime = 0.0f;
+				f32 attackProgress = 1.0f - (attackTime / comboWindowDuration);
+				UpdateWeaponHitBoxTrig(this, isFacingRight, &equippedWeapon, attackProgress);
+				isAttacking = true;
+
+				if (comboState < 2)
+				{
+					comboState++;
+					comboTime += (float)elapsedTime;
+				}
+
+				else
+				{
+					comboState = 0;
+					comboTime = 0.0f;
+				}
+				::comboTime = Clock::now();
+				undealtTriggerInput = false;
+
+
 			}
-			comboTime = Clock::now();
-			undealtTriggerInput = false;
-
-
 		}
 	}
 
+	Armor_Effect_Update(*this);
 }

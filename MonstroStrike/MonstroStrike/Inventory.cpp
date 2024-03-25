@@ -316,13 +316,13 @@ namespace Inventory
 
 		for (ButtonGearUI& button : inventoryButton)
 		{
-			button.img.pTex = blank;
-			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			button.pTex = blank;
+			AEVec2Set(&button.scale, 60.f, 60.f);
 			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
 
 			if (button.Item.ID < 0)
 			{
-				button.img.pTex = blank;
+				button.pTex = blank;
 			}
 			else
 			{
@@ -334,7 +334,7 @@ namespace Inventory
 				}
 				else
 				{
-					button.img.pTex = Gear[button.Item.ID];
+					button.pTex = Gear[button.Item.ID];
 				}
 			}
 
@@ -357,9 +357,9 @@ namespace Inventory
 
 			for (ButtonGearUI& button : inventoryButton)
 			{
-				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				if (AETestPointToRect(&mousePos, &button.pos, button.scale.x, button.scale.y))
 				{
-					if (button.img.pTex != blank)
+					if (button.pTex != blank)
 					{
 						//snap origin of img to mouse pos
 						snapBack = index;
@@ -403,10 +403,10 @@ namespace Inventory
 				for (ButtonGearUI& button : inventoryButton)
 				{
 					if (AETestRectToRect(&inventoryButton[snapBack].pos,
-						inventoryButton[snapBack].img.scale.x,
-						inventoryButton[snapBack].img.scale.y, &button.pos,
-						button.img.scale.x,
-						button.img.scale.y))
+						inventoryButton[snapBack].scale.x,
+						inventoryButton[snapBack].scale.y, &button.pos,
+						button.scale.x,
+						button.scale.y))
 					{
 						//Different items overlapping
 						if (index != snapBack)
@@ -467,14 +467,14 @@ namespace Inventory
 
 			for (ButtonGearUI& button : inventoryButton)
 			{
-				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				if (AETestPointToRect(&mousePos, &button.pos, button.scale.x, button.scale.y))
 				{
-					if (button.img.pTex != blank)
+					if (button.pTex != blank)
 					{
 						Inventory::UseItem(index, button, *playerReference);
 						if (button.Item.quantity == 0 || button.Item.ID < 0)
 						{
-							button.img.pTex = blank;
+							button.pTex = blank;
 						}
 						break;
 					}
@@ -488,13 +488,13 @@ namespace Inventory
 			{
 				if (button.Item.ID < 0)
 				{
-					button.img.pTex = blank;
+					button.pTex = blank;
 				}
 				else
 				{
-					button.img.pTex = Gear[button.Item.ID];
+					button.pTex = Gear[button.Item.ID];
 				}
-				AEVec2Set(&button.img.scale, 60.f, 60.f);
+				AEVec2Set(&button.scale, 60.f, 60.f);
 				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 				index++;
 			}
@@ -621,7 +621,7 @@ namespace Inventory
 					// if (player.equipment.size() < MAX_EQUIPPED_ITEMS)
 					// {
 					// 	player.equipment.push_back(item.Item);
-						std::cout << "Equipped " << item.Item.name << std::endl;
+						std::cout << "Equipped " << item.Item.rarity << std::endl;
 
 
 
@@ -629,6 +629,20 @@ namespace Inventory
 					 {
 					 case WEAPON:
 					
+						 switch (item.Item.rarity)
+						 {
+						 case COMMON:
+						 case RARE:
+						 case EPIC:
+							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_1);
+							 break;
+						 case LEGENDARY:
+							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_2);
+							 break;
+						 case UNIQUE:
+							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_3);
+							 break;
+						 }
 					 	break;
 					
 					 case ARMOUR:
@@ -641,14 +655,14 @@ namespace Inventory
 					 		{
 					 		case COMMON:
 					
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+					 			Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 			break;
 					 		case RARE:
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+					 			Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
 					 			break;
 					 		case EPIC:
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+					 			Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
 					 			break;
 					
 					 	}
@@ -663,14 +677,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -679,14 +693,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -695,14 +709,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -834,9 +848,9 @@ namespace Inventory
 		equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 
 
-		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-		itemDisplayBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+		inventoryBackground.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+		equipmentBackground.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+		itemDisplayBackground.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
@@ -877,7 +891,7 @@ namespace Inventory
 
 	void InitInventory()
 	{
-		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
+		AEVec2Set(&inventoryBackground.scale, 500.f, 500.f);
 
 		inventoryOpen = false;
 		s16 index = 0;
@@ -885,11 +899,11 @@ namespace Inventory
 		snapBack = -1;
 
 		//Display inventory
-		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
+		AEVec2Set(&equipmentBackground.scale, 250.f, 500.f);
 		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
 
 		//Item Info Display
-		AEVec2Set(&itemDisplayBackground.img.scale, 250.f, 500.f);
+		AEVec2Set(&itemDisplayBackground.scale, 250.f, 500.f);
 		AEVec2Set(&itemDisplayBackground.pos, 375.f, 0.f);
 
 		index = 0;
@@ -897,12 +911,12 @@ namespace Inventory
 		{
 			if(button.Item.ID<0)
 			{
-				button.img.pTex = blank;
+				button.pTex = blank;
 			}else
 			{
-				button.img.pTex = Gear[button.Item.ID];
+				button.pTex = Gear[button.Item.ID];
 			}
-			AEVec2Set(&button.img.scale, 60.f, 60.f);
+			AEVec2Set(&button.scale, 60.f, 60.f);
 			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
 			index++;
 		}
@@ -918,9 +932,9 @@ namespace Inventory
 	void FreeInventory()
 	{
 		AEGfxTextureUnload(blank);
-		AEGfxTextureUnload(inventoryBackground.img.pTex);
-		AEGfxTextureUnload(equipmentBackground.img.pTex);
-		AEGfxTextureUnload(itemDisplayBackground.img.pTex);
+		AEGfxTextureUnload(inventoryBackground.pTex);
+		AEGfxTextureUnload(equipmentBackground.pTex);
+		AEGfxTextureUnload(itemDisplayBackground.pTex);
 
 		//free item images
 		for (size_t i = 0; i < fullInventoryList.size(); ++i)

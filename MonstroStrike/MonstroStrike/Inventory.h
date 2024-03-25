@@ -78,8 +78,14 @@ struct Item
 
 struct ButtonGearUI
 {
-	Sprite img;
-	AEVec2 pos;
+	AEGfxTexture* pTex;
+
+	AEVec2 pos{ 0.f,0.f };
+	AEVec2 scale{ 0.f,0.f };
+	float rotate{ 0.f };
+
+	AEMtx33 transform;
+
 	bool isWeapon;
 	Item Item;
 };

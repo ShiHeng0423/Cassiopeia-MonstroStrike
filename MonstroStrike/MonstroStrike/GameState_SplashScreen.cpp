@@ -1,12 +1,16 @@
 #include "GameState_SplashScreen.h"
 #include "AEEngine.h"
 #include "GameStateManager.h"
-
+#include "main.h"
+#include "Utils.h"
+#include <string>
 namespace {
 	AEGfxVertexList* pSquareMesh;
-	AEGfxTexture* digipenLogo;
+	AEGfxTexture* digipenLogoSprite;
+	AEGfxTexture* copyrightSprite;
 
-	AEMtx33 transform;
+	Sprite digipenLogo;
+	Sprite copyright;
 
 	f32 timer;
 	f32 alpha;
@@ -28,22 +32,19 @@ void SplashScreen_Load()
 
 	pSquareMesh = AEGfxMeshEnd();
 
-	digipenLogo = AEGfxTextureLoad("Assets/Digipen_Logo/DigiPen_Singapore_WEB_RED.png");
+	digipenLogoSprite = AEGfxTextureLoad("Assets/Digipen_Logo/DigiPen_Singapore_WEB_WHITE.png");
+	copyrightSprite = AEGfxTextureLoad("Assets/Digipen_Logo/Copyright.png");
 }
 
 void SplashScreen_Initialize()
 {
-	AEMtx33 scale = { 0 };
-	AEMtx33Scale(&scale, 800.f, 400.f);
+	digipenLogo.pTex = digipenLogoSprite;
+	AEVec2Set(&digipenLogo.scale, 800.f, 400.f);
+	digipenLogo.UpdateTransformMatrix();
 
-	AEMtx33 rotate = { 0 };
-	AEMtx33Rot(&rotate, 0.f);
-
-	AEMtx33 translate = { 0 };
-	AEMtx33Trans(&translate, 0.f, 0.f);
-
-	AEMtx33Concat(&transform, &rotate, &scale);
-	AEMtx33Concat(&transform, &translate, &transform);
+	copyright.pTex = copyrightSprite;
+	AEVec2Set(&copyright.scale, 600.f, 50.f);
+	copyright.UpdateTransformMatrix();
 
 	timer = 3.0f;
 	alpha = 0.f;
@@ -70,8 +71,12 @@ void SplashScreen_Draw()
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(alpha);
 
-	AEGfxTextureSet(digipenLogo, 0, 0);
-	AEGfxSetTransform(transform.m);
+	AEGfxTextureSet(digipenLogo.pTex, 0, 0);
+	AEGfxSetTransform(digipenLogo.transform.m);
+	AEGfxMeshDraw(pSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+	AEGfxTextureSet(copyright.pTex, 0, 0);
+	AEGfxSetTransform(copyright.transform.m);
 	AEGfxMeshDraw(pSquareMesh, AE_GFX_MDM_TRIANGLES);
 }
 
@@ -83,5 +88,6 @@ void SplashScreen_Free()
 void SplashScreen_Unload()
 {
 	AEGfxMeshFree(pSquareMesh);
-	AEGfxTextureUnload(digipenLogo);
+	AEGfxTextureUnload(digipenLogoSprite);
+	AEGfxTextureUnload(copyrightSprite);
 }

@@ -125,7 +125,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="TransformMatrix.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
@@ -194,7 +193,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
     <ClInclude Include="TextPrinting.h" />
-    <ClInclude Include="TransformMatrix.h" />
     <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="CollisionShape.h" />
@@ -206,9 +204,10 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Assets\player_inventory.json" />
+    <None Include="..\Assets\SaveFiles\equipped_gears.json" />
+    <None Include="..\Assets\SaveFiles\full_item_list.json" />
+    <None Include="..\Assets\SaveFiles\player_inventory.json" />
+    <None Include="..\Assets\SaveFiles\recipe_list.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\GameMap_Lobby.csv" />

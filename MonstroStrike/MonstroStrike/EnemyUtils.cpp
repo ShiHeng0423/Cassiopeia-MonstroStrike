@@ -64,18 +64,18 @@ void SpawnBullet(AEVec2& enemyPosition, AEVec2& playerPosition, std::vector<Bull
 	//create a bullet
 	Bullet bullet;
 	bullet.lifeTime = 100;													//lifetime
-	bullet.obj.img.pTex = bulletTex;										//image
+	bullet.obj.pTex = bulletTex;										//image
 	AEVec2Set(&bullet.obj.pos, enemyPosition.x, enemyPosition.y);			//start position
-	AEVec2Set(&bullet.obj.img.scale, 25.f, 25.f);							//set scale of the image
+	AEVec2Set(&bullet.obj.scale, 25.f, 25.f);							//set scale of the image
 
 	//set velocity of bullet
 	bullet.bulletSpeed = 2.5f;
 	AEVec2Set(&bullet.bulletVel, direction.x * bullet.bulletSpeed, direction.y * bullet.bulletSpeed);
 
-	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.img.scale.x * 0.5f;
-	bullet.collisionBox.minimum.y = bullet.obj.pos.y - bullet.obj.img.scale.y * 0.5f;
-	bullet.collisionBox.maximum.x = bullet.obj.pos.x + bullet.obj.img.scale.x * 0.5f;
-	bullet.collisionBox.maximum.y = bullet.obj.pos.y + bullet.obj.img.scale.y * 0.5f;
+	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.scale.x * 0.5f;
+	bullet.collisionBox.minimum.y = bullet.obj.pos.y - bullet.obj.scale.y * 0.5f;
+	bullet.collisionBox.maximum.x = bullet.obj.pos.x + bullet.obj.scale.x * 0.5f;
+	bullet.collisionBox.maximum.y = bullet.obj.pos.y + bullet.obj.scale.y * 0.5f;
 
 	// Push the bullet into the vector
 	vecbullets.push_back(bullet);
@@ -83,8 +83,8 @@ void SpawnBullet(AEVec2& enemyPosition, AEVec2& playerPosition, std::vector<Bull
 
 void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 	for (const Bullet& bullet : enemy.bullets) {
-		AEGfxTextureSet(bullet.obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
+		AEGfxTextureSet(bullet.obj.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.scale.x, bullet.obj.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 }

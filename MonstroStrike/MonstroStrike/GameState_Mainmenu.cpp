@@ -1,6 +1,5 @@
 #include "GameState_Mainmenu.h"
 #include "Utils.h"
-#include "TransformMatrix.h"
 #include "GameStateManager.h"
 #include "main.h"
 #include "TextPrinting.h"
@@ -28,12 +27,13 @@ namespace {
 	Button interactableButtonMainMenu[6];
 
 	//Option button
-	Sprite_V2 optionbackground;
-	Sprite_V2 optionSoundBar[2];
-	Sprite_V2 optionBackgroundBar[2];
+	Sprite optionbackground;
+	Sprite optionSoundBar[2];
+	Sprite optionBackgroundBar[2];
 	Button interactableButtonOption[4];
 	AEGfxTexture* audioUp;
 	AEGfxTexture* audioDown;
+	AEGfxTexture* gameControlsImg;
 
 
 	Button backButton;
@@ -47,6 +47,7 @@ namespace {
 	AEGfxVertexList* pBlackSquareMesh;
 
 	Sprite background;
+	Sprite gameControls;
 
 	//menu buttons
 	//Start Game Option - "Start Game" or "New Game" (if multiple files and saved data)
@@ -107,6 +108,7 @@ void Mainmenu_Load()
 	boxBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
 	audioUp = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_right.png");
 	audioDown = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_left.png");
+	gameControlsImg = AEGfxTextureLoad("Assets/Keyboard_Keys/Game Control.png");
 
 	AEGfxMeshStart();
 
@@ -147,6 +149,7 @@ void Mainmenu_Initialize()
 		interactableButtonMainMenu[i].pTex = buttonTexture;
 		AEVec2Set(&interactableButtonMainMenu[i].scale, 250.f, 80.f);
 		AEVec2Set(&interactableButtonMainMenu[i].pos, 0.f, 100.f - 100.f * i);
+		interactableButtonMainMenu[i].UpdateTransformMatrix();
 
 		switch (i)
 		{
@@ -177,56 +180,74 @@ void Mainmenu_Initialize()
 	AEVec2Set(&interactableButtonOption[0].scale, 50, 50);
 	interactableButtonOption[0].Ptr = DecreaseBgmVolume;
 	interactableButtonOption[0].pTex = audioDown;
+	interactableButtonOption[0].UpdateTransformMatrix();
 
 	AEVec2Set(&interactableButtonOption[1].pos, 200, 0);
 	AEVec2Set(&interactableButtonOption[1].scale, 50, 50);
 	interactableButtonOption[1].Ptr = IncreaseBgmVolume;
 	interactableButtonOption[1].pTex = audioUp;
+	interactableButtonOption[1].UpdateTransformMatrix();
 
 	AEVec2Set(&interactableButtonOption[2].pos, -200, -100);
 	AEVec2Set(&interactableButtonOption[2].scale, 50, 50);
 	interactableButtonOption[2].Ptr = DecreaseSfxVolume;
 	interactableButtonOption[2].pTex = audioDown;
+	interactableButtonOption[2].UpdateTransformMatrix();
 
 	AEVec2Set(&interactableButtonOption[3].pos, 200, -100);
 	AEVec2Set(&interactableButtonOption[3].scale, 50, 50);
 	interactableButtonOption[3].Ptr = IncreaseSfxVolume;
 	interactableButtonOption[3].pTex = audioUp;
+	interactableButtonOption[3].UpdateTransformMatrix();
 
 	AEVec2Set(&optionSoundBar[0].pos, 0, 0); // bar 1
 	AEVec2Set(&optionSoundBar[0].scale, 250, 50);
+	optionSoundBar[0].UpdateTransformMatrix();
 
 	AEVec2Set(&optionSoundBar[1].pos, 0, -100); // bar 2
 	AEVec2Set(&optionSoundBar[1].scale, 250, 50);
+	optionSoundBar[1].UpdateTransformMatrix();
 
 	AEVec2Set(&optionBackgroundBar[0].pos, 0, 0); // bar 1
 	AEVec2Set(&optionBackgroundBar[0].scale, 250, 50);
+	optionBackgroundBar[0].UpdateTransformMatrix();
 
 	AEVec2Set(&optionBackgroundBar[1].pos, 0, -100); // bar 2
 	AEVec2Set(&optionBackgroundBar[1].scale, 250, 50);
+	optionBackgroundBar[1].UpdateTransformMatrix();
 
 	optionbackground.pTex = boxBackground;
 	optionbackground.scale.x = 1000.f;
 	optionbackground.scale.y = 500.f;
+	optionbackground.UpdateTransformMatrix();
 
 	backButton.pTex = buttonTexture;
 	AEVec2Set(&backButton.scale, 250.f, 80.f);
 	AEVec2Set(&backButton.pos, -675.f, -410.f);
 	backButton.Ptr = BackMainMenu;
+	backButton.UpdateTransformMatrix();
 
 	confirmationButtion[0].pTex = buttonTexture;
 	AEVec2Set(&confirmationButtion[0].scale, 250.f, 80.f);
 	AEVec2Set(&confirmationButtion[0].pos, 250.f, 0.f);
 	confirmationButtion[0].Ptr = BackMainMenu;
+	confirmationButtion[0].UpdateTransformMatrix();
 
 	confirmationButtion[1].pTex = buttonTexture;
 	AEVec2Set(&confirmationButtion[1].scale, 250.f, 80.f);
 	AEVec2Set(&confirmationButtion[1].pos, -250.f, 0.f);
 	confirmationButtion[1].Ptr = GoQuitGame;
+	confirmationButtion[1].UpdateTransformMatrix();
 
 	background.pTex = backgroundTexture;
 	background.scale.x = 1600;
 	background.scale.y = 900;
+	background.UpdateTransformMatrix();
+
+	gameControls.pTex = gameControlsImg;
+	gameControls.scale.x = 600;
+	gameControls.scale.y = 400;
+	gameControls.UpdateTransformMatrix();
 
 	currScene = CurrentScene::MAIN_SCENE;
 
@@ -289,7 +310,7 @@ void Mainmenu_Draw()
 	AEGfxSetTransparency(1.0f);
 
 	AEGfxTextureSet(background.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, background.scale.x, background.scale.y).m);
+	AEGfxSetTransform(background.transform.m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	switch (currScene)
@@ -299,7 +320,7 @@ void Mainmenu_Draw()
 		for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 		{
 			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButtonMainMenu[i].pos.x, interactableButtonMainMenu[i].pos.y, 0.f, interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y).m);
+			AEGfxSetTransform(interactableButtonMainMenu[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
@@ -334,10 +355,34 @@ void Mainmenu_Draw()
 		break;
 	}
 	case CurrentScene::CREDIT_SCENE:
+	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(optionbackground.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(backButton.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		f32 width, height;
+
+		const char* pText = "Back";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
 	case CurrentScene::CONTROL_SCENE:
 	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(optionbackground.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(gameControls.pTex, 0, 0);
+		AEGfxSetTransform(gameControls.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
 		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
+		AEGfxSetTransform(backButton.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;
@@ -350,19 +395,19 @@ void Mainmenu_Draw()
 	case CurrentScene::OPTION_SCENE:
 	{
 		AEGfxTextureSet(optionbackground.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(optionbackground.pos.x, optionbackground.pos.y, 0.f, optionbackground.scale.x, optionbackground.scale.y).m);
+		AEGfxSetTransform(optionbackground.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
 		for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
 		{
 			AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButtonOption[i].pos.x, interactableButtonOption[i].pos.y, 0.f, interactableButtonOption[i].scale.x, interactableButtonOption[i].scale.y).m);
+			AEGfxSetTransform(interactableButtonOption[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
+		AEGfxSetTransform(backButton.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -370,14 +415,14 @@ void Mainmenu_Draw()
 		for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
 		{
 			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(optionBackgroundBar[i].pos.x, optionBackgroundBar[i].pos.y, 0.f, optionBackgroundBar[i].scale.x, optionBackgroundBar[i].scale.y).m);
+			AEGfxSetTransform(optionBackgroundBar[i].transform.m);
 			AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 		for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
 		{
 			AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(optionSoundBar[i].pos.x, optionSoundBar[i].pos.y, 0.f, optionSoundBar[i].scale.x, optionSoundBar[i].scale.y).m);
+			AEGfxSetTransform(optionSoundBar[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
@@ -399,11 +444,11 @@ void Mainmenu_Draw()
 	case CurrentScene::QUIT_SCENE:
 	{
 		AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[0].pos.x, confirmationButtion[0].pos.y, 0.f, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y).m);
+		AEGfxSetTransform(confirmationButtion[0].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[1].pos.x, confirmationButtion[1].pos.y, 0.f, confirmationButtion[1].scale.x, confirmationButtion[1].scale.y).m);
+		AEGfxSetTransform(confirmationButtion[1].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;
@@ -436,6 +481,7 @@ void Mainmenu_Unload()
 	AEGfxTextureUnload(boxBackground);
 	AEGfxTextureUnload(audioUp);
 	AEGfxTextureUnload(audioDown);
+	AEGfxTextureUnload(gameControlsImg);
 }
 
 void BackMainMenu()
