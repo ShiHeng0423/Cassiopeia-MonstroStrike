@@ -3,6 +3,7 @@
 #include "AEEngine.h"
 #include "Physics.h"
 #include "EnemyUtils.h"
+#include "Inventory.h"
 
 
 
@@ -223,10 +224,24 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	while (it != vecCollectables.end()) {
 		// Check collision
 		if (AABBvsAABB(it->collisionBox, player.collisionBox)) {
-			// Erase the element
-			it = vecCollectables.erase(it);
 			//addit to inventory
 			//here
+			Item holder;
+			switch (it->dropType) {
+			case ENEMY_JUMPER_DROP:
+				holder = fullInventoryList[18];
+				break;
+			case ENEMY_CHARGER_DROP:
+				holder = fullInventoryList[18];
+				break;
+
+			}
+
+			Inventory::AddItem(holder);
+
+			// Erase the element
+			it = vecCollectables.erase(it);
+
 		}
 		else {
 			// Move to the next element

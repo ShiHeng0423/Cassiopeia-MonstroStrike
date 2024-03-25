@@ -55,7 +55,6 @@ struct EnemyDrops {
 	Object obj;
 	Drops dropType;
 	AABB collisionBox;
-	//Item enemyItemDrop;
 };
  
 struct Bullet {
