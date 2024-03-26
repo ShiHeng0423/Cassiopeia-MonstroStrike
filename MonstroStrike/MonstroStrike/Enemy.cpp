@@ -3,6 +3,7 @@
 #include "AEEngine.h"
 #include "Physics.h"
 #include "EnemyUtils.h"
+#include "Inventory.h"
 
 
 
@@ -22,8 +23,6 @@ void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 	case ENEMY_FLY:
 		enemy.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Angry.png");
-		break;
-	case ENEMY_PASSIVE:
 		break;
 	case ENEMY_BOSS1:
 
@@ -143,9 +142,6 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.mass = 100.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
-	case ENEMY_PASSIVE:
-
-		break;
 	case ENEMY_BOSS1:
 		//main body
 		enemy.attackState = ENEMY_ATTACK_CHOOSING;
@@ -199,7 +195,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 
 
-void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
+void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
 //(update bullet)---------------------------------------------------------------------------------------
 	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
@@ -220,7 +216,48 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 		}
 	}
 //(update bullet)---------------------------------------------------------------------------------------
-	
+
+//(update drops)---------------------------------------------------------------------------------------
+	std::vector<EnemyDrops>::iterator it = vecCollectables.begin();
+
+	// Iterate over the vector
+	while (it != vecCollectables.end()) {
+		// Check collision
+		if (AABBvsAABB(it->collisionBox, player.collisionBox)) {
+			//addit to inventory
+			//here
+			Item holder;
+			switch (it->dropType) {
+			case ENEMY_JUMPER_DROP:
+				holder = fullInventoryList[18];
+				break;
+			case ENEMY_CHARGER_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "Charger item collected\n";
+				break;
+			case ENEMY_FLY_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "CHANGE item collected\n";
+				break;
+			case ENEMY_BOSS1_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "CHANGE item collected\n";
+				break;
+
+			}
+
+			Inventory::AddItem(holder);
+
+			// Erase the element
+			it = vecCollectables.erase(it);
+
+		}
+		else {
+			// Move to the next element
+			++it;
+		}
+	}
+//(update drops)---------------------------------------------------------------------------------------
 
 
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
@@ -236,20 +273,16 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
-		ENEMY_JUMPER_Update(enemy, player);
+		ENEMY_JUMPER_Update(enemy, player, vecCollectables);
 		break;
 	case ENEMY_CHARGER:
-		ENEMY_CHARGER_Update(enemy, player);
+		ENEMY_CHARGER_Update(enemy, player, vecCollectables);
 		break;
 	case ENEMY_FLY:
-		ENEMY_FLY_Update(enemy, player);
-		break;
-	case ENEMY_PASSIVE:
+		ENEMY_FLY_Update(enemy, player, vecCollectables);
 		break;
 	case ENEMY_BOSS1:
-		ENEMY_BOSS_Update(enemy, player);
-		break;
-	default:
+		ENEMY_BOSS_Update(enemy, player, vecCollectables);
 		break;
 	}
 
@@ -273,12 +306,12 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player) {
 	enemy.boxArms.maximum.x += horizontalOffset;
 }
 
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player) {
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
 	for (Enemy& enemy : vecEnemyVar)
 	{
 		if (enemy.isAlive)
 		{
-			EnemyUpdateChoose(enemy, player);
+			EnemyUpdateChoose(enemy, player, vecCollectables);
 		}
 	}
 }
@@ -319,14 +352,13 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 	}
 }
 
-void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh) {
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh, std::vector<EnemyDrops>& vecCollectables) {
 	for (Enemy& enemy : vecEnemyVar) {
 		if (enemy.isAlive) {
 
-
 			if (enemy.isAttacking) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.angryTex, 0, 0);
 				enemy.obj.UpdateTransformMatrix();
 				AEGfxSetTransform(enemy.obj.transform.m);
@@ -337,7 +369,7 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			else
 			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
-
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.obj.pTex, 0, 0);
 				enemy.obj.UpdateTransformMatrix();
 				AEGfxSetTransform(enemy.obj.transform.m);
@@ -348,19 +380,56 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 
 
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
-
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.wing1.obj.pTex, 0, 0);
 				enemy.wing1.obj.UpdateTransformMatrix();
 				AEGfxSetTransform(enemy.wing1.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
-
+				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.wing2.obj.pTex, 0, 0);
 				enemy.wing2.obj.UpdateTransformMatrix();
 				AEGfxSetTransform(enemy.wing2.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
+
+			//healthbar
+			// Calculate health bar position and size
+			float healthBarWidth = 80.0f; //  width of health bar
+			float healthBarHeight = 10.0f; //  height of health bar
+			float healthBarX = enemy.obj.pos.x; // Center the health bar horizontally
+			float healthBarY = enemy.obj.pos.y + 40.0f; // offset above the enemy
+
+			// Calculate percentage of health remaining
+			float healthPercentage = static_cast<float>(enemy.health) / static_cast<float>(enemy.maxHealth);
+
+			// Calculate the width of the health bar based on the health percentage
+			float remainingWidth = healthBarWidth * healthPercentage;
+
+			float edgeX = healthBarX - (healthBarWidth - remainingWidth)/2;
+
+			// Draw health bar background
+			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxTextureSet(0, 0, 0);
+			AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 1.0f); // Red color for background
+			AEGfxSetTransform(ObjectTransformationMatrixSet(healthBarX, healthBarY, 0.f, healthBarWidth, healthBarHeight).m);
+			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+			
+			// Draw health bar with remaining health
+			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxTextureSet(0, 0, 0);
+			AEGfxSetColorToAdd(0.0f, 1.0f, 0.0f, 1.0f); // Green color for remaining health
+			AEGfxSetTransform(ObjectTransformationMatrixSet(edgeX, healthBarY, 0.f, remainingWidth, healthBarHeight).m);
+			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			//reset
+			AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 		}
 	}
+
+	DrawEnemyLoot(vecCollectables, pWhitesqrMesh);
 }

@@ -218,6 +218,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <None Include="..\Assets\SaveFiles\full_item_list.json" />
     <None Include="..\Assets\SaveFiles\player_inventory.json" />
     <None Include="..\Assets\SaveFiles\recipe_list.json" />
+    <None Include="..\Assets\GameMap_BossStage.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_A.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_B.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_C.csv" />

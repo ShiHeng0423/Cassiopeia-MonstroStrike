@@ -16,6 +16,7 @@ namespace
 	std::vector<struct Platforms> platformVectors;
 
 	std::vector<Enemy> vecEnemy; //enemy container
+	std::vector<EnemyDrops> vecCollect;
 
 	Player* player;
 
@@ -46,6 +47,9 @@ namespace
 	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player);
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
 }
+
+
+
 
 void Level1_F_Load()
 {
@@ -191,7 +195,7 @@ void Level1_F_Update()
 #pragma endregion
 
 #pragma region EnemyUpdate
-	AllEnemyUpdate(vecEnemy, *player);
+	AllEnemyUpdate(vecEnemy, *player, vecCollect);
 #pragma endregion
 
 #pragma region GridSystem
@@ -299,7 +303,7 @@ void Level1_F_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//drawing enemy
-	AllEnemyDraw(vecEnemy, pWhiteSquareMesh);
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
@@ -455,7 +459,8 @@ void Level1_F_Free()
 	//Free Enemy Vector
 	vecEnemy.clear();
 	vecEnemy.resize(0);
-
+	vecCollect.clear();
+	vecCollect.resize(0);
 	//Free vectors
 	gameMap.clear();
 	gameMap.resize(0);
@@ -474,7 +479,10 @@ void Level1_F_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
-
+	AEGfxTextureUnload(enemyJumperDropTex);
+	AEGfxTextureUnload(enemyChargerDropTex);
+	AEGfxTextureUnload(enemyFlyDropTex);
+	AEGfxTextureUnload(enemyBoss1DropTex);
 
 	AEGfxTextureUnload(player->obj.pTex);
 

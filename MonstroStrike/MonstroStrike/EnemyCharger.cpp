@@ -3,7 +3,7 @@
 
 
 
-void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
@@ -13,6 +13,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 	
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
 	}
 
@@ -28,8 +29,8 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		enemy.isRecoil = true;
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
+			enemy.health -= 10;
 
-			std::cout << "Hit!\n";
 		}
 	}
 	else {
