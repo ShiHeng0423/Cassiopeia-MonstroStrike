@@ -175,6 +175,15 @@ void SetGridTypes(Grids2D** grids2D, const std::vector<std::vector<MapCell>>& ga
             case 12:
                 grids2D[row][col].typeOfGrid = NPC_QUEST_GIVER_POS;
                 break;
+            case 20:
+                grids2D[row][col].typeOfGrid = ENEMY_CHARGER_POS;
+            break;
+            case 21:
+                grids2D[row][col].typeOfGrid = ENEMY_FLY_POS;
+                break;
+            case 22:
+                grids2D[row][col].typeOfGrid = ENEMY_SLIME_POS;
+                break;
             case 91:
                 grids2D[row][col].typeOfGrid = PLAYER_POS_GRID_1;
                 break;
