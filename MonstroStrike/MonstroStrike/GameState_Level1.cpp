@@ -130,7 +130,7 @@ void Level1_A_Initialize()
 			}
 		}
 	}
-	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
+	player->obj.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 #pragma endregion
 
 	cam = new Camera(player->obj.pos);
@@ -352,35 +352,35 @@ void Level1_A_Draw()
 #pragma region Inventory_UI_Render
 
 	//Inventory images
-	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	if (Inventory::inventoryOpen)
 	{
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 		f32 x, y;
 		AEGfxGetCamPosition(&x, &y);
 
-		AEGfxTextureSet(inventoryBackground.pTex, 0, 0);
+		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
-		                                                inventoryBackground.scale.x,
-		                                                inventoryBackground.scale.y).m);
+			inventoryBackground.img.scale.x,
+			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxTextureSet(equipmentBackground.pTex, 0, 0);
+		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
 			equipmentBackground.pos.x + x,
 			equipmentBackground.pos.y + y, 0.f,
-			equipmentBackground.scale.x,
-			equipmentBackground.scale.y).m);
+			equipmentBackground.img.scale.x,
+			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		if (Inventory::itemHover)
 		{
-			AEGfxTextureSet(itemDisplayBackground.pTex, 0, 0);
+			AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
 			AEGfxSetTransform(ObjectTransformationMatrixSet(
 				itemDisplayBackground.pos.x + x,
 				itemDisplayBackground.pos.y + y, 0.f,
-				itemDisplayBackground.scale.x,
-				itemDisplayBackground.scale.y).m);
+				itemDisplayBackground.img.scale.x,
+				itemDisplayBackground.img.scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
@@ -390,20 +390,20 @@ void Level1_A_Draw()
 			//Filled slots
 			if (button.Item.ID >= 0)
 			{
-				AEGfxTextureSet(button.pTex, 0, 0);
+				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.scale.x, button.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 
 			//Empty slots
 			if (button.Item.ID < 0)
 			{
-				AEGfxTextureSet(button.pTex, 0, 0);
+				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.scale.x, button.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
@@ -414,33 +414,23 @@ void Level1_A_Draw()
 			//Filled slots
 			if (button.Item.ID >= 0)
 			{
-				AEGfxTextureSet(button.pTex, 0, 0);
+				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.scale.x, button.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 
 			//empty slots
 			if (button.Item.ID < 0)
 			{
-				AEGfxTextureSet(button.pTex, 0, 0);
+				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.scale.x, button.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
-	}
-
-	int index = 1;
-	for (ButtonGearUI button : Inventory::equipmentDisplay)
-	{
-		AEGfxTextureSet(button.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 80.f * index++,
-			AEGfxGetWinMinY() + 50.f, 0.f,
-			button.scale.x, button.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 #pragma endregion
 
@@ -521,10 +511,10 @@ namespace {
 	{
 		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
 			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
 				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 				{
@@ -597,10 +587,10 @@ namespace {
 
 			int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
 
-			for (int i = 0; i <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+			for (int i = 0; i <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 			{
 				int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-				for (int j = 0; j <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+				for (int j = 0; j <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 				{
 
 					//Check vertical box (Head + Feet) 
@@ -624,13 +614,10 @@ namespace {
 						tmpEnemy.loopIdle = false;
 					}
 				}
-				break;
-			case EMPTY:
-				break;
+				enemyIndexX += 1;
 			}
-			playerIndexX += 1;
+			enemyIndexY += 1;
 		}
-		playerIndexY += 1;
 	}
 }
 

@@ -134,7 +134,7 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 			break;
 		case ParticleType::PARTICLE_TRAILING:
 			{
-			f32 offsetDistance = player->obj.img.scale.x * 0.2f;
+			f32 offsetDistance = player->obj.scale.x * 0.2f;
 
 			// Assuming player's velocity is stored in playerVelocityX and playerVelocityY
 			f32 offsetX = player->velocity.x * offsetDistance;
@@ -149,7 +149,7 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 		case ParticleType::PARTICLE_JUMP:
 		{
 			// Calculate offset distance from the player position
-			f32 offsetDistance = player->obj.img.scale.x * 0.5f;
+			f32 offsetDistance = player->obj.scale.x * 0.5f;
 
 			allParticles[index].velocity.x = (AERandFloat() * 2.0f - 1.0f) * (GRID_SIZE * 2.f); //Split
 

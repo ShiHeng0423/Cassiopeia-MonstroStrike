@@ -126,8 +126,8 @@ void Player::Update(bool isInventoryOpen)
 		if (particleEmissionRate > 0.1f)
 		{
 			particleEmissionRate = 0.f;
-			ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
-				player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, &player);
+			ParticleEmit(1, obj.pos.x, obj.pos.y,
+				obj.scale.x * 0.25f, obj.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, this);
 		}
 		else
 		{
@@ -142,8 +142,8 @@ void Player::Update(bool isInventoryOpen)
 		if (particleEmissionRate > 0.1f)
 		{
 			particleEmissionRate = 0.f;
-			ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
-				player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, &player);
+			ParticleEmit(1, obj.pos.x, obj.pos.y,
+				obj.scale.x * 0.25f, obj.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, this);
 		}
 		else
 		{
@@ -171,8 +171,8 @@ void Player::Update(bool isInventoryOpen)
 	{
 		onFloor = false;
 		velocity.y = 700.f;		
-		ParticleEmit(10, player.obj.pos.x, player.obj.pos.y,
-		player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_JUMP, &player);
+		ParticleEmit(10, obj.pos.x, obj.pos.y,
+		obj.scale.x * 0.25f, obj.scale.y * 0.25f, 0.f, PARTICLE_JUMP, this);
 	}
 
 	ApplyGravity(&velocity, mass, &onFloor, &gravityForce, &isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to

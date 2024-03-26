@@ -43,6 +43,7 @@ void SplashScreen_Initialize()
 	digipenLogo.UpdateTransformMatrix();
 
 	copyright.pTex = copyrightSprite;
+	AEVec2Set(&copyright.pos, 0.f, AEGfxGetWinMinY() * 0.9f);
 	AEVec2Set(&copyright.scale, 600.f, 50.f);
 	copyright.UpdateTransformMatrix();
 

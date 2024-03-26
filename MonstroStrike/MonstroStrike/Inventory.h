@@ -78,14 +78,8 @@ struct Item
 
 struct ButtonGearUI
 {
-	AEGfxTexture* pTex;
-
-	AEVec2 pos{ 0.f,0.f };
-	AEVec2 scale{ 0.f,0.f };
-	float rotate{ 0.f };
-
-	AEMtx33 transform;
-
+	Sprite img;
+	AEVec2 pos;
 	bool isWeapon;
 	Item Item;
 };
@@ -96,7 +90,7 @@ extern std::vector< Item> fullInventoryList;
 extern std::vector< Item> equippedGear;
 
 //Misc
-extern int Player_Inventory_Count;
+extern int playerInventoryCount;
 extern s16 snapBack;
 extern Player* playerReference;
 
@@ -114,7 +108,8 @@ extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
 
-#define INVALID_ITEM = -999;
+#define INVALID_ITEM -999
+#define MAX_INVENTORY_SIZE 25
 
 namespace Inventory
 {
@@ -124,7 +119,7 @@ namespace Inventory
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
 
 	//AEGfxVertexList* pWhiteSquareMesh;
-	extern Item displayItem;
+	extern ButtonGearUI displayItem;
 
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
@@ -146,15 +141,13 @@ namespace Inventory
 	void ItemPickUp(Item& item);
 	void ItemDrop();
 
-
-	void EquipToBody(Item obj);
-	void ApplyItemEffect(class Player& player, const Item& item);
 	void UseItem(int index, ButtonGearUI& item, class Player& player);
-	
-	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems);
-	void SaveInventory();
+	void EquipToBody(Item obj);
 
+	void ApplyConsumableEffect(class Player& player, const Item& item);
+	void ApplyWeaponEffect(Player& player, const std::vector<Item>& equippedItems);
+
+	void SaveInventory();
 	void FreeInventory();
 
 }
-
