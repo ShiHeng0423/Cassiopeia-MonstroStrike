@@ -30,6 +30,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyD
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
 			enemy.health -= 10;
+
 		}
 	}
 	else {
