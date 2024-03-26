@@ -235,6 +235,14 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 				holder = fullInventoryList[12];
 				std::cout << "Charger item collected\n";
 				break;
+			case ENEMY_FLY_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "CHANGE item collected\n";
+				break;
+			case ENEMY_BOSS1_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "CHANGE item collected\n";
+				break;
 
 			}
 
@@ -398,6 +406,8 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			// Calculate the width of the health bar based on the health percentage
 			float remainingWidth = healthBarWidth * healthPercentage;
 
+			float edgeX = healthBarX - (healthBarWidth - remainingWidth)/2;
+
 			// Draw health bar background
 			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 			AEGfxTextureSet(0, 0, 0);
@@ -409,7 +419,7 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 			AEGfxTextureSet(0, 0, 0);
 			AEGfxSetColorToAdd(0.0f, 1.0f, 0.0f, 1.0f); // Green color for remaining health
-			AEGfxSetTransform(ObjectTransformationMatrixSet(healthBarX, healthBarY, 0.f, remainingWidth, healthBarHeight).m);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(edgeX, healthBarY, 0.f, remainingWidth, healthBarHeight).m);
 			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 
 
