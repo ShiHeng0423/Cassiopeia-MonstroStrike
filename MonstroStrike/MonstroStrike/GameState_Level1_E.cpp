@@ -62,6 +62,13 @@ void Level1_E_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_SIZE];
 	}
 
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
 	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
@@ -158,6 +165,13 @@ void Level1_E_Initialize()
 	Inventory::InitInventory();
 
 #pragma endregion
+
+	Enemy_Init({ 70.f, 70.f }, { -147.f, -400.f }, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f, 70.f }, { 497.f, -300.f }, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({ 70.f, 70.f }, { 1601.f, 300.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f, 70.f }, { 861.f, 300.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f, 70.f }, { -618.f, 200.f }, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({ 70.f, 70.f }, { -313.f, 100.f }, ENEMY_IDLE, vecEnemy[5]);
 
 	menu->Init(cam);
 	ParticleInitialize();

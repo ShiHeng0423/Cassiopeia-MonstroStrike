@@ -1,3 +1,47 @@
 Level1
 Jumper: 180, -50
 Charger: 1090, -200
+
+LevelB
+Charger: -250, 50
+Charger: -180, -200
+Jumper: -214, -500
+Jumper: -523, -500
+Fly:-620, -1200
+Charger: 27, -1700
+Jumper: 27, -1700
+Jumper: -631, -1500
+
+LevelC
+Jumper: 1460, 300
+Fly: 780, 300
+Jumper: 770, 100
+Fly: 1750, 0
+Charger: 915, -300
+Jumper: 258, 350
+Fly: 142, 50
+Jumper: -364, 300
+Fly: -749, -200
+Fly: -749, 180
+
+LevelD
+Fly: -560, 0
+Jumper: -664, 350
+Jumper: - 532, -700
+Charger: 161, -1100
+Fly: -338, -1200
+Jumper: -170, -1700
+Jumper: -626, -1700
+
+LevelE
+Charger: -147, -400
+Jumper: 497, -300
+Charger: 1601, 300
+Jumper: 861, 300
+Jumper: -618, 200
+Jumper: -313, 100
+
+LevelF
+Charger: 140, -1550
+Jumper: -555, -1100
+Jumper: -555, -555
