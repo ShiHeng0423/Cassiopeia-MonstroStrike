@@ -5,25 +5,29 @@
 struct MissionSystem missionSystem;
 
 //Construct mission
-KillEnemyMission::KillEnemyMission(int missionID, const char* name, int slimeTarg, int chargerTarg, int flyTarg, bool avail, const char* missionDetails) : missionID {missionID},
-	missionName{ name }, accepted{ false }, completed{false}, available(avail), slimeToKill {slimeTarg}, 
-	chargerToKill{ chargerTarg }, flyToKill{ flyTarg }, missionDetails{missionDetails} {}
+KillEnemyMission::KillEnemyMission(int missionID, const char* name, int slimeTarg, int chargerTarg, int flyTarg,
+                                   bool avail, const char* missionDetails) : missionName{name},
+                                                                             missionDetails{missionDetails},
+                                                                             completed{false}, accepted{false},
+                                                                             available(avail), missionID{missionID},
+                                                                             slimeToKill{slimeTarg},
+                                                                             chargerToKill{chargerTarg},
+                                                                             flyToKill{flyTarg}
+{
+}
 
 void MissionSystem::InitialMission()
 {
-	CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 5, 5, true, "Defeat 5 flies!" );
+	CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 0, 5, true, "Defeat 5 flies!");
 	CreateKillEnemyMission("Slimy disaster", 5, 0, 0, true, "Defeat 5 slimes!");
 	CreateKillEnemyMission("Rampaging nightmare", 0, 5, 0, true, "Defeat 5 chargers!");
 }
 
 //For pushing back into vector
-void MissionSystem::CreateKillEnemyMission(const char* missionName, int targetSlime, int targetCharger, int targetFly, bool avail, const char* missionDetails)
+void MissionSystem::CreateKillEnemyMission(const char* missionName, int targetSlime, int targetCharger, int targetFly,
+                                           bool avail, const char* missionDetails)
 {
 	enemyMissions.push_back(KillEnemyMission(nextMissionID++, missionName, targetSlime, targetCharger, targetFly, avail, missionDetails));
-	std::cout << "Mission name: " << missionName << " with the goal of killing " << targetSlime <<
-		" amount of slimes, " << targetCharger << " amount of chargers, and " << targetFly << " of Flys have been added\n";
-
-	std::cout << missionDetails << std::endl;
 
 	if (avail)
 	{
@@ -64,21 +68,22 @@ void MissionSystem::MissionComplete(int missionID) //Please check if clear condi
 		{
 			mission.completed = true;
 			mission.accepted = false;
-			
-			missionSystem.chargersKilled = missionSystem.fliesKilled = missionSystem.slimesKilled = 0; //Reset
 
-			std::cout << "Mission " << mission.missionName << " has been completed\n";
+			missionSystem.chargersKilled = missionSystem.fliesKilled = missionSystem.slimesKilled = 0; //Reset
 
 			//Here to add clear rewards
 			switch (missionID)
 			{
 			case 0: //Need to know which mission ID is which mission
 				//Add new mission / add rewards to give
+				CreateKillEnemyMission("Airborne annoyance", 0, 10, 0, true, "Defeat 10 flyers!");
 				break;
 			case 1:
-				CreateKillEnemyMission("Rampaging nightmare strike again", 0, 15, 0, true, "Defeat 10 chargers!");
+				//call add item here
+				CreateKillEnemyMission("Sticky situation", 0, 10, 0, true, "Defeat 10 slimes!");
 				break;
 			case 2:
+				CreateKillEnemyMission("Rampaging nightmare strike again", 0, 10, 0, true, "Defeat 10 chargers!");
 				break;
 			}
 			return;
@@ -93,14 +98,13 @@ size_t MissionSystem::GetEnemyMissionsCount()
 
 std::vector<int> MissionSystem::GetAvailableEnemyMissionsIDs()
 {
-	std::vector<int> availableIDs; 
+	std::vector<int> availableIDs;
 
 	for (const KillEnemyMission& mission : enemyMissions)
 	{
 		if (mission.available)
 			availableIDs.push_back(mission.missionID);
 	}
-
 	return availableIDs;
 }
 
@@ -126,7 +130,7 @@ void MissionSystem::PrintMissionText()
 		size_t charLength = strlen(missionName) + strlen(missionBegin) + 1; // +1 for null terminator
 
 		// Allocate memory for the concatenated string
-		char* concatenatedString = new char[charLength];
+		auto concatenatedString = new char[charLength];
 
 		// Copy the first string
 		strcpy_s(concatenatedString, charLength, missionBegin);
@@ -136,13 +140,12 @@ void MissionSystem::PrintMissionText()
 
 		// Print the concatenated string
 		AEGfxPrint(fontID, concatenatedString,
-			-1.f, 0.7f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+		           -1.f, 0.7f, 0.5f, 1.f, 1.f, 1.f, 1.f);
 
 		//Print the goals
 		int numberOfTargets = 0;
 		if (missionSystem.enemyMissions[missionSystem.GetAcceptedMissionID()].slimeToKill != 0)
 		{
-			
 			numberOfTargets++;
 			std::string str = "Slimes: " + std::to_string(slimesKilled) + " / "
 				+ std::to_string(missionSystem.enemyMissions[missionSystem.GetAcceptedMissionID()].slimeToKill);
@@ -150,7 +153,7 @@ void MissionSystem::PrintMissionText()
 			const char* goal = str.c_str();
 
 			AEGfxPrint(fontID, goal,
-				-1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+			           -1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
 		}
 		if (missionSystem.enemyMissions[missionSystem.GetAcceptedMissionID()].flyToKill != 0)
 		{
@@ -161,7 +164,7 @@ void MissionSystem::PrintMissionText()
 			const char* goal = str.c_str();
 
 			AEGfxPrint(fontID, goal,
-				-1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+			           -1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
 		}
 		if (missionSystem.enemyMissions[missionSystem.GetAcceptedMissionID()].chargerToKill != 0)
 		{
@@ -173,7 +176,7 @@ void MissionSystem::PrintMissionText()
 			const char* goal = str.c_str();
 
 			AEGfxPrint(fontID, goal,
-				-1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
+			           -1.f, 0.7f - numberOfTargets * 0.1f, 0.5f, 1.f, 1.f, 1.f, 1.f);
 		}
 		delete[] concatenatedString;
 	}

@@ -1,6 +1,7 @@
 #include "ParticleSystem.h"
 #include <iostream>
 #include <random>
+#include "CSVMapLoader.h"
 
 namespace {
 	std::vector<AEGfxTexture*> particleTextureList;
@@ -18,13 +19,12 @@ void Particles::Update()
 	position.y += velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
 	//std::cout << "Active Particles: " << GetActiveParticleCount() << std::endl;
-	std::cout << "Particles rotation: " << rotate << std::endl;
 }
 
 void ParticleLoad()
 {
 	//Load all textures that will be used
-	ParticlesAddTexture("Assets/panel_brown.png");
+	ParticlesAddTexture("Assets/StardustParticle.png");
 	ParticlesAddTexture("Assets/PlanetTexture.png");
 }
 
@@ -61,15 +61,6 @@ void ParticleUpdate()
 		{
 			allParticles[i].Update(); //Positional update
 
-			switch (allParticles[i].particleType)
-			{
-			case ParticleType::TEST:
-				break;
-			case ParticleType::TEST_2:
-				break;
-			default:
-				break;
-			}
 			AEMtx33Rot(&allParticles[i].rotation, allParticles[i].rotate);
 
 			AEMtx33Scale(&allParticles[i].scale, allParticles[i].particleSize.x, allParticles[i].particleSize.y);
@@ -99,7 +90,7 @@ void ParticleUpdate()
 	}
 }
 
-void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose)
+void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose, Player* player)
 {
 
 	f32 angle = 0.f;
@@ -110,7 +101,6 @@ void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initi
 	for (int i = 0; i < amount; ++i)
 	{
 		int index = inactiveParticles.back();
-		std::cout << index << std::endl;
 		inactiveParticles.pop_back(); //Remove particle from behind
 
 		//Initial positions
@@ -142,12 +132,34 @@ void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initi
 
 			allParticles[index].textureIndex = 0;
 			break;
-		case ParticleType::TEST_2:
-			allParticles[index].velocity.x = -10.f;
-			allParticles[index].velocity.y = -20.f;
+		case ParticleType::PARTICLE_TRAILING:
+			{
+			f32 offsetDistance = player->obj.img.scale.x * 0.2f;
 
-			allParticles[index].textureIndex = 1;
+			// Assuming player's velocity is stored in playerVelocityX and playerVelocityY
+			f32 offsetX = player->velocity.x * offsetDistance;
+
+			// Initial positions with offset
+			allParticles[index].position.x = player->obj.pos.x - offsetX;
+			allParticles[index].position.y = player->obj.pos.y;
+
+			allParticles[index].textureIndex = 0; 
+			}	
 			break;
+		case ParticleType::PARTICLE_JUMP:
+		{
+			// Calculate offset distance from the player position
+			f32 offsetDistance = player->obj.img.scale.x * 0.5f;
+
+			allParticles[index].velocity.x = (AERandFloat() * 2.0f - 1.0f) * (GRID_SIZE * 2.f); //Split
+
+			// Initial positions with offset
+			allParticles[index].position.x = player->obj.pos.x;
+			allParticles[index].position.y = player->obj.pos.y - offsetDistance;
+
+			allParticles[index].textureIndex = 0;
+		}
+		break;
 		default:
 			break;
 		}
@@ -178,8 +190,11 @@ void ParticlesDraw(AEGfxVertexList& mesh)
 			//Draw based on texture index
 			AEGfxTextureSet(particleTextureList[allParticles[i].textureIndex], 0, 0); //Maybe can try particleTextureList[allParticles->particleType]
 			AEGfxSetTransform(allParticles[i].transformation.m);
+			AEGfxSetColorToMultiply(0.38f, 0.96f, 0.88f, 1.f);
 			AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 			AEGfxSetTransparency(1.0f);
+			AEGfxSetColorToMultiply(1.f, 1.f, 1.f, 1.f);
+
 		}
 	}
 }
@@ -218,6 +233,8 @@ void ParticlesDeactivate(int index)
 			allParticles[index].particleType = ParticleType::TEST;
 			allParticles[index].alpha = 1.f;
 			allParticles[index].rotate = 0.f;
+			allParticles[index].velocity = { 0.f };
+
 			allParticles[index].lifeTime = allParticles[index].maximumLifeTime;
 
 			inactiveParticles.push_back(index);

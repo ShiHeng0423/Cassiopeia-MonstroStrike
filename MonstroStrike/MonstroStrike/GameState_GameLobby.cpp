@@ -1,7 +1,6 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
 
-
 namespace
 {
 	AEGfxVertexList* pLineMesh;
@@ -9,8 +8,9 @@ namespace
 	AEGfxVertexList* pMeshRed;
 	AEGfxVertexList* pMeshGrey;
 	AEGfxVertexList* pWhiteSquareMesh;
+	AEGfxVertexList* pGreenSquareMesh;
 
-	Grids2D grids2D[MAP_ROW_LOBBY_SIZE][MAP_COLUMN_LOBBY_SIZE]; //Initializing map
+	Grids2D** grids2D;
 	std::vector<std::vector<MapCell>> gameMap; //Map for this level
 	std::vector<AEVec2> NPCPositions;
 
@@ -35,16 +35,22 @@ namespace
 
 	float burningEffectDuration = 1.5f;
 	f64 timer = 0.f;
+
+	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player);
 }
 
 
-void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* player);
-
 void Lobby_Load()
 {
-	player= new Player("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
+	//Memory allocation
+	grids2D = new Grids2D * [MAP_ROW_LOBBY_SIZE];
+	for (int i = 0; i < MAP_ROW_LOBBY_SIZE; ++i) {
+		grids2D[i] = new Grids2D[MAP_COLUMN_LOBBY_SIZE];
+	}
+
+	player = PlayerInitialize("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMap_Lobby.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
@@ -65,6 +71,7 @@ void Lobby_Load()
 	pMeshRedBar = GenerateSquareMesh(0xFFFF0000);
 	pMeshYellow = GenerateSquareMesh(0xFFFFFF00);
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
+	pGreenSquareMesh = GenerateSquareMesh(0xFF00FF00);
 
 	//Drawing line
 	pLineMesh = GenerateLineMesh(0xFF000000);
@@ -78,42 +85,8 @@ void Lobby_Load()
 void Lobby_Initialize()
 {
 	//Initializing grid data
-	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
-	{
-		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
-		{
-			switch (gameMap[rows][cols].symbol) //For checking the map symbol from the csv file
-			{
-			case 0:
-				grids2D[rows][cols].typeOfGrid = EMPTY;
-				break;
-			case 1:
-				grids2D[rows][cols].typeOfGrid = NORMAL_GROUND;
-				break;
-			case 9:
-				grids2D[rows][cols].typeOfGrid = NONE;
-				break;
-			case 10:
-				grids2D[rows][cols].typeOfGrid = NPC_BLACKSMITH_A_POS;
-				break;
-			case 11:
-				grids2D[rows][cols].typeOfGrid = NPC_BLACKSMITH_B_POS;
-				break;
-			case 12:
-				grids2D[rows][cols].typeOfGrid = NPC_QUEST_GIVER_POS;
-				break;
-			case 97:
-				grids2D[rows][cols].typeOfGrid = PLAYER_POS_GRID;
-				break;
-			case 98:
-				grids2D[rows][cols].typeOfGrid = MAP_TRANSITION_GRID;
-				break;
-			default:
-				grids2D[rows][cols].typeOfGrid = NONE;
-				break;
-			}
-		}
-	}
+
+	SetGridTypes(grids2D, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE);
 
 	//For Initializing the grids and positions
 	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
@@ -133,7 +106,7 @@ void Lobby_Initialize()
 			case 12:
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
-			case 97:
+			case PLAYER_POS_GRID_1: //Only 1 transition player initial position here
 				player->obj.pos = {grids2D[rows][cols].position}; //Set position based on grid
 				break;
 			default:
@@ -160,10 +133,6 @@ void Lobby_Initialize()
 
 void Lobby_Update()
 {
-	if (AEInputCheckTriggered(AEVK_9))
-	{
-		next = GameStates::AREA1;
-	}
 
 	if (!player->isConversation)
 	{
@@ -211,24 +180,7 @@ void Lobby_Draw()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//For Grid Drawing
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	for (s16 rows = 0; rows < MAP_ROW_LOBBY_SIZE; rows++)
-	{
-		for (s16 cols = 0; cols < MAP_COLUMN_LOBBY_SIZE; cols++)
-		{
-			switch (grids2D[rows][cols].typeOfGrid)
-			{
-			case NORMAL_GROUND:
-				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-				AEGfxMeshDraw(pMeshYellow, AE_GFX_MDM_TRIANGLES);
-				break;
-			case EMPTY:
-				AEGfxSetTransform(grids2D[rows][cols].transformation.m);
-				AEGfxMeshDraw(pMeshGrey, AE_GFX_MDM_TRIANGLES);
-				break;
-			}
-		}
-	}
+	RenderGrids(grids2D, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE, *pWhiteSquareMesh);
 
 	DrawNPC(*pWhiteSquareMesh);
 
@@ -249,12 +201,14 @@ void Lobby_Draw()
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0, (int)player->currHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0,
+	                                                (int)player->currHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0, (int)player->maxHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0,
+	                                                (int)player->maxHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -289,6 +243,57 @@ void Lobby_Draw()
 			equipmentBackground.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			if (button.Item.ID >= 0)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				                                                button.pos.y + y, 0.f,
+				                                                button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+		}
+
+
 		//ItemInfoDisplay
 		if (Inventory::itemHover)
 		{
@@ -302,21 +307,21 @@ void Lobby_Draw()
 
 			f32 width, height;
 
-			auto pText = "Start";
+			auto pText = Inventory::displayItem.name.c_str();
 			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2,
-			           -itemDisplayBackground.pos.y + y + 0.22f,
-			           0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText, 0.75f - width * 0.5f,
+			           0.5f - height * 0.5f,
+			           0.25f, 1, 1, 1, 1);
 
 			auto pText1 = "Load";
 			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -itemDisplayBackground.pos.x + x,
-			           -itemDisplayBackground.pos.y + y, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText1, -width / 2,
+			           -height / 2, 0.5f, 1, 1, 1, 1);
 
 			auto pText2 = "Credit";
 			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, -itemDisplayBackground.pos.x + x,
-			           -itemDisplayBackground.pos.y + y - 0.22f, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText2, -width / 2,
+			           -height / 2, 0.5f, 1, 1, 1, 1);
 
 			auto pText3 = "Controls";
 			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
@@ -394,7 +399,6 @@ void Lobby_Draw()
 	DrawConvBox(player->isConversation, *pWhiteSquareMesh);
 
 	MapTransitionDraw();
-
 }
 
 void Lobby_Free()
@@ -422,62 +426,71 @@ void Lobby_Unload()
 	AEGfxMeshFree(pLineMesh);
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
+	AEGfxMeshFree(pGreenSquareMesh);
 
 	delete player;
 	delete cam;
 	delete menu;
+
+	for (int i = 0; i < MAP_ROW_LOBBY_SIZE; ++i) {
+		delete[] grids2D[i];
+	}
+	delete[] grids2D;
 }
 
-void CheckPlayerGridCollision(Grids2D gridMap[][MAP_COLUMN_LOBBY_SIZE], Player* player)
-{
-	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
-
-	for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
+//Private function definition
+namespace {
+	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
 	{
-		int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-		for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
-		{
-			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
-			{
-			case NORMAL_GROUND:
-				//Collision check
-				//Resolve + Vertical Collision only for entity x (wall or ground)
-				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
-				{
-					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
-					                                        gridMap[playerIndexY][playerIndexX].collisionBox);
-					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
-					                         &player->collisionNormal, &player->obj.pos,
-					                         &player->velocity, &player->onFloor, &player->gravityForce,
-					                         &player->isFalling);
-				}
+		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-			//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+		for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		{
+			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+			for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			{
+				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 				{
-					player->collisionNormal = AABBNormalize(player->boxArms,
-					                                        gridMap[playerIndexY][playerIndexX].collisionBox);
-					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
-					                           &player->collisionNormal, &player->obj.pos,
-					                           &player->velocity);
-				}
-				break;
-			case MAP_TRANSITION_GRID:
-				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-				{
-					//std::cout << "Collided\n";MainMenu_Song
-					if (!transitionalImageOBJ.active)
+				case NORMAL_GROUND:
+					//Collision check
+					//Resolve + Vertical Collision only for entity x (wall or ground)
+					//Check vertical box (Head + Feet) 
+					if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
 					{
-						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1);
+						player->collisionNormal = AABBNormalize(player->boxHeadFeet,
+							gridMap[playerIndexY][playerIndexX].collisionBox);
+						ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
+							&player->collisionNormal, &player->obj.pos,
+							&player->velocity, &player->onFloor, &player->gravityForce,
+							&player->isFalling);
 					}
+
+					//Check horizontal box (Left arm -> Right arm)
+					if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+					{
+						player->collisionNormal = AABBNormalize(player->boxArms,
+							gridMap[playerIndexY][playerIndexX].collisionBox);
+						ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
+							&player->collisionNormal, &player->obj.pos,
+							&player->velocity);
+					}
+					break;
+				case MAP_TRANSITION_GRID_1:
+					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+					{
+						//std::cout << "Collided\n";MainMenu_Song
+						if (!transitionalImageOBJ.active)
+						{
+							transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_A);
+						}
+					}
+					break;
+				case EMPTY:
+					break;
 				}
-				break;
-			case EMPTY:
-				break;
+				playerIndexX += 1;
 			}
-			playerIndexX += 1;
+			playerIndexY += 1;
 		}
-		playerIndexY += 1;
 	}
 }

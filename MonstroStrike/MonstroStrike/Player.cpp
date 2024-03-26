@@ -7,6 +7,8 @@
 #include <chrono>
 #include <queue>
 #include <functional>  // for std::function
+#include "MapTransition.h"
+#include "ParticleSystem.h"
 
 #define CAM_X_BOUNDARY (250.f)
 #define CAM_FOLLOW_UP_SPEED_X (0.05f)
@@ -34,18 +36,9 @@ auto comboTime = Clock::now();
 
 #pragma region AnimationQueue
 
-//std::queue<anima> con_anima;
-//
-//class anima
-//{
-// public:
-//	bool is_playing = false;
-//	
-//
-//};
-
-
 #pragma endregion
+
+static f32 particleEmissionRate = 0.f;
 Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	obj.pTex = AEGfxTextureLoad(filename);
@@ -129,11 +122,34 @@ void Player::Update(bool isInventoryOpen)
 	{
 		velocity.x += obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		isFacingRight = true;
+
+		if (particleEmissionRate > 0.1f)
+		{
+			particleEmissionRate = 0.f;
+			ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
+				player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, &player);
+		}
+		else
+		{
+			particleEmissionRate += (f32)AEFrameRateControllerGetFrameTime();
+		}
+
 	}
 	else if (AEInputCheckCurr(AEVK_A) && !isInventoryOpen)
 	{
 		velocity.x -= obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		isFacingRight = false;
+		if (particleEmissionRate > 0.1f)
+		{
+			particleEmissionRate = 0.f;
+			ParticleEmit(1, player.obj.pos.x, player.obj.pos.y,
+				player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_TRAILING, &player);
+		}
+		else
+		{
+			particleEmissionRate += (f32)AEFrameRateControllerGetFrameTime();
+		}
+
 	}
 
 	// Apply velocity constraints
@@ -154,7 +170,9 @@ void Player::Update(bool isInventoryOpen)
 	if (AEInputCheckTriggered(VK_SPACE) && onFloor && !isInventoryOpen)
 	{
 		onFloor = false;
-		velocity.y = 700.f;
+		velocity.y = 700.f;		
+		ParticleEmit(10, player.obj.pos.x, player.obj.pos.y,
+		player.obj.img.scale.x * 0.25f, player.obj.img.scale.y * 0.25f, 0.f, PARTICLE_JUMP, &player);
 	}
 
 	ApplyGravity(&velocity, mass, &onFloor, &gravityForce, &isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
@@ -267,4 +285,13 @@ void Player::Update(bool isInventoryOpen)
 	}
 
 	Armor_Effect_Update(*this);
+}
+
+void OnPlayerDeath() {
+	//Return to lobby
+	if (!transitionalImageOBJ.active)
+	{
+		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+	}
+
 }
