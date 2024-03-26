@@ -49,13 +49,6 @@ namespace
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
 }
 
-
-AEGfxTexture* bulletTex = nullptr;
-AEGfxTexture* enemyJumperDropTex = nullptr;
-AEGfxTexture* enemyChargerDropTex = nullptr;
-AEGfxTexture* enemyFlyDropTex = nullptr;
-AEGfxTexture* enemyBoss1DropTex = nullptr;
-
 void Level1_A_Load()
 {
 	//Memory allocation

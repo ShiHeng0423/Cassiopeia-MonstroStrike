@@ -2,6 +2,11 @@
 
 
 AEGfxTexture* bulletTex;
+AEGfxTexture* enemyJumperDropTex = nullptr;
+AEGfxTexture* enemyChargerDropTex = nullptr;
+AEGfxTexture* enemyFlyDropTex = nullptr;
+AEGfxTexture* enemyBoss1DropTex = nullptr;
+
 
 void MoveTowards(Enemy& enemy, AEVec2 targetPosition) {
 
