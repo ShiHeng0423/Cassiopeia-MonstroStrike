@@ -15,6 +15,7 @@ extern AEGfxTexture* enemyChargerDropTex;
 extern AEGfxTexture* enemyFlyDropTex;
 extern AEGfxTexture* enemyBoss1DropTex;
 
+
 //(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(Enemy& movingEntity, AEVec2 targetPosition);
 void MoveTowardsFLY(Enemy& movingEntity, AEVec2 targetPosition);	//only for the flying enemy

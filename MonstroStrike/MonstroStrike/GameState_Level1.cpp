@@ -59,11 +59,7 @@ void Level1_A_Load()
 
 	//loading texture only, push back into the vector
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
-	Enemy_Load(ENEMY_JUMPER, vecEnemy);
-	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
-	Enemy_Load(ENEMY_CHARGER, vecEnemy);
-	Enemy_Load(ENEMY_FLY, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
@@ -147,12 +143,8 @@ void Level1_A_Initialize()
 #pragma endregion
 
 #pragma region Enemy
-	Enemy_Init({70.f, 70.f}, {1800.f, -80.f}, ENEMY_IDLE, vecEnemy[0]);
-	Enemy_Init({70.f, 70.f}, {1850.f, -80.f}, ENEMY_IDLE, vecEnemy[1]);
-	Enemy_Init({70.f, 70.f}, {1800.f, 250.f}, ENEMY_IDLE, vecEnemy[2]);
-	Enemy_Init({70.f, 70.f}, {-500.f, -80.f}, ENEMY_IDLE, vecEnemy[3]);
-	Enemy_Init({70.f, 70.f}, {-300.f, -80.f}, ENEMY_IDLE, vecEnemy[4]);
-	Enemy_Init({70.f, 70.f}, {800.f, 150.f}, ENEMY_IDLE, vecEnemy[5]);
+	Enemy_Init({70.f, 70.f}, {180.f, -50.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({70.f, 70.f}, {1090.f, -200.f}, ENEMY_IDLE, vecEnemy[1]);
 #pragma endregion Enemy
 
 	menu->Init(cam);
@@ -162,7 +154,8 @@ void Level1_A_Initialize()
 
 void Level1_A_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+
+	std::cout << player->obj.pos.x <<  " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
