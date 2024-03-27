@@ -8,7 +8,10 @@
 
 f32 const PlayerMaxBasehealth = 100.f;
 
+
+
 class Player {
+
 
 public:
 
@@ -98,6 +101,10 @@ private:
 	//Player Armor & Weapon
 	Armor_System::Armor_Set armorSet;
 	Weapon_System::Weapon_Set weaponSet;
+
+	//player texture
+	AEGfxTexture* FacingLeft;
+	AEGfxTexture* FacingRight;
 };
 
 void OnPlayerDeath();

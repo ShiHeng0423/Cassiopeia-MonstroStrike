@@ -94,7 +94,6 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
 
 void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols)
 {
-    std::cout << "In Printer: " << std::endl;
 
     for (int i = 0; i < rows; i++)
     {

@@ -57,7 +57,23 @@ void Level1_C_Load()
 	for (int i = 0; i < MAP_ROW_SIZE; ++i) {
 		grids2D[i] = new Grids2D[MAP_COLUMN_SIZE];
 	}
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+
+
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
+	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
+	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
+	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 
 	player = gameManager->GetPlayer();
 	playerReference = player;
@@ -94,8 +110,6 @@ void Level1_C_Load()
 
 void Level1_C_Initialize()
 {
-	std::cout << "C\n";
-
 #pragma region Grid_Loading
 	//Initializing grid data
 	SetGridTypes(grids2D, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE);
@@ -142,6 +156,17 @@ void Level1_C_Initialize()
 
 #pragma endregion
 
+	Enemy_Init({ 70.f, 70.f }, { 1460.f, 300.f }, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f, 70.f }, { 780.f, 300.f }, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({ 70.f, 70.f }, { 770.f, 100.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f, 70.f }, { 1750.f, 0.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f, 70.f }, { 915.f, -300.f }, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({ 70.f, 70.f }, { 258.f, 350.f }, ENEMY_IDLE, vecEnemy[5]);
+	Enemy_Init({ 70.f, 70.f }, { 142.f, 50.f }, ENEMY_IDLE, vecEnemy[6]);
+	Enemy_Init({ 70.f, 70.f }, { -364.f, 300.f }, ENEMY_IDLE, vecEnemy[7]);
+	Enemy_Init({ 70.f, 70.f }, { -749.f, -200.f }, ENEMY_IDLE, vecEnemy[8]);
+	Enemy_Init({ 70.f, 70.f }, { -749.f, 180.f }, ENEMY_IDLE, vecEnemy[9]);
+
 	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit();
@@ -149,7 +174,7 @@ void Level1_C_Initialize()
 
 void Level1_C_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger

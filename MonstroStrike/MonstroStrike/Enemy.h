@@ -73,6 +73,7 @@ struct EnemyPart {
 	f32 fireRate;
 	f32 timeSinceLastFire;
 	int health;
+	int maxHealth;
 
 };
 

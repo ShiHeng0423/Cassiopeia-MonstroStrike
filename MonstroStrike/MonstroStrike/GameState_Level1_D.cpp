@@ -56,7 +56,19 @@ void Level1_D_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_SIZE_2];
 	}
 
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
+	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
+	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
+	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 
 	player = gameManager->GetPlayer();
 	playerReference = player;
@@ -152,6 +164,14 @@ void Level1_D_Initialize()
 
 #pragma endregion
 
+	Enemy_Init({ 70.f, 70.f }, { -560.f, 0.f }, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f, 70.f }, { -664.f, 350.f }, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({ 70.f, 70.f }, { -532.f, -700.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f, 70.f }, { 161.f, -1100.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f, 70.f }, { -338.f, -1200.f }, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({ 70.f, 70.f }, { -170.f, -1700.f }, ENEMY_IDLE, vecEnemy[5]);
+	Enemy_Init({ 70.f, 70.f }, { -626.f, -1700.f }, ENEMY_IDLE, vecEnemy[6]);
+
 	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit();
@@ -159,7 +179,7 @@ void Level1_D_Initialize()
 
 void Level1_D_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger

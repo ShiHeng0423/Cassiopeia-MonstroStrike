@@ -1,5 +1,6 @@
 #include "MissionList.h"
 #include "main.h"
+#include "Inventory.h"
 
 //Global System
 struct MissionSystem missionSystem;
@@ -18,9 +19,15 @@ KillEnemyMission::KillEnemyMission(int missionID, const char* name, int slimeTar
 
 void MissionSystem::InitialMission()
 {
+	//Available from the start
 	CreateKillEnemyMission("Damn the pestering airborne pests!", 0, 0, 5, true, "Defeat 5 flies!");
 	CreateKillEnemyMission("Slimy disaster", 5, 0, 0, true, "Defeat 5 slimes!");
 	CreateKillEnemyMission("Rampaging nightmare", 0, 5, 0, true, "Defeat 5 chargers!");
+
+	//Slowly unlock
+	CreateKillEnemyMission("Airborne annoyance", 0, 0, 10, false, "Defeat 10 flyers!");
+	CreateKillEnemyMission("Sticky situation", 0, 10, 0, false, "Defeat 10 slimes!");
+	CreateKillEnemyMission("Rampaging nightmare strike again", 0, 10, 0, false, "Defeat 10 chargers!");
 }
 
 //For pushing back into vector
@@ -28,15 +35,6 @@ void MissionSystem::CreateKillEnemyMission(const char* missionName, int targetSl
                                            bool avail, const char* missionDetails)
 {
 	enemyMissions.push_back(KillEnemyMission(nextMissionID++, missionName, targetSlime, targetCharger, targetFly, avail, missionDetails));
-
-	if (avail)
-	{
-		std::cout << "Available now\n";
-	}
-	else
-	{
-		std::cout << "Not available\n";
-	}
 }
 
 void MissionSystem::AcceptKillEnemyMission(int missionID)
@@ -49,19 +47,18 @@ void MissionSystem::AcceptKillEnemyMission(int missionID)
 			{
 				mission.accepted = true;
 				mission.available = false;
-				std::cout << "Mission " << mission.missionName << " has been accepted\n";
 				return;
 			}
 		}
 	}
 	else
 	{
-		std::cout << "You have an ongoing mission!\n";
 	}
 }
 
 void MissionSystem::MissionComplete(int missionID) //Please check if clear condition is met before calling
 {
+
 	for (KillEnemyMission& mission : enemyMissions)
 	{
 		if (mission.missionID == missionID)
@@ -70,20 +67,59 @@ void MissionSystem::MissionComplete(int missionID) //Please check if clear condi
 			mission.accepted = false;
 
 			missionSystem.chargersKilled = missionSystem.fliesKilled = missionSystem.slimesKilled = 0; //Reset
-
 			//Here to add clear rewards
 			switch (missionID)
 			{
-			case 0: //Need to know which mission ID is which mission
-				//Add new mission / add rewards to give
-				CreateKillEnemyMission("Airborne annoyance", 0, 10, 0, true, "Defeat 10 flyers!");
+			case 0:
+				Inventory::AddItem(fullInventoryList[11]);
+				Inventory::AddItem(fullInventoryList[11]);
+				Inventory::AddItem(fullInventoryList[11]);
+
+				enemyMissions[3].available = true;
 				break;
 			case 1:
-				//call add item here
-				CreateKillEnemyMission("Sticky situation", 0, 10, 0, true, "Defeat 10 slimes!");
+				Inventory::AddItem(fullInventoryList[12]);
+				Inventory::AddItem(fullInventoryList[12]);
+				Inventory::AddItem(fullInventoryList[12]);
+
+				enemyMissions[4].available = true;
 				break;
 			case 2:
-				CreateKillEnemyMission("Rampaging nightmare strike again", 0, 10, 0, true, "Defeat 10 chargers!");
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+
+
+				enemyMissions[5].available = true;
+				break;
+			case 3:
+				Inventory::AddItem(fullInventoryList[11]);
+				Inventory::AddItem(fullInventoryList[11]);
+				Inventory::AddItem(fullInventoryList[11]);
+
+				Inventory::AddItem(fullInventoryList[11]);
+				Inventory::AddItem(fullInventoryList[11]);
+				Inventory::AddItem(fullInventoryList[11]);
+
+				break;
+			case 4:
+				Inventory::AddItem(fullInventoryList[12]);
+				Inventory::AddItem(fullInventoryList[12]);
+				Inventory::AddItem(fullInventoryList[12]);
+
+				Inventory::AddItem(fullInventoryList[12]);
+				Inventory::AddItem(fullInventoryList[12]);
+				Inventory::AddItem(fullInventoryList[12]);
+
+				break;
+			case 5:
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+				Inventory::AddItem(fullInventoryList[13]);
+
 				break;
 			}
 			return;
@@ -180,6 +216,47 @@ void MissionSystem::PrintMissionText()
 		}
 		delete[] concatenatedString;
 	}
+}
+
+bool MissionSystem::CheckMissionClear()
+{
+	int id = missionSystem.GetAcceptedMissionID();
+
+	if (id != -1)
+	{
+	}
+
+	switch (id)
+	{
+	case 0:
+		if (fliesKilled >= enemyMissions[id].flyToKill)
+			return true;
+		break;
+	case 1:
+		if (slimesKilled >= enemyMissions[id].slimeToKill)
+			return true;
+		break;
+	case 2:
+		if (chargersKilled >= enemyMissions[id].chargerToKill)
+			return true;
+		break;
+	case 3:
+		if (fliesKilled >= enemyMissions[id].flyToKill)
+			return true;
+		break;
+	case 4:
+		if (slimesKilled >= enemyMissions[id].slimeToKill)
+			return true;
+		break;
+	case 5:
+		if (chargersKilled >= enemyMissions[id].chargerToKill)
+			return true;
+		break;
+	default:
+		return false;
+	}
+
+	return false;
 }
 
 void MissionSystem::CleanMemory()

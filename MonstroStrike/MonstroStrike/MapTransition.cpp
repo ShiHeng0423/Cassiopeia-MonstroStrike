@@ -39,7 +39,6 @@ void MapTransitionInit() //Call when enter a new level
 {
 	AEVec2 transitInPos;
 	AEGfxGetCamPosition(&transitInPos.x, &transitInPos.y);
-	std::cout << transitInPos.x << " " << transitInPos.y << std::endl;
 
 	transitionalImageOBJ.animationSpeed = 2500.f;
 	transitionalImageOBJ.velocity = { 0 }; //No Veloicity
@@ -78,8 +77,6 @@ void MapTransitionInit() //Call when enter a new level
 
 void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, GameStates nextLevel) //To call when exiting a level
 {
-	std::cout << "Play Animation\n";
-
 	transitionDir = directionToPlay;
 	transitionalImageOBJ.active = true;
 	nextGameState = nextLevel;
@@ -190,12 +187,9 @@ void MapTransitionUpdate() //Update only when transition image is active
 		}
 		else //Reached destination
 		{
-			std::cout << "False\n";
-
 			if (nextGameState != GameStates::GAMESTATE_NONE)
 			{
 				prevTransitionDir = transitionDir;
-				std::cout << "Entering game state: " << GameStates::GAME_LOBBY << "\n";
 				next = nextGameState; //Go next game state as long as it is not a none
 			}
 			transitionalImageOBJ.velocity = { 0 }; //Pause instance of moving the object
@@ -203,7 +197,6 @@ void MapTransitionUpdate() //Update only when transition image is active
 		}
 		break;
 	case TRANSITION_EXIT:
-		std::cout << "False\n";
 		transitionalImageOBJ.active = false; //Shouldn't be outside to the player view at this point
 		break;
 	}

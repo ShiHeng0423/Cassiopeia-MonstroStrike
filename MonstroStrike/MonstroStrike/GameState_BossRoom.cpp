@@ -55,8 +55,9 @@ void Level1_BOSS_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_BOSS_SIZE];
 	}
 
+	Enemy_Load(ENEMY_BOSS1, vecEnemy);
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
-
+	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 	player = gameManager->GetPlayer();
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
@@ -125,6 +126,8 @@ void Level1_BOSS_Initialize()
 
 #pragma endregion
 
+	Enemy_Init({ 70.f, 70.f }, { 225.f, -500.f }, ENEMY_IDLE, vecEnemy[0]);
+
 	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit();
@@ -132,7 +135,7 @@ void Level1_BOSS_Initialize()
 
 void Level1_BOSS_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
@@ -442,9 +445,6 @@ void Level1_BOSS_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
-	AEGfxTextureUnload(enemyJumperDropTex);
-	AEGfxTextureUnload(enemyChargerDropTex);
-	AEGfxTextureUnload(enemyFlyDropTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
 
 	AEGfxMeshFree(pMeshGrey);

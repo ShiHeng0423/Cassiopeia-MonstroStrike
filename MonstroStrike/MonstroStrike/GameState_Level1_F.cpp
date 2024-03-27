@@ -58,7 +58,17 @@ void Level1_F_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_SIZE_2];
 	}
 
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
+	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
+	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
+	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 
 	player = gameManager->GetPlayer();
 	playerReference = player;
@@ -140,6 +150,12 @@ void Level1_F_Initialize()
 
 #pragma endregion
 
+	Enemy_Init({ 70.f, 70.f }, { 140.f, -1550.f }, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f, 70.f }, { -555.f, -1100.f }, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({ 70.f, 70.f }, { -555.f, -555.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f, 70.f }, { -42.f, -150.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f, 70.f }, { -171.f, 250.f }, ENEMY_IDLE, vecEnemy[4]);
+
 	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit();
@@ -147,7 +163,7 @@ void Level1_F_Initialize()
 
 void Level1_F_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
@@ -302,16 +318,18 @@ void Level1_F_Draw()
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0,
+		(int)player->currHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0,
+		(int)player->maxHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	std::string str = std::to_string(hp);
+	std::string str = std::to_string((int)player->currHealth);
 	const char* pTextHP = str.c_str();
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
