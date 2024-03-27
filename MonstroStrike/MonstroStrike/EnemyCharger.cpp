@@ -45,6 +45,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyD
 			enemy.enemyCurrent = ENEMY_IDLE;
 			enemy.speed = 80.f;
 			enemy.isRecoil = false;
+
 		}
 	}
 	else {
