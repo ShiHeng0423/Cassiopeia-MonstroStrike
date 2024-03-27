@@ -1,6 +1,7 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
 #include "ParticleSystem.h"
+#include "MissionList.h"
 
 
 void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
@@ -16,6 +17,8 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyD
 		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
 		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		missionSystem.chargersKilled++;
+		return;
 	}
 
 	// Handle collision with player

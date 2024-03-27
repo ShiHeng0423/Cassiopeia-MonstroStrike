@@ -114,9 +114,9 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.maxHealth = 100;
+		enemy.maxHealth = 50;
 		enemy.health = enemy.maxHealth;
-		enemy.mass = 50.f;
+		enemy.mass = 40.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 		break;
 	case ENEMY_CHARGER:
@@ -137,7 +137,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 250.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.maxHealth = 100;
+		enemy.maxHealth = 30;
 		enemy.health = enemy.maxHealth;
 		enemy.mass = 100.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
@@ -151,7 +151,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.shootingRange = 500.f;
 		enemy.fireRate = 1.0f;
 		enemy.timeSinceLastFire = 0;
-		enemy.maxHealth = 100;
+		enemy.maxHealth = 500;
 		enemy.health = enemy.maxHealth;
 		enemy.mass = 150.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
@@ -167,8 +167,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.scale.y * 0.5f;
 		enemy.wing1.fireRate = 1.0f;
 		enemy.wing1.timeSinceLastFire = 0;
-		enemy.wing1.health = 100;
-
+		enemy.wing1.health = 200;
+		enemy.wing1.maxHealth = enemy.wing1.health;
 		//wing2
 		enemy.wing2.isAlive = false;
 		enemy.wing2.Offset = -enemyWingPosOffset;
@@ -180,7 +180,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.scale.y * 0.5f;
 		enemy.wing2.fireRate = 1.0f;
 		enemy.wing2.timeSinceLastFire = 0;
-		enemy.wing2.health = 100;
+		enemy.wing2.health = 200;
+		enemy.wing2.maxHealth = enemy.wing2.health;
 		break;
 	default:
 		return;
@@ -383,6 +384,7 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 				enemy.wing1.obj.UpdateTransformMatrix();
 				AEGfxSetTransform(enemy.wing1.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+				DrawEnemyHpParts(enemy.wing1, pWhitesqrMesh);
 			}
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
@@ -391,40 +393,11 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 				enemy.wing2.obj.UpdateTransformMatrix();
 				AEGfxSetTransform(enemy.wing2.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+				DrawEnemyHpParts(enemy.wing2, pWhitesqrMesh);
 			}
 
 			//healthbar
-			// Calculate health bar position and size
-			float healthBarWidth = 80.0f; //  width of health bar
-			float healthBarHeight = 10.0f; //  height of health bar
-			float healthBarX = enemy.obj.pos.x; // Center the health bar horizontally
-			float healthBarY = enemy.obj.pos.y + 40.0f; // offset above the enemy
-
-			// Calculate percentage of health remaining
-			float healthPercentage = static_cast<float>(enemy.health) / static_cast<float>(enemy.maxHealth);
-
-			// Calculate the width of the health bar based on the health percentage
-			float remainingWidth = healthBarWidth * healthPercentage;
-
-			float edgeX = healthBarX - (healthBarWidth - remainingWidth)/2;
-
-			// Draw health bar background
-			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-			AEGfxTextureSet(0, 0, 0);
-			AEGfxSetColorToAdd(1.0f, 0.0f, 0.0f, 1.0f); // Red color for background
-			AEGfxSetTransform(ObjectTransformationMatrixSet(healthBarX, healthBarY, 0.f, healthBarWidth, healthBarHeight).m);
-			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
-			
-			// Draw health bar with remaining health
-			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-			AEGfxTextureSet(0, 0, 0);
-			AEGfxSetColorToAdd(0.0f, 1.0f, 0.0f, 1.0f); // Green color for remaining health
-			AEGfxSetTransform(ObjectTransformationMatrixSet(edgeX, healthBarY, 0.f, remainingWidth, healthBarHeight).m);
-			AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
-
-
-			//reset
-			AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+			DrawEnemyHp(enemy, pWhitesqrMesh);
 		}
 	}
 

@@ -1,7 +1,7 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
 #include "ParticleSystem.h"
-
+#include "MissionList.h"
 
 
 void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
@@ -14,6 +14,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
         EnemyLootSpawn(enemy, vecCollectables);
         enemy.isAlive = false;
         ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+        missionSystem.slimesKilled++;
         return;
     }
 
@@ -94,7 +95,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
             if (enemy.timePassed >= 1.5f) {
                 enemy.timePassed = 0.0f;
                 if (enemy.onFloor) {
-                    Jump(enemy, 600.f);
+                    Jump(enemy, 800.f);
                 }
             }
             if (!enemy.onFloor) {

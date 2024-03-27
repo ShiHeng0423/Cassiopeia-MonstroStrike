@@ -10,7 +10,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 {
 	//f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
-	AEVec2 Spawnloc;
+	AEVec2 Spawnloc1 = { enemy.startingPosition.x, enemy.startingPosition.y + 50.f };
 
 //health check
 	if (enemy.health <= 0)
@@ -22,30 +22,25 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	}
 	if (enemy.wing1.health <= 0)
 	{
+		if (enemy.wing1.isAlive) {
+			ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		}
 		enemy.wing1.isAlive = false;
-		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
-
 	}
 	if (enemy.wing2.health <= 0)
 	{
+		if (enemy.wing2.isAlive) {
+			ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		}
 		enemy.wing2.isAlive = false;
-		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
 	}
 
 	if (enemy.wing1.isAlive == false && enemy.wing2.isAlive == false) {
 		enemy.isFlying = false;
 	}
 
-	if (AEInputCheckCurr(AEVK_M)) {
-		enemy.health--;
-	}
 
-	if (AEInputCheckCurr(AEVK_L)) {
-		enemy.wing1.isAlive = false;
-	}
-	if (AEInputCheckCurr(AEVK_K)) {
-		enemy.wing2.isAlive = false;
-	}
+
 
 
 	switch (enemy.enemyCurrent)
@@ -62,10 +57,9 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		enemy.wing1.isAlive = true;
 		enemy.wing2.isAlive = true;
 		enemy.isFlying = true;
-		Spawnloc = enemy.startingPosition;
-		if (enemy.obj.pos.y <= Spawnloc.y) {
+		if (enemy.obj.pos.y <= Spawnloc1.y) {
 			enemy.speed =  120.f;
-			MoveTowardsFLY(enemy, Spawnloc);
+			MoveTowardsFLY(enemy, Spawnloc1);
 			enemy.timePassed = 0.0f;
 		}
 		else {
@@ -86,17 +80,17 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 
 			if (loopCounter < 20) {	//20bullets
 				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
-					Spawnloc.x = enemy.wing1.obj.pos.x;
-					Spawnloc.y = enemy.wing1.obj.pos.y;
-					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					Spawnloc1.x = enemy.wing1.obj.pos.x;
+					Spawnloc1.y = enemy.wing1.obj.pos.y;
+					SpawnBullet(Spawnloc1, player.obj.pos, enemy.bullets);
 					loopCounter++;
 				}
 			}
 			else {
 				if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
-					Spawnloc.x = enemy.wing2.obj.pos.x;
-					Spawnloc.y = enemy.wing2.obj.pos.y;
-					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					Spawnloc1.x = enemy.wing2.obj.pos.x;
+					Spawnloc1.y = enemy.wing2.obj.pos.y;
+					SpawnBullet(Spawnloc1, player.obj.pos, enemy.bullets);
 					loopCounter++;
 				}
 			}
@@ -171,7 +165,8 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 			case ENEMY_ATTACK_REVERSE:
 
 				MoveTowards(enemy, enemy.wayPoint);
-				if (ReachedPos(enemy, enemy.wayPoint)) {
+				if (ReachedPos(enemy, enemy.wayPoint) || enemy.timePassed >= 0.2f) {
+					enemy.timePassed = 0.0f;
 					enemy.attackState = ENEMY_ATTACK_CHARGE;
 				}
 				break;

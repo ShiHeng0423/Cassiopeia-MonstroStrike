@@ -45,3 +45,8 @@ LevelF
 Charger: 140, -1550
 Jumper: -555, -1100
 Jumper: -555, -555
+Fly: -42, -150
+Jumper: -171 , 250
+
+Boss
+boss: 225, -500

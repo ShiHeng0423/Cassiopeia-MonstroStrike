@@ -61,6 +61,8 @@ void Level1_F_Load()
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
@@ -152,6 +154,8 @@ void Level1_F_Initialize()
 	Enemy_Init({ 70.f, 70.f }, { 140.f, -1550.f }, ENEMY_IDLE, vecEnemy[0]);
 	Enemy_Init({ 70.f, 70.f }, { -555.f, -1100.f }, ENEMY_IDLE, vecEnemy[1]);
 	Enemy_Init({ 70.f, 70.f }, { -555.f, -555.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f, 70.f }, { -42.f, -150.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f, 70.f }, { -171.f, 250.f }, ENEMY_IDLE, vecEnemy[4]);
 
 	menu->Init(cam);
 	ParticleInitialize();
@@ -160,7 +164,7 @@ void Level1_F_Initialize()
 
 void Level1_F_Update()
 {
-	std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
+	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger

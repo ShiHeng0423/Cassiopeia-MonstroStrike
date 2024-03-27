@@ -155,7 +155,7 @@ void Level1_A_Initialize()
 void Level1_A_Update()
 {
 
-	std::cout << player->obj.pos.x <<  " " << player->obj.pos.y << "\n";
+	//std::cout << player->obj.pos.x <<  " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
