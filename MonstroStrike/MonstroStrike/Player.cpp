@@ -118,13 +118,6 @@ void Player::Update(bool isInventoryOpen)
 	//	std::cout << "Now equipped with a " << equippedWeapon.name << std::endl;
 	//}
 
-	std::cout << currHealth << "\n";
-
-	if (isFalling)
-	{
-		std::cout << "FELL\n";
-	}
-
 	if (AEInputCheckCurr(AEVK_D) && !isInventoryOpen)
 	{
 		velocity.x += obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();

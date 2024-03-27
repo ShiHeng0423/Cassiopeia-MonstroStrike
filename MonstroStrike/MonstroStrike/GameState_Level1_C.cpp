@@ -111,8 +111,6 @@ void Level1_C_Load()
 
 void Level1_C_Initialize()
 {
-	std::cout << "C\n";
-
 #pragma region Grid_Loading
 	//Initializing grid data
 	SetGridTypes(grids2D, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE);
