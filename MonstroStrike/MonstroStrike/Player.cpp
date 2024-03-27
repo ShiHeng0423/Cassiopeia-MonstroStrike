@@ -42,6 +42,8 @@ static f32 particleEmissionRate = 0.f;
 Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
 	obj.pTex = AEGfxTextureLoad(filename);
+	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
+	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
 	obj.speed = speed;
 
 	AEVec2Set(&obj.pos, location.x, location.y);
@@ -86,6 +88,9 @@ Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed
 
 	weaponExtraEffect = Status_Effect_System::NONE_WEAPON_EFFECT;
 	armorExtraEffect = Status_Effect_System::NONE_ARMOR_EFFECT;
+
+
+
 }
 
 Player::~Player()
@@ -112,6 +117,7 @@ void Player::Update(bool isInventoryOpen)
 	//	std::cout << "Now equipped with a " << equippedWeapon.name << std::endl;
 	//}
 
+	std::cout << currHealth << "\n";
 
 	if (isFalling)
 	{
@@ -122,6 +128,7 @@ void Player::Update(bool isInventoryOpen)
 	{
 		velocity.x += obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		isFacingRight = true;
+		
 
 		if (particleEmissionRate > 0.1f)
 		{
@@ -139,6 +146,7 @@ void Player::Update(bool isInventoryOpen)
 	{
 		velocity.x -= obj.speed.x * (f32)AEFrameRateControllerGetFrameTime();
 		isFacingRight = false;
+		
 		if (particleEmissionRate > 0.1f)
 		{
 			particleEmissionRate = 0.f;
@@ -151,6 +159,14 @@ void Player::Update(bool isInventoryOpen)
 		}
 
 	}
+	
+	if (isFacingRight) {
+		obj.pTex = FacingRight;
+	}
+	else {
+		obj.pTex = FacingLeft;
+	}
+
 
 	// Apply velocity constraints
 	velocity.x = AEClamp(velocity.x, -5.f, 5.f);

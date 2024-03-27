@@ -7,7 +7,14 @@
 
 f32 const PlayerMaxBasehealth = 100.f;
 
+
+
 class Player {
+
+private: 
+	AEGfxTexture* FacingLeft;
+	AEGfxTexture* FacingRight;
+
 
 public:
 
@@ -60,6 +67,8 @@ public:
 	Weapon_System::Weapon wp;
 	Status_Effect_System::Armor_Status_Effect armorExtraEffect;
 	Status_Effect_System::Weapon_Status_Effect weaponExtraEffect;
+
+
 };
 
 void OnPlayerDeath();

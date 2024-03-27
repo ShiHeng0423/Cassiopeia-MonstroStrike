@@ -10,6 +10,7 @@ namespace
 	AEGfxVertexList* pWhiteSquareMesh;
 	AEGfxVertexList* pGreenSquareMesh;
 
+
 	Grids2D** grids2D;
 	std::vector<std::vector<MapCell>> gameMap; //Map for this level
 	std::vector<AEVec2> NPCPositions;
@@ -48,9 +49,15 @@ void Lobby_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_LOBBY_SIZE];
 	}
 
-	player = new Player("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
+
+
+
+
+	player = new Player("Assets/PlayerLeft.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
+	
+
 
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))

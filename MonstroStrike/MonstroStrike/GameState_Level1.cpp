@@ -67,7 +67,7 @@ void Level1_A_Load()
 	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
 	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 
-	player= new Player("Assets/Border.png", {AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f},
+	player= new Player("Assets/Player.png", {AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f},
 	                          {0, -100}, {40.f, 0.f}, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
