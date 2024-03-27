@@ -58,6 +58,9 @@ public:
 	
 	bool& GetIsPlayerOnFloor();
 	bool& GetIsPlayerFalling();
+
+	void OnPlayerDeath();
+
 private:
 
 	//Sprite Data
@@ -107,4 +110,3 @@ private:
 	AEGfxTexture* FacingRight;
 };
 
-void OnPlayerDeath();
