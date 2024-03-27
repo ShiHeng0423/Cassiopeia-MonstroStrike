@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
 
 
 
@@ -21,6 +22,8 @@ void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops
 	{
 		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+
 	}
 
 	switch (enemy.enemyCurrent)

@@ -151,4 +151,3 @@ namespace Inventory
 	void FreeInventory();
 
 }
-

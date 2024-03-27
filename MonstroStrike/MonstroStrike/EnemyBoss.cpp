@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
-
+#include "ParticleSystem.h"
 
 
 
@@ -17,14 +17,19 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	{
 		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+
 	}
 	if (enemy.wing1.health <= 0)
 	{
 		enemy.wing1.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+
 	}
 	if (enemy.wing2.health <= 0)
 	{
 		enemy.wing2.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
 	}
 
 	if (enemy.wing1.isAlive == false && enemy.wing2.isAlive == false) {
@@ -208,19 +213,19 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		enemy.wing1.obj.pos.x = enemy.obj.pos.x + enemy.wing1.Offset;
 		enemy.wing1.obj.pos.y = enemy.obj.pos.y + 10.f;
 
-		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
-		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.scale.x * 0.5f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.scale.y * 0.5f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.scale.x * 0.5f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.scale.y * 0.5f;
 	}
 	if (enemy.wing2.isAlive) {
 
 		enemy.wing2.obj.pos.x = enemy.obj.pos.x + enemy.wing2.Offset;
 		enemy.wing2.obj.pos.y = enemy.obj.pos.y + 10.f;
 
-		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
-		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.scale.x * 0.5f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.scale.y * 0.5f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.scale.x * 0.5f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.scale.y * 0.5f;
 	}
 }

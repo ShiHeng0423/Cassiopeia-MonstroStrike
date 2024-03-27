@@ -474,12 +474,20 @@ void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, cl
         std::cout << "Attack landed wing1" << std::endl;
 
         playerEquip->weaponHIT = true;
+        if (player.weaponExtraEffect == Status_Effect_System::Weapon_Status_Effect::DRAINING)
+        {
+            player.currHealth = min(player.currHealth + player.equippedWeapon.damage, player.maxHealth);
+        }
     }
     if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing2.collisionBox)) {
         theEnemy.wing2.health -= playerEquip->damage;
         std::cout << "Attack landed wing2" << std::endl;
 
         playerEquip->weaponHIT = true;
+        if (player.weaponExtraEffect == Status_Effect_System::Weapon_Status_Effect::DRAINING)
+        {
+            player.currHealth = min(player.currHealth + player.equippedWeapon.damage, player.maxHealth);
+        }
     }
 
 
@@ -491,6 +499,11 @@ void CheckWeaponCollision(struct Weapon* playerEquip, struct Enemy& theEnemy, cl
 
 
         playerEquip->weaponHIT = true;
+
+        if (player.weaponExtraEffect == Status_Effect_System::Weapon_Status_Effect::DRAINING)
+        {
+            player.currHealth = min(player.currHealth + player.equippedWeapon.damage, player.maxHealth);
+        }
     }
 
 

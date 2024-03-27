@@ -1,5 +1,6 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
 
 
 
@@ -12,6 +13,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
     if (enemy.health <= 0) {
         EnemyLootSpawn(enemy, vecCollectables);
         enemy.isAlive = false;
+        ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
         return;
     }
 
@@ -19,7 +21,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
     if (enemy.isCollidedWithPlayer) {
         if (!enemy.hasDealtDmg) {
             enemy.hasDealtDmg = true;
-            std::cout << "Hit!\n";
+            player.currHealth -= 10;
         }
     }
     else {

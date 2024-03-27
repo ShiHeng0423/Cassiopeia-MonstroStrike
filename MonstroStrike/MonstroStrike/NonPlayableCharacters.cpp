@@ -188,11 +188,11 @@ void UpdateNPC(Player* player)
 		case CONVERSATION_ENTRY:
 			if (AEInputCheckTriggered(AEVK_Y))
 			{
-
 				switch (collidedPlayer[0].second)
 				{
 				case NPC_BLACKSMITH_A:
 					//Heals the player
+					player->currHealth = player->maxHealth;
 					//Plays healing sound effect
 					currentConvState = CONVERSATION_EXIT;
 					break;

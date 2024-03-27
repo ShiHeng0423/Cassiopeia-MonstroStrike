@@ -85,6 +85,14 @@ void GSM_Update()
 		fpFree = Level1_F_Free;
 		fpUnload = Level1_F_Unload;
 		break;
+	case AREA_BOSS:
+		fpLoad = Level1_BOSS_Load;
+		fpInitialize = Level1_BOSS_Initialize;
+		fpUpdate = Level1_BOSS_Update;
+		fpDraw = Level1_BOSS_Draw;
+		fpFree = Level1_BOSS_Free;
+		fpUnload = Level1_BOSS_Unload;
+		break;
 	case QUIT:
 		break;
 	default:

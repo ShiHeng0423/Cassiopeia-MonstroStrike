@@ -13,23 +13,23 @@ void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 
 	switch (enemyType) {
 	case ENEMY_JUMPER:
-		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Normal.png");
+		enemy.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Angry.png");
 		break;
 	case ENEMY_CHARGER:
-		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Normal.png");
+		enemy.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Charger_Angry.png");
 		break;
 	case ENEMY_FLY:
-		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Normal.png");
+		enemy.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_FLY_Angry.png");
 		break;
 	case ENEMY_BOSS1:
 
-		enemy.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
+		enemy.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Boss1_Angry.png");
-		enemy.wing1.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
-		enemy.wing2.obj.img.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_left.png");
+		enemy.wing1.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_right.png");
+		enemy.wing2.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_wing_left.png");
 
 		break;
 
@@ -45,12 +45,12 @@ void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 
 void FreeEnemy(std::vector<Enemy>& vecEnemy) {
 	for (Enemy& enemy : vecEnemy) {
-		AEGfxTextureUnload(enemy.obj.img.pTex);	//default tex
+		AEGfxTextureUnload(enemy.obj.pTex);	//default tex
 		AEGfxTextureUnload(enemy.angryTex);		//angry tex
 
 		if (enemy.enemyType == ENEMY_BOSS1) {	//check if need to free wings
-			AEGfxTextureUnload(enemy.wing1.obj.img.pTex);
-			AEGfxTextureUnload(enemy.wing2.obj.img.pTex);
+			AEGfxTextureUnload(enemy.wing1.obj.pTex);
+			AEGfxTextureUnload(enemy.wing2.obj.pTex);
 		}
 	}
 }
@@ -64,7 +64,7 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 
 	//Initializing Enemy struct variables
 	AEVec2Set(&enemy.obj.pos, location.x, location.y); //set starting location
-	AEVec2Set(&enemy.obj.img.scale, scale.x, scale.y); //set scale of the image
+	AEVec2Set(&enemy.obj.scale, scale.x, scale.y); //set scale of the image
 
 	enemy.startingPosition = location;
 	enemy.lastPosition = location;
@@ -160,11 +160,11 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.wing1.isAlive = false;
 		enemy.wing1.Offset = enemyWingPosOffset;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing1.obj.img.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
-		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
-		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+		AEVec2Set(&enemy.wing1.obj.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.scale.x * 0.5f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.scale.y * 0.5f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.scale.x * 0.5f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.scale.y * 0.5f;
 		enemy.wing1.fireRate = 1.0f;
 		enemy.wing1.timeSinceLastFire = 0;
 		enemy.wing1.health = 100;
@@ -173,11 +173,11 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.wing2.isAlive = false;
 		enemy.wing2.Offset = -enemyWingPosOffset;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing2.obj.img.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
-		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
-		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+		AEVec2Set(&enemy.wing2.obj.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.scale.x * 0.5f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.scale.y * 0.5f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.scale.x * 0.5f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.scale.y * 0.5f;
 		enemy.wing2.fireRate = 1.0f;
 		enemy.wing2.timeSinceLastFire = 0;
 		enemy.wing2.health = 100;
@@ -201,10 +201,10 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 		it->obj.pos.y += it->bulletVel.y * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 
-		it->collisionBox.minimum.x = it->obj.pos.x - it->obj.img.scale.x * 0.5f;
-		it->collisionBox.minimum.y = it->obj.pos.y - it->obj.img.scale.y * 0.5f;
-		it->collisionBox.maximum.x = it->obj.pos.x + it->obj.img.scale.x * 0.5f;
-		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.img.scale.y * 0.5f;
+		it->collisionBox.minimum.x = it->obj.pos.x - it->obj.scale.x * 0.5f;
+		it->collisionBox.minimum.y = it->obj.pos.y - it->obj.scale.y * 0.5f;
+		it->collisionBox.maximum.x = it->obj.pos.x + it->obj.scale.x * 0.5f;
+		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.scale.y * 0.5f;
 
 
 		it->lifeTime--;	//decrease lifetime
@@ -268,9 +268,6 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 	}
 
-	
-
-
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		ENEMY_JUMPER_Update(enemy, player, vecCollectables);
@@ -288,18 +285,18 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 
 
 	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.img.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.img.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.img.scale.y * 0.5f;
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.scale.y * 0.5f;
 
-	f32 verticalOffset = enemy.obj.img.scale.y * 0.05f;
+	f32 verticalOffset = enemy.obj.scale.y * 0.05f;
 	//Vertical
 	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
 	enemy.boxHeadFeet.minimum.y -= verticalOffset;
 	enemy.boxHeadFeet.maximum.y += verticalOffset;
 
-	f32 horizontalOffset = enemy.obj.img.scale.x * 0.02f;
+	f32 horizontalOffset = enemy.obj.scale.x * 0.02f;
 	//Horizontal
 	enemy.boxArms = enemy.collisionBox;
 	enemy.boxArms.minimum.x -= horizontalOffset;
@@ -360,7 +357,8 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.angryTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f, enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				enemy.obj.UpdateTransformMatrix();
+				AEGfxSetTransform(enemy.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhitesqrMesh); //drawing bullets
@@ -369,9 +367,9 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-				AEGfxTextureSet(enemy.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.obj.pos.x, enemy.obj.pos.y, 0.f,
-					enemy.obj.img.scale.x, enemy.obj.img.scale.y).m);
+				AEGfxTextureSet(enemy.obj.pTex, 0, 0);
+				enemy.obj.UpdateTransformMatrix();
+				AEGfxSetTransform(enemy.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 
 				DrawBullets(enemy, pWhitesqrMesh); //drawing bullets
@@ -381,15 +379,17 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-				AEGfxTextureSet(enemy.wing1.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing1.obj.pos.x, enemy.wing1.obj.pos.y, 0.f, enemy.wing1.obj.img.scale.x, enemy.wing1.obj.img.scale.y).m);
+				AEGfxTextureSet(enemy.wing1.obj.pTex, 0, 0);
+				enemy.wing1.obj.UpdateTransformMatrix();
+				AEGfxSetTransform(enemy.wing1.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
 			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-				AEGfxTextureSet(enemy.wing2.obj.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(enemy.wing2.obj.pos.x, enemy.wing2.obj.pos.y, 0.f, enemy.wing2.obj.img.scale.x, enemy.wing2.obj.img.scale.y).m);
+				AEGfxTextureSet(enemy.wing2.obj.pTex, 0, 0);
+				enemy.wing2.obj.UpdateTransformMatrix();
+				AEGfxSetTransform(enemy.wing2.obj.transform.m);
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 			}
 

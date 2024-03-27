@@ -48,7 +48,7 @@ void Lobby_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_LOBBY_SIZE];
 	}
 
-	player = PlayerInitialize("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
+	player = new Player("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
@@ -115,11 +115,11 @@ void Lobby_Initialize()
 		}
 	}
 
-	player->obj.img.scale = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
+	player->obj.scale = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
 
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
 	               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
 	               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
@@ -142,14 +142,14 @@ void Lobby_Update()
 			CurrentScene::QUIT_SCENE)
 			return;
 		if (currScene == CurrentScene::MAIN_SCENE)
-			PlayerUpdate(*player, Inventory::inventoryOpen);
-		cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
-		               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
-		               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+			player->Update(Inventory::inventoryOpen);
+		cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
+			grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
+			grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 		CheckPlayerGridCollision(grids2D, player);
 
-		if (AEInputCheckTriggered(AEVK_I))
+		if (AEInputCheckTriggered(AEVK_TAB))
 		{
 			Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		}
@@ -185,9 +185,9 @@ void Lobby_Draw()
 	DrawNPC(*pWhiteSquareMesh);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x,
-	                                                player->obj.img.scale.y).m);
+	AEGfxTextureSet(player->obj.pTex, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.scale.x,
+	                                                player->obj.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -220,19 +220,18 @@ void Lobby_Draw()
 
 	//Print Mission Name
 	//Print 
-
-#pragma region InventoryDraw
+	//Inventory images
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	if (Inventory::inventoryOpen)
 	{
-		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 		f32 x, y;
 		AEGfxGetCamPosition(&x, &y);
 
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
-		                                                inventoryBackground.img.scale.x,
-		                                                inventoryBackground.img.scale.y).m);
+			inventoryBackground.img.scale.x,
+			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
@@ -384,6 +383,16 @@ void Lobby_Draw()
 	}
 #pragma endregion
 
+	int index = 1;
+	for (ButtonGearUI button : Inventory::equipmentDisplay)
+	{
+		AEGfxTextureSet(button.img.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f * index++,
+			AEGfxGetWinMinY() + 50.f, 0.f,
+			button.img.scale.x, button.img.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
+
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
 
@@ -414,9 +423,6 @@ void Lobby_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 
-
-	AEGfxTextureUnload(player->obj.img.pTex);
-
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -441,10 +447,10 @@ namespace {
 	{
 		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
 			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
 				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 				{

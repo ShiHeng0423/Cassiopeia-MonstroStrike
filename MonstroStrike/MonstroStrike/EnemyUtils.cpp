@@ -70,18 +70,18 @@ void SpawnBullet(AEVec2& enemyPosition, AEVec2& playerPosition, std::vector<Bull
 	//create a bullet
 	Bullet bullet;
 	bullet.lifeTime = 100;													//lifetime
-	bullet.obj.img.pTex = bulletTex;										//image
+	bullet.obj.pTex = bulletTex;										//image
 	AEVec2Set(&bullet.obj.pos, enemyPosition.x, enemyPosition.y);			//start position
-	AEVec2Set(&bullet.obj.img.scale, 25.f, 25.f);							//set scale of the image
+	AEVec2Set(&bullet.obj.scale, 25.f, 25.f);							//set scale of the image
 
 	//set velocity of bullet
 	bullet.bulletSpeed = 2.5f;
 	AEVec2Set(&bullet.bulletVel, direction.x * bullet.bulletSpeed, direction.y * bullet.bulletSpeed);
 
-	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.img.scale.x * 0.5f;
-	bullet.collisionBox.minimum.y = bullet.obj.pos.y - bullet.obj.img.scale.y * 0.5f;
-	bullet.collisionBox.maximum.x = bullet.obj.pos.x + bullet.obj.img.scale.x * 0.5f;
-	bullet.collisionBox.maximum.y = bullet.obj.pos.y + bullet.obj.img.scale.y * 0.5f;
+	bullet.collisionBox.minimum.x = bullet.obj.pos.x - bullet.obj.scale.x * 0.5f;
+	bullet.collisionBox.minimum.y = bullet.obj.pos.y - bullet.obj.scale.y * 0.5f;
+	bullet.collisionBox.maximum.x = bullet.obj.pos.x + bullet.obj.scale.x * 0.5f;
+	bullet.collisionBox.maximum.y = bullet.obj.pos.y + bullet.obj.scale.y * 0.5f;
 
 	// Push the bullet into the vector
 	vecbullets.push_back(bullet);
@@ -89,8 +89,8 @@ void SpawnBullet(AEVec2& enemyPosition, AEVec2& playerPosition, std::vector<Bull
 
 void DrawBullets(Enemy& enemy, AEGfxVertexList* pWhiteSquareMesh) {
 	for (const Bullet& bullet : enemy.bullets) {
-		AEGfxTextureSet(bullet.obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.img.scale.x, bullet.obj.img.scale.y).m);
+		AEGfxTextureSet(bullet.obj.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(bullet.obj.pos.x, bullet.obj.pos.y, 0.f, bullet.obj.scale.x, bullet.obj.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 }
@@ -144,31 +144,31 @@ void EnemyLootSpawn(Enemy& enemy, std::vector<EnemyDrops>& vecCollectables) {
 	
 	EnemyDrops holder;
 	AEVec2Set(&holder.obj.pos, enemy.obj.pos.x, enemy.obj.pos.y);			//start position
-	AEVec2Set(&holder.obj.img.scale, 25.f, 25.f);							//set scale of the image
+	AEVec2Set(&holder.obj.scale, 25.f, 25.f);							//set scale of the image
 
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		holder.dropType = ENEMY_JUMPER_DROP;
-		holder.obj.img.pTex = enemyJumperDropTex;
+		holder.obj.pTex = enemyJumperDropTex;
 		break;
 	case ENEMY_CHARGER:
 		holder.dropType = ENEMY_CHARGER_DROP;
-		holder.obj.img.pTex = enemyChargerDropTex;
+		holder.obj.pTex = enemyChargerDropTex;
 		break;
 	case ENEMY_FLY:
 		holder.dropType = ENEMY_FLY_DROP;
-		holder.obj.img.pTex = enemyFlyDropTex;
+		holder.obj.pTex = enemyFlyDropTex;
 		break;
 	case ENEMY_BOSS1:
 		holder.dropType = ENEMY_BOSS1_DROP;
-		holder.obj.img.pTex = enemyBoss1DropTex;
+		holder.obj.pTex = enemyBoss1DropTex;
 		break;
 	}
 
-	holder.collisionBox.minimum.x = holder.obj.pos.x - holder.obj.img.scale.x * 0.5f;
-	holder.collisionBox.minimum.y = holder.obj.pos.y - holder.obj.img.scale.y * 0.5f;
-	holder.collisionBox.maximum.x = holder.obj.pos.x + holder.obj.img.scale.x * 0.5f;
-	holder.collisionBox.maximum.y = holder.obj.pos.y + holder.obj.img.scale.y * 0.5f;
+	holder.collisionBox.minimum.x = holder.obj.pos.x - holder.obj.scale.x * 0.5f;
+	holder.collisionBox.minimum.y = holder.obj.pos.y - holder.obj.scale.y * 0.5f;
+	holder.collisionBox.maximum.x = holder.obj.pos.x + holder.obj.scale.x * 0.5f;
+	holder.collisionBox.maximum.y = holder.obj.pos.y + holder.obj.scale.y * 0.5f;
 
 	vecCollectables.push_back(holder);
 }
@@ -176,8 +176,8 @@ void EnemyLootSpawn(Enemy& enemy, std::vector<EnemyDrops>& vecCollectables) {
 
 void DrawEnemyLoot(std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pWhiteSquareMesh) {
 	for (const EnemyDrops& holder : vecCollectables) {
-		AEGfxTextureSet(holder.obj.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(holder.obj.pos.x, holder.obj.pos.y, 0.f, holder.obj.img.scale.x, holder.obj.img.scale.y).m);
+		AEGfxTextureSet(holder.obj.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(holder.obj.pos.x, holder.obj.pos.y, 0.f, holder.obj.scale.x, holder.obj.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 }

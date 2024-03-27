@@ -108,6 +108,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
+    <ClCompile Include="GameState_BossRoom.cpp" />
     <ClCompile Include="GameState_Level1_B.cpp" />
     <ClCompile Include="GameState_Level1_C.cpp" />
     <ClCompile Include="GameState_Level1_D.cpp" />
@@ -121,6 +122,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="GameState_Mainmenu.cpp" />
     <ClCompile Include="GameState_SplashScreen.cpp" />
     <ClInclude Include="GameStateHeaders.h" />
+    <ClInclude Include="GameState_BossRoom.h" />
     <ClInclude Include="GameState_Level1_B.h" />
     <ClInclude Include="GameState_Level1_C.h" />
     <ClInclude Include="GameState_Level1_D.h" />
@@ -136,7 +138,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="TransformMatrix.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
@@ -205,7 +206,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
     <ClInclude Include="TextPrinting.h" />
-    <ClInclude Include="TransformMatrix.h" />
     <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="CollisionShape.h" />
@@ -216,7 +216,11 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="json.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Assets\GameMap_BossStage.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_BossStage.csv" />
+    <None Include="..\Assets\SaveFiles\equipped_gears.json" />
+    <None Include="..\Assets\SaveFiles\full_item_list.json" />
+    <None Include="..\Assets\SaveFiles\player_inventory.json" />
+    <None Include="..\Assets\SaveFiles\recipe_list.json" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_A.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_B.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_C.csv" />

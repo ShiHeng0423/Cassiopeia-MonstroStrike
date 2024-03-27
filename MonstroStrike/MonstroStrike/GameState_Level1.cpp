@@ -67,7 +67,7 @@ void Level1_A_Load()
 	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
 	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
 
-	player = PlayerInitialize("Assets/Border.png", {AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f},
+	player= new Player("Assets/Border.png", {AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f},
 	                          {0, -100}, {40.f, 0.f}, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
@@ -131,7 +131,7 @@ void Level1_A_Initialize()
 			}
 		}
 	}
-	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
+	player->obj.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 #pragma endregion
 
 	cam = new Camera(player->obj.pos);
@@ -170,8 +170,8 @@ void Level1_A_Update()
 
 #pragma region PlayerUpdate
 	if (currScene == MAIN_SCENE)
-		PlayerUpdate(*player, Inventory::inventoryOpen);
-	if (AEInputCheckTriggered(AEVK_I))
+		player->Update(Inventory::inventoryOpen);
+	if (AEInputCheckTriggered(AEVK_TAB))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 	}
@@ -269,7 +269,7 @@ void Level1_A_Update()
 
 #pragma region CameraUpdate
 
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
 	               grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x,
 	               grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
@@ -303,9 +303,9 @@ void Level1_A_Draw()
 
 #pragma region Player_Render
 
-	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x,
-	                                                player->obj.img.scale.y).m);
+	AEGfxTextureSet(player->obj.pTex, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.scale.x,
+	                                                player->obj.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//drawing enemy
@@ -330,16 +330,16 @@ void Level1_A_Draw()
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0, (int)player->currHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0, (int)player->maxHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	std::string str = std::to_string(hp);
+	std::string str = std::to_string((int)player->currHealth);
 	const char* pTextHP = str.c_str();
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
@@ -359,8 +359,8 @@ void Level1_A_Draw()
 
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
-		                                                inventoryBackground.img.scale.x,
-		                                                inventoryBackground.img.scale.y).m);
+			inventoryBackground.img.scale.x,
+			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
@@ -390,8 +390,8 @@ void Level1_A_Draw()
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 
@@ -400,8 +400,8 @@ void Level1_A_Draw()
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
@@ -414,8 +414,8 @@ void Level1_A_Draw()
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 
@@ -424,8 +424,8 @@ void Level1_A_Draw()
 			{
 				AEGfxTextureSet(button.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 		}
@@ -486,12 +486,11 @@ void Level1_A_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
+	
 	AEGfxTextureUnload(enemyJumperDropTex);
 	AEGfxTextureUnload(enemyChargerDropTex);
 	AEGfxTextureUnload(enemyFlyDropTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
-
-	AEGfxTextureUnload(player->obj.img.pTex);
 
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
@@ -517,10 +516,10 @@ namespace {
 	{
 		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
 			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
 				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 				{
@@ -593,10 +592,10 @@ namespace {
 
 			int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
 
-			for (int i = 0; i <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+			for (int i = 0; i <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 			{
 				int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-				for (int j = 0; j <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+				for (int j = 0; j <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 				{
 
 					//Check vertical box (Head + Feet) 
@@ -620,6 +619,48 @@ namespace {
 						tmpEnemy.loopIdle = false;
 					}
 				}
+				enemyIndexX += 1;
+			}
+			enemyIndexY += 1;
+		}
+	}
+}
+
+void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy)
+{
+	for (Enemy& tmpEnemy : enemy)
+	{
+
+		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
+
+		for (int i = 0; i <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); i++)
+		{
+			int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+			for (int j = 0; j <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); j++)
+			{
+
+				//Check vertical box (Head + Feet) 
+				if (AABBvsAABB(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) 
+				{
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
+						&tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
+						&tmpEnemy.isFalling);
+				}
+				//Check horizontal box (Left arm -> Right arm)
+				if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
+				{
+					tmpEnemy.isCollision = true;
+					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
+
+					ResolveHorizontalCollision(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
+						&tmpEnemy.velocity);
+					tmpEnemy.loopIdle = false;
+				}
+
+		
 			}
 		}
 	}
