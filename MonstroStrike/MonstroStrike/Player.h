@@ -11,10 +11,6 @@ f32 const PlayerMaxBasehealth = 100.f;
 
 class Player {
 
-private: 
-	AEGfxTexture* FacingLeft;
-	AEGfxTexture* FacingRight;
-
 
 public:
 
@@ -25,6 +21,9 @@ public:
 
 	Object obj;
 	AEVec2 prevPos;
+
+	AEGfxTexture* FacingLeft;
+	AEGfxTexture* FacingRight;
 
 	bool isFacingRight;
 	bool onFloor; //Added to check entity on floor, hence can jump

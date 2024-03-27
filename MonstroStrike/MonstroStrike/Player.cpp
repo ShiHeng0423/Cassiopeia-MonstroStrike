@@ -96,6 +96,8 @@ Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed
 Player::~Player()
 {
 	//AEGfxTextureUnload(obj.pTex);
+	//AEGfxTextureUnload(FacingRight);
+	//AEGfxTextureUnload(FacingLeft);
 }
 
 void Player::Update(bool isInventoryOpen)
