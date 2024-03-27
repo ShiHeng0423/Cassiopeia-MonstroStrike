@@ -1,6 +1,6 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
-
+#include "ParticleSystem.h"
 
 
 
@@ -17,14 +17,19 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	{
 		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+
 	}
 	if (enemy.wing1.health <= 0)
 	{
 		enemy.wing1.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+
 	}
 	if (enemy.wing2.health <= 0)
 	{
 		enemy.wing2.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
 	}
 
 	if (enemy.wing1.isAlive == false && enemy.wing2.isAlive == false) {

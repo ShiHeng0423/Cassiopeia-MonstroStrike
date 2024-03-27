@@ -147,6 +147,9 @@
     <ClCompile Include="GameState_Level1_F.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
+    <ClCompile Include="GameState_BossRoom.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h">
@@ -212,9 +215,6 @@
     <ClInclude Include="GameState_Mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_Level1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameState_GameLobby.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -275,12 +275,15 @@
     <ClInclude Include="GameStateHeaders.h">
       <Filter>Header Files\GameLevels</Filter>
     </ClInclude>
+    <ClInclude Include="GameState_Level1.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_BossRoom.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\player_inventory.json" />
-    <None Include="..\Assets\GameMap_BossStage.csv">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="..\Assets\GameMaps\GameMap_Level1_A.csv">
       <Filter>Resource Files</Filter>
     </None>
@@ -300,6 +303,13 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="..\Assets\GameMaps\GameMap_Lobby.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Assets\SaveFiles\equipped_gears.json" />
+    <None Include="..\Assets\SaveFiles\full_item_list.json" />
+    <None Include="..\Assets\SaveFiles\player_inventory.json" />
+    <None Include="..\Assets\SaveFiles\recipe_list.json" />
+    <None Include="..\Assets\GameMaps\GameMap_BossStage.csv">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

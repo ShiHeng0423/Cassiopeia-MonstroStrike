@@ -285,6 +285,11 @@ void Player::Update(bool isInventoryOpen)
 	}
 
 	Armor_Effect_Update(*this);
+
+	if (currHealth <= 0.f)
+	{
+		OnPlayerDeath();
+	}
 }
 
 void OnPlayerDeath() {

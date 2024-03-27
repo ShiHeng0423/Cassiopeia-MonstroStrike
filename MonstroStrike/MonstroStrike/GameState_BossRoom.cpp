@@ -48,14 +48,11 @@ namespace
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
 }
 
-
-
-
-void Level1_F_Load()
+void Level1_BOSS_Load()
 {
-	grids2D = new Grids2D * [MAP_ROW_SIZE_2];
-	for (int i = 0; i < MAP_ROW_SIZE_2; ++i) {
-		grids2D[i] = new Grids2D[MAP_COLUMN_SIZE_2];
+	grids2D = new Grids2D * [MAP_COLUMN_BOSS_SIZE];
+	for (int i = 0; i < MAP_ROW_BOSS_SIZE; ++i) {
+		grids2D[i] = new Grids2D[MAP_COLUMN_BOSS_SIZE];
 	}
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
@@ -64,11 +61,11 @@ void Level1_F_Load()
 		{ 0, -100 }, { 40.f, 0.f }, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	const char* fileName = "Assets/GameMaps/GameMap_Level1_F.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMaps/GameMap_BossStage.csv"; //Change name as per level
 	//Load map
-	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2))
+	if (MapLoader(fileName, gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE))
 	{
-		PrintMap(gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2); //Just for checking if the map data is stored properly
+		PrintMap(gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE); //Just for checking if the map data is stored properly
 	}
 
 	//Inventory assets
@@ -94,36 +91,24 @@ void Level1_F_Load()
 	menu = new PauseMenu_Manager();
 }
 
-void Level1_F_Initialize()
+void Level1_BOSS_Initialize()
 {
 #pragma region Grid_Loading
 	//Initializing grid data
-	SetGridTypes(grids2D, gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2);
+	SetGridTypes(grids2D, gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE);
 
 	//For Initializing the grids and positions
-	for (s16 rows = 0; rows < MAP_ROW_SIZE_2; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_BOSS_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_SIZE_2; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_BOSS_SIZE; cols++)
 		{
 			grids2D[rows][cols].rowIndex = rows;
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
-			if (grids2D[rows][cols].typeOfGrid == VERTICAL_PLATFORM_POS)
-			{
-				CreatePlatform(grids2D[rows][cols].position.x, grids2D[rows][cols].position.y,
-					GRID_SIZE * 3.f, GRID_SIZE, 2.f, VERTICAL_MOVING_PLATFORM, platformVectors);
-			}
-			//Check if previous zone is the next zone
-			else if (grids2D[rows][cols].typeOfGrid == DIAGONAL_PLATFORM_POS)
-			{
-			CreatePlatform(grids2D[rows][cols].position.x, grids2D[rows][cols].position.y,
-				GRID_SIZE * 3.f, GRID_SIZE, 2.f, DIAGONAL_PLATFORM, platformVectors);
-
-			}
 
 			//Previous zone is area a
-			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1 && previous == AREA1_E)
+			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1)
 			{
 				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
 			}
@@ -146,7 +131,7 @@ void Level1_F_Initialize()
 	MapTransitionInit();
 }
 
-void Level1_F_Update()
+void Level1_BOSS_Update()
 {
 	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
 	MapTransitionUpdate();
@@ -202,9 +187,9 @@ void Level1_F_Update()
 	CheckPlayerGridCollision(grids2D, player);
 	//CheckEnemyGridCollision(grids2D, vecEnemy);
 
-	for (s16 rows = 0; rows < MAP_ROW_SIZE_2; rows++)
+	for (s16 rows = 0; rows < MAP_ROW_BOSS_SIZE; rows++)
 	{
-		for (s16 cols = 0; cols < MAP_COLUMN_SIZE_2; cols++)
+		for (s16 cols = 0; cols < MAP_COLUMN_BOSS_SIZE; cols++)
 		{
 			switch (grids2D[rows][cols].typeOfGrid)
 			{
@@ -263,13 +248,13 @@ void Level1_F_Update()
 #pragma region CameraUpdate
 
 	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
-		grids2D[0][MAP_COLUMN_SIZE_2 - 1].collisionBox.maximum.x,
-		grids2D[MAP_ROW_SIZE_2 - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+		grids2D[0][MAP_COLUMN_BOSS_SIZE - 1].collisionBox.maximum.x,
+		grids2D[MAP_ROW_BOSS_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
 }
 
-void Level1_F_Draw()
+void Level1_BOSS_Draw()
 {
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
@@ -284,7 +269,7 @@ void Level1_F_Draw()
 
 #pragma region Grid_Render
 
-	RenderGrids(grids2D, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2, *pWhiteSquareMesh);
+	RenderGrids(grids2D, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE, *pWhiteSquareMesh);
 
 
 	for (s16 i = 0; i < platformVectors.size(); i++)
@@ -453,7 +438,7 @@ void Level1_F_Draw()
 	MapTransitionDraw();
 }
 
-void Level1_F_Free()
+void Level1_BOSS_Free()
 {
 	FreeEnemy(vecEnemy); //loops thru all eney tex and free them.
 	//Free Enemy Vector
@@ -471,7 +456,7 @@ void Level1_F_Free()
 	ParticlesFree();
 }
 
-void Level1_F_Unload()
+void Level1_BOSS_Unload()
 {
 	Inventory::SaveInventory();
 	Inventory::FreeInventory();
@@ -493,7 +478,7 @@ void Level1_F_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxMeshFree(pGreenSquareMesh);
-	for (int i = 0; i < MAP_ROW_SIZE_2; ++i) {
+	for (int i = 0; i < MAP_ROW_BOSS_SIZE; ++i) {
 		delete[] grids2D[i];
 	}
 
@@ -543,27 +528,6 @@ namespace {
 					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
 					{
 						OnPlayerDeath();
-					}
-					break;
-				case MAP_TRANSITION_GRID_1:
-					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						//std::cout << "Collided\n";MainMenu_Song
-						if (!transitionalImageOBJ.active)
-						{
-							transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_E);
-						}
-					}
-					break;
-				case MAP_TRANSITION_GRID_2:
-					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						//std::cout << "Collided\n";MainMenu_Song
-						if (!transitionalImageOBJ.active)
-						{
-							//Need to change to boss room
-							transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA_BOSS);
-						}
 					}
 					break;
 				case EMPTY:

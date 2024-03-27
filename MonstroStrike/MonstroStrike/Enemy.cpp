@@ -268,9 +268,6 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 	}
 
-	
-
-
 	switch (enemy.enemyType) {
 	case ENEMY_JUMPER:
 		ENEMY_JUMPER_Update(enemy, player, vecCollectables);

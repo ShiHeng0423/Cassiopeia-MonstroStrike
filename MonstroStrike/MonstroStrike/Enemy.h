@@ -8,7 +8,6 @@
 #include <iostream>
 
 
-
 enum EnemyDir {
 	ENEMY_DEFAULT = 0,
 	ENEMY_LEFT,
