@@ -207,9 +207,9 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		it->collisionBox.maximum.x = it->obj.pos.x + it->obj.scale.x * 0.5f;
 		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.scale.y * 0.5f;
 
-		if (AABBvsAABB(it->collisionBox, player.collisionBox)) {
+		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
 			it = enemy.bullets.erase(it);
-			player.currHealth -= 5;
+			player.GetCurrentHealth() -= 5;
 			continue;
 		}
 		it->lifeTime--;	//decrease lifetime

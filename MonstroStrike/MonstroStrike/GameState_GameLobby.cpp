@@ -406,11 +406,6 @@ void Lobby_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 
-	AEGfxTextureUnload(player->FacingRight);
-	AEGfxTextureUnload(player->FacingLeft);
-	
-
-
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);

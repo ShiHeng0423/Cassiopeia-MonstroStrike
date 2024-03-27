@@ -8,7 +8,7 @@ f32 BURN_TIME = 3.0f;
 
 void Armor_Effect_Update(class Player& player)
 {
-    player.GetArmorSet().effectTimer -= AEFrameRateControllerGetFrameTime();
+    player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
     switch (player.GetArmorSet().extraEffect)
     {
     case Status_Effect_System::Armor_Status_Effect::BURNING:

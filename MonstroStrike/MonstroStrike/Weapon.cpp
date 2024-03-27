@@ -489,7 +489,7 @@ namespace Weapon_System
     {
         //wings
         if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) {
-            theEnemy.wing1.health -= playerEquip->damage;
+            theEnemy.wing1.health -= (int)playerEquip->damage;
             std::cout << "Attack landed wing1" << std::endl;
 
             playerEquip->weaponHIT = true;
@@ -499,7 +499,7 @@ namespace Weapon_System
             }
         }
         if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing2.collisionBox)) {
-            theEnemy.wing2.health -= playerEquip->damage;
+            theEnemy.wing2.health -= (int)playerEquip->damage;
             std::cout << "Attack landed wing2" << std::endl;
 
             playerEquip->weaponHIT = true;
@@ -512,7 +512,7 @@ namespace Weapon_System
 
         if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.collisionBox)) //Success
         {
-            theEnemy.health -= playerEquip->damage;
+            theEnemy.health -= (int)playerEquip->damage;
             std::cout << "Attack landed" << std::endl;
             std::cout << theEnemy.health << std::endl;
 

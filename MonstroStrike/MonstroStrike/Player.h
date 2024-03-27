@@ -15,7 +15,7 @@ class Player {
 
 public:
 
-	Player(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool FacingRight);
+	Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRight);
 	~Player();
 
 	void Update(bool isInventoryOpen);

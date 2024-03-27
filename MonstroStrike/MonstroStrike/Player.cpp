@@ -47,7 +47,7 @@ namespace
 }
 
 
-Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool FacingRight)
+Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRight)
 {
 	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
 	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
@@ -64,7 +64,7 @@ Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed
 
 	//camera
 	AEVec2Set(&expectedLocation, 0.f, 0.f);
-	isFacingRight = FacingRight;
+	isFacingRight = playerFacingRight;
 	lookAheadMutliplier = 50.f;
 
 	//Initializing collision box starting position
@@ -100,9 +100,8 @@ Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed
 
 Player::~Player()
 {
-	//AEGfxTextureUnload(obj.pTex);
-	//AEGfxTextureUnload(FacingRight);
-	//AEGfxTextureUnload(FacingLeft);
+	AEGfxTextureUnload(FacingRight);
+	AEGfxTextureUnload(FacingLeft);
 }
 
 void Player::Update(bool isInventoryOpen)

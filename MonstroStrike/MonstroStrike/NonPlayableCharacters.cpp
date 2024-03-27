@@ -226,7 +226,7 @@ void UpdateNPC(Player* player)
 				case NPC_QUEST_GIVER:
 					if (missionSystem.CheckMissionClear())
 					{
-						missionSystem.MissionComplete(missionSystem.GetAcceptedMissionID());
+						missionSystem.MissionComplete((int)missionSystem.GetAcceptedMissionID());
 					}
 					//Activate next conversation
 					currentConvState = CONVERSATION_CONTENT;
