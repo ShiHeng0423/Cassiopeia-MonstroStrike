@@ -1,5 +1,6 @@
 
 #include "AEEngine.h"
+#include "Inventory.h"
 #include "Player.h"
 #include "Physics.h"
 #include "Weapon.h"
@@ -102,6 +103,10 @@ Player::~Player()
 {
 	AEGfxTextureUnload(FacingRight);
 	AEGfxTextureUnload(FacingLeft);
+	AEGfxTextureUnload(HealthBorder);
+
+	AEGfxMeshFree(pMeshRed);
+	AEGfxMeshFree(pWhiteSquareMesh);
 }
 
 void Player::Update(bool isInventoryOpen)
@@ -297,7 +302,7 @@ void Player::RenderPlayerStatUI()
 
 	//Health Border
 	//AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + (int)currHealth, AEGfxGetWinMaxY(), 0, (int)currHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + (int)maxHealth, AEGfxGetWinMaxY(), 0, (int)maxHealth * 2.f, 80.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//Health Bar
@@ -308,8 +313,19 @@ void Player::RenderPlayerStatUI()
 	std::string str = std::to_string((int)currHealth);
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.5f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
-}
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 0, 0, 0, 1);
+
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+	int index = 1;
+	for (ButtonGearUI button : Inventory::equipmentDisplay)
+	{
+		AEGfxTextureSet(button.img.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f * index++,
+			AEGfxGetWinMinY() + 50.f, 0.f,
+			button.img.scale.x, button.img.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
+}	
 
 //Get Player Armor Set
 Armor_System::Armor_Set& Player::GetArmorSet()

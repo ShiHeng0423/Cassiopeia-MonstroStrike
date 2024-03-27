@@ -691,14 +691,16 @@ namespace Inventory
 					 		switch (item.Item.rarity)
 					 		{
 					 		case COMMON:
-					
+								std::cout << "Common: " << item.Item.name << std::endl;
 					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
-					
 					 			break;
 					 		case RARE:
+							case LEGENDARY:
+								std::cout << "Rare: " << item.Item.name << std::endl;
 					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
 					 			break;
 					 		case EPIC:
+								std::cout << "Epic: " << item.Item.name << std::endl;
 					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
 					 			break;
 					
@@ -718,6 +720,7 @@ namespace Inventory
 					
 					 		break;
 					 	case RARE:
+						case LEGENDARY:
 					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
@@ -734,6 +737,7 @@ namespace Inventory
 					
 					 		break;
 					 	case RARE:
+						case LEGENDARY:
 					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
@@ -750,6 +754,7 @@ namespace Inventory
 					
 					 		break;
 					 	case RARE:
+						case LEGENDARY:
 					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
@@ -892,7 +897,7 @@ namespace Inventory
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 		//Item images
-		for (size_t i = 0 ; i < fullInventoryList.size(); ++i)
+		for (size_t i = 0; i < fullInventoryList.size(); ++i)
 		{
 			// Construct the file path for the texture
 			std::stringstream ss;
@@ -904,25 +909,40 @@ namespace Inventory
 		}
 
 
-		Item emptySpace {"", -999, "", "",
+		Item emptySpace{ "", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
-			false, 0, 0, 0};
+			false, 0, 0, 0 };
 
 		for (size_t i = 0; i < 5; ++i)
 		{
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
-			if(equippedGear.size() < 5)
+			if (equippedGear.size() < 5)
 			{
 				equippedGear.push_back(emptySpace);
+				equipmentDisplay[i].Item = emptySpace;
+			}
+		}
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+
+			if (equippedGear[i].ID >= 0)
+			{
+				equipmentDisplay[equippedGear[i].gear_loc].Item = equippedGear[i];
 			}
 
-			if(equippedGear[i].ID < 0)
-			{
-				equipmentDisplay[i].Item = emptySpace;
-			}else
-			{
-				equipmentDisplay[i].Item = equippedGear[i];
-			}
+			//if(equippedGear[i].ID < 0)
+			//{
+			//	equipmentDisplay[i].Item = emptySpace;
+			//}else
+			//{
+			//	equipmentDisplay[i].Item = equippedGear[i];
+			//}
+		}
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			equippedGear[i] = equipmentDisplay[i].Item;
 		}
 	}
 

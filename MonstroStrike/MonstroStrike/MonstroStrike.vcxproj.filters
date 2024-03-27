@@ -289,7 +289,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Assets\player_inventory.json" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_A.csv">
       <Filter>Resource Files</Filter>
     </None>

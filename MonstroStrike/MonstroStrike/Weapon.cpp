@@ -24,6 +24,7 @@ namespace Weapon_System
         case Weapon_System::WEAPON_GRADE::TIER_2:
             tmp.name = "Broad-Sword";
             tmp.damage = 10;
+            tmp.extraEffect = Status_Effect_System::DRAINING;
             break;
         case Weapon_System::WEAPON_GRADE::TIER_3:
             tmp.name = "GreatSword";
@@ -276,8 +277,6 @@ namespace Weapon_System
                 playerEquip->collisionBox.maximum.y = playerEquip->position.y + playerEquip->scale.y * 0.5f;
 
                 playerEquip->weaponHIT = false;
-
-
             }
             else if (player->GetComboState() == 1)
             {

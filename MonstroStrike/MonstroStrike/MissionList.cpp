@@ -220,7 +220,7 @@ void MissionSystem::PrintMissionText()
 
 bool MissionSystem::CheckMissionClear()
 {
-	int id = missionSystem.GetAcceptedMissionID();
+	size_t id = missionSystem.GetAcceptedMissionID();
 
 	if (id != -1)
 	{

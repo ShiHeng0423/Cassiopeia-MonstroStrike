@@ -4,8 +4,6 @@
 f32 REGEN_TIME = 2.0f;
 f32 BURN_TIME = 3.0f;
 
-
-
 void Armor_Effect_Update(class Player& player)
 {
     player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
@@ -193,11 +191,11 @@ f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_Sy
             return 80;
             break;
         case Armor_System::ARMOR_GRADE::TIER_2:
-            effect = Status_Effect_System::BURNING;
+            effect = Status_Effect_System::REGEN;
             return 150;
             break;
         case Armor_System::ARMOR_GRADE::TIER_3:
-            effect = Status_Effect_System::REGEN;
+            effect = Status_Effect_System::BURNING;
             return 250;
             break;
         default:

@@ -366,16 +366,6 @@ void Lobby_Draw()
 	}
 #pragma endregion
 
-	int index = 1;
-	for (ButtonGearUI button : Inventory::equipmentDisplay)
-	{
-		AEGfxTextureSet(button.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f * index++,
-			AEGfxGetWinMinY() + 50.f, 0.f,
-			button.img.scale.x, button.img.scale.y).m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	}
-
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
 

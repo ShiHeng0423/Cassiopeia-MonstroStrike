@@ -17,7 +17,7 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
-
+	delete player;
 }
 
 void GameManager::Render()

@@ -85,6 +85,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	AEGfxDestroyFont(fontID);
 	missionSystem.CleanMemory();
 	delete audioManager;
+	delete gameManager;
 	// free the system
 	AESysExit();
 }
