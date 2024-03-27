@@ -12,7 +12,7 @@ namespace
 
 GameManager::GameManager()
 {
-	player = new Player("Assets/Border.png", { 0.f, 0.f }, { 0.f, 0.f }, { 40.f, 0.f }, true);
+	player = new Player("Assets/PlayerLeft.png", { 0.f, 0.f }, { 0.f, 0.f }, { 40.f, 0.f }, true);
 }
 
 GameManager::~GameManager()
