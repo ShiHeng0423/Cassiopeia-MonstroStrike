@@ -30,7 +30,7 @@ Camera::Camera(AEVec2 player)
 	lookbackTimer = 0.f;
 }
 
-void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gameMinHeight,f32 gameMaxHeight)
+void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, f32 gameMinHeight,f32 gameMaxHeight)
 {
 	s32 cursor_x = 0;
 	s32 cursor_y = 0;
@@ -102,28 +102,28 @@ void Camera::UpdatePos(Player player,f32 gameMinWidth, f32 gameMaxWidth, f32 gam
 			AEVec2Lerp(&this->worldCoordinate, &this->worldCoordinate, &desiredCamLocation, 0.05f);
 		}
 
-		if ((player.expectedLocation.x > this->worldCoordinate.x + camXBoundary) && player.isFacingRight)
+		if ((player->expectedLocation.x > this->worldCoordinate.x + camXBoundary) && player->isFacingRight)
 		{
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x + camXBoundary,this->worldCoordinate.y };
-			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
+			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player->expectedLocation, camFollowupSpeedX);
 			this->worldCoordinate.x = desiredCamLocation.x - camXBoundary;
 		}
-		else if ((player.expectedLocation.x < this->worldCoordinate.x - camXBoundary) && !player.isFacingRight)
+		else if ((player->expectedLocation.x < this->worldCoordinate.x - camXBoundary) && !player->isFacingRight)
 		{
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x - camXBoundary,this->worldCoordinate.y };
-			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
+			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player->expectedLocation, camFollowupSpeedX);
 			this->worldCoordinate.x = desiredCamLocation.x + camXBoundary;
 		}
-		if (player.expectedLocation.y > this->worldCoordinate.y + camYBoundary)
+		if (player->expectedLocation.y > this->worldCoordinate.y + camYBoundary)
 		{
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x, this->worldCoordinate.y + camYBoundary };
-			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
+			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player->expectedLocation, camFollowupSpeedX);
 			this->worldCoordinate.y = desiredCamLocation.y - camYBoundary;
 		}
-		else if (player.expectedLocation.y < this->worldCoordinate.y - camYBoundary)
+		else if (player->expectedLocation.y < this->worldCoordinate.y - camYBoundary)
 		{
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x,this->worldCoordinate.y - camYBoundary };
-			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player.expectedLocation, camFollowupSpeedX);
+			AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &player->expectedLocation, camFollowupSpeedX);
 			this->worldCoordinate.y = desiredCamLocation.y + camYBoundary;
 		}
 

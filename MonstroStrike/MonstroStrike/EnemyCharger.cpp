@@ -1,9 +1,9 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
 
 
-
-void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
@@ -13,7 +13,9 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 	
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
 	}
 
 	// Handle collision with player
@@ -28,8 +30,8 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		enemy.isRecoil = true;
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
-
-			std::cout << "Hit!\n";
+			player.currHealth -= 10.f;
+			player.velocity.x = enemy.velocity.x * 3.f;
 		}
 	}
 	else {
@@ -43,6 +45,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 			enemy.enemyCurrent = ENEMY_IDLE;
 			enemy.speed = 80.f;
 			enemy.isRecoil = false;
+
 		}
 	}
 	else {

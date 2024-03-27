@@ -8,7 +8,7 @@ enum {
 };
 
 enum ParticleType {
-	TEST = 0,
+	ENEMY_DEATH_EFFECT = 0,
 	PARTICLE_TRAILING,
 	PARTICLE_JUMP,
 };

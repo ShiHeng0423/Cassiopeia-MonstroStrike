@@ -1,13 +1,9 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
 
 
-
-
-
-
-
-void ENEMY_FLY_Update(Enemy& enemy, class Player& player)
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
@@ -19,7 +15,10 @@ void ENEMY_FLY_Update(Enemy& enemy, class Player& player)
 
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+
 	}
 
 	switch (enemy.enemyCurrent)

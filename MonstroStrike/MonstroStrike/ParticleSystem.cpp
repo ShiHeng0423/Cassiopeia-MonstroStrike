@@ -18,14 +18,18 @@ void Particles::Update()
 	position.x += velocity.x * (f32)AEFrameRateControllerGetFrameTime();
 	position.y += velocity.y * (f32)AEFrameRateControllerGetFrameTime();
 
-	//std::cout << "Active Particles: " << GetActiveParticleCount() << std::endl;
+	if (particleType == ENEMY_DEATH_EFFECT)
+	{
+		particleSize.x -= 5.f * (f32)AEFrameRateControllerGetFrameTime();
+		particleSize.y -= 5.f * (f32)AEFrameRateControllerGetFrameTime();
+	}
 }
 
 void ParticleLoad()
 {
 	//Load all textures that will be used
-	ParticlesAddTexture("Assets/StardustParticle.png");
-	ParticlesAddTexture("Assets/PlanetTexture.png");
+	ParticlesAddTexture("Assets/Particles/StardustParticle.png");
+	ParticlesAddTexture("Assets/Particles/Particle_EnemyDeath.png");
 }
 
 void ParticleInitialize()
@@ -38,7 +42,7 @@ void ParticleInitialize()
 		allParticles[i].scale = { 0 };
 		allParticles[i].transformation = { 0 };
 		allParticles[i].textureIndex = 0;
-		allParticles[i].particleType = ParticleType::TEST;
+		allParticles[i].particleType = ParticleType::ENEMY_DEATH_EFFECT;
 		allParticles[i].rotate = 0.f;
 
 		allParticles[i].maximumLifeTime = 1.f;
@@ -82,7 +86,7 @@ void ParticleUpdate()
 				ParticlesDeactivate(i); 
 			}
 
-			if (allParticles[i].alpha <= 0.f)
+			if (allParticles[i].alpha <= 0.f || allParticles[i].particleSize.x <= 0.f || allParticles[i].particleSize.y <= 0.f)
 			{
 				ParticlesDeactivate(i);
 			}
@@ -92,7 +96,6 @@ void ParticleUpdate()
 
 void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose, Player* player)
 {
-
 	f32 angle = 0.f;
 	f32 speed = 0.f;
 
@@ -120,9 +123,9 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 		//Setting initial velocities and textures index (Texture index maybe can just base on particle type)
 		switch (allParticles[index].particleType)
 		{
-		case ParticleType::TEST:
+		case ParticleType::ENEMY_DEATH_EFFECT:
 
-			angle = static_cast<f32>(rand() % 360);
+			angle = static_cast<f32>(rand() % 180 + 10);
 			speed = static_cast<f32>(rand() % 60 + 10);
 
 			radians = angle * 3.14159f / 180.f;
@@ -130,11 +133,11 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 			allParticles[index].velocity.x = speed * cos(radians);
 			allParticles[index].velocity.y = speed * sin(radians);
 
-			allParticles[index].textureIndex = 0;
+			allParticles[index].textureIndex = 1;
 			break;
 		case ParticleType::PARTICLE_TRAILING:
 			{
-			f32 offsetDistance = player->obj.img.scale.x * 0.2f;
+			f32 offsetDistance = player->obj.scale.x * 0.2f;
 
 			// Assuming player's velocity is stored in playerVelocityX and playerVelocityY
 			f32 offsetX = player->velocity.x * offsetDistance;
@@ -149,7 +152,7 @@ void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 init
 		case ParticleType::PARTICLE_JUMP:
 		{
 			// Calculate offset distance from the player position
-			f32 offsetDistance = player->obj.img.scale.x * 0.5f;
+			f32 offsetDistance = player->obj.scale.x * 0.5f;
 
 			allParticles[index].velocity.x = (AERandFloat() * 2.0f - 1.0f) * (GRID_SIZE * 2.f); //Split
 
@@ -190,7 +193,10 @@ void ParticlesDraw(AEGfxVertexList& mesh)
 			//Draw based on texture index
 			AEGfxTextureSet(particleTextureList[allParticles[i].textureIndex], 0, 0); //Maybe can try particleTextureList[allParticles->particleType]
 			AEGfxSetTransform(allParticles[i].transformation.m);
-			AEGfxSetColorToMultiply(0.38f, 0.96f, 0.88f, 1.f);
+			if (allParticles[i].particleType != ENEMY_DEATH_EFFECT)
+			{
+				AEGfxSetColorToMultiply(0.38f, 0.96f, 0.88f, 1.f);
+			}
 			AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
 			AEGfxSetTransparency(1.0f);
 			AEGfxSetColorToMultiply(1.f, 1.f, 1.f, 1.f);
@@ -230,13 +236,11 @@ void ParticlesDeactivate(int index)
 			allParticles[index].scale = { 0 };
 			allParticles[index].transformation = { 0 };
 			allParticles[index].textureIndex = 0;
-			allParticles[index].particleType = ParticleType::TEST;
+			allParticles[index].particleType = ParticleType::ENEMY_DEATH_EFFECT; //Might need, might don't need
 			allParticles[index].alpha = 1.f;
 			allParticles[index].rotate = 0.f;
 			allParticles[index].velocity = { 0.f };
-
 			allParticles[index].lifeTime = allParticles[index].maximumLifeTime;
-
 			inactiveParticles.push_back(index);
 			activeCount--;
 		}

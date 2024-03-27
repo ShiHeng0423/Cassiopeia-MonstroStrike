@@ -1,16 +1,19 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
 
 
 
-void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
     const f32 frameTime = (f32)AEFrameRateControllerGetFrameTime();
     f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
     enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.collisionBox);
 
     // Update enemy state based on health
     if (enemy.health <= 0) {
+        EnemyLootSpawn(enemy, vecCollectables);
         enemy.isAlive = false;
+        ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
         return;
     }
 
@@ -18,7 +21,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
     if (enemy.isCollidedWithPlayer) {
         if (!enemy.hasDealtDmg) {
             enemy.hasDealtDmg = true;
-            std::cout << "Hit!\n";
+            player.currHealth -= 10;
         }
     }
     else {

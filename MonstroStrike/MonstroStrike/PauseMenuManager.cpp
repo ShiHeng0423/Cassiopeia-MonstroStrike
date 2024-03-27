@@ -1,6 +1,5 @@
 #include "PauseMenuManager.h"
 #include "GameStateManager.h"
-#include "TransformMatrix.h"
 #include "Utils.h"
 #include "main.h"
 
@@ -9,12 +8,14 @@ namespace {
 
 	AEGfxTexture* pauseMenuBackgroundTex;
 	AEGfxTexture* buttonFrame;
+	AEGfxTexture* gameControlsImg;
 
 	Button pauseMenuButtons[4];
 	Button quitToMainmenu[2];
 	Button backButton;
 
-	Sprite_V2 pauseMenuBackground;
+	Sprite pauseMenuBackground;
+	Sprite gameControls;
 
 
 
@@ -34,6 +35,7 @@ PauseMenu_Manager::PauseMenu_Manager()
 {
 	pauseMenuBackgroundTex = AEGfxTextureLoad("Assets/panelInset_beige.png");
 	buttonFrame = AEGfxTextureLoad("Assets/panel_brown.png");
+	gameControlsImg = AEGfxTextureLoad("Assets/Keyboard_Keys/Game Control.png");
 
 	AEGfxMeshStart();
 
@@ -54,6 +56,7 @@ PauseMenu_Manager::~PauseMenu_Manager()
 {
 	AEGfxTextureUnload(pauseMenuBackgroundTex);
 	AEGfxTextureUnload(buttonFrame);
+	AEGfxTextureUnload(gameControlsImg);
 	AEGfxMeshFree(pWhiteSquareMesh);
 }
 
@@ -105,6 +108,11 @@ void PauseMenu_Manager::Init(Camera* cam)
 	pauseMenuBackground.scale.x = 1000.f;
 	pauseMenuBackground.scale.y = 500.f;
 	pauseMenuBackground.pos = cam->GetCameraWorldPoint();
+
+	gameControls.pTex = gameControlsImg;
+	gameControls.scale.x = 600;
+	gameControls.scale.y = 400;
+	gameControls.pos = cam->GetCameraWorldPoint();
 }
 
 void PauseMenu_Manager::Update(Camera* cam)
@@ -119,14 +127,25 @@ void PauseMenu_Manager::Update(Camera* cam)
 			currScene = CurrentScene::PAUSE_SCENE;
 
 			for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
+			{
 				AEVec2Set(&pauseMenuButtons[i].pos, x, y - 100.f * i + 100.f);
+				pauseMenuButtons[i].UpdateTransformMatrix();
+			}
 
 			AEVec2Set(&quitToMainmenu[0].pos, 250.f + x, y);
+			quitToMainmenu[0].UpdateTransformMatrix();
+
 			AEVec2Set(&quitToMainmenu[1].pos, -250.f + x, y);
+			quitToMainmenu[1].UpdateTransformMatrix();
 
 			AEVec2Set(&backButton.pos, 280.f + x, -180.f + y);
+			backButton.UpdateTransformMatrix();
 
 			AEVec2Set(&pauseMenuBackground.pos, x, y);
+			pauseMenuBackground.UpdateTransformMatrix();
+
+			AEVec2Set(&gameControls.pos, x, y);
+			gameControls.UpdateTransformMatrix();
 		}
 		else
 		{
@@ -203,12 +222,12 @@ void PauseMenu_Manager::Render()
 	case CurrentScene::PAUSE_SCENE:
 	{
 		AEGfxTextureSet(pauseMenuBackgroundTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
+		AEGfxSetTransform(pauseMenuBackground.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		for (size_t i = 0; i < sizeof(pauseMenuButtons) / sizeof(pauseMenuButtons[0]); i++)
 		{
 			AEGfxTextureSet(pauseMenuButtons[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuButtons[i].pos.x, pauseMenuButtons[i].pos.y, 0.f, pauseMenuButtons[i].scale.x, pauseMenuButtons[i].scale.y).m);
+			AEGfxSetTransform(pauseMenuButtons[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
@@ -232,11 +251,15 @@ void PauseMenu_Manager::Render()
 	case CurrentScene::CONTROL_SCENE:
 	{
 		AEGfxTextureSet(pauseMenuBackgroundTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
+		AEGfxSetTransform(pauseMenuBackground.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
+		AEGfxSetTransform(backButton.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(gameControls.pTex, 0, 0);
+		AEGfxSetTransform(gameControls.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;
@@ -248,16 +271,16 @@ void PauseMenu_Manager::Render()
 	}
 	case CurrentScene::QUIT_SCENE:
 	{
-		AEGfxTextureSet(pauseMenuBackgroundTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(pauseMenuBackground.pos.x, pauseMenuBackground.pos.y, 0.f, pauseMenuBackground.scale.x, pauseMenuBackground.scale.y).m);
+		AEGfxTextureSet(pauseMenuBackground.pTex, 0, 0);
+		AEGfxSetTransform(pauseMenuBackground.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxTextureSet(quitToMainmenu[0].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(quitToMainmenu[0].pos.x, quitToMainmenu[0].pos.y, 0.f, quitToMainmenu[0].scale.x, quitToMainmenu[0].scale.y).m);
+		AEGfxSetTransform(quitToMainmenu[0].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxTextureSet(quitToMainmenu[1].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(quitToMainmenu[1].pos.x, quitToMainmenu[1].pos.y, 0.f, quitToMainmenu[1].scale.x, quitToMainmenu[1].scale.y).m);
+		AEGfxSetTransform(quitToMainmenu[1].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;

@@ -48,7 +48,7 @@ void Lobby_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_LOBBY_SIZE];
 	}
 
-	player = PlayerInitialize("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
+	player = new Player("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
@@ -115,11 +115,11 @@ void Lobby_Initialize()
 		}
 	}
 
-	player->obj.img.scale = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
+	player->obj.scale = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
 
 	cam = new Camera(player->obj.pos);
 	menu->Init(cam);
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
 	               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
 	               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 	//Initialize NPCs
@@ -142,14 +142,14 @@ void Lobby_Update()
 			CurrentScene::QUIT_SCENE)
 			return;
 		if (currScene == CurrentScene::MAIN_SCENE)
-			PlayerUpdate(*player, Inventory::inventoryOpen);
-		cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
-		               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
-		               grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+			player->Update(Inventory::inventoryOpen);
+		cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
+			grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
+			grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 		CheckPlayerGridCollision(grids2D, player);
 
-		if (AEInputCheckTriggered(AEVK_I))
+		if (AEInputCheckTriggered(AEVK_TAB))
 		{
 			Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		}
@@ -185,9 +185,9 @@ void Lobby_Draw()
 	DrawNPC(*pWhiteSquareMesh);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x,
-	                                                player->obj.img.scale.y).m);
+	AEGfxTextureSet(player->obj.pTex, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.scale.x,
+	                                                player->obj.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
@@ -221,17 +221,17 @@ void Lobby_Draw()
 	//Print Mission Name
 	//Print 
 	//Inventory images
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	if (Inventory::inventoryOpen)
 	{
-		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 		f32 x, y;
 		AEGfxGetCamPosition(&x, &y);
 
 		AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
-		                                                inventoryBackground.img.scale.x,
-		                                                inventoryBackground.img.scale.y).m);
+			inventoryBackground.img.scale.x,
+			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
@@ -246,51 +246,44 @@ void Lobby_Draw()
 
 		for (ButtonGearUI button : inventoryButton)
 		{
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+			AEGfxTextureSet(button.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+			                                                button.pos.y + y, 0.f,
+			                                                button.img.scale.x, button.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
+		std::string playerStatsHeader = "Player Stats: ";
+		auto pStats = playerStatsHeader.c_str();
+		AEGfxGetPrintSize(fontID, pStats, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pStats, -0.75f,
+		           0.45f - height * 0.5f,
+		           0.35f, 1, 1, 1, 1);
 
-		for (ButtonGearUI button : inventoryButton)
-		{
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
+
+		auto playerHealth = "Health: " + std::to_string(PlayerMaxBasehealth) + " + (" + std::to_string(
+			playerReference->maxHealth) + ")";
+		const char* pHealthText = playerHealth.c_str();
+		AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pHealthText, -0.75f,
+		           0.3f - height * 0.5f,
+		           0.35f, 1, 1, 1, 1);
+
+		auto playerAttack = "Attack: " + std::to_string(playerReference->attack);
+		const char* pAttackText = playerAttack.c_str();
+		AEGfxGetPrintSize(fontID, pAttackText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pAttackText, -0.75f,
+		           0.1f - height * 0.5f,
+		           0.35f, 1, 1, 1, 1);
+
 
 		for (ButtonGearUI button : Inventory::equipmentDisplay)
 		{
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
-
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-				                                                button.pos.y + y, 0.f,
-				                                                button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+			AEGfxTextureSet(button.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+			                                                button.pos.y + y, 0.f,
+			                                                button.img.scale.x, button.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 
@@ -309,27 +302,95 @@ void Lobby_Draw()
 
 			f32 width, height;
 
-			auto pText = Inventory::displayItem.name.c_str();
+			auto pText = Inventory::displayItem.Item.name.c_str();
 			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, 0.75f - width * 0.5f,
-			           0.5f - height * 0.5f,
-			           0.25f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText, 0.35f,
+			           0.45f - height * 0.5f,
+			           0.4f, 1, 1, 1, 1);
 
-			auto pText1 = "Load";
+			auto quantityString = "Qty: " + std::to_string(Inventory::displayItem.Item.quantity);
+			const char* pText1 = quantityString.c_str();
 			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -width / 2,
-			           -height / 2, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText1, 0.35f,
+			           0.35f - height * 0.5f,
+			           0.35f, 1, 1, 1, 1);
 
-			auto pText2 = "Credit";
+			AEGfxTextureSet(blank, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+			                                                90.f + y, 0.f,
+			                                                Inventory::displayItem.img.scale.x * 2,
+			                                                Inventory::displayItem.img.scale.y * 2).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			AEGfxTextureSet(Inventory::displayItem.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+			                                                90.f + y, 0.f,
+			                                                Inventory::displayItem.img.scale.x * 2,
+			                                                Inventory::displayItem.img.scale.y * 2).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			std::string descriptionHeader = "Description: ";
+			auto pDescription = descriptionHeader.c_str();
+			AEGfxGetPrintSize(fontID, pDescription, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pDescription, 0.35f,
+			           0.f - height * 0.5f,
+			           0.35f, 1, 1, 1, 1);
+
+			auto pText2 = Inventory::displayItem.Item.description.c_str();
 			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, -width / 2,
-			           -height / 2, 0.5f, 1, 1, 1, 1);
+			AEGfxPrint(fontID, pText2, 0.35f,
+			           -0.1f - height * 0.5f,
+			           0.35f, 1, 1, 1, 1);
 
-			auto pText3 = "Controls";
-			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText3, -width / 2,
-			           -height / 2, 0.5f, 1, 1, 1, 1);
+			if (Inventory::displayItem.Item.item_type != MATERIAL)
+			{
+				if ((Inventory::displayItem.Item.item_type == FOOD) || (Inventory::displayItem.Item.item_type ==
+					POTION))
+				{
+					auto healthString = "Healing Amount: " + std::to_string(Inventory::displayItem.Item.health);
+					const char* pText3 = healthString.c_str();
+					AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText3, 0.35f,
+					           -0.25f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+
+					auto attackString = "Atk Buff: " + std::to_string(Inventory::displayItem.Item.attack);
+					const char* pText4 = attackString.c_str();
+					AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText4, 0.35f,
+					           -0.35f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+				}
+				else
+				{
+					auto healthString = "Bonus HP: " + std::to_string(Inventory::displayItem.Item.health);
+					const char* pText3 = healthString.c_str();
+					AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText3, 0.35f,
+					           -0.25f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+
+					auto attackString = "Bonus Atk: " + std::to_string(Inventory::displayItem.Item.attack);
+					const char* pText4 = attackString.c_str();
+					AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText4, 0.35f,
+					           -0.35f - height * 0.5f,
+					           0.35f, 1, 1, 1, 1);
+				}
+			}
 		}
+	}
+#pragma endregion
+
+	int index = 1;
+	for (ButtonGearUI button : Inventory::equipmentDisplay)
+	{
+		AEGfxTextureSet(button.img.pTex, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f * index++,
+			AEGfxGetWinMinY() + 50.f, 0.f,
+			button.img.scale.x, button.img.scale.y).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 
 	menu->Render();
@@ -362,9 +423,6 @@ void Lobby_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 
-
-	AEGfxTextureUnload(player->obj.img.pTex);
-
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -389,10 +447,10 @@ namespace {
 	{
 		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
 			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
 				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 				{

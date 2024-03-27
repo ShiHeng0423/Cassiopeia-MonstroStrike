@@ -53,6 +53,7 @@ namespace {
 
 	bool displayBoxActive = false;
 	bool confirmAcceptPrompt = false;
+	bool checkMissionClear = false;
 
 	int loc1 = -1;
 	int loc2 = -1;
@@ -69,6 +70,7 @@ namespace {
 
 	const Recipe* recipePtr = nullptr;
 	const KillEnemyMission* missionPtr = nullptr;
+
 
 }
 
@@ -93,6 +95,7 @@ void LoadNPC()
 		missionSystem.InitialMission();
 		initialMissionsLoaded = true;
 	}
+
 }
 
 void InitializeNPC(std::vector<AEVec2> allocatedPositions)
@@ -102,7 +105,7 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 		AEVec2 pos = allocatedPositions[i];
 		switch (i) {
 		case 0:
-			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_BLACKSMITH_A);
+			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_CLERIC);
 			break;
 		case 1:
 			CreateNPCInstance(pos.x, pos.y * 0.96f, 70.f, 70.f, npcs[i], NPC_BLACKSMITH_B);
@@ -128,6 +131,7 @@ void InitializeNPC(std::vector<AEVec2> allocatedPositions)
 	npcs[1].npcName = "Jack, Weapon Blacksmith";
 	npcs[2].npcName = "Marie, Quest Counter";
 
+
 	npcs[0].openingText = "Do you require some healing? [Y/N]";
 	npcs[1].openingText = "It is too dangerous to go alone, craft some weapons from me.[Y/N]";
 	npcs[2].openingText = "Any quests that caught your eye? [Y/N]";
@@ -149,7 +153,7 @@ void UpdateNPC(Player* player)
 	{
 		switch (npcs[i].typeOfNPC)
 		{
-		case NPC_BLACKSMITH_A:
+		case NPC_CLERIC:
 			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
 			{
 				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
@@ -174,11 +178,16 @@ void UpdateNPC(Player* player)
 	}
 
 	//Check if there are any collided NPC
-	if (AEInputCheckTriggered(AEVK_F) && !collidedPlayer.empty())
+	if (AEInputCheckTriggered(AEVK_I) && !collidedPlayer.empty())
 	{
 		std::sort(collidedPlayer.begin(), collidedPlayer.end()); //Sort the closest collided NPC to be front
 		currentConvState = CONVERSATION_ENTRY;
 		player->isConversation = true;
+	}
+
+	if (AEInputCheckTriggered(AEVK_0))
+	{
+		missionSystem.fliesKilled = 6;
 	}
 
 	if (player->isConversation)
@@ -186,13 +195,22 @@ void UpdateNPC(Player* player)
 		switch (currentConvState)
 		{
 		case CONVERSATION_ENTRY:
+			if (missionSystem.CheckMissionClear())
+			{
+				npcs[2].openingText = "Congrats! You completed the mission! [Y/N]";
+			}
+			else
+			{
+				npcs[2].openingText = "Any quests that caught your eye? [Y/N]";
+			}
+
 			if (AEInputCheckTriggered(AEVK_Y))
 			{
-
 				switch (collidedPlayer[0].second)
 				{
-				case NPC_BLACKSMITH_A:
+				case NPC_CLERIC:
 					//Heals the player
+					player->currHealth = player->maxHealth;
 					//Plays healing sound effect
 					currentConvState = CONVERSATION_EXIT;
 					break;
@@ -206,6 +224,10 @@ void UpdateNPC(Player* player)
 					}
 					break;
 				case NPC_QUEST_GIVER:
+					if (missionSystem.CheckMissionClear())
+					{
+						missionSystem.MissionComplete(missionSystem.GetAcceptedMissionID());
+					}
 					//Activate next conversation
 					currentConvState = CONVERSATION_CONTENT;
 					contentBarContainer.clear(); //Clean container
@@ -232,7 +254,7 @@ void UpdateNPC(Player* player)
 			mousePos.y = screenPos.y + AEGfxGetWindowHeight() * 0.5f - y;
 			switch (collidedPlayer[0].second)
 			{
-			case NPC_BLACKSMITH_A:
+			case NPC_CLERIC:
 				break;
 			case NPC_BLACKSMITH_B:
 				if (!confirmAcceptPrompt)
@@ -310,9 +332,10 @@ void UpdateNPC(Player* player)
 				if (!confirmAcceptPrompt)
 				{
 					displayBoxActive = false;
+					const KillEnemyMission* missionPtr = nullptr;
+
 					for (int i = 0; i < availableMissionsID.size(); i++)
 					{
-						const KillEnemyMission* missionPtr = nullptr;
 						for (const KillEnemyMission& mission : missionSystem.enemyMissions) {
 							if (mission.missionID == availableMissionsID[i]) {
 								missionPtr = &mission;
@@ -350,7 +373,7 @@ void UpdateNPC(Player* player)
 				{
 					if (AEInputCheckTriggered(AEVK_Y))
 					{
-						missionSystem.AcceptKillEnemyMission((size_t)currentMissionInfo.missionID);
+						missionSystem.AcceptKillEnemyMission((int)currentMissionInfo.missionID);
 						//Reset the content bars...
 						availableMissionsID = missionSystem.GetAvailableEnemyMissionsIDs();
 						if (!availableMissionsID.empty())
@@ -456,7 +479,7 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 
 		switch (collidedPlayer[0].second)
 		{
-		case NPC_BLACKSMITH_A:
+		case NPC_CLERIC:
 			//Available recipes
 			break;
 		case NPC_BLACKSMITH_B:

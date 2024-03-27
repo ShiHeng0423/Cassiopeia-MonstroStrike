@@ -2,12 +2,10 @@
 #include "Utils.h"
 #include "Player.h"
 #include "CollisionShape.h"
-#include "TransformMatrix.h"
 #include "AEEngine.h"
 #include "Physics.h"
 #include <vector>
 #include <iostream>
-
 
 
 enum EnemyDir {
@@ -38,11 +36,22 @@ enum EnemyTypes
 	ENEMY_JUMPER = 0,
 	ENEMY_CHARGER,
 	ENEMY_FLY,
-	ENEMY_PASSIVE,
 	ENEMY_BOSS1,
 };
 
+enum Drops {
 
+	ENEMY_JUMPER_DROP = 0,
+	ENEMY_CHARGER_DROP,
+	ENEMY_FLY_DROP,
+	ENEMY_BOSS1_DROP,
+};
+
+struct EnemyDrops {
+	Object obj;
+	Drops dropType;
+	AABB collisionBox;
+};
  
 struct Bullet {
 	Object obj;
@@ -135,22 +144,22 @@ struct Enemy {
 void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy); //loads the sprite
 void FreeEnemy(std::vector<Enemy>& vecEnemy);
 void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy);
-void EnemyUpdateChoose(Enemy& enemy, class Player& player);
+void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables);
 
 //the functions to use in levels
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player);
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables);
 void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB);
-void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh);
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh, std::vector<EnemyDrops>& vecCollectables);
 
 
 
 
 
 
-void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player);
-void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player);
-void ENEMY_FLY_Update(Enemy& enemy, class Player& player);
-void ENEMY_BOSS_Update(Enemy& enemy, class Player& player);
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables);
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables);
+void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables);
+void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables);
 
 
 

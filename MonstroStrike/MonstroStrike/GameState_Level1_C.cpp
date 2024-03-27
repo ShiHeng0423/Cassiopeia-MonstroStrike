@@ -19,6 +19,7 @@ namespace
 	std::vector<struct Platforms> platformVectors;
 
 	std::vector<Enemy> vecEnemy; //enemy container
+	std::vector<EnemyDrops> vecCollect;
 
 	Player* player;
 
@@ -58,7 +59,7 @@ void Level1_C_Load()
 	}
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
 
-	player = PlayerInitialize("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f },
+	player = new Player("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f },
 		{ 0, -100 }, { 40.f, 0.f }, true);
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
@@ -130,7 +131,7 @@ void Level1_C_Initialize()
 			}
 		}
 	}
-	player->obj.img.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
+	player->obj.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 #pragma endregion
 
@@ -164,7 +165,7 @@ void Level1_C_Update()
 
 #pragma region PlayerUpdate
 	if (currScene == MAIN_SCENE)
-		PlayerUpdate(*player, Inventory::inventoryOpen);
+		player->Update(Inventory::inventoryOpen);
 	if (AEInputCheckTriggered(AEVK_I))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
@@ -196,7 +197,7 @@ void Level1_C_Update()
 #pragma endregion
 
 #pragma region EnemyUpdate
-	AllEnemyUpdate(vecEnemy, *player);
+	AllEnemyUpdate(vecEnemy, *player, vecCollect);
 #pragma endregion
 
 #pragma region GridSystem
@@ -263,7 +264,7 @@ void Level1_C_Update()
 
 #pragma region CameraUpdate
 
-	cam->UpdatePos(*player, grids2D[0][0].collisionBox.minimum.x,
+	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
 		grids2D[0][MAP_COLUMN_SIZE - 1].collisionBox.maximum.x,
 		grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
@@ -298,13 +299,13 @@ void Level1_C_Draw()
 
 #pragma region Player_Render
 
-	AEGfxTextureSet(player->obj.img.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.img.scale.x,
-		player->obj.img.scale.y).m);
+	AEGfxTextureSet(player->obj.pTex, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.scale.x,
+		player->obj.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//drawing enemy
-	AllEnemyDraw(vecEnemy, pWhiteSquareMesh);
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
@@ -460,6 +461,8 @@ void Level1_C_Free()
 	//Free Enemy Vector
 	vecEnemy.clear();
 	vecEnemy.resize(0);
+	vecCollect.clear();
+	vecCollect.resize(0);
 
 	//Free vectors
 	gameMap.clear();
@@ -479,9 +482,12 @@ void Level1_C_Unload()
 	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
+	AEGfxTextureUnload(enemyJumperDropTex);
+	AEGfxTextureUnload(enemyChargerDropTex);
+	AEGfxTextureUnload(enemyFlyDropTex);
+	AEGfxTextureUnload(enemyBoss1DropTex);
 
-
-	AEGfxTextureUnload(player->obj.img.pTex);
+	AEGfxTextureUnload(player->obj.pTex);
 
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
@@ -505,10 +511,10 @@ namespace {
 	{
 		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 		{
 			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 			{
 				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
 				{
@@ -578,10 +584,10 @@ namespace {
 
 			int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
 
-			for (int i = 0; i <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); i++)
+			for (int i = 0; i <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); i++)
 			{
 				int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-				for (int j = 0; j <= (int)(tmpEnemy.obj.img.scale.x * 2 / gridMap[0][0].size.x); j++)
+				for (int j = 0; j <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); j++)
 				{
 
 					//Check vertical box (Head + Feet) 

@@ -40,8 +40,6 @@ using namespace rapidjson;
  std::vector< Item> fullInventoryList;
 
 
- int Player_Inventory_Count;
-
  AEGfxTexture* Gear[25];
  s16 snapBack = -1;
 
@@ -70,7 +68,7 @@ namespace Inventory
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 	bool itemHover;
-	Item displayItem;
+	ButtonGearUI displayItem;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -131,12 +129,12 @@ namespace Inventory
 
 
 				// std::cout << newItem.UID << std::endl;
-				 std::cout << "ID: " << newItem.ID << std::endl;
-				 std::cout << newItem.name << std::endl;
+				// std::cout << "ID: " << newItem.ID << std::endl;
+				// std::cout << newItem.name << std::endl;
 				// std::cout << newItem.description << std::endl;
 				// std::cout << newItem.item_type << std::endl;
 				// std::cout << "enum" << newItem.rarity << std::endl;
-				 std::cout << "Quantity: "<<newItem.quantity << std::endl;
+				//std::cout << "Quantity: "<<newItem.quantity << std::endl;
 				// std::cout << newItem.stackable << std::endl;
 				// std::cout << newItem.attack << std::endl;
 				// std::cout << newItem.defence << std::endl;
@@ -247,7 +245,7 @@ namespace Inventory
 
 		json.Accept(writer);
 
-		std::cout << buffer.GetString() << std::endl;
+		//std::cout << buffer.GetString() << std::endl;
 
 		
 		 std::ofstream ofs;
@@ -273,22 +271,29 @@ namespace Inventory
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
-		playerInventoryCount = 0;
-		for(size_t i=0; i<inventory.size(); ++i)
+		
+		int count = 0;
+
+		for(size_t i=0; i< inventory.size(); ++i)
 		{
 			button[i].Item = inventory[i];
-			playerInventoryCount++;
+
+			if(inventory[i].ID >= 0)
+			count++;
 			
 		}
+
 		if(inventory.size()<25)
 		{
 			for(size_t i = inventory.size() ; i < 25 ; i++)
 			{
 				Item emptyItemSlot;
-				emptyItemSlot.ID = -99;
+				emptyItemSlot.ID = INVALID_ITEM;
 				button[i].Item = emptyItemSlot;
 			}
 		}
+
+		playerInventoryCount = count;
 	}
 
 
@@ -336,7 +341,7 @@ namespace Inventory
 				if (button.Item.quantity <= 0)
 				{
 					Item blank;
-					blank.ID = -9999;
+					blank.ID = INVALID_ITEM;
 					button.Item = blank;
 				}
 				else
@@ -352,6 +357,9 @@ namespace Inventory
 		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
+			std::cout << "Inventory Count: "<< playerInventoryCount << std::endl;
+
+
 			s32 textX = 0;
 			s32 textY = 0;
 
@@ -374,7 +382,7 @@ namespace Inventory
 						//Display item's info on l_click
 						//DisplayItemInfo(button.Item);
 						itemHover = true;
-						displayItem = button.Item;
+						displayItem = button;
 
 
 						break;
@@ -383,7 +391,7 @@ namespace Inventory
 				}
 				//Reset itemHover
 				itemHover = false;
-				displayItem = { "",-9 };
+				displayItem.img.pTex = blank;
 				//{"", -9, "invalid item", "",0, 0,5,0,false,0,0,0 };
 
 				index++;
@@ -435,7 +443,7 @@ namespace Inventory
 								playerInventory.resize(index + 1);
 								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
-									playerInventory[x].ID = -9999;
+									playerInventory[x].ID = INVALID_ITEM;
 								}
 							}
 							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
@@ -460,7 +468,7 @@ namespace Inventory
 				}
 			}
 		}
-
+		
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
@@ -504,25 +512,18 @@ namespace Inventory
 				{
 					button.img.pTex = Gear[button.Item.ID];
 				}
-				AEVec2Set(&button.img.scale, 60.f, 60.f);
-				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+				//Set scale
+				AEVec2Set(&button.img.scale, 90.f, 90.f);
 				index++;
 			}
-		}
+			//Set custom position
+			AEVec2Set(&equipmentDisplay[0].pos, -550.f, -60.f);
+			AEVec2Set(&equipmentDisplay[1].pos, -350.f, -60.f);
 
-		if(AEInputCheckTriggered(AEVK_LALT))
-		{
-			Recipe dummy = Crafting::recipeList[0];
+			AEVec2Set(&equipmentDisplay[2].pos, -450.f, -100.f);
 
-			int reqloc1 = 0;
-			int reqloc2 = 0;
-
-			if(Crafting::Can_Craft(dummy, playerInventory, reqloc1, reqloc2))
-			{
-				std::cout << "Can craft" << fullInventoryList[dummy.item_id].name << std::endl;
-
-				Crafting::Craft_Item(dummy, playerInventory, reqloc1, reqloc2);
-			}
+			AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+			AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
 		}
 
 	}
@@ -531,8 +532,32 @@ namespace Inventory
 
 	void AddItem(const Item& item)
 	{
-		//check if got existing ID, item++
-		playerInventory.push_back(item);
+		
+		if(item.stackable)
+		{
+			for (auto& playeritem : playerInventory)
+			{
+				//check if got existing ID, item++
+				if ((playeritem.ID == item.ID))
+				{
+					playeritem.quantity++;
+					return;
+				}
+			}
+		}else
+		{
+			for (auto& playeritem : playerInventory)
+			{
+				if(playeritem.ID < 0)
+				{
+					playeritem = item;
+					return;
+				}
+			}
+			playerInventory.push_back(item);
+		}
+
+		UpdateInventory(playerInventory, inventoryButton);
 	}
 
 
@@ -545,20 +570,26 @@ namespace Inventory
 	}
 
 	//Function to apply the effect of a consumable item on the player
-	void ApplyItemEffect(class Player& player, const Item& item)
+	void ApplyConsumableEffect(class Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
 		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
 		{
 			// Apply the effect of the item on the player
 
-			// player.max_health += static_cast<f32> (item.health);
+			 player.currHealth += static_cast<f32> (item.health);
 			// player.attack += static_cast<f32> (item.attack);
 			// player.defence += static_cast<f32> (item.defence);
 			//
 			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
 			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
 			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
+
+			//Cap player hp
+			 if(playerReference->currHealth > playerReference->maxHealth)
+			 {
+				 playerReference->currHealth = playerReference->maxHealth;
+			 }
 
 		}
 		else
@@ -569,30 +600,20 @@ namespace Inventory
 
 
 	// Function to update the player's stats after equipping or unequipping items
-	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
+	void ApplyWeaponEffect(Player& player, Item Weapon)
 	{
 		// Reset player's stats to base values
 		// player.hp = player.maxHp;
 		// player.attack = 0;
 		// player.defence = 0;
 
-		// Iterate through equipped items and update player's stats accordingly
-		for (const auto& item : equippedItems)
-		{
-			// Update player's attack based on equipped weapon(s)
-			if (item.item_type == Item_Type::WEAPON)
+
+			if (Weapon.item_type != WEAPON)
 			{
-				//player.attack += item.attack;
+				return;
 			}
-			// Update player's defence based on equipped armor(s)
-			else if (item.item_type == Item_Type::ARMOUR)
-			{
-				//player.health += item.health;
-				//player.defence += item.defence;
-			}
-			// Apply other effects of equipped items as needed
-			// For example: increase player's maxHp, mana, agility, etc.
-		}
+
+		
 	}
 
 
@@ -601,8 +622,6 @@ namespace Inventory
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
 
-		const int MAX_INVENTORY_SIZE = 25;
-		const int MAX_EQUIPPED_ITEMS = 5;
 
 		// Check if the item is available in the player's inventory
 		if (index >= 0 && index < MAX_INVENTORY_SIZE)
@@ -622,7 +641,7 @@ namespace Inventory
 						std::cout << "Consumed " << item.Item.name << std::endl;
 
 						// Apply item effect
-						ApplyItemEffect(player, item.Item);
+						ApplyConsumableEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
 						playerInventory[index].quantity -= 1;
@@ -647,7 +666,20 @@ namespace Inventory
 					 switch (item.Item.item_type)
 					 {
 					 case WEAPON:
-					
+						 switch (item.Item.rarity)
+						 {
+						 case COMMON:
+						 case RARE:
+						 case EPIC:
+							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_1);
+							 break;
+						 case LEGENDARY:
+							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_2);
+							 break;
+						 case UNIQUE:
+							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_3);
+							 break;
+						 }
 					 	break;
 					
 					 case ARMOUR:
@@ -660,14 +692,14 @@ namespace Inventory
 					 		{
 					 		case COMMON:
 					
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+					 			Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 			break;
 					 		case RARE:
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+					 			Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
 					 			break;
 					 		case EPIC:
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+					 			Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
 					 			break;
 					
 					 	}
@@ -682,14 +714,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -698,14 +730,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -714,14 +746,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -735,13 +767,13 @@ namespace Inventory
 						
 					Item equipping = item.Item;
 					Item blank;
-					blank.ID = -9999;
+					blank.ID = INVALID_ITEM;
 					item.Item = blank;
-					playerInventory[index].ID = -9999;
+					playerInventory[index].ID = INVALID_ITEM;
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-						UpdatePlayerStats(player, equippedGear);
+						//ApplyWeaponEffect(player, equippedGear);
 
 				}
 			
@@ -758,7 +790,7 @@ namespace Inventory
 	{
 		Item backup[5];
 		for(int i = 0; i< 5; ++i)
-		backup[i].ID = -9999;
+		backup[i].ID = INVALID_ITEM;
 
 
 			switch (obj.gear_loc)
@@ -837,7 +869,7 @@ namespace Inventory
 		//Assign the previously equipped item to empty inventory slot
 		for (auto& inventory : playerInventory)
 		{
-			if (inventory.ID < 0) //check for -99 id
+			if (inventory.ID < 0) //check for invalid item id
 			{
 				
 				inventory = backup[obj.gear_loc];
@@ -872,7 +904,7 @@ namespace Inventory
 		}
 
 
-		Item nothing {"", -999, "", "",
+		Item emptySpace {"", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
 			false, 0, 0, 0};
 
@@ -881,12 +913,12 @@ namespace Inventory
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
 			if(equippedGear.size() < 5)
 			{
-				equippedGear.push_back(nothing);
+				equippedGear.push_back(emptySpace);
 			}
 
 			if(equippedGear[i].ID < 0)
 			{
-				equipmentDisplay[i].Item = nothing;
+				equipmentDisplay[i].Item = emptySpace;
 			}else
 			{
 				equipmentDisplay[i].Item = equippedGear[i];
@@ -896,6 +928,8 @@ namespace Inventory
 
 	void InitInventory()
 	{
+		UpdateInventory(playerInventory, inventoryButton);
+
 		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
 		inventoryOpen = false;
@@ -904,8 +938,8 @@ namespace Inventory
 		snapBack = -1;
 
 		//Display inventory
-		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
-		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
+		AEVec2Set(&equipmentBackground.img.scale, 400.f, 500.f);
+		AEVec2Set(&equipmentBackground.pos, -450.f, 0.f);
 
 		//Item Info Display
 		AEVec2Set(&itemDisplayBackground.img.scale, 400.f, 500.f);
@@ -921,10 +955,19 @@ namespace Inventory
 			{
 				button.img.pTex = Gear[button.Item.ID];
 			}
-			AEVec2Set(&button.img.scale, 60.f, 60.f);
-			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+			//Set scale
+			AEVec2Set(&button.img.scale, 90.f, 90.f);
 			index++;
 		}
+		//Set custom position
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f,  -60.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f,  -60.f);
+
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -100.f);
+
+		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+
 
 	}
 

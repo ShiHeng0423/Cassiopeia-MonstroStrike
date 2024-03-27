@@ -4,7 +4,7 @@
 #include "Player.h"
 #include <vector>
 enum NpcTypes {
-	NPC_BLACKSMITH_A = 0, //Armor black smith
+	NPC_CLERIC = 0, //Armor black smith
 	NPC_BLACKSMITH_B, //Weapon black smith
 	NPC_QUEST_GIVER //Quest give
 	//Might add an NPC who restore health
