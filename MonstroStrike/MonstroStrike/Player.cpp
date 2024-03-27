@@ -41,7 +41,6 @@ auto comboTime = Clock::now();
 static f32 particleEmissionRate = 0.f;
 Player::Player(const char* filename, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight)
 {
-	obj.pTex = AEGfxTextureLoad(filename);
 	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
 	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
 	obj.speed = speed;

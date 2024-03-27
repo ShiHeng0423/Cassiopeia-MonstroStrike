@@ -492,6 +492,9 @@ void Level1_A_Unload()
 	AEGfxTextureUnload(enemyFlyDropTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
 
+	AEGfxTextureUnload(player->FacingRight);
+	AEGfxTextureUnload(player->FacingLeft);
+
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
