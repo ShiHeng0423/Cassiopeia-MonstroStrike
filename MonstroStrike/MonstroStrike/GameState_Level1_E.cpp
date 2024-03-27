@@ -195,7 +195,7 @@ void Level1_E_Update()
 #pragma region PlayerUpdate
 	if (currScene == MAIN_SCENE)
 		player->Update(Inventory::inventoryOpen);
-	if (AEInputCheckTriggered(AEVK_I))
+	if (AEInputCheckTriggered(AEVK_TAB))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 	}
@@ -435,12 +435,12 @@ void Level1_E_Draw()
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
-		(f32)AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
-		0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	//AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+	//	(f32)AEGfxGetWindowWidth(), 1.f).m);
+	//AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	//AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
+	//	0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
+	//AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 #pragma endregion
 	missionSystem.PrintMissionText();

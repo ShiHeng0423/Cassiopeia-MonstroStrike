@@ -47,6 +47,7 @@ void MissionSystem::AcceptKillEnemyMission(int missionID)
 			{
 				mission.accepted = true;
 				mission.available = false;
+				missionSystem.chargersKilled = missionSystem.fliesKilled = missionSystem.slimesKilled = 0;
 				return;
 			}
 		}

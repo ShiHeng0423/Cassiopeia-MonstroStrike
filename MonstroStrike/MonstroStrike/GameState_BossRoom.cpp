@@ -151,7 +151,7 @@ void Level1_BOSS_Update()
 #pragma region PlayerUpdate
 	if (currScene == MAIN_SCENE)
 		player->Update(Inventory::inventoryOpen);
-	if (AEInputCheckTriggered(AEVK_I))
+	if (AEInputCheckTriggered(AEVK_TAB))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 	}
@@ -287,7 +287,7 @@ void Level1_BOSS_Draw()
 
 #pragma region Game_UI_Render
 
-	f32 x, y;
+	/*f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
 	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
@@ -303,7 +303,9 @@ void Level1_BOSS_Draw()
 	const char* pTextHP = str.c_str();
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
-	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
+	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);*/
+
+	player->RenderPlayerStatUI();
 
 #pragma endregion
 

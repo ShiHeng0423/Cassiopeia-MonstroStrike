@@ -41,7 +41,17 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 
 
 
-
+	enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.GetPlayerCollisionBox());
+	// Handle collision with player
+	if (enemy.isCollidedWithPlayer) {
+		if (!enemy.hasDealtDmg) {
+			enemy.hasDealtDmg = true;
+			player.GetCurrentHealth() -= 20.f;
+		}
+	}
+	else {
+		enemy.hasDealtDmg = false;
+	}
 
 	switch (enemy.enemyCurrent)
 	{
@@ -147,7 +157,6 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 				if (enemy.timePassed >= 1.f) {
 					enemy.timePassed = 0.0f;
 					enemy.speed = 80.f;
-
 					enemy.targetPosition = ENEMY_DEFAULT;
 					enemy.attackState = ENEMY_ATTACK_CHOOSING;
 				}
