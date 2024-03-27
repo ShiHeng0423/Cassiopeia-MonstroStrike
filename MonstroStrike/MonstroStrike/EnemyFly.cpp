@@ -3,11 +3,6 @@
 #include "ParticleSystem.h"
 #include "MissionList.h"
 
-
-
-
-
-
 void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
 	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
