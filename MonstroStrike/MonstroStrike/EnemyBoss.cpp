@@ -8,7 +8,7 @@
 
 void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
-	//f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	//f32 distanceFromPlayer = AEVec2Distance(&player.GetPlayerCurrentPosition(), &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
 	AEVec2 Spawnloc;
 
@@ -88,7 +88,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
 					Spawnloc.x = enemy.wing1.obj.pos.x;
 					Spawnloc.y = enemy.wing1.obj.pos.y;
-					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					SpawnBullet(Spawnloc, player.GetPlayerCurrentPosition(), enemy.bullets);
 					loopCounter++;
 				}
 			}
@@ -96,7 +96,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 				if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
 					Spawnloc.x = enemy.wing2.obj.pos.x;
 					Spawnloc.y = enemy.wing2.obj.pos.y;
-					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					SpawnBullet(Spawnloc, player.GetPlayerCurrentPosition(), enemy.bullets);
 					loopCounter++;
 				}
 			}
@@ -111,7 +111,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 
 			//locking on which direction to dash
 			if (enemy.targetPosition == ENEMY_DEFAULT) {
-				if (enemy.obj.pos.x >= player.obj.pos.x) {
+				if (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) {
 					enemy.targetPosition = ENEMY_LEFT;
 				}
 				else {
@@ -180,7 +180,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 
 
 			if (!enemy.onFloor) { //for the jumping
-				MoveTowards(enemy, player.obj.pos);
+				MoveTowards(enemy, player.GetPlayerCurrentPosition());
 			}
 
 

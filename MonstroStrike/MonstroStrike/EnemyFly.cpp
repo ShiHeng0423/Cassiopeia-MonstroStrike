@@ -10,7 +10,7 @@
 
 void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
-	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	f32 distanceFromPlayer = AEVec2Distance(&player.GetPlayerCurrentPosition(), &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();	//time.time
 	//std::cout << enemy.isCollision << "\n";
@@ -29,7 +29,7 @@ void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops
 	switch (enemy.enemyCurrent)
 	{
 	case ENEMY_IDLE:
-		//std::cout << player.obj.pos.y << " " << enemy.obj.pos.y << "\n";
+		//std::cout << player.GetPlayerCurrentPosition().y << " " << enemy.obj.pos.y << "\n";
 		//std::cout << enemy.obj.pos.x << "\n";
 
 		if (distanceFromPlayer <= enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
@@ -71,9 +71,9 @@ void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops
 		else if (distanceFromPlayer < enemy.lineOfSight && distanceFromPlayer > enemy.shootingRange) {
 
 
-			MoveTowardsFLY(enemy, player.obj.pos);
+			MoveTowardsFLY(enemy, player.GetPlayerCurrentPosition());
 
-			enemy.wayPoint = player.obj.pos;	//set a wayPoint a player's location
+			enemy.wayPoint = player.GetPlayerCurrentPosition();	//set a wayPoint a player's location
 			IsStuck(enemy);
 
 		}
@@ -99,7 +99,7 @@ void ENEMY_FLY_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops
 
 			if(CanFire(enemy)) {
 				AEVec2Set(&enemy.spawnPoint, enemy.obj.pos.x - 7.f, enemy.obj.pos.y - 15.f);	//customized spawn point for bullet
-				SpawnBullet(enemy.spawnPoint, player.obj.pos, enemy.bullets);
+				SpawnBullet(enemy.spawnPoint, player.GetPlayerCurrentPosition(), enemy.bullets);
 			}
 		}
 		else {

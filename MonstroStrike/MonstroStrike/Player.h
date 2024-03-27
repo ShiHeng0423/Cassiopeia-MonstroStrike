@@ -4,6 +4,7 @@
 #include "CollisionShape.h" //To add AABB boxes
 #include "Armor.h"
 #include "Weapon.h"
+#include "CSVMapLoader.h"
 
 f32 const PlayerMaxBasehealth = 100.f;
 
@@ -11,55 +12,92 @@ class Player {
 
 public:
 
-	Player(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight);
+	Player(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool FacingRight);
 	~Player();
 
 	void Update(bool isInventoryOpen);
+	void CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol);
+	void RenderPlayer();
+	void RenderPlayerStatUI();
 
+	//Camera Effects
+	AEVec2& GetCameraExpectedPosition();
+	bool IsPlayerFacingRight();
+
+	//Weapon & Armor
+	Armor_System::Armor_Set& GetArmorSet();
+	Weapon_System::Weapon_Set& GetWeaponSet();
+
+	//Player Health
+	f32& GetMaxHealth();
+	f32& GetCurrentHealth();
+
+	//combo system
+	int& GetComboState();
+	bool& GetIsPlayerAttacking();
+
+	//Get Player Sprite Data
+	AEVec2& GetPlayerCurrentPosition();
+	AEVec2& GetPlayerScale();
+
+	//Get If Player currently talking to npc
+	bool& GetIsTalkingToNpc();
+
+	//Collision boxes Data
+	AABB& GetPlayerBoxHeadFeet();
+	AABB& GetPlayerBoxArm();
+	AABB& GetPlayerCollisionBox();
+
+	AEVec2& GetPlayerVelocity();
+	AEVec2& GetPlayerCollisionNormal();
+
+	f32& GetGravityOnPlayer();
+	
+	bool& GetIsPlayerOnFloor();
+	bool& GetIsPlayerFalling();
+private:
+
+	//Sprite Data
 	Object obj;
 	AEVec2 prevPos;
 
-	bool isFacingRight;
-	bool onFloor; //Added to check entity on floor, hence can jump
-	bool isAttacking;
-	bool isFalling;
-
-	AEVec2 expectedLocation;
-	AEVec2 velocity; //Added for movement - Johny
-	AEVec2 collisionNormal;
-	f32 lookAheadMutliplier;
-
-	Armor_System::Armor equippedArmor;
-
-	Weapon equippedWeapon;
 	//Gravity affection
+	AEVec2 velocity; //Added for movement - Johny
 	f32 mass;
+	f32 gravityForce;
+	bool onFloor; //Added to check entity on floor, hence can jump
+	bool isFalling;
 	
 	//Collision boxes
+	AEVec2 collisionNormal;
 	AABB prevcollisionBox;
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;
 
+	//Attack Combo
 	f32 attackTime;
-	bool burningEffect;
-	int comboTrig;
 	float comboTime;
+	int comboTrig;
 	int comboState;
-	f32 gravityForce;
+	bool isAttacking;
+
+	//is Player currently interacting with NPC
+	bool isConversation;
+
+	//Camera Follow
+	AEVec2 expectedLocation;
+	f32 lookAheadMutliplier;
+	bool isFacingRight;
 
 	//Player Stats
 	f32 maxHealth;
 	f32 currHealth;
 	f32 attack;
-	f32 defence;
 
-	bool isConversation;
-
+	//Player Armor & Weapon
 	Armor_System::Armor_Set armorSet;
-	Weapon_System::Weapon wp;
-	Status_Effect_System::Armor_Status_Effect armorExtraEffect;
-	Status_Effect_System::Weapon_Status_Effect weaponExtraEffect;
+	Weapon_System::Weapon_Set weaponSet;
 };
 
 void OnPlayerDeath();

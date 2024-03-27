@@ -29,6 +29,7 @@
 
 s8 fontID;
 AudioManager* audioManager;
+GameManager* gameManager;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_opt_ HINSTANCE hPrevInstance,
@@ -53,7 +54,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
 	audioManager = new AudioManager();
-
+	gameManager = new GameManager();
 	while (current != GameStates::QUIT)
 	{
 		GSM_Update();

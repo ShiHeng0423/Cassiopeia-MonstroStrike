@@ -223,7 +223,7 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	// Iterate over the vector
 	while (it != vecCollectables.end()) {
 		// Check collision
-		if (AABBvsAABB(it->collisionBox, player.collisionBox)) {
+		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
 			//addit to inventory
 			//here
 			Item holder;

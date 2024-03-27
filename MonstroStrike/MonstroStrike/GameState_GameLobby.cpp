@@ -35,8 +35,6 @@ namespace
 
 	float burningEffectDuration = 1.5f;
 	f64 timer = 0.f;
-
-	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player);
 }
 
 
@@ -48,7 +46,7 @@ void Lobby_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_LOBBY_SIZE];
 	}
 
-	player = new Player("Assets/Border.png", {0.f, 0.f}, {0.f, 0.f}, {40.f, 0.f}, true);
+	player = gameManager->GetPlayer();
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
@@ -107,7 +105,7 @@ void Lobby_Initialize()
 				NPCPositions.push_back(grids2D[rows][cols].position);
 				break;
 			case PLAYER_POS_GRID_1: //Only 1 transition player initial position here
-				player->obj.pos = {grids2D[rows][cols].position}; //Set position based on grid
+				player->GetPlayerCurrentPosition() = {grids2D[rows][cols].position}; //Set position based on grid
 				break;
 			default:
 				break;
@@ -115,9 +113,9 @@ void Lobby_Initialize()
 		}
 	}
 
-	player->obj.scale = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
+	player->GetPlayerScale() = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
 
-	cam = new Camera(player->obj.pos);
+	cam = new Camera(player->GetPlayerCurrentPosition());
 	menu->Init(cam);
 	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
 	               grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
@@ -134,7 +132,7 @@ void Lobby_Initialize()
 void Lobby_Update()
 {
 
-	if (!player->isConversation)
+	if (!player->GetIsTalkingToNpc())
 	{
 		menu->Update(cam);
 
@@ -147,7 +145,7 @@ void Lobby_Update()
 			grids2D[0][MAP_COLUMN_LOBBY_SIZE - 1].collisionBox.maximum.x,
 			grids2D[MAP_ROW_LOBBY_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
-		CheckPlayerGridCollision(grids2D, player);
+		player->CheckPlayerGridCollision(grids2D, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE);
 
 		if (AEInputCheckTriggered(AEVK_TAB))
 		{
@@ -184,11 +182,7 @@ void Lobby_Draw()
 
 	DrawNPC(*pWhiteSquareMesh);
 
-	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-	AEGfxTextureSet(player->obj.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.scale.x,
-	                                                player->obj.scale.y).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	player->RenderPlayer();
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
@@ -198,25 +192,10 @@ void Lobby_Draw()
 	                                                0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+	player->RenderPlayerStatUI();
+
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
-
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->currHealth + x, 450.f + y, 0,
-	                                                (int)player->currHealth * 2.f, 80.f).m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
-
-	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + (int)player->maxHealth + x, 450.f + y, 0,
-	                                                (int)player->maxHealth * 2.f, 80.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	std::string str = std::to_string((int)player->currHealth);
-	const char* pTextHP = str.c_str();
-	f32 width, height;
-	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
-	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
 
 	//Print Mission Name
 	//Print 
@@ -253,6 +232,7 @@ void Lobby_Draw()
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
+		f32 width, height;
 		std::string playerStatsHeader = "Player Stats: ";
 		auto pStats = playerStatsHeader.c_str();
 		AEGfxGetPrintSize(fontID, pStats, 0.5f, &width, &height);
@@ -262,14 +242,14 @@ void Lobby_Draw()
 
 
 		auto playerHealth = "Health: " + std::to_string(PlayerMaxBasehealth) + " + (" + std::to_string(
-			playerReference->maxHealth) + ")";
+			playerReference->GetMaxHealth()) + ")";
 		const char* pHealthText = playerHealth.c_str();
 		AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pHealthText, -0.75f,
 		           0.3f - height * 0.5f,
 		           0.35f, 1, 1, 1, 1);
 
-		auto playerAttack = "Attack: " + std::to_string(playerReference->attack);
+		auto playerAttack = "Attack: " + std::to_string(playerReference->GetWeaponSet().damage);
 		const char* pAttackText = playerAttack.c_str();
 		AEGfxGetPrintSize(fontID, pAttackText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pAttackText, -0.75f,
@@ -399,7 +379,7 @@ void Lobby_Draw()
 
 	missionSystem.PrintMissionText();
 
-	DrawConvBox(player->isConversation, *pWhiteSquareMesh);
+	DrawConvBox(player->GetIsTalkingToNpc(), *pWhiteSquareMesh);
 
 	MapTransitionDraw();
 }
@@ -431,7 +411,6 @@ void Lobby_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxMeshFree(pGreenSquareMesh);
 
-	delete player;
 	delete cam;
 	delete menu;
 
@@ -439,61 +418,4 @@ void Lobby_Unload()
 		delete[] grids2D[i];
 	}
 	delete[] grids2D;
-}
-
-//Private function definition
-namespace {
-	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
-	{
-		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
-
-		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
-		{
-			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
-			{
-				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
-				{
-				case NORMAL_GROUND:
-					//Collision check
-					//Resolve + Vertical Collision only for entity x (wall or ground)
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxHeadFeet,
-							gridMap[playerIndexY][playerIndexX].collisionBox);
-						ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity, &player->onFloor, &player->gravityForce,
-							&player->isFalling);
-					}
-
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxArms,
-							gridMap[playerIndexY][playerIndexX].collisionBox);
-						ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity);
-					}
-					break;
-				case MAP_TRANSITION_GRID_1:
-					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						//std::cout << "Collided\n";MainMenu_Song
-						if (!transitionalImageOBJ.active)
-						{
-							transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_A);
-						}
-					}
-					break;
-				case EMPTY:
-					break;
-				}
-				playerIndexX += 1;
-			}
-			playerIndexY += 1;
-		}
-	}
 }

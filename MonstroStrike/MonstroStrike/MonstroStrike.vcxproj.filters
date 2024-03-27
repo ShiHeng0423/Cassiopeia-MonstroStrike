@@ -126,25 +126,28 @@
     <ClCompile Include="MissionList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Level1.cpp">
-      <Filter>Source Files\GameLevels</Filter>
-    </ClCompile>
     <ClCompile Include="GameState_GameLobby.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Level1_B.cpp">
+    <ClCompile Include="GameManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_D.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
     <ClCompile Include="GameState_Level1_C.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Level1_D.cpp">
+    <ClCompile Include="GameState_Level1_B.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Level1_F.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
     <ClCompile Include="GameState_Level1_E.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
-    <ClCompile Include="GameState_Level1_F.cpp">
+    <ClCompile Include="GameState_Level1.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
     <ClCompile Include="GameState_BossRoom.cpp">
@@ -280,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="GameState_BossRoom.h">
       <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

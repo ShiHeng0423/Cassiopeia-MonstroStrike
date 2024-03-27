@@ -577,7 +577,7 @@ namespace Inventory
 		{
 			// Apply the effect of the item on the player
 
-			 player.currHealth += static_cast<f32> (item.health);
+			 player.GetCurrentHealth() += static_cast<f32> (item.health);
 			// player.attack += static_cast<f32> (item.attack);
 			// player.defence += static_cast<f32> (item.defence);
 			//
@@ -586,9 +586,9 @@ namespace Inventory
 			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
 			//Cap player hp
-			 if(playerReference->currHealth > playerReference->maxHealth)
+			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
 			 {
-				 playerReference->currHealth = playerReference->maxHealth;
+				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
 			 }
 
 		}
@@ -671,13 +671,13 @@ namespace Inventory
 						 case COMMON:
 						 case RARE:
 						 case EPIC:
-							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_1);
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_1);
 							 break;
 						 case LEGENDARY:
-							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_2);
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_2);
 							 break;
 						 case UNIQUE:
-							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_3);
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_3);
 							 break;
 						 }
 					 	break;
@@ -692,14 +692,14 @@ namespace Inventory
 					 		{
 					 		case COMMON:
 					
-					 			Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 			break;
 					 		case RARE:
-					 			Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
 					 			break;
 					 		case EPIC:
-					 			Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
 					 			break;
 					
 					 	}
@@ -714,14 +714,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -730,14 +730,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -746,14 +746,14 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
