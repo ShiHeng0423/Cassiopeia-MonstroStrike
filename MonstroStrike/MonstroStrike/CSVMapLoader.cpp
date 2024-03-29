@@ -183,6 +183,18 @@ void SetGridTypes(Grids2D** grids2D, const std::vector<std::vector<MapCell>>& ga
             case 22:
                 grids2D[row][col].typeOfGrid = ENEMY_SLIME_POS;
                 break;
+            case 30:
+                grids2D[row][col].typeOfGrid = TRAPS_POISON_ARROW_GRID;
+                break;
+            case 31:
+                grids2D[row][col].typeOfGrid = TRAPS_SLOWNESS_ARROW_GRID;
+                break;
+            case 32:
+                grids2D[row][col].typeOfGrid = TRAPS_FIRE_CIRCLE_GRID;
+                break;
+            case 33:
+                grids2D[row][col].typeOfGrid = TRAPS_ROTATING_SAW_GRID;
+                break;
             case 91:
                 grids2D[row][col].typeOfGrid = PLAYER_POS_GRID_1;
                 break;

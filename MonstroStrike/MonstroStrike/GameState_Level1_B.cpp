@@ -131,12 +131,6 @@ void Level1_B_Initialize()
 			{
 				player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
 			}
-			//Previous zone is treasure zone
-			//else if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_2 && previous == AREA1_C)
-			//{
-			//	//Set initial player position at pos grid 2
-			//	player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
-			//}
 			//Previous zone is area c
 			else if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_3 && previous == AREA1_C)
 			{
@@ -489,83 +483,7 @@ void Level1_B_Unload()
 }
 
 namespace {
-	//void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
-	//{
-	//	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->GetPlayerCurrentPosition().y) / (gridMap[0][0].size.x));
 
-	//	for (int i = 0; i <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); i++)
-	//	{
-	//		int playerIndexX = (int)((player->GetPlayerCurrentPosition().x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-	//		for (int j = 0; j <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); j++)
-	//		{
-	//			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
-	//			{
-	//			case NORMAL_GROUND:
-	//				//Collision check
-	//				//Resolve + Vertical Collision only for entity x (wall or ground)
-	//				//Check vertical box (Head + Feet) 
-	//				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
-	//						gridMap[playerIndexY][playerIndexX].collisionBox);
-	//					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
-	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
-	//						&player->velocity, &player->onFloor, &player->gravityForce,
-	//						&player->isFalling);
-	//				}
-
-	//				//Check horizontal box (Left arm -> Right arm)
-	//				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->collisionNormal = AABBNormalize(player->boxArms,
-	//						gridMap[playerIndexY][playerIndexX].collisionBox);
-	//					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
-	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
-	//						&player->velocity);
-	//				}
-	//				break;
-	//			case LAVA_GRID:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					OnPlayerDeath();
-	//				}
-	//				break;
-	//			case MAP_TRANSITION_GRID_1:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					if (!transitionalImageOBJ.active)
-	//					{
-	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, AREA1_A);
-	//					}
-	//				}
-	//				break;
-	//			case MAP_TRANSITION_GRID_3:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					if (!transitionalImageOBJ.active)
-	//					{
-	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_C);
-	//					}
-	//				}
-	//				break;
-	//				//case MAP_TRANSITION_GRID_2:
-	//				//	if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				//	{
-	//				//		//std::cout << "Collided\n";MainMenu_Song
-	//				//		if (!transitionalImageOBJ.active)
-	//				//		{
-	//				//			transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
-	//				//		}
-	//				//	}
-	//				break;
-	//			case EMPTY:
-	//				break;
-	//			}
-	//			playerIndexX += 1;
-	//		}
-	//		playerIndexY += 1;
-	//	}
-	//}
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{
