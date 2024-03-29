@@ -151,8 +151,8 @@
       "gear_location": 5,
       "quantity": 1,
       "stackable": true,
-      "health": 30,
-      "attack": 30,
+      "health": 300,
+      "attack": 0,
       "defence": 30
     },
     {
@@ -336,8 +336,20 @@
       "health": 0,
       "attack": 8000,
       "defence": 0
+    },
+    {
+      "UID": "ygvrfc9",
+      "ID": 24,
+      "name": "Attack Potion",
+      "description": "Makes you as strong as a demon",
+      "rarity": 1,
+      "item_type": 5,
+      "gear_location": 5,
+      "quantity": 1,
+      "stackable": true,
+      "health": 0,
+      "attack": 300,
+      "defence": 0
     }
-
-
   ]
 }

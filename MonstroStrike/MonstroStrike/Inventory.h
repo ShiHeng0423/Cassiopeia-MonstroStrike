@@ -145,7 +145,7 @@ namespace Inventory
 	void EquipToBody(Item obj);
 
 	void ApplyConsumableEffect(class Player& player, const Item& item);
-	void ApplyWeaponEffect(Player& player, const std::vector<Item>& equippedItems);
+	void UpdatePlayerGearStats(const std::vector<Item>& equippedItems);
 
 	void SaveInventory();
 	void FreeInventory();

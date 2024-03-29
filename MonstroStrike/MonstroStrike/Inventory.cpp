@@ -517,15 +517,14 @@ namespace Inventory
 				index++;
 			}
 			//Set custom position
-			AEVec2Set(&equipmentDisplay[0].pos, -550.f, -60.f);
-			AEVec2Set(&equipmentDisplay[1].pos, -350.f, -60.f);
+			AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
+			AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
 
-			AEVec2Set(&equipmentDisplay[2].pos, -450.f, -100.f);
+			AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
 
 			AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
 			AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
 		}
-
 	}
 
 
@@ -577,15 +576,14 @@ namespace Inventory
 		{
 			// Apply the effect of the item on the player
 
-			 player.currHealth += static_cast<f32> (item.health);
-			// player.attack += static_cast<f32> (item.attack);
-			// player.defence += static_cast<f32> (item.defence);
-			//
-			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
-			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
-			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
+			 playerReference->currHealth += static_cast<f32> (item.health);
+			 playerReference->attack += static_cast<f32> (item.attack);
+			
+			 std::cout << "Increased by " << item.health << " Current hp = "  << player.currHealth << std::endl;
+			 std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
 
-			//Cap player hp
+
+			//Cap the player hp
 			 if(playerReference->currHealth > playerReference->maxHealth)
 			 {
 				 playerReference->currHealth = playerReference->maxHealth;
@@ -599,22 +597,7 @@ namespace Inventory
 	}
 
 
-	// Function to update the player's stats after equipping or unequipping items
-	void ApplyWeaponEffect(Player& player, Item Weapon)
-	{
-		// Reset player's stats to base values
-		// player.hp = player.maxHp;
-		// player.attack = 0;
-		// player.defence = 0;
 
-
-			if (Weapon.item_type != WEAPON)
-			{
-				return;
-			}
-
-		
-	}
 
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player)
@@ -760,7 +743,7 @@ namespace Inventory
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-						ApplyWeaponEffect(player, equippedGear);
+					UpdatePlayerGearStats( equippedGear);
 
 				}
 			
@@ -772,6 +755,22 @@ namespace Inventory
 			std::cerr << "Error: Invalid inventory index\n";
 		}
 	}
+
+	// Function to update the player's stats after equipping or unequipping items
+	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
+	{
+		// Reset player's stats to base values
+		playerReference->maxHealth = 0.f;
+		playerReference->attack = 0.f;
+
+		for (auto gear : equippedItems)
+		{
+			playerReference->maxHealth += (f32)gear.health;
+			playerReference->attack += (f32)gear.attack;
+
+		}
+	}
+
 
 	void EquipToBody(Item obj)
 	{
@@ -947,10 +946,10 @@ namespace Inventory
 			index++;
 		}
 		//Set custom position
-		AEVec2Set(&equipmentDisplay[0].pos, -550.f,  -60.f);
-		AEVec2Set(&equipmentDisplay[1].pos, -350.f,  -60.f);
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
 
-		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -100.f);
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
 
 		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
 		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);

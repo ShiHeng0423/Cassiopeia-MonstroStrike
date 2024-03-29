@@ -183,6 +183,7 @@ void Lobby_Update()
 		if (AEInputCheckTriggered(AEVK_I))
 		{
 			Inventory::inventoryOpen = !Inventory::inventoryOpen;
+			Inventory::itemHover = false;
 		}
 
 		if (Inventory::inventoryOpen)
@@ -310,20 +311,20 @@ void Lobby_Draw()
 		           0.35f, 1, 1, 1, 1);
 
 
-		auto playerHealth = "Health: " + std::to_string(PlayerMaxBasehealth) + " + (" + std::to_string(
-			playerReference->maxHealth) + ")";
+		auto playerHealth = "Health: " + std::to_string((int)PlayerMaxBasehealth) + " + (" + std::to_string(
+			(int)playerReference->maxHealth) + ")";
 		const char* pHealthText = playerHealth.c_str();
 		AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pHealthText, -0.75f,
-		           0.3f - height * 0.5f,
-		           0.35f, 1, 1, 1, 1);
+		           0.35f - height * 0.5f,
+		           0.35f, 0, 1, 0, 1);
 
-		auto playerAttack = "Attack: " + std::to_string(playerReference->attack);
+		auto playerAttack = "Attack: " + std::to_string((int)playerReference->attack);
 		const char* pAttackText = playerAttack.c_str();
 		AEGfxGetPrintSize(fontID, pAttackText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pAttackText, -0.75f,
-		           0.1f - height * 0.5f,
-		           0.35f, 1, 1, 1, 1);
+		           0.25f - height * 0.5f,
+		           0.35f, 1, 0, 0, 1);
 
 
 		for (ButtonGearUI button : Inventory::equipmentDisplay)
