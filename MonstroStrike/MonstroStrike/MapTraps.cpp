@@ -1,6 +1,7 @@
 #include "MapTraps.h"
 #include <iostream>
 #include "main.h"
+#include "ParticleSystem.h"
 
 namespace {
 	std::vector<TrapDetails> levelTrapsContainer;
@@ -25,8 +26,8 @@ namespace {
 		Object obj;
 		AABB collisionBox;
 		AEVec2 velocity;
-		f32 currLifeTime = 5.f;
-		f32 maxLifeTime = 5.f;
+		f32 currLifeTime = 3.f;
+		f32 maxLifeTime = 3.f;
 		f32 damage = 0.f;
 
 		ArrowType type;
@@ -69,12 +70,6 @@ void StoreTrapDetails(Grids2D theGrid)
 	theTrap.obj.scale = theGrid.size;
 	theTrap.obj.speed = { 0 };
 	theTrap.hitPlayer = false;
-
-	//Create the initial collision box
-	theTrap.collisionBox.minimum.x = theTrap.obj.pos.x - theTrap.obj.scale.x * 0.5f;
-	theTrap.collisionBox.minimum.y = theTrap.obj.pos.y - theTrap.obj.scale.y * 0.5f;
-	theTrap.collisionBox.maximum.x = theTrap.obj.pos.x + theTrap.obj.scale.x * 0.5f;
-	theTrap.collisionBox.maximum.y = theTrap.obj.pos.y + theTrap.obj.scale.y * 0.5f;
 
 	levelTrapsContainer.push_back(theTrap);
 }
@@ -205,7 +200,7 @@ namespace {
 		
 		Arrow newArrow;
 		newArrow.obj.pos = spawnPos;
-		newArrow.velocity = { -10.f, 0.f };  //Towards left
+		newArrow.velocity = { -30.f, 0.f };  //Towards left
 		newArrow.obj.scale = { GRID_SIZE * 0.25f, GRID_SIZE * 0.25f };
 		newArrow.damage = damage;
 		newArrow.currLifeTime = newArrow.maxLifeTime;
@@ -233,6 +228,10 @@ namespace {
 			if (AABBvsAABB(arrowContainer[i].collisionBox, gameManager->GetPlayer()->GetPlayerCollisionBox()))
 			{
 				gameManager->GetPlayer()->GetCurrentHealth() -= arrowContainer[i].damage;
+
+				ParticleEmit(5, arrowContainer[i].obj.pos.x, arrowContainer[i].obj.pos.y, 5.f, 5.f, 0.f,
+					ENEMY_DEATH_EFFECT, nullptr);
+
 				switch (arrowContainer[i].type) 
 				{
 				case POISON_ARROW:
