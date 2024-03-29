@@ -48,7 +48,7 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 		//End Point X Axis
 		thePlatform.endPoint.x = thePlatform.startPoint.x;
 		//End Point Y Axis
-		thePlatform.endPoint.y = thePlatform.position.y - 100.f;
+		thePlatform.endPoint.y = thePlatform.position.y - 300.f;
 
 		//Setting Velocity
 		AEVec2Set(&thePlatform.velocity, thePlatform.endPoint.x - thePlatform.startPoint.x, thePlatform.endPoint.y - thePlatform.startPoint.y);
@@ -61,9 +61,9 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 		thePlatform.startPoint = thePlatform.position;
 
 		//End Point X Axis
-		thePlatform.endPoint.x = thePlatform.startPoint.x + 200.f;
+		thePlatform.endPoint.x = thePlatform.startPoint.x - 100.f;
 		//End Point Y Axis
-		thePlatform.endPoint.y = thePlatform.position.y - 100.f;
+		thePlatform.endPoint.y = thePlatform.position.y - 400.f;
 
 		//Setting Velocity
 		AEVec2Set(&thePlatform.velocity, thePlatform.endPoint.x - thePlatform.startPoint.x, thePlatform.endPoint.y - thePlatform.startPoint.y);
@@ -122,30 +122,24 @@ void PlatformCollision(Platforms& movingObject, Player& player)
 {
 	bool collided = false;
 	//Vertical
-	if (AABBvsAABB(player.boxHeadFeet, movingObject.collisionBox)) {
-		player.collisionNormal = AABBNormalize(player.boxHeadFeet, movingObject.collisionBox);
+	if (AABBvsAABB(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox)) {
+		player.GetPlayerCollisionNormal() = AABBNormalize(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox);
 
-		ResolveVerticalCollision(player.boxHeadFeet, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity, &player.onFloor, &player.gravityForce, &player.isFalling);
+		ResolveVerticalCollision(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox, &player.GetPlayerCollisionNormal(), &player.GetPlayerCurrentPosition(),
+			&player.GetPlayerVelocity(), &player.GetIsPlayerOnFloor(), &player.GetGravityOnPlayer(), &player.GetIsPlayerFalling());
 
-		collided = true;
-
+		player.GetPlayerCurrentPosition().x += movingObject.velocity.x;
+		player.GetPlayerCurrentPosition().y += movingObject.velocity.y;
 	}
 
 	//Check horizontal box (Left arm -> Right arm)
-	if (AABBvsAABB(player.boxArms, movingObject.collisionBox)) {
-		player.collisionNormal = AABBNormalize(player.boxArms, movingObject.collisionBox);
+	if (AABBvsAABB(player.GetPlayerBoxArm(), movingObject.collisionBox)) {
+		player.GetPlayerCollisionNormal() = AABBNormalize(player.GetPlayerBoxArm(), movingObject.collisionBox);
 
-		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity);
-		collided = true;
+		ResolveHorizontalCollision(player.GetPlayerBoxArm(), movingObject.collisionBox, &player.GetPlayerCollisionNormal(), &player.GetPlayerCurrentPosition(),
+			&player.GetPlayerVelocity());
 	}
 
-	if (collided)
-	{
-		player.obj.pos.x += movingObject.velocity.x;
-		player.obj.pos.y += movingObject.velocity.y;
-	}
 }
 
 void PlatformCollision(Platforms& movingObject, Enemy& enemy)

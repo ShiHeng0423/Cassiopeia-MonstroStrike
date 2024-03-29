@@ -1,14 +1,16 @@
 #pragma once
 #include <AEEngine.h>
 #include <vector>
+#include "Player.h"
 
 enum {
 	MAX_PARTICLE_COUNT = 1000
 };
 
 enum ParticleType {
-	TEST = 0,
-	TEST_2
+	ENEMY_DEATH_EFFECT = 0,
+	PARTICLE_TRAILING,
+	PARTICLE_JUMP,
 };
 
 struct Particles
@@ -43,7 +45,7 @@ void ParticleInitialize();
 
 void ParticleUpdate();
 
-void ParticleEmit(s8 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose);
+void ParticleEmit(s16 amount, f32 posX, f32 posY, f32 sizeX, f32 sizeY, f32 initialRadian, ParticleType particlePurpose, Player* player);
 
 void ParticlesDraw(AEGfxVertexList& mesh);
 

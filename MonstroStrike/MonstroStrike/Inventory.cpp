@@ -576,17 +576,18 @@ namespace Inventory
 		{
 			// Apply the effect of the item on the player
 
-			 playerReference->currHealth += static_cast<f32> (item.health);
-			 playerReference->attack += static_cast<f32> (item.attack);
-			
-			 std::cout << "Increased by " << item.health << " Current hp = "  << player.currHealth << std::endl;
-			 std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
+			 player.GetCurrentHealth() += static_cast<f32> (item.health);
+			// player.attack += static_cast<f32> (item.attack);
+			// player.defence += static_cast<f32> (item.defence);
+			//
+			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
+			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
+			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
-
-			//Cap the player hp
-			 if(playerReference->currHealth > playerReference->maxHealth)
+			//Cap player hp
+			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
 			 {
-				 playerReference->currHealth = playerReference->maxHealth;
+				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
 			 }
 
 		}
@@ -649,7 +650,20 @@ namespace Inventory
 					 switch (item.Item.item_type)
 					 {
 					 case WEAPON:
-					
+						 switch (item.Item.rarity)
+						 {
+						 case COMMON:
+						 case RARE:
+						 case EPIC:
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_1);
+							 break;
+						 case LEGENDARY:
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_2);
+							 break;
+						 case UNIQUE:
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_3);
+							 break;
+						 }
 					 	break;
 					
 					 case ARMOUR:
@@ -661,15 +675,17 @@ namespace Inventory
 					 		switch (item.Item.rarity)
 					 		{
 					 		case COMMON:
-					
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
-					
+								std::cout << "Common: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
 					 			break;
 					 		case RARE:
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+							case LEGENDARY:
+								std::cout << "Rare: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
 					 			break;
 					 		case EPIC:
-					 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+								std::cout << "Epic: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
 					 			break;
 					
 					 	}
@@ -684,14 +700,15 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+						case LEGENDARY:
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -700,14 +717,15 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+						case LEGENDARY:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -716,14 +734,15 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+						case LEGENDARY:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -760,13 +779,13 @@ namespace Inventory
 	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
 	{
 		// Reset player's stats to base values
-		playerReference->maxHealth = 0.f;
-		playerReference->attack = 0.f;
+		playerReference->GetMaxHealth() = 0.f;
+		//playerReference->GetAttack() = 0.f;
 
 		for (auto gear : equippedItems)
 		{
-			playerReference->maxHealth += (f32)gear.health;
-			playerReference->attack += (f32)gear.attack;
+			playerReference->GetMaxHealth() += (f32)gear.health;
+			//playerReference->attack += (f32)gear.attack;
 
 		}
 	}
@@ -805,8 +824,6 @@ namespace Inventory
 
 			equippedGear[obj.gear_loc] = obj;
 			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
-
-			//playerReference->equippedArmor.defence = obj.defence;
 			break;
 
 			case body:
@@ -878,7 +895,7 @@ namespace Inventory
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 		//Item images
-		for (size_t i = 0 ; i < fullInventoryList.size(); ++i)
+		for (size_t i = 0; i < fullInventoryList.size(); ++i)
 		{
 			// Construct the file path for the texture
 			std::stringstream ss;
@@ -890,25 +907,32 @@ namespace Inventory
 		}
 
 
-		Item emptySpace {"", -999, "", "",
+		Item emptySpace{ "", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
-			false, 0, 0, 0};
+			false, 0, 0, 0 };
 
 		for (size_t i = 0; i < 5; ++i)
 		{
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
-			if(equippedGear.size() < 5)
+			if (equippedGear.size() < 5)
 			{
 				equippedGear.push_back(emptySpace);
-			}
-
-			if(equippedGear[i].ID < 0)
-			{
 				equipmentDisplay[i].Item = emptySpace;
-			}else
-			{
-				equipmentDisplay[i].Item = equippedGear[i];
 			}
+		}
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+
+			if (equippedGear[i].ID >= 0)
+			{
+				equipmentDisplay[equippedGear[i].gear_loc].Item = equippedGear[i];
+			}
+		}
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			equippedGear[i] = equipmentDisplay[i].Item;
 		}
 	}
 

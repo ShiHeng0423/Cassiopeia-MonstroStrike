@@ -36,6 +36,8 @@ struct MissionSystem {
 
 	void MissionComplete(int missionID);
 
+	bool CheckMissionClear();
+
 	size_t GetEnemyMissionsCount();
 
 	std::vector<int>GetAvailableEnemyMissionsIDs();

@@ -1,37 +1,53 @@
 #pragma once
-#include <string>
 #include "AEEngine.h"
 
-//#include "Inventory.h"
+//Static Image
 struct Sprite
 {
 	AEGfxTexture* pTex;
-	AEVec2 scale;
+
+	AEVec2 pos{ 0.f,0.f };
+	AEVec2 scale{ 0.f,0.f };
+	float rotate{ 0.f };
+
+	AEMtx33 transform;
+
+	void UpdateTransformMatrix();
 };
 
-
-struct Sprite_V2
-{
-	AEGfxTexture* pTex;
-	AEVec2 scale;
-	AEVec2 pos;
-};
-
+//Moving Image (E.g. Player, Enemy etc)
 struct Object
 {
-	AEVec2 pos;
-	AEVec2 speed;
-	Sprite img;
+	AEGfxTexture* pTex;
+
+	AEVec2 pos{ 0.f,0.f };
+	AEVec2 scale{ 0.f,0.f };
+	float rotate{ 0.f };
+
+	AEVec2 speed{ 0.f, 0.f };
+
+	AEMtx33 transform;
+
+	void UpdateTransformMatrix();
 };
 
+//Button UI
 struct Button
 {
 	AEGfxTexture* pTex;
-	AEVec2 scale;
-	AEVec2 pos;
-	void (*Ptr)(void);
-};
 
+	AEVec2 pos{ 0.f,0.f };
+	AEVec2 scale{ 0.f,0.f };
+	float rotate{ 0.f };
+
+	AEVec2 speed{ 0.f, 0.f };
+
+	AEMtx33 transform;
+
+	void (*Ptr)(void);
+	void UpdateTransformMatrix();
+};
 
 AEGfxVertexList* GenerateSquareMesh(u32 meshColor);
 AEGfxVertexList* GenerateLineMesh(u32 meshColor);
+AEMtx33 ObjectTransformationMatrixSet(f32 transX, f32 transY, f32 rotation, f32 scaleX, f32 scaleY);

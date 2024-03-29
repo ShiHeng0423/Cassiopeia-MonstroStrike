@@ -69,7 +69,7 @@ namespace Crafting
 			matReq2.mat_quantity = matRequirementsValue[1]["mat_quantity"].GetInt();
 
 			// Create and store the recipe
-			recipes.push_back({itemId, {matReq1, matReq2}});
+			recipes.push_back({ itemId, {matReq1, matReq2} });
 		}
 
 		return recipes;
