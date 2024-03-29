@@ -44,7 +44,7 @@ namespace
 	AEVec2 playerBoundaryMax;
 
 
-	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player);
+	
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
 
@@ -58,10 +58,22 @@ void Level1_B_Load()
 		grids2D[i] = new Grids2D[MAP_COLUMN_SIZE_2];
 	}
 
-	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_FLY, vecEnemy);
+	Enemy_Load(ENEMY_CHARGER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
+	Enemy_Load(ENEMY_JUMPER, vecEnemy);
 
-	player = new Player("Assets/Border.png", { AEGfxGetWindowWidth() * 0.05f, AEGfxGetWindowWidth() * 0.05f },
-		{ 0, -100 }, { 40.f, 0.f }, true);
+	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
+	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
+	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
+	enemyBoss1DropTex = AEGfxTextureLoad("Assets/ENEMY_BOSS1_DROP.png");
+
+	player = gameManager->GetPlayer();
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Level1_B.csv"; //Change name as per level
@@ -94,8 +106,6 @@ void Level1_B_Load()
 
 void Level1_B_Initialize()
 {
-	std::cout << "B\n";
-
 #pragma region Grid_Loading
 	//Initializing grid data
 	SetGridTypes(grids2D, gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2);
@@ -119,33 +129,42 @@ void Level1_B_Initialize()
 			//Previous zone is area a
 			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1 && previous == AREA1_A)
 			{
-				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
 			}
 			//Previous zone is treasure zone
 			//else if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_2 && previous == AREA1_C)
 			//{
 			//	//Set initial player position at pos grid 2
-			//	player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+			//	player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
 			//}
 			//Previous zone is area c
 			else if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_3 && previous == AREA1_C)
 			{
 				//Set initial player position at pos grid 2
-				player->obj.pos = { grids2D[rows][cols].position }; //Set position based on grid
+				player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
 			}
 		}
 	}
-	player->obj.scale = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
+	player->GetPlayerScale() = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 #pragma endregion
 
-	cam = new Camera(player->obj.pos);
+	cam = new Camera(player->GetPlayerCurrentPosition());
 
 #pragma region Inventory_UI
 
 	Inventory::InitInventory();
 
 #pragma endregion
+
+	Enemy_Init({ 70.f, 70.f }, { -250.f, 50.f }, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f, 70.f }, { -180.f, -200.f }, ENEMY_IDLE, vecEnemy[1]);
+	Enemy_Init({ 70.f, 70.f }, { -214.f, -500.f }, ENEMY_IDLE, vecEnemy[2]);
+	Enemy_Init({ 70.f, 70.f }, { -523.f, -500.f }, ENEMY_IDLE, vecEnemy[3]);
+	Enemy_Init({ 70.f, 70.f }, { -620.f, -1200.f }, ENEMY_IDLE, vecEnemy[4]);
+	Enemy_Init({ 70.f, 70.f }, { 27.f, -1700.f }, ENEMY_IDLE, vecEnemy[5]);
+	Enemy_Init({ 70.f, 70.f }, { 27.f, -1700.f }, ENEMY_IDLE, vecEnemy[6]);
+	Enemy_Init({ 70.f, 70.f }, { -631.f, -1500.f }, ENEMY_IDLE, vecEnemy[7]);
 
 	menu->Init(cam);
 	ParticleInitialize();
@@ -154,7 +173,7 @@ void Level1_B_Initialize()
 
 void Level1_B_Update()
 {
-	//std::cout << AEFrameRateControllerGetFrameRate() << "\n";
+	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
@@ -170,7 +189,7 @@ void Level1_B_Update()
 #pragma region PlayerUpdate
 	if (currScene == MAIN_SCENE)
 		player->Update(Inventory::inventoryOpen);
-	if (AEInputCheckTriggered(AEVK_I))
+	if (AEInputCheckTriggered(AEVK_TAB))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 	}
@@ -187,13 +206,13 @@ void Level1_B_Update()
 	}
 
 	//This is set here temporary so that thing actually work, need to move
-	if (player->isAttacking)
+	if (player->GetIsPlayerAttacking())
 	{
 		for (Enemy& enemy : vecEnemy)
 		{
 			if (enemy.isAlive)
 			{
-				CheckWeaponCollision(&player->equippedWeapon, enemy, *player);
+				CheckWeaponCollision(&player->GetWeaponSet(), enemy, *player);
 			}
 		}
 	}
@@ -205,7 +224,7 @@ void Level1_B_Update()
 #pragma endregion
 
 #pragma region GridSystem
-	CheckPlayerGridCollision(grids2D, player);
+	player->CheckPlayerGridCollision(grids2D, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2);
 	//CheckEnemyGridCollision(grids2D, vecEnemy);
 
 	for (s16 rows = 0; rows < MAP_ROW_SIZE_2; rows++)
@@ -232,24 +251,6 @@ void Level1_B_Update()
 		{
 			//Display item info
 		}
-	}
-
-	if (player->burningEffect)
-	{
-		if (timer >= burningEffectDuration)
-		{
-			AEVec2 hpLerp{ 0, 0 };
-			hpLerp.x = (f32)hp;
-			hpLerp.y = 0.f;
-			AEVec2 end{ 0, 0 };
-			end.x = 0;
-			end.y = 0;
-			AEVec2Lerp(&hpLerp, &hpLerp, &end, 0.01f);
-			hp = (int)hpLerp.x;
-			timer = 0.f;
-		}
-		else
-			timer += AEFrameRateControllerGetFrameTime();
 	}
 
 #pragma endregion
@@ -301,47 +302,28 @@ void Level1_B_Draw()
 
 #pragma region Player_Render
 
-	AEGfxTextureSet(player->obj.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(player->obj.pos.x, player->obj.pos.y, 0.f, player->obj.scale.x,
-		player->obj.scale.y).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	player->RenderPlayer();
 
 	//drawing enemy
 	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-	if (player->isAttacking)
+	if (player->GetIsPlayerAttacking())
 	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
-			player->equippedWeapon.position.y, 0.f,
-			player->equippedWeapon.scale.x,
-			player->equippedWeapon.scale.y).m);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(player->GetWeaponSet().position.x,
+			player->GetWeaponSet().position.y, 0.f,
+			player->GetWeaponSet().scale.x,
+			player->GetWeaponSet().scale.y).m);
 		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
-		player->isAttacking = false;
+		player->GetIsPlayerAttacking() = false;
 	}
 
 #pragma endregion
 
 #pragma region Game_UI_Render
 
-	f32 x, y;
-	AEGfxGetCamPosition(&x, &y);
-
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
-	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
-
-	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-	AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(-800.f + hp + x, 450.f + y, 0, hp * 2.f, 80.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	std::string str = std::to_string(hp);
-	const char* pTextHP = str.c_str();
-	f32 width, height;
-	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
-	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);
+	player->RenderPlayerStatUI();
 
 #pragma endregion
 
@@ -445,12 +427,12 @@ void Level1_B_Draw()
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+	/*AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
 		(f32)AEGfxGetWindowWidth(), 1.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
 		0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);*/
 
 #pragma endregion
 	missionSystem.PrintMissionText();
@@ -489,8 +471,6 @@ void Level1_B_Unload()
 	AEGfxTextureUnload(enemyFlyDropTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
 
-	AEGfxTextureUnload(player->obj.pTex);
-
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -503,89 +483,89 @@ void Level1_B_Unload()
 	}
 
 	delete[] grids2D;
-	delete player;
+	
 	delete cam;
 	delete menu;
 }
 
 namespace {
-	void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
-	{
-		int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->obj.pos.y) / (gridMap[0][0].size.x));
+	//void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
+	//{
+	//	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->GetPlayerCurrentPosition().y) / (gridMap[0][0].size.x));
 
-		for (int i = 0; i <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); i++)
-		{
-			int playerIndexX = (int)((player->obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(player->obj.scale.x * 2 / gridMap[0][0].size.x); j++)
-			{
-				switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
-				{
-				case NORMAL_GROUND:
-					//Collision check
-					//Resolve + Vertical Collision only for entity x (wall or ground)
-					//Check vertical box (Head + Feet) 
-					if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxHeadFeet,
-							gridMap[playerIndexY][playerIndexX].collisionBox);
-						ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity, &player->onFloor, &player->gravityForce,
-							&player->isFalling);
-					}
+	//	for (int i = 0; i <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); i++)
+	//	{
+	//		int playerIndexX = (int)((player->GetPlayerCurrentPosition().x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
+	//		for (int j = 0; j <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); j++)
+	//		{
+	//			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
+	//			{
+	//			case NORMAL_GROUND:
+	//				//Collision check
+	//				//Resolve + Vertical Collision only for entity x (wall or ground)
+	//				//Check vertical box (Head + Feet) 
+	//				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
+	//				{
+	//					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
+	//						gridMap[playerIndexY][playerIndexX].collisionBox);
+	//					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
+	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
+	//						&player->velocity, &player->onFloor, &player->gravityForce,
+	//						&player->isFalling);
+	//				}
 
-					//Check horizontal box (Left arm -> Right arm)
-					if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						player->collisionNormal = AABBNormalize(player->boxArms,
-							gridMap[playerIndexY][playerIndexX].collisionBox);
-						ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
-							&player->collisionNormal, &player->obj.pos,
-							&player->velocity);
-					}
-					break;
-				case LAVA_GRID:
-					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						OnPlayerDeath();
-					}
-					break;
-				case MAP_TRANSITION_GRID_1:
-					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						if (!transitionalImageOBJ.active)
-						{
-							transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, AREA1_A);
-						}
-					}
-					break;
-				case MAP_TRANSITION_GRID_3:
-					if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					{
-						if (!transitionalImageOBJ.active)
-						{
-							transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_C);
-						}
-					}
-					break;
-					//case MAP_TRANSITION_GRID_2:
-					//	if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-					//	{
-					//		//std::cout << "Collided\n";MainMenu_Song
-					//		if (!transitionalImageOBJ.active)
-					//		{
-					//			transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
-					//		}
-					//	}
-					break;
-				case EMPTY:
-					break;
-				}
-				playerIndexX += 1;
-			}
-			playerIndexY += 1;
-		}
-	}
+	//				//Check horizontal box (Left arm -> Right arm)
+	//				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
+	//				{
+	//					player->collisionNormal = AABBNormalize(player->boxArms,
+	//						gridMap[playerIndexY][playerIndexX].collisionBox);
+	//					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
+	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
+	//						&player->velocity);
+	//				}
+	//				break;
+	//			case LAVA_GRID:
+	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+	//				{
+	//					OnPlayerDeath();
+	//				}
+	//				break;
+	//			case MAP_TRANSITION_GRID_1:
+	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+	//				{
+	//					if (!transitionalImageOBJ.active)
+	//					{
+	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, AREA1_A);
+	//					}
+	//				}
+	//				break;
+	//			case MAP_TRANSITION_GRID_3:
+	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+	//				{
+	//					if (!transitionalImageOBJ.active)
+	//					{
+	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_C);
+	//					}
+	//				}
+	//				break;
+	//				//case MAP_TRANSITION_GRID_2:
+	//				//	if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
+	//				//	{
+	//				//		//std::cout << "Collided\n";MainMenu_Song
+	//				//		if (!transitionalImageOBJ.active)
+	//				//		{
+	//				//			transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+	//				//		}
+	//				//	}
+	//				break;
+	//			case EMPTY:
+	//				break;
+	//			}
+	//			playerIndexX += 1;
+	//		}
+	//		playerIndexY += 1;
+	//	}
+	//}
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{

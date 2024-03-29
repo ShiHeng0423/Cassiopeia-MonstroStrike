@@ -122,22 +122,22 @@ void PlatformCollision(Platforms& movingObject, Player& player)
 {
 	bool collided = false;
 	//Vertical
-	if (AABBvsAABB(player.boxHeadFeet, movingObject.collisionBox)) {
-		player.collisionNormal = AABBNormalize(player.boxHeadFeet, movingObject.collisionBox);
+	if (AABBvsAABB(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox)) {
+		player.GetPlayerCollisionNormal() = AABBNormalize(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox);
 
-		ResolveVerticalCollision(player.boxHeadFeet, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity, &player.onFloor, &player.gravityForce, &player.isFalling);
+		ResolveVerticalCollision(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox, &player.GetPlayerCollisionNormal(), &player.GetPlayerCurrentPosition(),
+			&player.GetPlayerVelocity(), &player.GetIsPlayerOnFloor(), &player.GetGravityOnPlayer(), &player.GetIsPlayerFalling());
 
-		player.obj.pos.x += movingObject.velocity.x;
-		player.obj.pos.y += movingObject.velocity.y;
+		player.GetPlayerCurrentPosition().x += movingObject.velocity.x;
+		player.GetPlayerCurrentPosition().y += movingObject.velocity.y;
 	}
 
 	//Check horizontal box (Left arm -> Right arm)
-	if (AABBvsAABB(player.boxArms, movingObject.collisionBox)) {
-		player.collisionNormal = AABBNormalize(player.boxArms, movingObject.collisionBox);
+	if (AABBvsAABB(player.GetPlayerBoxArm(), movingObject.collisionBox)) {
+		player.GetPlayerCollisionNormal() = AABBNormalize(player.GetPlayerBoxArm(), movingObject.collisionBox);
 
-		ResolveHorizontalCollision(player.boxArms, movingObject.collisionBox, &player.collisionNormal, &player.obj.pos,
-			&player.velocity);
+		ResolveHorizontalCollision(player.GetPlayerBoxArm(), movingObject.collisionBox, &player.GetPlayerCollisionNormal(), &player.GetPlayerCurrentPosition(),
+			&player.GetPlayerVelocity());
 	}
 
 }

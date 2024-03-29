@@ -14,6 +14,7 @@ extern AEGfxTexture* enemyChargerDropTex;
 extern AEGfxTexture* enemyFlyDropTex;
 extern AEGfxTexture* enemyBoss1DropTex;
 
+
 //(EnemyUtils)-------------------------------------------------------------------------
 void MoveTowards(Enemy& movingEntity, AEVec2 targetPosition);
 void MoveTowardsFLY(Enemy& movingEntity, AEVec2 targetPosition);	//only for the flying enemy
@@ -29,6 +30,8 @@ void IsStuck(Enemy& enemy);
 bool ReachedPos(Enemy& enemy, AEVec2 wayPoint);
 void EnemyLootSpawn(Enemy& enemy, std::vector<EnemyDrops>& vecCollectables);
 void DrawEnemyLoot(std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pWhiteSquareMesh);
+void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh);
+void DrawEnemyHpParts(EnemyPart& enemy, AEGfxVertexList* pWhitesqrMesh);
 //(EnemyUtils)-------------------------------------------------------------------------
 
 

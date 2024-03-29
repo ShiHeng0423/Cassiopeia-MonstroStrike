@@ -577,7 +577,7 @@ namespace Inventory
 		{
 			// Apply the effect of the item on the player
 
-			 player.currHealth += static_cast<f32> (item.health);
+			 player.GetCurrentHealth() += static_cast<f32> (item.health);
 			// player.attack += static_cast<f32> (item.attack);
 			// player.defence += static_cast<f32> (item.defence);
 			//
@@ -586,9 +586,9 @@ namespace Inventory
 			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
 			//Cap player hp
-			 if(playerReference->currHealth > playerReference->maxHealth)
+			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
 			 {
-				 playerReference->currHealth = playerReference->maxHealth;
+				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
 			 }
 
 		}
@@ -671,13 +671,13 @@ namespace Inventory
 						 case COMMON:
 						 case RARE:
 						 case EPIC:
-							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_1);
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_1);
 							 break;
 						 case LEGENDARY:
-							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_2);
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_2);
 							 break;
 						 case UNIQUE:
-							 Equip_Weapon(player, player.wp, Weapon_System::WEAPON_GRADE::TIER_3);
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_3);
 							 break;
 						 }
 					 	break;
@@ -691,15 +691,17 @@ namespace Inventory
 					 		switch (item.Item.rarity)
 					 		{
 					 		case COMMON:
-					
-					 			Equip_Armor(player, player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
-					
+								std::cout << "Common: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
 					 			break;
 					 		case RARE:
-					 			Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+							case LEGENDARY:
+								std::cout << "Rare: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
 					 			break;
 					 		case EPIC:
-					 			Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+								std::cout << "Epic: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
 					 			break;
 					
 					 	}
@@ -714,14 +716,15 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+						case LEGENDARY:
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -730,14 +733,15 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+						case LEGENDARY:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -746,14 +750,15 @@ namespace Inventory
 					 	{
 					 	case COMMON:
 					
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
 					
 					 		break;
 					 	case RARE:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+						case LEGENDARY:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
 					 		break;
 					 	case EPIC:
-					 		Equip_Armor(player,  player.armorSet.pieces[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
 					 		break;
 					 	}
 					 	break;
@@ -892,7 +897,7 @@ namespace Inventory
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 		//Item images
-		for (size_t i = 0 ; i < fullInventoryList.size(); ++i)
+		for (size_t i = 0; i < fullInventoryList.size(); ++i)
 		{
 			// Construct the file path for the texture
 			std::stringstream ss;
@@ -904,25 +909,40 @@ namespace Inventory
 		}
 
 
-		Item emptySpace {"", -999, "", "",
+		Item emptySpace{ "", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
-			false, 0, 0, 0};
+			false, 0, 0, 0 };
 
 		for (size_t i = 0; i < 5; ++i)
 		{
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
-			if(equippedGear.size() < 5)
+			if (equippedGear.size() < 5)
 			{
 				equippedGear.push_back(emptySpace);
+				equipmentDisplay[i].Item = emptySpace;
+			}
+		}
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+
+			if (equippedGear[i].ID >= 0)
+			{
+				equipmentDisplay[equippedGear[i].gear_loc].Item = equippedGear[i];
 			}
 
-			if(equippedGear[i].ID < 0)
-			{
-				equipmentDisplay[i].Item = emptySpace;
-			}else
-			{
-				equipmentDisplay[i].Item = equippedGear[i];
-			}
+			//if(equippedGear[i].ID < 0)
+			//{
+			//	equipmentDisplay[i].Item = emptySpace;
+			//}else
+			//{
+			//	equipmentDisplay[i].Item = equippedGear[i];
+			//}
+		}
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			equippedGear[i] = equipmentDisplay[i].Item;
 		}
 	}
 

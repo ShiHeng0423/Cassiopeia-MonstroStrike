@@ -47,14 +47,13 @@ void MissionSystem::AcceptKillEnemyMission(int missionID)
 			{
 				mission.accepted = true;
 				mission.available = false;
-				std::cout << "Mission " << mission.missionName << " has been accepted\n";
+				missionSystem.chargersKilled = missionSystem.fliesKilled = missionSystem.slimesKilled = 0;
 				return;
 			}
 		}
 	}
 	else
 	{
-		std::cout << "You have an ongoing mission!\n";
 	}
 }
 
@@ -222,11 +221,10 @@ void MissionSystem::PrintMissionText()
 
 bool MissionSystem::CheckMissionClear()
 {
-	int id = missionSystem.GetAcceptedMissionID();
+	size_t id = missionSystem.GetAcceptedMissionID();
 
 	if (id != -1)
 	{
-		std::cout << enemyMissions[id].flyToKill << " checking complete\n";
 	}
 
 	switch (id)
@@ -256,7 +254,6 @@ bool MissionSystem::CheckMissionClear()
 			return true;
 		break;
 	default:
-		std::cout << "No missions\n" << std::endl;
 		return false;
 	}
 

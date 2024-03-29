@@ -108,7 +108,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
+    <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GameState_BossRoom.cpp" />
+    <ClCompile Include="GameState_Level1.cpp" />
     <ClCompile Include="GameState_Level1_B.cpp" />
     <ClCompile Include="GameState_Level1_C.cpp" />
     <ClCompile Include="GameState_Level1_D.cpp" />
@@ -118,9 +120,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameState_GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
-    <ClCompile Include="GameState_Level1.cpp" />
     <ClCompile Include="GameState_Mainmenu.cpp" />
     <ClCompile Include="GameState_SplashScreen.cpp" />
+    <ClInclude Include="GameManager.h" />
     <ClInclude Include="GameStateHeaders.h" />
     <ClInclude Include="GameState_BossRoom.h" />
     <ClInclude Include="GameState_Level1_B.h" />
@@ -228,7 +230,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <None Include="..\Assets\GameMaps\GameMap_Level1_E.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Level1_F.csv" />
     <None Include="..\Assets\GameMaps\GameMap_Lobby.csv" />
-    <None Include="..\Assets\player_inventory.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

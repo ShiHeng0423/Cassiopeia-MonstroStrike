@@ -154,21 +154,21 @@ void UpdateNPC(Player* player)
 		switch (npcs[i].typeOfNPC)
 		{
 		case NPC_CLERIC:
-			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			if (AABBvsAABB(player->GetPlayerCollisionBox(), npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
+				collidedPlayer.push_back({ AEVec2Distance(&player->GetPlayerCurrentPosition(), &npcs[i].position), i});
 			}
 			break;
 		case NPC_BLACKSMITH_B:
-			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			if (AABBvsAABB(player->GetPlayerCollisionBox(), npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
+				collidedPlayer.push_back({ AEVec2Distance(&player->GetPlayerCurrentPosition(), &npcs[i].position), i});
 			}
 			break;
 		case NPC_QUEST_GIVER:
-			if (AABBvsAABB(player->collisionBox, npcs[i].collisionBox))
+			if (AABBvsAABB(player->GetPlayerCollisionBox(), npcs[i].collisionBox))
 			{
-				collidedPlayer.push_back({ AEVec2Distance(&player->obj.pos, &npcs[i].position), i});
+				collidedPlayer.push_back({ AEVec2Distance(&player->GetPlayerCurrentPosition(), &npcs[i].position), i});
 			}
 			break;
 		default:
@@ -182,7 +182,7 @@ void UpdateNPC(Player* player)
 	{
 		std::sort(collidedPlayer.begin(), collidedPlayer.end()); //Sort the closest collided NPC to be front
 		currentConvState = CONVERSATION_ENTRY;
-		player->isConversation = true;
+		player->GetIsTalkingToNpc() = true;
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -190,7 +190,7 @@ void UpdateNPC(Player* player)
 		missionSystem.fliesKilled = 6;
 	}
 
-	if (player->isConversation)
+	if (player->GetIsTalkingToNpc())
 	{
 		switch (currentConvState)
 		{
@@ -210,7 +210,7 @@ void UpdateNPC(Player* player)
 				{
 				case NPC_CLERIC:
 					//Heals the player
-					player->currHealth = player->maxHealth;
+					player->GetCurrentHealth() = player->GetMaxHealth();
 					//Plays healing sound effect
 					currentConvState = CONVERSATION_EXIT;
 					break;
@@ -226,7 +226,7 @@ void UpdateNPC(Player* player)
 				case NPC_QUEST_GIVER:
 					if (missionSystem.CheckMissionClear())
 					{
-						missionSystem.MissionComplete(missionSystem.GetAcceptedMissionID());
+						missionSystem.MissionComplete((int)missionSystem.GetAcceptedMissionID());
 					}
 					//Activate next conversation
 					currentConvState = CONVERSATION_CONTENT;
@@ -406,7 +406,7 @@ void UpdateNPC(Player* player)
 			break;
 		case CONVERSATION_OUTSIDE:
 		default:
-			player->isConversation = false;
+			player->GetIsTalkingToNpc() = false;
 			break;
 		}
 	}
