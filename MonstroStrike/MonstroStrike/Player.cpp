@@ -127,6 +127,11 @@ Player::~Player()
 	AEGfxTextureUnload(FacingRight);
 	AEGfxTextureUnload(FacingLeft);
 	AEGfxTextureUnload(HealthBorder);
+	AEGfxTextureUnload(gearDisplayBorder);
+
+	AEGfxTextureUnload(se_Burning);
+	AEGfxTextureUnload(se_Lifesteal);
+	AEGfxTextureUnload(se_Regen);
 
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pWhiteSquareMesh);
