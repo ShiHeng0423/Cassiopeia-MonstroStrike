@@ -50,8 +50,6 @@ void Lobby_Load()
 	player = gameManager->GetPlayer();
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
-	
-
 
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
@@ -194,13 +192,12 @@ void Lobby_Draw()
 	f32 x, y;
 	AEGfxGetCamPosition(&x, &y);
 
-	//Print Mission Name
 	//Print 
 	//Inventory images
+#pragma region Inventory_UI_Render
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	if (Inventory::inventoryOpen)
 	{
-
 		f32 x, y;
 		AEGfxGetCamPosition(&x, &y);
 
@@ -362,8 +359,8 @@ void Lobby_Draw()
 
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
-
-
+	
+	//Print Mission Name
 	missionSystem.PrintMissionText();
 
 	DrawConvBox(player->GetIsTalkingToNpc(), *pWhiteSquareMesh);

@@ -26,5 +26,6 @@
 #include "Crafting.h"
 #include "main.h"
 #include "MissionList.h"
+#include "MapTraps.h"
 
 //Slapped it here first

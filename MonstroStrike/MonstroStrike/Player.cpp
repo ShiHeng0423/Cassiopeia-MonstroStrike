@@ -591,7 +591,7 @@ void Player::OnPlayerDeath() {
 	//Return to lobby
 	if (!transitionalImageOBJ.active)
 	{
-		Player::GetCurrentHealth() = Player::GetMaxHealth();
 		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+		GetCurrentHealth() = GetMaxHealth();
 	}
 }
