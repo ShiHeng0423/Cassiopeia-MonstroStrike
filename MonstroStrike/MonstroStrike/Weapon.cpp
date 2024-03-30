@@ -20,6 +20,7 @@ namespace Weapon_System
         case Weapon_System::WEAPON_GRADE::TIER_1:
             tmp.name = "Short-Sword";
             tmp.damage = 15;
+            tmp.extraEffect = Status_Effect_System::NONE_EFFECT;
             break;
         case Weapon_System::WEAPON_GRADE::TIER_2:
             tmp.name = "Broad-Sword";
@@ -29,9 +30,32 @@ namespace Weapon_System
         case Weapon_System::WEAPON_GRADE::TIER_3:
             tmp.name = "GreatSword";
             tmp.damage = 35;
+            tmp.extraEffect = Status_Effect_System::NONE_EFFECT;
             break;
         default:
             break;
+        }
+
+        if (player.GetWeaponSet().rarity != tmp.rarity)
+        {
+            if (player.GetWeaponSet().extraEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)
+            {
+                size_t index = 0;
+                for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : player.playerStatusEffectList)
+                {
+                    if (effect.second == Status_Effect_System::Status_Effect_Source::WEAPON)
+                    {
+                        std::cout << index << std::endl;
+                        break;
+                    }
+                    index++;
+                }
+                player.playerStatusEffectList.erase(player.playerStatusEffectList.begin() + index);
+            }
+            if (tmp.extraEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)
+            {
+                player.playerStatusEffectList.push_back({ tmp.extraEffect, Status_Effect_System::Status_Effect_Source::WEAPON });
+            }
         }
 
         player.GetWeaponSet() = tmp;
@@ -492,7 +516,7 @@ namespace Weapon_System
             std::cout << "Attack landed wing1" << std::endl;
 
             playerEquip->weaponHIT = true;
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Weapon_Status_Effect::DRAINING)
+            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::DRAINING)
             {
                 player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
             }
@@ -502,7 +526,7 @@ namespace Weapon_System
             std::cout << "Attack landed wing2" << std::endl;
 
             playerEquip->weaponHIT = true;
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Weapon_Status_Effect::DRAINING)
+            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::DRAINING)
             {
                 player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
             }
@@ -518,7 +542,7 @@ namespace Weapon_System
 
             playerEquip->weaponHIT = true;
 
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Weapon_Status_Effect::DRAINING)
+            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::DRAINING)
             {
                 player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
             }
