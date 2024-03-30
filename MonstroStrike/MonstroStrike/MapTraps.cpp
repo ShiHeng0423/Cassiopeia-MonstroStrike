@@ -303,10 +303,13 @@ namespace {
 				{
 				case POISON_ARROW:
 					std::cout << "Poison Arrow Hit\n";
+					gameManager->GetPlayer()->GetPlayerPoisoned() = true;
 					//Inflict status effect
 					break;
 				case SLOWNESS_ARROW:
 					std::cout << "Slowness Arrow Hit\n";
+					gameManager->GetPlayer()->GetPlayerSlowed() = true;
+
 					//Inflict status effect
 					break;
 				}
