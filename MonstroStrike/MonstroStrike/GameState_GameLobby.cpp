@@ -246,7 +246,7 @@ void Lobby_Draw()
 
 
 		auto playerHealth = "Health: " + std::to_string((int)PlayerMaxBasehealth) + " + (" + std::to_string(
-			playerReference->GetMaxHealth()) + ")";
+			(int)playerReference->GetMaxHealth()) + ")";
 		const char* pHealthText = playerHealth.c_str();
 		AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pHealthText, -0.75f,

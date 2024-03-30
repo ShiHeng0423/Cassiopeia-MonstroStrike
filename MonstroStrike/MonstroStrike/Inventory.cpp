@@ -780,12 +780,12 @@ namespace Inventory
 	{
 		// Reset player's stats to base values
 		playerReference->GetMaxHealth() = 0.f;
-		//playerReference->GetAttack() = 0.f;
+		playerReference->GetWeaponSet().damage = 0.f;
 
 		for (auto gear : equippedItems)
 		{
 			playerReference->GetMaxHealth() += (f32)gear.health;
-			//playerReference->attack += (f32)gear.attack;
+			playerReference->GetWeaponSet().damage += (f32)gear.attack;
 
 		}
 	}
