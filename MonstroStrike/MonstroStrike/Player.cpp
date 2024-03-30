@@ -74,6 +74,7 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	isFalling = false;
 	isPoisoned = false;
 	isSlowed = false;
+	justDied = false;
 
 	AEVec2Set(&velocity, 0.f, 0.f); //Begin with no velocity	
 
@@ -711,11 +712,17 @@ bool& Player::GetIsPlayerFalling()
 	return isFalling;
 }
 
+bool& Player::GetPlayerJustDied()
+{
+	return justDied;
+}
+
 void Player::OnPlayerDeath() {
 	//Return to lobby
 	if (!transitionalImageOBJ.active)
 	{
 		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
 		GetCurrentHealth() = GetMaxHealth();
+		justDied = true;
 	}
 }

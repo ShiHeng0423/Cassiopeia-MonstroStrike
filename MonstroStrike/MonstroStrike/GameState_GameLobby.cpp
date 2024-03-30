@@ -116,6 +116,13 @@ void Lobby_Initialize()
 
 	player->GetPlayerScale() = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
 
+	//Check if player previously just died
+	if (player->GetPlayerJustDied())
+	{
+		player->GetPlayerJustDied() = false; //Set it to false
+		player->GetCurrentHealth() = player->GetMaxHealth();
+	}
+
 	cam = new Camera(player->GetPlayerCurrentPosition());
 	menu->Init(cam);
 	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
@@ -132,6 +139,7 @@ void Lobby_Initialize()
 
 void Lobby_Update()
 {
+	MapTransitionUpdate();
 
 	if (!player->GetIsTalkingToNpc())
 	{
@@ -161,7 +169,6 @@ void Lobby_Update()
 
 	UpdateNPC(player);
 	ParticleUpdate();
-	MapTransitionUpdate();
 }
 
 void Lobby_Draw()

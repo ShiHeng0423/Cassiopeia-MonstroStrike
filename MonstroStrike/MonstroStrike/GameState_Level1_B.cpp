@@ -171,7 +171,6 @@ void Level1_B_Update()
 {
 	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
-
 #pragma region PauseMenuTrigger
 
 	menu->Update(cam);

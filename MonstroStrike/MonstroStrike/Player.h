@@ -64,6 +64,8 @@ public:
 
 	bool& GetPlayerPoisoned();
 	bool& GetPlayerSlowed();
+	bool& GetPlayerJustDied();
+
 	
 	void OnPlayerDeath();
 	std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
@@ -81,7 +83,8 @@ private:
 
 	bool onFloor; //Added to check entity on floor, hence can jump
 	bool isFalling;
-	
+	bool justDied;
+
 	//Status effects
 	bool isPoisoned;
 	bool isSlowed;
