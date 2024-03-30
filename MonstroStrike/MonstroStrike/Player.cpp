@@ -44,8 +44,14 @@ namespace
 	//meshes
 	AEGfxVertexList* pMeshRed;
 	AEGfxVertexList* pWhiteSquareMesh;
+
 	AEGfxTexture* HealthBorder;
 	AEGfxTexture* gearDisplayBorder;
+
+	//status effect sprite
+	AEGfxTexture* se_Burning;
+	AEGfxTexture* se_Regen;
+	AEGfxTexture* se_Lifesteal;
 
 }
 
@@ -57,6 +63,10 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
 	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
 	gearDisplayBorder = AEGfxTextureLoad("Assets/panel_brown.png");
+
+	se_Burning = AEGfxTextureLoad("Assets/StatusEffects/Status_BurningEffect.png");
+	se_Regen = AEGfxTextureLoad("Assets/StatusEffects/Status_Regen.png");
+	se_Lifesteal = AEGfxTextureLoad("Assets/StatusEffects/Status_LifeSteal.png");
 
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
 	pMeshRed = GenerateSquareMesh(0xFFFF0000);
@@ -371,20 +381,20 @@ void Player::RenderPlayerStatUI()
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 	AEGfxTextureSet(gearDisplayBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() +250.f,
-		AEGfxGetWinMaxY() - 75.f, 0.f,
-		500.f, 150.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() +200.f,
+		AEGfxGetWinMaxY() - 60.f, 0.f,
+		400.f, 120.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 	//Health Border
 	//AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 250.f, AEGfxGetWinMaxY() - 70.f, 0, 360.f, 40.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f, AEGfxGetWinMaxY() - 60.f, 0, 300.f, 25.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//Health Bar
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 250.f - ((1.f - (currHealth / maxHealth)) * 180.f), AEGfxGetWinMaxY() - 70.f, 0, (int)(currHealth / maxHealth * 360.f), 40.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - (currHealth / maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (int)(currHealth / maxHealth * 300.f), 25.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -397,23 +407,36 @@ void Player::RenderPlayerStatUI()
 	
 	str = "HP";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.85f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
 
 	str = "Buff";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.75f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
 	
 	size_t buff_index = 0;
 	for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
 	{
-		AEGfxTextureSet(gearDisplayBorder, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f + buff_index++ * 50.f, AEGfxGetWinMaxY() - 115.f, 0, 25.f, 25.f).m);
+		switch (effect.first)
+		{
+		case Status_Effect_System::BURNING:
+			AEGfxTextureSet(se_Burning, 0, 0);
+			break;
+		case Status_Effect_System::LIFE_STEAL:
+			AEGfxTextureSet(se_Lifesteal, 0, 0);
+			break;
+		case Status_Effect_System::REGEN:
+			AEGfxTextureSet(se_Regen, 0, 0);
+			break;
+		default:
+			break;
+		}
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f + buff_index++ * 50.f, AEGfxGetWinMaxY() - 100.f, 0, 25.f, 25.f).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 
 	str = std::to_string((int)currHealth) + "/" + std::to_string((int)maxHealth);
-	AEGfxGetPrintSize(fontID, str.c_str(), 0.5f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.75f, -height / 2 + 0.85f, 0.5f, 0, 0, 0, 1);
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.35f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.75f, -height / 2 + 0.865f, 0.35f, 0, 0, 0, 1);
 
 	AEGfxTextureSet(gearDisplayBorder, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 300.f,
