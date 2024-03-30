@@ -19,17 +19,17 @@ namespace Weapon_System
         {
         case Weapon_System::WEAPON_GRADE::TIER_1:
             tmp.name = "Short-Sword";
-            tmp.damage = 15;
+            tmp.damage = 4;
             tmp.extraEffect = Status_Effect_System::NONE_EFFECT;
             break;
         case Weapon_System::WEAPON_GRADE::TIER_2:
             tmp.name = "Broad-Sword";
-            tmp.damage = 10;
+            tmp.damage = 7;
             tmp.extraEffect = Status_Effect_System::LIFE_STEAL;
             break;
         case Weapon_System::WEAPON_GRADE::TIER_3:
             tmp.name = "GreatSword";
-            tmp.damage = 35;
+            tmp.damage = 5;
             tmp.extraEffect = Status_Effect_System::NONE_EFFECT;
             break;
         default:
@@ -73,9 +73,6 @@ namespace Weapon_System
         if (player->GetWeaponSet().name == "Short-Sword")
         {
             //Initializes weapon's position
-
-            player->GetWeaponSet().damage = 10;
-
             if (player->GetComboState() == 0)
             {
                 xHitOffset = 10.0f;
@@ -179,7 +176,6 @@ namespace Weapon_System
             //Initializes weapon's position
             playerEquip->position.x = player->GetPlayerCurrentPosition().x;
             playerEquip->position.y = player->GetPlayerCurrentPosition().y;
-            player->GetWeaponSet().damage = 20;
 
             if (player->GetComboState() == 0)
             {
@@ -271,7 +267,6 @@ namespace Weapon_System
         }
         else if (player->GetWeaponSet().name == "GreatSword")
         {
-            player->GetWeaponSet().damage = 20;
             if (player->GetComboState() == 0)
             {
                 xHitOffset = 0.0f;
@@ -377,8 +372,6 @@ namespace Weapon_System
     {
         if (player->GetWeaponSet().name == "Short-Sword")
         {
-            playerEquip->damage = 20;
-
             if (player->GetComboState() == 2)
             {
                 xHitOffset = 10.0f;
@@ -410,15 +403,12 @@ namespace Weapon_System
                 std::cout << playerEquip->damage << std::endl;
                 player->GetIsPlayerAttacking() = false;
                 playerEquip->weaponHIT = false;
-                playerEquip->damage = 20;
-                std::cout << playerEquip->damage << std::endl;
 
             }
 
         }
         if (player->GetWeaponSet().name == "Broad-Sword")
         {
-            playerEquip->damage = 40;
             if (player->GetComboState() == 2)
             {
 
@@ -453,14 +443,11 @@ namespace Weapon_System
                 std::cout << playerEquip->damage << std::endl;
                 player->GetIsPlayerAttacking() = false;
                 playerEquip->weaponHIT = false;
-                playerEquip->damage = 60;
-                std::cout << playerEquip->damage << std::endl;
 
             }
         }
         if (player->GetWeaponSet().name == "GreatSword")
         {
-            playerEquip->damage = 100;
 
             if (player->GetComboState() == 2)
             {
@@ -494,8 +481,6 @@ namespace Weapon_System
                 std::cout << playerEquip->damage << std::endl;
                 player->GetIsPlayerAttacking() = false;
                 playerEquip->weaponHIT = false;
-                playerEquip->damage = 20;
-                std::cout << playerEquip->damage << std::endl;
 
             }
 
@@ -506,7 +491,6 @@ namespace Weapon_System
 
         }
     }
-
 
     void CheckWeaponCollision(struct Weapon_Set* playerEquip, struct Enemy& theEnemy, class Player& player)
     {
