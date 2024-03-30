@@ -5,9 +5,11 @@
 #include "Armor.h"
 #include "Weapon.h"
 #include "CSVMapLoader.h"
+#include "StatusEffect.h"
+
+#include <vector>
 
 f32 const PlayerMaxBasehealth = 100.f;
-
 
 
 class Player {
@@ -64,7 +66,7 @@ public:
 	bool& GetPlayerSlowed();
 	
 	void OnPlayerDeath();
-
+	std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
 private:
 
 	//Sprite Data
@@ -112,6 +114,9 @@ private:
 	f32 attack;
 	f32 currStatusCD;
 	f32 currStatusMaxCD;
+
+	//List Of Status Effect
+	//std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
 
 	//Player Armor & Weapon
 	Armor_System::Armor_Set armorSet;

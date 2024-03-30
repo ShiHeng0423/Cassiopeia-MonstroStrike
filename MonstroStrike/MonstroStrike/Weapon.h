@@ -3,16 +3,7 @@
 #include "Player.h"
 #include "CollisionShape.h"
 #include "Enemy.h"
-
-//shi heng
-namespace Status_Effect_System
-{
-    enum Weapon_Status_Effect {
-        DRAINING,
-
-        NONE_WEAPON_EFFECT
-    };
-}
+#include "StatusEffect.h"
 
 //shi heng
 namespace Weapon_System
@@ -30,7 +21,7 @@ namespace Weapon_System
     {
         //shi heng
         WEAPON_GRADE rarity{ WEAPON_GRADE::NO_GRADE };
-        Status_Effect_System::Weapon_Status_Effect extraEffect;
+        Status_Effect_System::Status_Effect extraEffect{ Status_Effect_System::Status_Effect::NONE_EFFECT };
 
         //jian wei
         std::string name;

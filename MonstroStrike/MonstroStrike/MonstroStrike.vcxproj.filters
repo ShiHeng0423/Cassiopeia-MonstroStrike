@@ -287,6 +287,9 @@
     <ClInclude Include="GameManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="StatusEffect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GameState_GameLobby.h">
       <Filter>Header Files\GameLevels</Filter>
     </ClInclude>

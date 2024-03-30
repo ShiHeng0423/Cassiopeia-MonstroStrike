@@ -45,13 +45,22 @@ namespace
 	AEGfxVertexList* pMeshRed;
 	AEGfxVertexList* pWhiteSquareMesh;
 	AEGfxTexture* HealthBorder;
+	AEGfxTexture* gearDisplayBorder;
+
 }
 
 
 Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRight)
 {
+	//Meshes & Texture
+	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
 	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
+	gearDisplayBorder = AEGfxTextureLoad("Assets/panel_brown.png");
+
+	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
+	pMeshRed = GenerateSquareMesh(0xFFFF0000);
+
 	obj.speed = speed;
 
 	AEVec2Set(&obj.pos, location.x, location.y);
@@ -100,10 +109,7 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	currStatusMaxCD = 3.f;
 	currStatusCD = currStatusMaxCD;
 
-	//Meshes & Texture
-	HealthBorder		= AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
-	pWhiteSquareMesh	= GenerateSquareMesh(0xFFFFFFFF);
-	pMeshRed			= GenerateSquareMesh(0xFFFF0000);
+
 }
 
 Player::~Player()
@@ -362,24 +368,59 @@ void Player::RenderPlayer()
 //Render Player Health bar and Current equipped weapons
 void Player::RenderPlayerStatUI()
 {
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+
+	AEGfxTextureSet(gearDisplayBorder, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() +250.f,
+		AEGfxGetWinMaxY() - 75.f, 0.f,
+		500.f, 150.f).m);
+	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 	//Health Border
 	//AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + (int)maxHealth, AEGfxGetWinMaxY(), 0, (int)maxHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 250.f, AEGfxGetWinMaxY() - 70.f, 0, 360.f, 40.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//Health Bar
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + (int)currHealth, AEGfxGetWinMaxY(), 0, (int)currHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 250.f - ((1.f - (currHealth / maxHealth)) * 180.f), AEGfxGetWinMaxY() - 70.f, 0, (int)(currHealth / maxHealth * 360.f), 40.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
-	//Health Text
-	std::string str = std::to_string((int)currHealth);
-	f32 width, height;
-	AEGfxGetPrintSize(fontID, str.c_str(), 0.5f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 0, 0, 0, 1);
-
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+
+	//Health Text
+	std::string str = "Player Stats";
+	f32 width, height;
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
+	
+	str = "HP";
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.85f, 0.3f, 0, 0, 0, 1);
+
+	str = "Buff";
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.75f, 0.3f, 0, 0, 0, 1);
+	
+	size_t buff_index = 0;
+	for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
+	{
+		AEGfxTextureSet(gearDisplayBorder, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f + buff_index++ * 50.f, AEGfxGetWinMaxY() - 115.f, 0, 25.f, 25.f).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
+
+	str = std::to_string((int)currHealth) + "/" + std::to_string((int)maxHealth);
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.5f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.75f, -height / 2 + 0.85f, 0.5f, 0, 0, 0, 1);
+
+	AEGfxTextureSet(gearDisplayBorder, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 300.f,
+		AEGfxGetWinMinY() + 60.f, 0.f,
+		550.f, 150.f).m);
+	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
 	int index = 1;
 	for (ButtonGearUI button : Inventory::equipmentDisplay)
 	{
@@ -389,7 +430,11 @@ void Player::RenderPlayerStatUI()
 			button.img.scale.x, button.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
-}	
+
+	str = "Gears Equipped";
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8f, -height / 2 - 0.75f, 0.3f, 1, 1, 1, 1);
+}
 
 //Get Player Armor Set
 Armor_System::Armor_Set& Player::GetArmorSet()
