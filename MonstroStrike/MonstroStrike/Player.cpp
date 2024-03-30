@@ -444,24 +444,24 @@ void Player::RenderPlayerStatUI()
 	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.75f, -height / 2 + 0.865f, 0.35f, 0, 0, 0, 1);
 
 	AEGfxTextureSet(gearDisplayBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 300.f,
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f,
 		AEGfxGetWinMinY() + 60.f, 0.f,
-		550.f, 150.f).m);
+		450.f, 125.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	int index = 1;
 	for (ButtonGearUI button : Inventory::equipmentDisplay)
 	{
 		AEGfxTextureSet(button.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f * index++,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() -15.f+ 80.f * index++,
 			AEGfxGetWinMinY() + 50.f, 0.f,
-			button.img.scale.x, button.img.scale.y).m);
+			button.img.scale.x * 0.8f, button.img.scale.y * 0.8f).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 
 	str = "Gears Equipped";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8f, -height / 2 - 0.75f, 0.3f, 1, 1, 1, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.85f, -height / 2 - 0.775f, 0.3f, 1, 1, 1, 1);
 }
 
 //Get Player Armor Set
