@@ -25,7 +25,7 @@ namespace Weapon_System
         case Weapon_System::WEAPON_GRADE::TIER_2:
             tmp.name = "Broad-Sword";
             tmp.damage = 10;
-            tmp.extraEffect = Status_Effect_System::DRAINING;
+            tmp.extraEffect = Status_Effect_System::LIFE_STEAL;
             break;
         case Weapon_System::WEAPON_GRADE::TIER_3:
             tmp.name = "GreatSword";
@@ -516,7 +516,7 @@ namespace Weapon_System
             std::cout << "Attack landed wing1" << std::endl;
 
             playerEquip->weaponHIT = true;
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::DRAINING)
+            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
             {
                 player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
             }
@@ -526,7 +526,7 @@ namespace Weapon_System
             std::cout << "Attack landed wing2" << std::endl;
 
             playerEquip->weaponHIT = true;
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::DRAINING)
+            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
             {
                 player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
             }
@@ -542,7 +542,7 @@ namespace Weapon_System
 
             playerEquip->weaponHIT = true;
 
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::DRAINING)
+            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
             {
                 player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
             }

@@ -4,7 +4,7 @@ namespace Status_Effect_System
 	enum Status_Effect {
 		BURNING,
 		REGEN,
-		DRAINING,
+		LIFE_STEAL,
 
 		NONE_EFFECT
 	};
