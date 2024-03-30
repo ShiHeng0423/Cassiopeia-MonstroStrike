@@ -68,8 +68,13 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 
 	//Gravity affection
 	mass = 60.f;
+	friction = 0.85f;
+
 	onFloor = true; //Set as false first, will be set as true when ground detected
 	isFalling = false;
+	isPoisoned = false;
+	isSlowed = false;
+
 	AEVec2Set(&velocity, 0.f, 0.f); //Begin with no velocity	
 
 	//camera
@@ -101,6 +106,8 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	maxHealth = 100.f;
 	currHealth = maxHealth;
 	attack = 100.f;
+	currStatusMaxCD = 3.f;
+	currStatusCD = currStatusMaxCD;
 
 
 }
@@ -170,7 +177,7 @@ void Player::Update(bool isInventoryOpen)
 
 	//For friction
 	if (onFloor) //Means confirm on floor
-		velocity.x *= 0.85f; //Friction application
+		velocity.x *= friction; //Friction application
 
 	//For jumping
 	if (AEInputCheckTriggered(VK_SPACE) && onFloor && !isInventoryOpen)
@@ -286,6 +293,48 @@ void Player::Update(bool isInventoryOpen)
 
 	Armor_Effect_Update(*this);
 
+	if (isPoisoned)
+	{
+		if (currStatusCD > 0.f)
+		{
+			currStatusCD -= (f32)AEFrameRateControllerGetFrameTime();
+
+			// Apply damage over time every specified interval
+			const f32 damageInterval = 2.0f; 
+			static f32 timeSinceLastDamage = 0.0f;
+			timeSinceLastDamage += (f32)AEFrameRateControllerGetFrameTime();
+			if (timeSinceLastDamage >= damageInterval)
+			{
+				const f32 poisonDamage = 0.1f * currHealth;
+				currHealth -= poisonDamage;
+				if (currHealth < 1.f)
+				{
+					currHealth = 1.f;
+				}
+				timeSinceLastDamage = 0.0f; // Reset timer
+			}
+		}
+		else
+		{
+			isPoisoned = false; // Set status to false
+			currStatusCD = currStatusMaxCD; // Reset cooldown
+		}
+	}
+	if (isSlowed)
+	{
+		if (currStatusCD > 0.f)
+		{
+			currStatusCD -= (f32)AEFrameRateControllerGetFrameTime();
+			friction = 0.5f;
+		}
+		else
+		{
+			isSlowed = false; //Set status to false
+			friction = 0.85f;
+			currStatusCD = currStatusMaxCD; //reset cd
+		}
+	}
+
 	if (currHealth <= 0.f)
 	{
 		OnPlayerDeath();
@@ -295,10 +344,25 @@ void Player::Update(bool isInventoryOpen)
 //Render player sprite
 void Player::RenderPlayer()
 {
+	
+	if (isSlowed && isPoisoned)
+	{
+		AEGfxSetColorToMultiply(0.8f, 0.f, 0.f, 1.f);
+	}
+	else if (isPoisoned)
+	{
+		AEGfxSetColorToMultiply(0.7f, 0.f, 0.7f, 1.f);
+	}
+	else if (isSlowed)
+	{
+		AEGfxSetColorToMultiply(0.4f, 0.4f, 0.4f, 1.f);
+	}
+
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(obj.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(obj.pos.x, obj.pos.y, 0.f, obj.scale.x, obj.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxSetColorToMultiply(1.f, 1.f, 1.f, 1.f); //Reset color multiplied
 }
 
 //Render Player Health bar and Current equipped weapons
@@ -408,6 +472,11 @@ f32& Player::GetCurrentHealth()
 	return currHealth;
 }
 
+f32& Player::GetFrictionOnPlayer()
+{
+	return friction;
+}
+
 int& Player::GetComboState()
 {
 	return comboState;
@@ -432,6 +501,16 @@ bool& Player::GetIsPlayerAttacking()
 bool& Player::GetIsTalkingToNpc()
 {
 	return isConversation;
+}
+
+bool& Player::GetPlayerPoisoned()
+{
+	return isPoisoned;
+}
+
+bool& Player::GetPlayerSlowed()
+{
+	return isSlowed;
 }
 
 
@@ -636,7 +715,7 @@ void Player::OnPlayerDeath() {
 	//Return to lobby
 	if (!transitionalImageOBJ.active)
 	{
-		Player::GetCurrentHealth() = Player::GetMaxHealth();
 		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+		GetCurrentHealth() = GetMaxHealth();
 	}
 }

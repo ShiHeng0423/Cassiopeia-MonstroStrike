@@ -22,6 +22,15 @@
     <Filter Include="Source Files\GameLevels">
       <UniqueIdentifier>{a4bc3268-d6a4-4f49-9036-523ad14766a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Enemies">
+      <UniqueIdentifier>{1abb5d9b-d613-4bd8-89c0-5884015c88da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MapDesign">
+      <UniqueIdentifier>{7d920cea-7805-4522-9b2e-3a0afea60cd4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\MapDesign">
+      <UniqueIdentifier>{d71a5956-920b-4951-92ce-8390e8298401}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Player.cpp">
@@ -57,9 +66,6 @@
     <ClCompile Include="MapTransition.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MapPlatformGenerate.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -76,27 +82,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameState_Mainmenu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyUtils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyJumper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyFly.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyCharger.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnemyBoss.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CSVMapLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Crafting.cpp">
@@ -153,6 +138,33 @@
     <ClCompile Include="GameState_BossRoom.cpp">
       <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
+    <ClCompile Include="Enemy.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyBoss.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyCharger.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyFly.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyJumper.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyUtils.cpp">
+      <Filter>Source Files\Enemies</Filter>
+    </ClCompile>
+    <ClCompile Include="CSVMapLoader.cpp">
+      <Filter>Source Files\MapDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="MapPlatformGenerate.cpp">
+      <Filter>Source Files\MapDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="MapTraps.cpp">
+      <Filter>Source Files\MapDesign</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h">
@@ -191,9 +203,6 @@
     <ClInclude Include="MapTransition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MapPlatformGenerate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="main.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -206,9 +215,6 @@
     <ClInclude Include="ImageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GridTypesList.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameStateManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -218,16 +224,10 @@
     <ClInclude Include="GameState_Mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameState_GameLobby.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EnemyUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Enemy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CSVMapLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Crafting.h">
@@ -289,6 +289,21 @@
     </ClInclude>
     <ClInclude Include="StatusEffect.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_GameLobby.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="CSVMapLoader.h">
+      <Filter>Header Files\MapDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="GridTypesList.h">
+      <Filter>Header Files\MapDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="MapPlatformGenerate.h">
+      <Filter>Header Files\MapDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="MapTraps.h">
+      <Filter>Header Files\MapDesign</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

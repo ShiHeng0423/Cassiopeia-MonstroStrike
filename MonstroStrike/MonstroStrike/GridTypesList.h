@@ -20,6 +20,13 @@ enum GridTypes
     ENEMY_FLY_POS = 21,
     ENEMY_SLIME_POS = 22,
 
+    //Level gimmicks grid
+    TRAPS_POISON_ARROW_GRID = 30,
+    TRAPS_SLOWNESS_ARROW_GRID = 31,
+    TRAPS_FIRE_CIRCLE_GRID = 32,
+    TRAPS_ROTATING_SAW_GRID = 33,
+
+
     //Player positions
     PLAYER_POS_GRID_1 = 91,
     PLAYER_POS_GRID_2 = 92,

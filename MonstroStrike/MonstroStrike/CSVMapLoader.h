@@ -9,7 +9,7 @@
 
 enum {
 	//Level 1 type A
-	MAP_ROW_SIZE = 25,
+	MAP_ROW_SIZE = 28,
 	MAP_COLUMN_SIZE = 70, 
 
 	//Level 1 type B
@@ -17,7 +17,7 @@ enum {
 	MAP_COLUMN_SIZE_2 = 40,
 
 	//Lobby Level
-	MAP_ROW_LOBBY_SIZE = 25,
+	MAP_ROW_LOBBY_SIZE = 28,
 	MAP_COLUMN_LOBBY_SIZE = 65, //Shares the same column amount
 
 	//Boss level

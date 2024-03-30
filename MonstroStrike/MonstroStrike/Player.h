@@ -57,10 +57,14 @@ public:
 	AEVec2& GetPlayerCollisionNormal();
 
 	f32& GetGravityOnPlayer();
-	
+	f32& GetFrictionOnPlayer();
+
 	bool& GetIsPlayerOnFloor();
 	bool& GetIsPlayerFalling();
 
+	bool& GetPlayerPoisoned();
+	bool& GetPlayerSlowed();
+	
 	void OnPlayerDeath();
 	std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
 private:
@@ -73,9 +77,15 @@ private:
 	AEVec2 velocity; //Added for movement - Johny
 	f32 mass;
 	f32 gravityForce;
+	f32 friction;
+
 	bool onFloor; //Added to check entity on floor, hence can jump
 	bool isFalling;
 	
+	//Status effects
+	bool isPoisoned;
+	bool isSlowed;
+
 	//Collision boxes
 	AEVec2 collisionNormal;
 	AABB prevcollisionBox;
@@ -92,7 +102,7 @@ private:
 
 	//is Player currently interacting with NPC
 	bool isConversation;
-
+	
 	//Camera Follow
 	AEVec2 expectedLocation;
 	f32 lookAheadMutliplier;
@@ -102,6 +112,8 @@ private:
 	f32 maxHealth;
 	f32 currHealth;
 	f32 attack;
+	f32 currStatusCD;
+	f32 currStatusMaxCD;
 
 	//List Of Status Effect
 	//std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;

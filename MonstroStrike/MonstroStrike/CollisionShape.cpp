@@ -41,14 +41,14 @@ void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* coll
             position->y += penetrationDepth;
         }
     }
-    else if (collisionNormal->y == -1) // Colliding from top
+    else if (collisionNormal->y == -1) // Colliding from entity top
     {
         penetrationDepth = firstBoxHeadFeet.maximum.y - second.minimum.y;
+
         if (penetrationDepth > 0) {
             f32 dampingFactor = 1.f;
             penetrationDepth *= dampingFactor;
             position->y -= penetrationDepth;
-            velocity->y = 0.f;
         }
     }
 

@@ -1,6 +1,7 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
 #include "GameStateHeaders.h"
+#include "MapTraps.h"
 
 namespace
 {
@@ -43,8 +44,6 @@ namespace
 
 	AEVec2 playerBoundaryMin;
 	AEVec2 playerBoundaryMax;
-
-	
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
 }
@@ -95,6 +94,7 @@ void Level1_A_Load()
 #pragma endregion
 
 	ParticleLoad();
+	PreLoadTrapsTexture();
 
 	menu = new PauseMenu_Manager();
 }
@@ -114,8 +114,8 @@ void Level1_A_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
-
-			//Check if previous zone is the next zone
+			
+			StoreTrapDetails(grids2D[rows][cols]); //Add any traps if any
 
 			//Previous zone is lobby
 			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1 && previous == GAME_LOBBY)
@@ -153,8 +153,6 @@ void Level1_A_Initialize()
 
 void Level1_A_Update()
 {
-
-	//std::cout << player->obj.pos.x <<  " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
@@ -227,11 +225,6 @@ void Level1_A_Update()
 	if (Inventory::inventoryOpen)
 	{
 		Inventory::OpenInventory();
-
-		if (Inventory::itemHover)
-		{
-			//Display item info
-		}
 	}
 
 #pragma endregion
@@ -255,6 +248,8 @@ void Level1_A_Update()
 	               grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
+
+	UpdateTraps();
 }
 
 void Level1_A_Draw()
@@ -272,6 +267,7 @@ void Level1_A_Draw()
 
 #pragma region Grid_Render
 
+	DrawTraps(pWhiteSquareMesh);
 	RenderGrids(grids2D, MAP_ROW_SIZE, MAP_COLUMN_SIZE, *pWhiteSquareMesh);
 
 	for (s16 i = 0; i < platformVectors.size(); i++)
@@ -310,12 +306,9 @@ void Level1_A_Draw()
 #pragma endregion
 
 #pragma region Inventory_UI_Render
-
-	//Inventory images
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	if (Inventory::inventoryOpen)
 	{
-		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-
 		f32 x, y;
 		AEGfxGetCamPosition(&x, &y);
 
@@ -325,6 +318,7 @@ void Level1_A_Draw()
 			inventoryBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+
 		AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
 			equipmentBackground.pos.x + x,
@@ -333,8 +327,56 @@ void Level1_A_Draw()
 			equipmentBackground.img.scale.y).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+
+		for (ButtonGearUI button : inventoryButton)
+		{
+			AEGfxTextureSet(button.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				button.pos.y + y, 0.f,
+				button.img.scale.x, button.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		f32 width, height;
+		std::string playerStatsHeader = "Player Stats: ";
+		auto pStats = playerStatsHeader.c_str();
+		AEGfxGetPrintSize(fontID, pStats, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pStats, -0.75f,
+			0.45f - height * 0.5f,
+			0.35f, 1, 1, 1, 1);
+
+
+		auto playerHealth = "Health: " + std::to_string(PlayerMaxBasehealth) + " + (" + std::to_string(
+			playerReference->GetMaxHealth()) + ")";
+		const char* pHealthText = playerHealth.c_str();
+		AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pHealthText, -0.75f,
+			0.3f - height * 0.5f,
+			0.35f, 1, 1, 1, 1);
+
+		auto playerAttack = "Attack: " + std::to_string(playerReference->GetWeaponSet().damage);
+		const char* pAttackText = playerAttack.c_str();
+		AEGfxGetPrintSize(fontID, pAttackText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pAttackText, -0.75f,
+			0.1f - height * 0.5f,
+			0.35f, 1, 1, 1, 1);
+
+
+		for (ButtonGearUI button : Inventory::equipmentDisplay)
+		{
+			AEGfxTextureSet(button.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+				button.pos.y + y, 0.f,
+				button.img.scale.x, button.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+
+		//ItemInfoDisplay
 		if (Inventory::itemHover)
 		{
+			//Inventory::DisplayItemInfo(Inventory::displayItem);
+
 			AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
 			AEGfxSetTransform(ObjectTransformationMatrixSet(
 				itemDisplayBackground.pos.x + x,
@@ -342,57 +384,90 @@ void Level1_A_Draw()
 				itemDisplayBackground.img.scale.x,
 				itemDisplayBackground.img.scale.y).m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-		}
+
+			f32 width, height;
+
+			auto pText = Inventory::displayItem.Item.name.c_str();
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, 0.35f,
+				0.45f - height * 0.5f,
+				0.4f, 1, 1, 1, 1);
+
+			auto quantityString = "Qty: " + std::to_string(Inventory::displayItem.Item.quantity);
+			const char* pText1 = quantityString.c_str();
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, 0.35f,
+				0.35f - height * 0.5f,
+				0.35f, 1, 1, 1, 1);
+
+			AEGfxTextureSet(blank, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+				90.f + y, 0.f,
+				Inventory::displayItem.img.scale.x * 2,
+				Inventory::displayItem.img.scale.y * 2).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
-		for (ButtonGearUI button : inventoryButton)
-		{
-			//Filled slots
-			if (button.Item.ID >= 0)
+			AEGfxTextureSet(Inventory::displayItem.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+				90.f + y, 0.f,
+				Inventory::displayItem.img.scale.x * 2,
+				Inventory::displayItem.img.scale.y * 2).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			std::string descriptionHeader = "Description: ";
+			auto pDescription = descriptionHeader.c_str();
+			AEGfxGetPrintSize(fontID, pDescription, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pDescription, 0.35f,
+				0.f - height * 0.5f,
+				0.35f, 1, 1, 1, 1);
+
+			auto pText2 = Inventory::displayItem.Item.description.c_str();
+			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText2, 0.35f,
+				-0.1f - height * 0.5f,
+				0.35f, 1, 1, 1, 1);
+
+			if (Inventory::displayItem.Item.item_type != MATERIAL)
 			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-					button.pos.y + y, 0.f,
-					button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+				if ((Inventory::displayItem.Item.item_type == FOOD) || (Inventory::displayItem.Item.item_type ==
+					POTION))
+				{
+					auto healthString = "Healing Amount: " + std::to_string(Inventory::displayItem.Item.health);
+					const char* pText3 = healthString.c_str();
+					AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText3, 0.35f,
+						-0.25f - height * 0.5f,
+						0.35f, 1, 1, 1, 1);
 
-			//Empty slots
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-					button.pos.y + y, 0.f,
-					button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-		}
+					auto attackString = "Atk Buff: " + std::to_string(Inventory::displayItem.Item.attack);
+					const char* pText4 = attackString.c_str();
+					AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText4, 0.35f,
+						-0.35f - height * 0.5f,
+						0.35f, 1, 1, 1, 1);
+				}
+				else
+				{
+					auto healthString = "Bonus HP: " + std::to_string(Inventory::displayItem.Item.health);
+					const char* pText3 = healthString.c_str();
+					AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText3, 0.35f,
+						-0.25f - height * 0.5f,
+						0.35f, 1, 1, 1, 1);
 
-
-		for (ButtonGearUI button : Inventory::equipmentDisplay)
-		{
-			//Filled slots
-			if (button.Item.ID >= 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-					button.pos.y + y, 0.f,
-					button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-
-			//empty slots
-			if (button.Item.ID < 0)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-					button.pos.y + y, 0.f,
-					button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+					auto attackString = "Bonus Atk: " + std::to_string(Inventory::displayItem.Item.attack);
+					const char* pText4 = attackString.c_str();
+					AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText4, 0.35f,
+						-0.35f - height * 0.5f,
+						0.35f, 1, 1, 1, 1);
+				}
 			}
 		}
 	}
 #pragma endregion
+
 
 	menu->Render();
 
@@ -454,6 +529,8 @@ void Level1_A_Unload()
 	AEGfxTextureUnload(enemyFlyDropTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
 
+	UnloadTrapsTexture();
+
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -474,78 +551,6 @@ void Level1_A_Unload()
 
 //Function definition for private functions
 namespace {
-	//void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
-	//{
-	//	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->GetPlayerCurrentPosition().y) / (gridMap[0][0].size.x));
-
-	//	for (int i = 0; i <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); i++)
-	//	{
-	//		int playerIndexX = (int)((player->GetPlayerCurrentPosition().x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-	//		for (int j = 0; j <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); j++)
-	//		{
-	//			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
-	//			{
-	//			case NORMAL_GROUND:
-	//				//Collision check
-	//				//Resolve + Vertical Collision only for entity x (wall or ground)
-	//				//Check vertical box (Head + Feet) 
-	//				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
-	//						gridMap[playerIndexY][playerIndexX].collisionBox);
-	//					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
-	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
-	//						&player->velocity, &player->onFloor, &player->gravityForce,
-	//						&player->isFalling);
-	//				}
-
-	//				//Check horizontal box (Left arm -> Right arm)
-	//				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->collisionNormal = AABBNormalize(player->boxArms,
-	//						gridMap[playerIndexY][playerIndexX].collisionBox);
-	//					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
-	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
-	//						&player->velocity);
-	//				}
-	//				break;
-	//			case LAVA_GRID:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					OnPlayerDeath();
-	//				}
-	//				break;
-	//			case MAP_TRANSITION_GRID_1:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->velocity = { 0 };
-	//					//std::cout << "Collided\n";MainMenu_Song
-	//					if (!transitionalImageOBJ.active)
-	//					{
-	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
-	//					}
-	//				}
-	//				break;
-	//			case MAP_TRANSITION_GRID_2:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->velocity = { 0 };
-
-	//					//std::cout << "Collided\n";MainMenu_Song
-	//					if (!transitionalImageOBJ.active)
-	//					{
-	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, AREA1_B);
-	//					}
-	//				}
-	//				break;
-	//			case EMPTY:
-	//				break;
-	//			}
-	//			playerIndexX += 1;
-	//		}
-	//		playerIndexY += 1;
-	//	}
-	//}
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{
@@ -587,44 +592,3 @@ namespace {
 		}
 	}
 }
-
-void CheckEnemyGridCollision(Grids2D gridMap[][MAP_COLUMN_SIZE], std::vector<Enemy>& enemy)
-{
-	for (Enemy& tmpEnemy : enemy)
-	{
-
-		int enemyIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - tmpEnemy.obj.pos.y) / (gridMap[0][0].size.x));
-
-		for (int i = 0; i <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); i++)
-		{
-			int enemyIndexX = (int)((tmpEnemy.obj.pos.x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-			for (int j = 0; j <= (int)(tmpEnemy.obj.scale.x * 2 / gridMap[0][0].size.x); j++)
-			{
-
-				//Check vertical box (Head + Feet) 
-				if (AABBvsAABB(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox)) 
-				{
-					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox);
-
-					ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
-						&tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
-						&tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
-						&tmpEnemy.isFalling);
-				}
-				//Check horizontal box (Left arm -> Right arm)
-				if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))
-				{
-					tmpEnemy.isCollision = true;
-					tmpEnemy.collisionNormal = AABBNormalize(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox);
-
-					ResolveHorizontalCollision(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox, &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
-						&tmpEnemy.velocity);
-					tmpEnemy.loopIdle = false;
-				}
-
-		
-			}
-		}
-	}
-}
-
