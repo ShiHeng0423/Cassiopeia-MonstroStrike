@@ -296,6 +296,62 @@ namespace Inventory
 		playerInventoryCount = count;
 	}
 
+	void UpdateInventoryUI()
+	{
+		s16 index = 0;
+		s32 textX = 0;
+		s32 textY = 0;
+
+
+		index = 0;
+		AEInputGetCursorPosition(&textX, &textY);
+		AEVec2 mousePos;
+		mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+		for (ButtonGearUI& button : inventoryButton)
+		{
+			if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+			{
+				if (button.img.pTex != blank)
+				{
+					UseItem(index, button, *playerReference);
+					if (button.Item.quantity == 0 || button.Item.ID < 0)
+					{
+						button.img.pTex = blank;
+					}
+					break;
+				}
+			}
+
+			index++;
+		}
+
+		index = 0;
+		for (ButtonGearUI& button : equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				button.img.pTex = Gear[button.Item.ID];
+			}
+			//Set scale
+			AEVec2Set(&button.img.scale, 90.f, 90.f);
+			index++;
+		}
+		//Set custom position
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
+
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
+
+		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+	}
+
 
 	void SwapInventory(Item& lhs, Item& rhs)
 	{
@@ -446,6 +502,7 @@ namespace Inventory
 									playerInventory[x].ID = INVALID_ITEM;
 								}
 							}
+							//Swap items inside inventory
 							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5) * 90.f + 180.f);
@@ -460,6 +517,21 @@ namespace Inventory
 					index++;
 				}
 
+				//check with equipped slots
+				for (ButtonGearUI& equipment_slot : equipmentDisplay)
+				{
+					if (AETestRectToRect(&inventoryButton[snapBack].pos, inventoryButton[snapBack].img.scale.x, inventoryButton[snapBack].img.scale.y, &equipment_slot.pos, equipment_slot.img.scale.x, equipment_slot.img.scale.y))
+					{
+						//check if gear location matches with equipment slot location
+						if(inventoryButton[snapBack].Item.gear_loc == equipment_slot.Item.gear_loc)
+						UseItem(snapBack, inventoryButton[snapBack], *playerReference);
+
+						//Update images
+						UpdateInventoryUI();
+					}
+				}
+
+				//Return to original position
 				if (snapBack >= 0)
 				{
 					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
@@ -472,58 +544,7 @@ namespace Inventory
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
-			s16 index = 0;
-			s32 textX = 0;
-			s32 textY = 0;
-
-
-			index = 0;
-			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
-			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
-
-			for (ButtonGearUI& button : inventoryButton)
-			{
-				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
-				{
-					if (button.img.pTex != blank)
-					{
-						Inventory::UseItem(index, button, *playerReference);
-						if (button.Item.quantity == 0 || button.Item.ID < 0)
-						{
-							button.img.pTex = blank;
-						}
-						break;
-					}
-				}
-
-				index++;
-			}
-
-			index = 0;
-			for (ButtonGearUI& button : Inventory::equipmentDisplay)
-			{
-				if (button.Item.ID < 0)
-				{
-					button.img.pTex = blank;
-				}
-				else
-				{
-					button.img.pTex = Gear[button.Item.ID];
-				}
-				//Set scale
-				AEVec2Set(&button.img.scale, 90.f, 90.f);
-				index++;
-			}
-			//Set custom position
-			AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
-			AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
-
-			AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
-
-			AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
-			AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+			UpdateInventoryUI();
 		}
 	}
 
@@ -689,10 +710,6 @@ namespace Inventory
 					 			break;
 					
 					 	}
-					
-					
-					 	
-					
 					 	break;
 					
 					 case body:
@@ -746,11 +763,7 @@ namespace Inventory
 					 		break;
 					 	}
 					 	break;
-					
-					
 					 	}
-					
-					
 					 	break;
 					 }
 						
@@ -762,7 +775,7 @@ namespace Inventory
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-					UpdatePlayerGearStats( equippedGear);
+					UpdatePlayerGearStats(equippedGear);
 
 				}
 			
@@ -911,13 +924,17 @@ namespace Inventory
 			IT_NONE, IR_NONE, GL_NONE, 0,
 			false, 0, 0, 0 };
 
+
 		for (size_t i = 0; i < 5; ++i)
 		{
+			
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
 			if (equippedGear.size() < 5)
 			{
 				equippedGear.push_back(emptySpace);
 				equipmentDisplay[i].Item = emptySpace;
+				//Init the empty slots, this will match to the enum values
+				equipmentDisplay[i].Item.gear_loc = (Gear_Location)i;
 			}
 		}
 
@@ -939,6 +956,13 @@ namespace Inventory
 	void InitInventory()
 	{
 		UpdateInventory(playerInventory, inventoryButton);
+
+		for(auto gear:equippedGear)
+		{
+			EquipToBody(gear);
+		}
+
+		UpdatePlayerGearStats(equippedGear);
 
 		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 

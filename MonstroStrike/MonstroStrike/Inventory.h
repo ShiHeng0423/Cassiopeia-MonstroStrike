@@ -129,6 +129,7 @@ namespace Inventory
 	void LoadInventory();
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 
+	void UpdateInventoryUI();
 
 	void SwapInventory(Item& lhs, Item& rhs);
 	Item GetItemById(int id);
