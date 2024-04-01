@@ -223,48 +223,6 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	}
 //(update bullet)---------------------------------------------------------------------------------------
 
-//(update drops)---------------------------------------------------------------------------------------
-	std::vector<EnemyDrops>::iterator it = vecCollectables.begin();
-
-	// Iterate over the vector
-	while (it != vecCollectables.end()) {
-		// Check collision
-		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
-			//addit to inventory
-			//here
-			Item holder;
-			switch (it->dropType) {
-			case ENEMY_JUMPER_DROP:
-				holder = fullInventoryList[18];
-				break;
-			case ENEMY_CHARGER_DROP:
-				holder = fullInventoryList[12];
-				std::cout << "Charger item collected\n";
-				break;
-			case ENEMY_FLY_DROP:
-				holder = fullInventoryList[12];
-				std::cout << "CHANGE item collected\n";
-				break;
-			case ENEMY_BOSS1_DROP:
-				holder = fullInventoryList[12];
-				std::cout << "CHANGE item collected\n";
-				break;
-
-			}
-
-			Inventory::AddItem(holder);
-
-			// Erase the element
-			it = vecCollectables.erase(it);
-
-		}
-		else {
-			// Move to the next element
-			++it;
-		}
-	}
-//(update drops)---------------------------------------------------------------------------------------
-
 
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
@@ -310,6 +268,49 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 }
 
 void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
+
+	//(update drops)---------------------------------------------------------------------------------------
+	std::vector<EnemyDrops>::iterator it = vecCollectables.begin();
+
+	// Iterate over the vector
+	while (it != vecCollectables.end()) {
+		// Check collision
+		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
+			//addit to inventory
+			//here
+			Item holder;
+			switch (it->dropType) {
+			case ENEMY_JUMPER_DROP:
+				holder = fullInventoryList[18];
+				break;
+			case ENEMY_CHARGER_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "Charger item collected\n";
+				break;
+			case ENEMY_FLY_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "CHANGE item collected\n";
+				break;
+			case ENEMY_BOSS1_DROP:
+				holder = fullInventoryList[12];
+				std::cout << "CHANGE item collected\n";
+				break;
+
+			}
+
+			Inventory::AddItem(holder);
+
+			// Erase the element
+			it = vecCollectables.erase(it);
+
+		}
+		else {
+			// Move to the next element
+			++it;
+		}
+	}
+	//(update drops)---------------------------------------------------------------------------------------
+
 	for (Enemy& enemy : vecEnemyVar)
 	{
 		if (enemy.isAlive)

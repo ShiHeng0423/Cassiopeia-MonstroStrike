@@ -28,9 +28,11 @@ namespace
 	AEGfxTexture* npcContentBox;
 	AEGfxTexture* contentListBox; //The list of bars shown in content, like showing missions, crafting lists etc...
 	AEGfxTexture* infoDisplayBoxSprite;
+	AEGfxTexture* interactionButton;
 
-	enum ConversationState
-	{
+	
+	enum ConversationState {
+		
 		CONVERSATION_OUTSIDE = 0,
 		CONVERSATION_ENTRY,
 		CONVERSATION_CONTENT,
@@ -89,6 +91,8 @@ void LoadNPC()
 	npcContentBox = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/NPC_ContentScreen.png");
 	contentListBox = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/Contentbar.png");
 	infoDisplayBoxSprite = AEGfxTextureLoad("Assets/UI_Sprite/NPC_Conv/InfoContentBanner.png");
+
+	interactionButton = AEGfxTextureLoad("Assets/Keyboard_Keys/keyboard_i.png");
 
 	if (!initialMissionsLoaded)
 	{
@@ -431,6 +435,21 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 	AEGfxGetCamPosition(&screenPos.x, &screenPos.y);
 	AEMtx33 transformation, scale, rotation, translation;
 
+	if (!collidedPlayer.empty())
+	{
+		AEMtx33Scale(&scale, GRID_SIZE, GRID_SIZE);
+		AEMtx33Rot(&rotation, 0.f);
+		AEMtx33Trans(&translation, npcs[collidedPlayer[0].second].position.x, npcs[collidedPlayer[0].second].position.y + 
+			npcs[collidedPlayer[0].second].size.y);
+		AEMtx33Concat(&transformation, &rotation, &scale);
+		AEMtx33Concat(&transformation, &translation, &transformation);
+
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTextureSet(interactionButton, 0, 0);
+		AEGfxSetTransform(transformation.m);
+		AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+	}
+
 	if (inConv)
 	{
 		//Drawing NPC portrait
@@ -651,6 +670,7 @@ void FreeNPC()
 	AEGfxTextureUnload(contentListBox);
 	AEGfxTextureUnload(npcContentBox);
 	AEGfxTextureUnload(infoDisplayBoxSprite);
+	AEGfxTextureUnload(interactionButton);
 
 	collidedPlayer.clear();
 	availableMissionsID.clear();

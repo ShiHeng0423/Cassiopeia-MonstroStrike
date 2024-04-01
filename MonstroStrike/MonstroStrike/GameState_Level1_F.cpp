@@ -97,6 +97,7 @@ void Level1_F_Load()
 #pragma endregion
 
 	ParticleLoad();
+	PreLoadTrapsTexture();
 
 	menu = new PauseMenu_Manager();
 }
@@ -116,6 +117,8 @@ void Level1_F_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
+			StoreTrapDetails(grids2D[rows][cols]); //Add any traps if any
+
 			if (grids2D[rows][cols].typeOfGrid == VERTICAL_PLATFORM_POS)
 			{
 				CreatePlatform(grids2D[rows][cols].position.x, grids2D[rows][cols].position.y,
@@ -258,6 +261,9 @@ void Level1_F_Update()
 	               grids2D[MAP_ROW_SIZE_2 - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
+
+	UpdateTraps();
+
 }
 
 void Level1_F_Draw()
@@ -274,6 +280,7 @@ void Level1_F_Draw()
 #pragma endregion
 
 #pragma region Grid_Render
+	DrawTraps(pWhiteSquareMesh);
 
 	RenderGrids(grids2D, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2, *pWhiteSquareMesh);
 
@@ -374,6 +381,8 @@ void Level1_F_Unload()
 	AEGfxTextureUnload(enemyChargerDropTex);
 	AEGfxTextureUnload(enemyFlyDropTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
+
+	UnloadTrapsTexture();
 
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);

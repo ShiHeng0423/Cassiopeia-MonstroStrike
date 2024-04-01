@@ -87,6 +87,7 @@ void Level1_C_Load()
 
 	//Inventory assets
 	Inventory::LoadInventory();
+	PreLoadTrapsTexture();
 
 
 	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
@@ -123,6 +124,7 @@ void Level1_C_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
+			StoreTrapDetails(grids2D[rows][cols]); //Add any traps if any
 
 			//Check if previous zone is the next zone
 			if (grids2D[rows][cols].typeOfGrid == VERTICAL_PLATFORM_POS)
@@ -271,6 +273,9 @@ void Level1_C_Update()
 	               grids2D[MAP_ROW_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
+
+	UpdateTraps();
+
 }
 
 void Level1_C_Draw()
@@ -288,6 +293,7 @@ void Level1_C_Draw()
 
 
 #pragma region Grid_Render
+	DrawTraps(pWhiteSquareMesh);
 
 	RenderGrids(grids2D, MAP_ROW_SIZE, MAP_COLUMN_SIZE, *pWhiteSquareMesh);
 
@@ -390,6 +396,8 @@ void Level1_C_Unload()
 	AEGfxTextureUnload(enemyBoss1DropTex);
 
 
+	UnloadTrapsTexture();
+
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -408,77 +416,7 @@ void Level1_C_Unload()
 	delete menu;
 }
 
-namespace
-{
-	//void CheckPlayerGridCollision(Grids2D** gridMap, Player* player)
-	//{
-	//	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - player->GetPlayerCurrentPosition().y) / (gridMap[0][0].size.x));
-
-	//	for (int i = 0; i <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); i++)
-	//	{
-	//		int playerIndexX = (int)((player->GetPlayerCurrentPosition().x + AEGfxGetWindowWidth() * 0.5f) / (gridMap[0][0].size.x));
-	//		for (int j = 0; j <= (int)(player->GetPlayerScale().x * 2 / gridMap[0][0].size.x); j++)
-	//		{
-	//			switch (gridMap[playerIndexY][playerIndexX].typeOfGrid)
-	//			{
-	//			case NORMAL_GROUND:
-	//				//Collision check
-	//				//Resolve + Vertical Collision only for entity x (wall or ground)
-	//				//Check vertical box (Head + Feet) 
-	//				if (AABBvsAABB(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->collisionNormal = AABBNormalize(player->boxHeadFeet,
-	//						gridMap[playerIndexY][playerIndexX].collisionBox);
-	//					ResolveVerticalCollision(player->boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
-	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
-	//						&player->velocity, &player->onFloor, &player->gravityForce,
-	//						&player->isFalling);
-	//				}
-
-	//				//Check horizontal box (Left arm -> Right arm)
-	//				if (AABBvsAABB(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					player->collisionNormal = AABBNormalize(player->boxArms,
-	//						gridMap[playerIndexY][playerIndexX].collisionBox);
-	//					ResolveHorizontalCollision(player->boxArms, gridMap[playerIndexY][playerIndexX].collisionBox,
-	//						&player->collisionNormal, &player->GetPlayerCurrentPosition(),
-	//						&player->velocity);
-	//				}
-	//				break;
-	//			case LAVA_GRID:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					OnPlayerDeath();
-	//				}
-	//				break;
-	//			case MAP_TRANSITION_GRID_1:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					//std::cout << "Collided\n";MainMenu_Song
-	//					if (!transitionalImageOBJ.active)
-	//					{
-	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_B);
-	//					}
-	//				}
-	//				break;
-	//			case MAP_TRANSITION_GRID_2:
-	//				if (AABBvsAABB(player->collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox))
-	//				{
-	//					//std::cout << "Collided\n";MainMenu_Song
-	//					if (!transitionalImageOBJ.active)
-	//					{
-	//						transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_D);
-	//					}
-	//				}
-	//				break;
-	//			case EMPTY:
-	//				break;
-	//			}
-	//			playerIndexX += 1;
-	//		}
-	//		playerIndexY += 1;
-	//	}
-	//}
+namespace {
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{

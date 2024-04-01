@@ -50,8 +50,7 @@ void Lobby_Load()
 
 	player = gameManager->GetPlayer();
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
-
+	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
@@ -118,6 +117,13 @@ void Lobby_Initialize()
 
 	player->GetPlayerScale() = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
 
+	//Check if player previously just died
+	if (player->GetPlayerJustDied())
+	{
+		player->GetPlayerJustDied() = false; //Set it to false
+		player->GetCurrentHealth() = player->GetMaxHealth();
+	}
+
 	cam = new Camera(player->GetPlayerCurrentPosition());
 	menu->Init(cam);
 	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
@@ -134,6 +140,8 @@ void Lobby_Initialize()
 
 void Lobby_Update()
 {
+	MapTransitionUpdate();
+
 	if (!player->GetIsTalkingToNpc())
 	{
 		menu->Update(cam);
@@ -165,7 +173,6 @@ void Lobby_Update()
 
 	UpdateNPC(player);
 	ParticleUpdate();
-	MapTransitionUpdate();
 }
 
 void Lobby_Draw()
@@ -190,12 +197,6 @@ void Lobby_Draw()
 	player->RenderPlayer();
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-	//AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
-	//                                                (f32)AEGfxGetWindowWidth(), 1.f).m);
-	//AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	//AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
-	//                                                0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
-	//AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	player->RenderPlayerStatUI();
 
@@ -208,8 +209,8 @@ void Lobby_Draw()
 
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
-
-
+	
+	//Print Mission Name
 	missionSystem.PrintMissionText();
 
 	DrawConvBox(player->GetIsTalkingToNpc(), *pWhiteSquareMesh);

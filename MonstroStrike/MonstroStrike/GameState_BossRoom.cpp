@@ -43,7 +43,6 @@ namespace
 	AEVec2 playerBoundaryMin;
 	AEVec2 playerBoundaryMax;
 
-
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
 }
 
@@ -88,6 +87,7 @@ void Level1_BOSS_Load()
 #pragma endregion
 
 	ParticleLoad();
+	PreLoadTrapsTexture();
 
 	menu = new PauseMenu_Manager();
 }
@@ -107,6 +107,7 @@ void Level1_BOSS_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
+			StoreTrapDetails(grids2D[rows][cols]); //Add any traps if any
 
 			//Previous zone is area a
 			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1)
@@ -136,7 +137,6 @@ void Level1_BOSS_Initialize()
 
 void Level1_BOSS_Update()
 {
-	//std::cout << player->obj.pos.x << " " << player->obj.pos.y << "\n";
 	MapTransitionUpdate();
 
 #pragma region PauseMenuTrigger
@@ -237,6 +237,8 @@ void Level1_BOSS_Update()
 	               grids2D[MAP_ROW_BOSS_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
 
 #pragma endregion
+
+	UpdateTraps();
 }
 
 void Level1_BOSS_Draw()
@@ -254,6 +256,7 @@ void Level1_BOSS_Draw()
 
 #pragma region Grid_Render
 
+	DrawTraps(pWhiteSquareMesh);
 	RenderGrids(grids2D, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE, *pWhiteSquareMesh);
 
 
@@ -369,6 +372,8 @@ void Level1_BOSS_Unload()
 	AEGfxTextureUnload(bulletTex);
 	AEGfxTextureUnload(enemyBoss1DropTex);
 
+	UnloadTrapsTexture();
+
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
@@ -376,8 +381,8 @@ void Level1_BOSS_Unload()
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxMeshFree(pGreenSquareMesh);
-	for (int i = 0; i < MAP_ROW_BOSS_SIZE; ++i)
-	{
+
+	for (int i = 0; i < MAP_ROW_BOSS_SIZE; ++i) {
 		delete[] grids2D[i];
 	}
 
