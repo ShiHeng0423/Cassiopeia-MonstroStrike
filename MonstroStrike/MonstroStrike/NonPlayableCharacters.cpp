@@ -30,9 +30,9 @@ namespace
 	AEGfxTexture* infoDisplayBoxSprite;
 	AEGfxTexture* interactionButton;
 
-	
-	enum ConversationState {
-		
+
+	enum ConversationState
+	{
 		CONVERSATION_OUTSIDE = 0,
 		CONVERSATION_ENTRY,
 		CONVERSATION_CONTENT,
@@ -288,17 +288,17 @@ void UpdateNPC(Player* player)
 							currentCraftingInfo.theRecipe = *recipePtr;
 							if (AEInputCheckTriggered(AEVK_LBUTTON))
 							{
-								for (int i = 0; i < playerInventory.size(); i++)
-								{
-									if (playerInventory[i].ID == recipePtr->mat_requirements.first.mat_ID)
-									{
-										loc1 = i;
-									}
-									if (playerInventory[i].ID == recipePtr->mat_requirements.second.mat_ID)
-									{
-										loc2 = i;
-									}
-								}
+								// for (int i = 0; i < playerInventory.size(); i++)
+								// {
+								// 	if (playerInventory[i].ID == recipePtr->mat_requirements.first.mat_ID)
+								// 	{
+								// 		loc1 = i;
+								// 	}
+								// 	if (playerInventory[i].ID == recipePtr->mat_requirements.second.mat_ID)
+								// 	{
+								// 		loc2 = i;
+								// 	}
+								// }
 								if (Crafting::Can_Craft(*recipePtr, playerInventory, loc1, loc2))
 								{
 									confirmAcceptPrompt = true;
@@ -439,8 +439,9 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 	{
 		AEMtx33Scale(&scale, GRID_SIZE, GRID_SIZE);
 		AEMtx33Rot(&rotation, 0.f);
-		AEMtx33Trans(&translation, npcs[collidedPlayer[0].second].position.x, npcs[collidedPlayer[0].second].position.y + 
-			npcs[collidedPlayer[0].second].size.y);
+		AEMtx33Trans(&translation, npcs[collidedPlayer[0].second].position.x,
+		             npcs[collidedPlayer[0].second].position.y +
+		             npcs[collidedPlayer[0].second].size.y);
 		AEMtx33Concat(&transformation, &rotation, &scale);
 		AEMtx33Concat(&transformation, &translation, &transformation);
 

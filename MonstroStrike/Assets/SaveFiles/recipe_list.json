@@ -90,32 +90,6 @@
           "mat_quantity": 1
         }
       ]
-    },
-    {
-      "item_id": 22,
-      "material_requirements": [
-        {
-          "mat_ID": 15,
-          "mat_quantity": 1
-        },
-        {
-          "mat_ID": 20,
-          "mat_quantity": 1
-        }
-      ]
-    },
-    {
-      "item_id": 23,
-      "material_requirements": [
-        {
-          "mat_ID": 15,
-          "mat_quantity": 1
-        },
-        {
-          "mat_ID": 20,
-          "mat_quantity": 1
-        }
-      ]
     }
   ]
 }
