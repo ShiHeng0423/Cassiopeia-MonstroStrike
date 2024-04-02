@@ -10,10 +10,14 @@
 
 class DebuggerManager
 {
-	DebuggerManager();
+public:
+	DebuggerManager(Player* player);
 	~DebuggerManager();
+	void Update();
 	void RenderDebuggerUI();
 
 private:
+	bool openDebugPanel;
+
 	Player* playerInfo;
 };

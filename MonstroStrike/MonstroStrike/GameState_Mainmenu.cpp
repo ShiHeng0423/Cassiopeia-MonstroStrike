@@ -3,7 +3,6 @@
 #include "GameStateManager.h"
 #include "main.h"
 #include "TextPrinting.h"
-
 namespace
 {
 	enum CurrentScene
@@ -62,6 +61,7 @@ namespace
 	s8 currScene;
 	std::vector<PrintedCharacter> printedCharVec;
 	f32 printTimer = 0.0f;
+
 }
 
 void GoNewGameLevel1();
@@ -145,6 +145,7 @@ void Mainmenu_Load()
 
 	// Saving the mesh (list of triangles) in pMesh
 	pBlackSquareMesh = AEGfxMeshEnd();
+
 }
 
 void Mainmenu_Initialize()
@@ -475,6 +476,7 @@ void Mainmenu_Draw()
 	default:
 		break;
 	}
+
 }
 
 void Mainmenu_Free()

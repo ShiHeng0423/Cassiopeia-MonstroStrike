@@ -1,5 +1,6 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
+#include "DebuggerManager.h"
 
 namespace
 {
@@ -373,6 +374,7 @@ void Lobby_Draw()
 	DrawConvBox(player->GetIsTalkingToNpc(), *pWhiteSquareMesh);
 
 	MapTransitionDraw();
+
 }
 
 void Lobby_Free()

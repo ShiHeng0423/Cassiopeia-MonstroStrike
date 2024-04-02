@@ -66,9 +66,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			// Informing the system about the loop's start
 			AESysFrameStart();
+			gameManager->Update();
 			fpUpdate();
 			fpDraw();
-
+			gameManager->Render();
 			if (0 == AESysDoesWindowExist())
 				next = GameStates::QUIT;
 
