@@ -37,6 +37,7 @@ namespace
 		CONVERSATION_ENTRY,
 		CONVERSATION_CONTENT,
 		CONVERSATION_EXIT
+
 	} currentConvState;
 
 	AEVec2 screenPos;
@@ -65,8 +66,11 @@ namespace
 	{
 		const char* hoverContentName;
 		const char* hoverMissionDetails;
+		std::vector<std::string> rewardsDetails;
+
 		size_t missionID;
 
+		
 		Recipe theRecipe;
 	} currentMissionInfo, currentCraftingInfo;
 
@@ -182,7 +186,7 @@ void UpdateNPC(Player* player)
 	}
 
 	//Check if there are any collided NPC
-	if (AEInputCheckTriggered(AEVK_I) && !collidedPlayer.empty())
+	if (AEInputCheckTriggered(AEVK_I) && !collidedPlayer.empty() && !player->GetIsTalkingToNpc())
 	{
 		std::sort(collidedPlayer.begin(), collidedPlayer.end()); //Sort the closest collided NPC to be front
 		currentConvState = CONVERSATION_ENTRY;
@@ -358,6 +362,8 @@ void UpdateNPC(Player* player)
 
 							currentMissionInfo.hoverContentName = missionPtr->missionName;
 							currentMissionInfo.hoverMissionDetails = missionPtr->missionDetails;
+							currentMissionInfo.rewardsDetails = missionPtr->rewardDetails;
+
 							CreateInfoDisplayBanner(); //Update
 
 							if (AEInputCheckTriggered(AEVK_LBUTTON))
@@ -597,6 +603,13 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 
 				AEGfxPrint(fontID, "QUEST INFO", 0.7f, 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 				AEGfxPrint(fontID, currentMissionInfo.hoverMissionDetails, 0.63f, 0.f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+				
+				AEGfxPrint(fontID, "REWARDS", 0.7f, -0.1f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+				f32 yOffset = -0.2f;
+				for (const std::string& reward : currentMissionInfo.rewardsDetails) {
+					AEGfxPrint(fontID, reward.c_str(), 0.63f, yOffset, 0.28f, 0.f, 0.f, 0.f, 1.f);
+					yOffset -= 0.1f;
+				}
 			}
 			break;
 		}

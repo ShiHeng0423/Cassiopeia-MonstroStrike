@@ -72,7 +72,7 @@ void Level1_D_Load()
 	player = gameManager->GetPlayer();
 	playerReference = player;
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMaps/GameMap_Level1_D.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMaps/GameMap_Level1_D.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2))
 	{

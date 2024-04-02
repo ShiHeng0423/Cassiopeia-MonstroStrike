@@ -337,27 +337,27 @@ void Mainmenu_Draw()
 		//PrintTextOverTime(testText, 0.01f, -1.f, 0.f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, pFont, printedCharVec, & printTimer);
 		////AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
-		auto pText = "Start";
+		const char* pText = "Start";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
-		auto pText1 = "Load";
+		const char* pText1 = "Load";
 		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
 
-		auto pText2 = "Credit";
+		const char* pText2 = "Credit";
 		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
 
-		auto pText3 = "Controls";
+		const char* pText3 = "Controls";
 		AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
 
-		auto pText4 = "Options";
+		const char* pText4 = "Options";
 		AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
 
-		auto pText5 = "Quit";
+		const char* pText5 = "Quit";
 		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 		break;
@@ -395,7 +395,7 @@ void Mainmenu_Draw()
 
 		f32 width, height;
 
-		auto pText = "Back";
+		const char* pText = "Back";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
@@ -437,15 +437,15 @@ void Mainmenu_Draw()
 
 		f32 width, height;
 
-		auto pText = "BGM";
+		const char* pText = "BGM";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
 
-		auto pText1 = "SFX";
+		const char* pText1 = "SFX";
 		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
 
-		auto pText2 = "Back";
+		const char* pText2 = "Back";
 		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
@@ -463,11 +463,11 @@ void Mainmenu_Draw()
 
 		f32 width, height;
 
-		auto pText = "Yes";
+		const char* pText = "Yes";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 
-		auto pText1 = "No";
+		const char* pText1 = "No";
 		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 		break;
