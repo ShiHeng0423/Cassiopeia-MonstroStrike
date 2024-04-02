@@ -744,18 +744,20 @@ namespace Inventory
 					return;
 				}
 			}
-		}else
-		{
-			for (auto& playeritem : playerInventory)
-			{
-				if(playeritem.ID < 0)
-				{
-					playeritem = item;
-					return;
-				}
-			}
-			playerInventory.push_back(item);
 		}
+
+		//Check for empty spaces in inventory
+		for (auto& playeritem : playerInventory)
+		{
+			//Add new item to empty space if found
+			if(playeritem.ID < 0)
+			{
+				playeritem = item;
+				return;
+			}
+		}
+		//if no empty spaces found, add to the back of list
+		playerInventory.push_back(item);
 
 		UpdateInventory(playerInventory, inventoryButton);
 	}
