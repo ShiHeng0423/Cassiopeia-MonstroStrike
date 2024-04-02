@@ -529,29 +529,11 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 
 				if (recipePtr)
 				{
-					AEVec2 posText = {
-						-0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f
-					};
+					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f + GRID_SIZE * 2 };
 					AEGfxPrint(fontID, fullInventoryList[i].name.c_str(), posText.x,
 					           (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
 				}
 			}
-		/*if (displayBoxActive && recipePtr->item_id > 0)
-		{
-			AEGfxTextureSet(infoDisplayBoxSprite, 0, 0);
-			AEGfxSetTransform(infoDisplayBox.transformation.m);
-			AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
-
-			std::string firstMatName = fullInventoryList[recipePtr->mat_requirements.first.mat_ID].name;
-			firstMatName += " x" + std::to_string(recipePtr->mat_requirements.first.mat_quantity);
-			std::string secondMatName = fullInventoryList[recipePtr->mat_requirements.second.mat_ID].name;
-			secondMatName += " x" + std::to_string(recipePtr->mat_requirements.second.mat_quantity);
-
-			AEGfxPrint(fontID, "MATERIALS", 0.7f, 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
-			AEGfxPrint(fontID, firstMatName.c_str(), 0.625f, 0.7f, 0.3f, 0.f, 0.f, 0.f, 1.f);
-			AEGfxPrint(fontID, secondMatName.c_str(), 0.625f, 0.5f, 0.3f, 0.f, 0.f, 0.f, 1.f);
-		}*/
-
 
 			if (currentCraftingInfo.theRecipe.item_id >= 0 && displayBoxActive)
 			{
@@ -601,9 +583,7 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 				}
 				if (missionPtr)
 				{
-					AEVec2 posText = {
-						-0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f
-					};
+					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f + GRID_SIZE * 2 };
 					AEGfxPrint(fontID, missionPtr->missionName, posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f,
 					           0.f, 0.f, 0.f, 1.f);
 				}
