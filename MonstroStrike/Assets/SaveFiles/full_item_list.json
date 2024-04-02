@@ -304,7 +304,7 @@
       "item_type": 3,
       "gear_location": 4,
       "quantity": 1,
-      "stackable": true,
+      "stackable": false,
       "health": 1500,
       "attack": 2000,
       "defence": 2000
@@ -318,7 +318,7 @@
       "item_type": 2,
       "gear_location": 2,
       "quantity": 1,
-      "stackable": true,
+      "stackable": false,
       "health": 1000,
       "attack": 4000,
       "defence": 0
@@ -332,7 +332,7 @@
       "item_type": 2,
       "gear_location": 2,
       "quantity": 1,
-      "stackable": true,
+      "stackable": false,
       "health": 0,
       "attack": 8000,
       "defence": 0
