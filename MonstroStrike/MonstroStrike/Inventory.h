@@ -146,6 +146,9 @@ namespace Inventory
 	void ApplyConsumableEffect(class Player& player, const Item& item);
 	void UpdatePlayerGearStats(const std::vector<Item>& equippedItems);
 
+	std::vector<std::string> ChopDescription(std::string& string);
+	//std::string ChopDescription(std::string& string);
+
 	void SaveInventory();
 	void FreeInventory();
 

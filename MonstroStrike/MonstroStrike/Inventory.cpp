@@ -55,18 +55,14 @@ using namespace rapidjson;
  ButtonGearUI itemDisplayBackground;
 
  AEGfxTexture* blank;
- 
 
  int playerInventoryCount;
-
-
 
 namespace Inventory
 {
 	//Global Variable
 	
 	std::vector<Item> allItems; //list of all items in game
-	//std::vector<ButtonGearUI> equipmentDisplay[5];
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 	bool itemHover;
@@ -110,8 +106,6 @@ namespace Inventory
 
 			for (SizeType loc = 0; loc < items.Size(); loc++)
 			{
-
-
 				const Value& ind_item = items[loc];
 
 				Item newItem;
@@ -129,23 +123,8 @@ namespace Inventory
 				newItem.attack = ind_item["attack"].GetInt();
 				newItem.defence = ind_item["defence"].GetInt();
 
-
-				// std::cout << newItem.UID << std::endl;
-				// std::cout << "ID: " << newItem.ID << std::endl;
-				// std::cout << newItem.name << std::endl;
-				// std::cout << newItem.description << std::endl;
-				// std::cout << newItem.item_type << std::endl;
-				// std::cout << "enum" << newItem.rarity << std::endl;
-				//std::cout << "Quantity: "<<newItem.quantity << std::endl;
-				// std::cout << newItem.stackable << std::endl;
-				// std::cout << newItem.attack << std::endl;
-				// std::cout << newItem.defence << std::endl;
-
-
 				inventory.push_back(newItem);
 			}
-
-
 			if (json.HasParseError())
 			{
 				std::cerr << "Error parsing JSON: " << std::endl;
@@ -200,9 +179,9 @@ namespace Inventory
 
 		Value items( kArrayType);
 
-
 		for (const auto& item : inventory)
 		{
+			//Skip empty inventory slots
 			if(item.ID < 0)
 				continue;
 
@@ -221,19 +200,8 @@ namespace Inventory
 			ind_item.AddMember("attack", item.attack, json.GetAllocator());
 			ind_item.AddMember("defence", item.defence, json.GetAllocator());
 
-		/*	std::cout << item.UID << std::endl;
-			std::cout << item.ID << std::endl;
-			std::cout << item.name << std::endl;
-			std::cout << item.description << std::endl;
-			std::cout << item.item_type << std::endl;
-			std::cout << "enum " << item.rarity << std::endl;
-			std::cout << item.quantity << std::endl;
-			std::cout << item.stackable << std::endl;
-			std::cout << item.health << std::endl;
-			std::cout << item.attack << std::endl;
-			std::cout << item.defence << std::endl;*/
+
 			items.PushBack(ind_item, json.GetAllocator());
-			//items.AddMember("items",ind_item, json.GetAllocator());
 		}
 
 		json.AddMember("items", items, json.GetAllocator());
@@ -246,9 +214,6 @@ namespace Inventory
 		json.Parse(buffer.GetString());
 
 		json.Accept(writer);
-
-		//std::cout << buffer.GetString() << std::endl;
-
 		
 		 std::ofstream ofs;
 
@@ -662,16 +627,16 @@ namespace Inventory
 				AEGfxTextureSet(blank, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
 					90.f + y, 0.f,
-					Inventory::displayItem.img.scale.x * 2,
-					Inventory::displayItem.img.scale.y * 2).m);
+					displayItem.img.scale.x * 2,
+					displayItem.img.scale.y * 2).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
-				AEGfxTextureSet(Inventory::displayItem.img.pTex, 0, 0);
+				AEGfxTextureSet(displayItem.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
 					90.f + y, 0.f,
-					Inventory::displayItem.img.scale.x * 2,
-					Inventory::displayItem.img.scale.y * 2).m);
+					displayItem.img.scale.x * 2,
+					displayItem.img.scale.y * 2).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 				std::string descriptionHeader = "Description: ";
@@ -682,25 +647,37 @@ namespace Inventory
 					0.35f, 1, 1, 1, 1);
 
 				//Read string & cut the string up to implement newline
-				auto pText2 = Inventory::displayItem.Item.description.c_str();
-				AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-				AEGfxPrint(fontID, pText2, 0.35f,
-					-0.1f - height * 0.5f,
-					0.35f, 1, 1, 1, 1);
+			//	std::string dummy = "hi@no@bye";
 
-				if (Inventory::displayItem.Item.item_type != MATERIAL)
+				std::vector<std::string> chopped_description = ChopDescription(displayItem.Item.description);
+
+				//auto pText2 = displayItem.Item.description.c_str();
+				for(size_t i =0; i<chopped_description.size(); ++i)
 				{
-					if ((Inventory::displayItem.Item.item_type == FOOD) || (Inventory::displayItem.Item.item_type ==
+					auto pText2 = chopped_description[i].c_str();
+
+					AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+					AEGfxPrint(fontID, pText2, 0.35f,
+						(- 0.05f * i) - height * 0.5f - 0.07f,
+						0.25f, 1, 1, 1, 1);
+				}
+				
+
+
+
+				if (displayItem.Item.item_type != MATERIAL)
+				{
+					if ((displayItem.Item.item_type == FOOD) || (displayItem.Item.item_type ==
 						POTION))
 					{
-						auto healthString = "Healing Amount: " + std::to_string(Inventory::displayItem.Item.health);
+						auto healthString = "Healing Amount: " + std::to_string(displayItem.Item.health);
 						const char* pText3 = healthString.c_str();
 						AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
 						AEGfxPrint(fontID, pText3, 0.35f,
 							-0.25f - height * 0.5f,
 							0.35f, 1, 1, 1, 1);
 
-						auto attackString = "Atk Buff: " + std::to_string(Inventory::displayItem.Item.attack);
+						auto attackString = "Atk Buff: " + std::to_string(displayItem.Item.attack);
 						const char* pText4 = attackString.c_str();
 						AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
 						AEGfxPrint(fontID, pText4, 0.35f,
@@ -709,14 +686,14 @@ namespace Inventory
 					}
 					else
 					{
-						auto healthString = "Bonus HP: " + std::to_string(Inventory::displayItem.Item.health);
+						auto healthString = "Bonus HP: " + std::to_string(displayItem.Item.health);
 						const char* pText3 = healthString.c_str();
 						AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
 						AEGfxPrint(fontID, pText3, 0.35f,
 							-0.25f - height * 0.5f,
 							0.35f, 1, 1, 1, 1);
 
-						auto attackString = "Bonus Atk: " + std::to_string(Inventory::displayItem.Item.attack);
+						auto attackString = "Bonus Atk: " + std::to_string(displayItem.Item.attack);
 						const char* pText4 = attackString.c_str();
 						AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
 						AEGfxPrint(fontID, pText4, 0.35f,
@@ -974,8 +951,8 @@ namespace Inventory
 	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
 	{
 		// Reset player's stats to base values
-		playerReference->GetMaxHealth() = 0.f;
-		playerReference->GetWeaponSet().damage = 0.f;
+		// playerReference->GetMaxHealth() = 0.f;
+		// playerReference->GetWeaponSet().damage = 0.f;
 
 		for (auto gear : equippedItems)
 		{
@@ -983,6 +960,27 @@ namespace Inventory
 			playerReference->GetWeaponSet().damage += (f32)gear.attack;
 
 		}
+	}
+
+	std::vector<std::string> ChopDescription(std::string& string)
+	{
+		std::vector<std::string> result;
+		std::string store="";
+		for (auto c : string )
+		{
+			if(c == '@')
+			{
+				c = '\n';
+				result.push_back(store);
+				store = "";
+			}
+			if (c != '\n')
+			{
+				store.push_back(c);
+			}
+		}
+		result.push_back(store);
+		return result;
 	}
 
 
