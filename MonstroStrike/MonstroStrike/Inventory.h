@@ -118,6 +118,8 @@ namespace Inventory
 
 	extern ButtonGearUI displayItem;//Display item information
 
+	//Item backupPreviousItem[5];
+
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
@@ -127,6 +129,7 @@ namespace Inventory
 
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
 	void UpdateInventoryUI();
+	void UpdateEquipmentUI();
 
 	void DrawInventory(AEGfxVertexList* pWhiteSquareMesh);
 
@@ -141,7 +144,7 @@ namespace Inventory
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player);
 	void EquipToBody(Item obj);
-	void UnequipItem(Item obj);
+	void UnequipItem(const Gear_Location slot);
 
 	void ApplyConsumableEffect(class Player& player, const Item& item);
 	void UpdatePlayerGearStats(const std::vector<Item>& equippedItems);

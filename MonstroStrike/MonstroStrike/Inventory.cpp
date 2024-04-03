@@ -68,6 +68,14 @@ namespace Inventory
 	bool itemHover;
 	ButtonGearUI displayItem;
 
+	Item backupPreviousItem[5];
+
+	Item emptySpace{ "", INVALID_ITEM, "", "",
+IT_NONE, IR_NONE, GL_NONE, 0,
+false, 0, 0, 0 };
+
+
+
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
 		
@@ -294,6 +302,8 @@ namespace Inventory
 			index++;
 		}
 
+
+		//Update equipped item UI
 		index = 0;
 		for (ButtonGearUI& button : equipmentDisplay)
 		{
@@ -317,6 +327,62 @@ namespace Inventory
 
 		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
 		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+
+	}
+
+	void UpdateEquipmentUI()
+	{
+		s16 index = 0;
+		s32 textX = 0;
+		s32 textY = 0;
+
+
+		index = 0;
+		AEInputGetCursorPosition(&textX, &textY);
+		AEVec2 mousePos;
+		mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+		//Unequip Item
+		for (ButtonGearUI& equipment_slot : equipmentDisplay)
+		{
+			if (AETestPointToRect(&mousePos, &equipment_slot.pos, equipment_slot.img.scale.x, equipment_slot.img.scale.y))
+			{
+
+				Item backup = equipment_slot.Item;
+
+				UnequipItem(equipment_slot.Item.gear_loc);
+
+				AddItem(backup);
+			}
+		}
+
+
+		//Update equipped item UI
+		index = 0;
+		for (ButtonGearUI& button : equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				button.img.pTex = Gear[button.Item.ID];
+			}
+			//Set scale
+			AEVec2Set(&button.img.scale, 90.f, 90.f);
+			index++;
+		}
+		//Set custom position
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
+
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
+
+		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+
 	}
 
 
@@ -397,7 +463,7 @@ namespace Inventory
 			{
 				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
 				{
-					if (button.img.pTex != blank)
+					if (button.Item.ID >= 0)
 					{
 						//snap origin of img to mouse pos
 						snapBack = index;
@@ -488,7 +554,10 @@ namespace Inventory
 					{
 						//check if gear location matches with equipment slot location
 						if(inventoryButton[snapBack].Item.gear_loc == equipment_slot.Item.gear_loc)
-						UseItem(snapBack, inventoryButton[snapBack], *playerReference);
+						{
+							UseItem(snapBack, inventoryButton[snapBack], *playerReference);
+						}
+
 
 						//Update images
 						UpdateInventoryUI();
@@ -508,7 +577,11 @@ namespace Inventory
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
+
+
 			UpdateInventoryUI();
+
+			UpdateEquipmentUI();
 		}
 	}
 
@@ -599,8 +672,6 @@ namespace Inventory
 			//ItemInfoDisplay
 			if (Inventory::itemHover)
 			{
-				//Inventory::DisplayItemInfo(Inventory::displayItem);
-
 				AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
 				AEGfxSetTransform(ObjectTransformationMatrixSet(
 					itemDisplayBackground.pos.x + x,
@@ -647,8 +718,6 @@ namespace Inventory
 					0.35f, 1, 1, 1, 1);
 
 				//Read string & cut the string up to implement newline
-			//	std::string dummy = "hi@no@bye";
-
 				std::vector<std::string> chopped_description = ChopDescription(displayItem.Item.description);
 
 				//auto pText2 = displayItem.Item.description.c_str();
@@ -776,10 +845,6 @@ namespace Inventory
 			std::cerr << "Error: Cannot apply effect. Item is not a consumable." << std::endl;
 		}
 	}
-
-
-
-
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player)
 	{
@@ -935,9 +1000,7 @@ namespace Inventory
 					
 					// 	Remove previous item effect and apply new item effect
 					UpdatePlayerGearStats(equippedGear);
-
 				}
-			
 		}
 		else
 		{
@@ -986,9 +1049,9 @@ namespace Inventory
 
 	void EquipToBody(Item obj)
 	{
-		Item backup[5];
+		
 		for(int i = 0; i< 5; ++i)
-		backup[i].ID = INVALID_ITEM;
+		backupPreviousItem[i].ID = INVALID_ITEM;
 
 
 			switch (obj.gear_loc)
@@ -996,7 +1059,7 @@ namespace Inventory
 			case weaponry:
 			if (equippedGear[obj.gear_loc].ID >= 0)
 			{
-				backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+				backupPreviousItem[obj.gear_loc] = equippedGear[obj.gear_loc];
 			}
 
 			equippedGear[obj.gear_loc] = obj;
@@ -1012,7 +1075,7 @@ namespace Inventory
 
 				if (equippedGear[obj.gear_loc].ID >= 0)
 				{
-					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+					backupPreviousItem[obj.gear_loc] = equippedGear[obj.gear_loc];
 				}
 
 			equippedGear[obj.gear_loc] = obj;
@@ -1022,7 +1085,7 @@ namespace Inventory
 			case body:
 				if (equippedGear[obj.gear_loc].ID >= 0)
 				{
-					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+					backupPreviousItem[obj.gear_loc] = equippedGear[obj.gear_loc];
 
 				}
 
@@ -1036,7 +1099,7 @@ namespace Inventory
 
 				if (equippedGear[obj.gear_loc].ID >= 0)
 				{
-					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+					backupPreviousItem[obj.gear_loc] = equippedGear[obj.gear_loc];
 
 				}
 			equippedGear[obj.gear_loc] = obj;
@@ -1049,7 +1112,7 @@ namespace Inventory
 
 				if (equippedGear[obj.gear_loc].ID >= 0)
 				{
-					backup[obj.gear_loc] = equippedGear[obj.gear_loc];
+					backupPreviousItem[obj.gear_loc] = equippedGear[obj.gear_loc];
 
 				}
 				equippedGear[obj.gear_loc] = obj;
@@ -1068,10 +1131,28 @@ namespace Inventory
 			if (inventory.ID < 0) //check for invalid item id
 			{
 				
-				inventory = backup[obj.gear_loc];
+				inventory = backupPreviousItem[obj.gear_loc];
 				break;
 			}
 		}
+	}
+
+	void UnequipItem(const Gear_Location slot)
+	{
+		if(playerInventoryCount + 1 > MAX_INVENTORY_SIZE)
+		{
+			std::cout << "Inventory full!";
+			return;
+		}
+
+		equippedGear[slot] = emptySpace;
+		equipmentDisplay[slot].Item = emptySpace;
+		//backupPreviousItem[obj.gear_loc] = emptySpace;
+		//UpdateEquipmentUI();
+
+		std::cout << "Unequipped called" << std::endl;;
+
+		
 	}
 
 	void LoadInventory()
@@ -1098,11 +1179,6 @@ namespace Inventory
 			// Load the texture using the constructed file path
 			Gear[i] = AEGfxTextureLoad(filePath.c_str());
 		}
-
-
-		Item emptySpace{ "", -999, "", "",
-			IT_NONE, IR_NONE, GL_NONE, 0,
-			false, 0, 0, 0 };
 
 
 		for (size_t i = 0; i < 5; ++i)
