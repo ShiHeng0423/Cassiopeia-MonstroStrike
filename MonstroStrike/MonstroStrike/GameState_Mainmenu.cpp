@@ -44,6 +44,7 @@ namespace
 	AEGfxTexture* backgroundTexture;
 	AEGfxTexture* boxBackground;
 
+
 	AEGfxVertexList* pWhiteSquareMesh;
 	AEGfxVertexList* pBlackSquareMesh;
 
@@ -62,8 +63,6 @@ namespace
 	s8 currScene;
 	f32 printTimer = 0.0f;
 
-	const char* professorNames[3];
-
 	void CreditAnimationUpdate();
 	void CreditAnimationEnter();
 	void CreditAnimationEnd();
@@ -78,6 +77,9 @@ namespace
 	f32 creditTime = 0;
 	f32 creditHeightUpdate = 0;
 	f32 maxCreditTime = 20.f;
+
+	Object gameTitle;
+
 }
 
 void GoNewGameLevel1();
@@ -139,6 +141,7 @@ void Mainmenu_Load()
 	credits[4].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_4.png");
 	credits[5].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_Ending.png");
 
+	gameTitle.pTex = AEGfxTextureLoad("Assets/GameTitle.png");
 
 	AEGfxMeshStart();
 
@@ -282,10 +285,13 @@ void Mainmenu_Initialize()
 
 	audioManager->PlayAudio(true, Audio_List::MAINMENU_SONG);
 
-	professorNames[0] = "Ding Xiang Cheng";
-	professorNames[1] = "Gerald Wong";
-	professorNames[2] = "Ellie Hosry";
+	gameTitle.scale.x = (f32)AEGfxGetWindowWidth() * 0.5f;
+	gameTitle.scale.y = (f32)AEGfxGetWindowHeight() * 0.15f;
 
+	gameTitle.pos.x = 0.f;
+	gameTitle.pos.y = (f32)AEGfxGetWindowHeight() * 0.3f;
+
+	gameTitle.UpdateTransformMatrix();
 }
 
 void Mainmenu_Update()
@@ -358,6 +364,10 @@ void Mainmenu_Draw()
 	{
 		AEGfxTextureSet(background.pTex, 0, 0);
 		AEGfxSetTransform(background.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(gameTitle.pTex, 0, 0);
+		AEGfxSetTransform(gameTitle.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
 
@@ -532,6 +542,8 @@ void Mainmenu_Unload()
 	AEGfxTextureUnload(audioUp);
 	AEGfxTextureUnload(audioDown);
 	AEGfxTextureUnload(gameControlsImg);
+	AEGfxTextureUnload(gameTitle.pTex);
+
 
 	//Unload all slides
 	for (int i = 0; i < (sizeof(credits) / sizeof(credits[0])); i++)
