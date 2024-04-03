@@ -202,6 +202,7 @@ void Player::Update(bool isInventoryOpen)
 		velocity.y = 700.f;		
 		ParticleEmit(10, obj.pos.x, obj.pos.y,
 		obj.scale.x * 0.25f, obj.scale.y * 0.25f, 0.f, PARTICLE_JUMP, this);
+		//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 	}
 
 	//Apply Gravity
@@ -245,6 +246,7 @@ void Player::Update(bool isInventoryOpen)
 			undealtTriggerInput = true;
 			isReleased = false;
 			if_first_input = true;
+			//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 
 		}
 		if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)

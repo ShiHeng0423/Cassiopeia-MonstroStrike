@@ -311,6 +311,7 @@ void UpdateNPC(Player* player)
 								{
 									//Play Unavailable sound effect here, something like DE DEEE
 									std::cout << "Unavailable\n";
+									audioManager->PlayAudio(false, REJECT_SFX);
 								}
 							}
 						}
@@ -376,6 +377,7 @@ void UpdateNPC(Player* player)
 								else
 								{
 									//Play Unavailable sound effect here, something like DE DEEE
+									audioManager->PlayAudio(false, REJECT_SFX);
 									std::cout << "Unavailable\n";
 								}
 							}
