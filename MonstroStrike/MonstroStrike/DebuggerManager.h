@@ -8,6 +8,32 @@
 #include "Player.h"
 #include <AEEngine.h>
 
+enum DebuggerFunction
+{
+	FPS,
+	POSITION,
+	IMMORTAL,
+	MAX_POWER,
+	TELEPORT_LEVEL_UP,
+	TELEPORT_LEVEL_DOWN,
+
+	DEBUGGER_TOTAL
+};
+
+enum AreaNumber
+{
+	AREA_0,
+	AREA_1,
+	AREA_2,
+	AREA_3,
+	AREA_4,
+	AREA_5,
+	AREA_6,
+	AREA_LAST,
+
+	AREA_TOTAL
+};
+
 class DebuggerManager
 {
 public:
@@ -16,8 +42,9 @@ public:
 	void Update();
 	void RenderDebuggerUI();
 
+	static int& GetCurrentArea();
 private:
 	bool openDebugPanel;
-
+	static int currArea;
 	Player* playerInfo;
 };

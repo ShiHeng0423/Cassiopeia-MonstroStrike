@@ -14,7 +14,11 @@ void Armor_Effect_Update(class Player& player)
         if (player.GetArmorSet().effectTimer < 0.f)
         {
             player.GetArmorSet().effectTimer = BURN_TIME;
-            player.GetCurrentHealth() = max(1, player.GetCurrentHealth() - 5);
+
+            if (player.GetCurrentHealth() - 5 < 1)
+                player.DamageToPlayer(player.GetCurrentHealth() - 1);
+            else
+                player.DamageToPlayer(5);
         }
         break;
     }
@@ -23,7 +27,7 @@ void Armor_Effect_Update(class Player& player)
         if (player.GetArmorSet().effectTimer < 0.f)
         {
             player.GetArmorSet().effectTimer = REGEN_TIME;
-            player.GetCurrentHealth() = min(player.GetCurrentHealth() + 10, player.GetMaxHealth());
+            player.RecoverHpToPlayer(10);
         }
         break;
     }

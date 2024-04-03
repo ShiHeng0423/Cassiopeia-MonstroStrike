@@ -22,7 +22,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
     if (enemy.isCollidedWithPlayer) {
         if (!enemy.hasDealtDmg) {
             enemy.hasDealtDmg = true;
-            player.GetCurrentHealth() -= 10;
+            player.DamageToPlayer(10);
         }
     }
     else {

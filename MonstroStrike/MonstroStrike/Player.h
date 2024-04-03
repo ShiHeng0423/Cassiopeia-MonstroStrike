@@ -34,8 +34,10 @@ public:
 	Weapon_System::Weapon_Set& GetWeaponSet();
 
 	//Player Health
-	f32& GetMaxHealth();
-	f32& GetCurrentHealth();
+	int& GetMaxHealth();
+	int& GetCurrentHealth();
+	void DamageToPlayer(int damageValue);
+	void RecoverHpToPlayer(int recoveryValue);
 
 	//combo system
 	int& GetComboState();
@@ -69,6 +71,13 @@ public:
 	
 	void OnPlayerDeath();
 	std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
+
+	bool GetDebugModeImmortal();
+	void SetDebugModeImmortal(bool);
+
+	bool GetDebugModeOverpower();
+	void SetDebugModeOverpower(bool);
+
 private:
 
 	//Sprite Data
@@ -112,9 +121,9 @@ private:
 	bool isFacingRight;
 
 	//Player Stats
-	f32 maxHealth;
-	f32 currHealth;
-	f32 attack;
+	int maxHealth;
+	int currHealth;
+	int attack;
 	f32 currStatusCD;
 	f32 currStatusMaxCD;
 
@@ -128,5 +137,9 @@ private:
 	//player texture
 	AEGfxTexture* FacingLeft;
 	AEGfxTexture* FacingRight;
+
+	//debugging ability
+	bool immortalHp;
+	bool maxAttackPower;
 };
 

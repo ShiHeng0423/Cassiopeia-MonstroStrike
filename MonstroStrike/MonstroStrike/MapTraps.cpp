@@ -151,7 +151,7 @@ void UpdateTraps()
 				if (!levelTrapsContainer[i].hitPlayer)
 				{
 					levelTrapsContainer[i].hitPlayer = true;
-					gameManager->GetPlayer()->GetCurrentHealth() -= levelTrapsContainer[i].trapDamage;
+					gameManager->GetPlayer()->DamageToPlayer(levelTrapsContainer[i].trapDamage);
 					gameManager->GetPlayer()->GetPlayerVelocity().x =
 						-gameManager->GetPlayer()->GetPlayerVelocity().x * 2.f;
 				}
@@ -294,7 +294,7 @@ namespace {
 			//Check collision
 			if (AABBvsAABB(arrowContainer[i].collisionBox, gameManager->GetPlayer()->GetPlayerCollisionBox()))
 			{
-				gameManager->GetPlayer()->GetCurrentHealth() -= arrowContainer[i].damage;
+				gameManager->GetPlayer()->DamageToPlayer(arrowContainer[i].damage);
 
 				ParticleEmit(5, arrowContainer[i].obj.pos.x, arrowContainer[i].obj.pos.y, 5.f, 5.f, 0.f,
 					ENEMY_DEATH_EFFECT, nullptr);
@@ -384,7 +384,7 @@ namespace {
 				if (!fireBallContainer[i].hitPlayer)
 				{
 					fireBallContainer[i].hitPlayer = true;
-					gameManager->GetPlayer()->GetCurrentHealth() -= fireBallContainer[i].damage;
+					gameManager->GetPlayer()->DamageToPlayer(fireBallContainer[i].damage);
 					gameManager->GetPlayer()->GetPlayerVelocity().x = -gameManager->GetPlayer()->GetPlayerVelocity().x * 2.f;
 					gameManager->GetPlayer()->GetPlayerVelocity().y = -gameManager->GetPlayer()->GetPlayerVelocity().y;
 				}

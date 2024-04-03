@@ -577,7 +577,7 @@ namespace Inventory
 		{
 			// Apply the effect of the item on the player
 
-			 player.GetCurrentHealth() += static_cast<f32> (item.health);
+			 player.RecoverHpToPlayer(item.health);
 			// player.attack += static_cast<f32> (item.attack);
 			// player.defence += static_cast<f32> (item.defence);
 			//
@@ -586,10 +586,7 @@ namespace Inventory
 			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
 			//Cap player hp
-			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
-			 {
-				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
-			 }
+			 
 
 		}
 		else

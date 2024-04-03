@@ -322,7 +322,7 @@ void Player::Update(bool isInventoryOpen)
 			if (timeSinceLastDamage >= damageInterval)
 			{
 				const f32 poisonDamage = 0.1f * currHealth;
-				currHealth -= poisonDamage;
+				DamageToPlayer(poisonDamage);
 				if (currHealth < 1.f)
 				{
 					currHealth = 1.f;
@@ -355,6 +355,69 @@ void Player::Update(bool isInventoryOpen)
 	{
 		OnPlayerDeath();
 	}
+
+	if (AEInputCheckTriggered(AEVK_G))
+	{
+		switch (current)
+		{
+		case GAME_LOBBY:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_A);
+			break;
+		case AREA1_A:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_B);
+			break;
+		case AREA1_B:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_C);
+			break;
+		case AREA1_C:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_D);
+			break;
+		case AREA1_D:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_E);
+			break;
+		case AREA1_E:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_F);
+			break;
+		case AREA1_F:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA_BOSS);
+			break;
+		case AREA_BOSS:
+		default:
+			break;
+		}
+	}
+	else if(AEInputCheckTriggered(AEVK_B))
+	{
+		switch (current)
+		{
+		case GAME_LOBBY:
+			break;
+		case AREA1_A:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
+			break;
+		case AREA1_B:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, AREA1_A);
+			break;
+		case AREA1_C:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_B);
+			break;
+		case AREA1_D:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_C);
+			break;
+		case AREA1_E:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_D);
+			break;
+		case AREA1_F:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_E);
+			break;
+		case AREA_BOSS:
+			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_F);
+			break;
+		default:
+			break;
+		}
+	}
+
 }
 
 //Render player sprite
@@ -399,8 +462,10 @@ void Player::RenderPlayerStatUI()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f, AEGfxGetWinMaxY() - 60.f, 0, 300.f, 25.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+	std::cout << (currHealth / maxHealth * 300.f) << std::endl;
+
 	//Health Bar
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - (currHealth / maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (int)(currHealth / maxHealth * 300.f), 25.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - ((float)currHealth / (float)maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (currHealth * 300.f) / maxHealth , 25.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -490,15 +555,27 @@ bool Player::IsPlayerFacingRight()
 }
 
 //Player Max Health
-f32& Player::GetMaxHealth()
+int& Player::GetMaxHealth()
 {
 	return maxHealth;
 }
 //Player Current Health
 
-f32& Player::GetCurrentHealth()
+int& Player::GetCurrentHealth()
 {
 	return currHealth;
+}
+
+void Player::DamageToPlayer(int damageValue)
+{
+	if (!immortalHp)
+		currHealth -= damageValue;
+}
+
+
+void Player::RecoverHpToPlayer(int recoveryValue)
+{
+	currHealth = min(currHealth + recoveryValue, maxHealth);
 }
 
 f32& Player::GetFrictionOnPlayer()
@@ -541,7 +618,6 @@ bool& Player::GetPlayerSlowed()
 {
 	return isSlowed;
 }
-
 
 AABB& Player::GetPlayerCollisionBox()
 {
@@ -753,4 +829,24 @@ void Player::OnPlayerDeath() {
 		GetCurrentHealth() = GetMaxHealth();
 		justDied = true;
 	}
+}
+
+bool Player::GetDebugModeImmortal()
+{
+	return immortalHp;
+}
+
+void Player::SetDebugModeImmortal(bool isImmortal)
+{
+	immortalHp = isImmortal;
+}
+
+bool Player::GetDebugModeOverpower()
+{
+	return maxAttackPower;
+}
+
+void Player::SetDebugModeOverpower(bool isMaxPower)
+{
+	maxAttackPower = isMaxPower;
 }

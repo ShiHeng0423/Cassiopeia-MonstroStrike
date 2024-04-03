@@ -209,7 +209,7 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 
 		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
 			it = enemy.bullets.erase(it);
-			player.GetCurrentHealth() -= 5;
+			player.DamageToPlayer(5);
 			continue;
 		}
 		it->lifeTime--;	//decrease lifetime
