@@ -81,7 +81,7 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	friction = 0.85f;
 
 	onFloor = true; //Set as false first, will be set as true when ground detected
-	isFalling = false;
+	killedBoss = false;
 	isPoisoned = false;
 	isSlowed = false;
 	justDied = false;
@@ -205,7 +205,7 @@ void Player::Update(bool isInventoryOpen)
 	}
 
 	//Apply Gravity
-	ApplyGravity(&velocity, mass, &onFloor, &gravityForce, &isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&velocity, mass, &onFloor, &gravityForce); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 
 	//Player position update
 	prevPos = obj.pos;
@@ -400,7 +400,7 @@ void Player::RenderPlayerStatUI()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//Health Bar
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - (currHealth / maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (int)(currHealth / maxHealth * 300.f), 25.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - (currHealth / maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0.f, (currHealth / maxHealth * 300.f), 25.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -409,15 +409,15 @@ void Player::RenderPlayerStatUI()
 	std::string str = "Player Stats";
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8f, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
 	
 	str = "HP";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
 
 	str = "Buff";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
 	
 	size_t buff_index = 0;
 	for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
@@ -578,8 +578,7 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 						gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveVerticalCollision(boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
 						&collisionNormal, &obj.pos,
-						&velocity, &onFloor, &gravityForce,
-						&isFalling);
+						&velocity, &onFloor, &gravityForce);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)
@@ -696,6 +695,14 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 				{
 					OnPlayerDeath();
 				}
+				break;
+			case RETURN_PORTAL_GRID:
+				if (AABBvsAABB(collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox) && killedBoss)
+				{
+					if (!transitionalImageOBJ.active)
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+				}
+				break;
 			case EMPTY:
 				break;
 			}
@@ -735,9 +742,9 @@ f32& Player::GetGravityOnPlayer()
 	return gravityForce;
 }
 
-bool& Player::GetIsPlayerFalling()
+bool& Player::GetIsPlayerKillBoss()
 {
-	return isFalling;
+	return killedBoss;
 }
 
 bool& Player::GetPlayerJustDied()

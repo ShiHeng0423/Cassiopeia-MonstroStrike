@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
+#include "main.h"
 
 //Author: Johny Yong
 //Email: j.yong\@digipen.edu
@@ -28,6 +29,32 @@ Number of cols
 
 \return Result of successful map load
 */
+
+
+namespace {
+    AEGfxTexture* gridGround;
+    AEGfxTexture* gridLava;
+    AEGfxTexture* gridPortal;
+
+
+}
+
+void GridTextureLoad()
+{
+    gridGround = AEGfxTextureLoad("Assets/Grids/Grid_Ground.png");
+    gridLava = AEGfxTextureLoad("Assets/Grids/Grid_Lava.png");
+    gridPortal = AEGfxTextureLoad("Assets/Grids/Grid_Portal.png");
+
+
+}
+
+void GridTextureUnload()
+{
+    AEGfxTextureUnload(gridGround);
+    AEGfxTextureUnload(gridLava);
+    AEGfxTextureUnload(gridPortal);
+}
+
 bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols) {
 
     std::ifstream file(csvFilePath, std::ios::in);
@@ -162,6 +189,9 @@ void SetGridTypes(Grids2D** grids2D, const std::vector<std::vector<MapCell>>& ga
             case 5:
                 grids2D[row][col].typeOfGrid = LAVA_GRID;
                 break;
+            case 6:
+                grids2D[row][col].typeOfGrid = RETURN_PORTAL_GRID;
+                break;
             case 9:
                 grids2D[row][col].typeOfGrid = NONE;
                 break;
@@ -176,7 +206,7 @@ void SetGridTypes(Grids2D** grids2D, const std::vector<std::vector<MapCell>>& ga
                 break;
             case 20:
                 grids2D[row][col].typeOfGrid = ENEMY_CHARGER_POS;
-            break;
+                break;
             case 21:
                 grids2D[row][col].typeOfGrid = ENEMY_FLY_POS;
                 break;
@@ -229,31 +259,45 @@ void SetGridTypes(Grids2D** grids2D, const std::vector<std::vector<MapCell>>& ga
 
 void RenderGrids(Grids2D** grids2D, int numRows, int numCols, AEGfxVertexList& mesh)
 {
-    AEGfxSetRenderMode(AE_GFX_RM_COLOR);
     for (int rows = 0; rows < numRows; ++rows) {
         for (int cols = 0; cols < numCols; ++cols) {
             switch (grids2D[rows][cols].typeOfGrid)
             {
             case NORMAL_GROUND:
-                AEGfxSetColorToMultiply(1.0f, 1.f, 0.0f, 1.0f);
+
+                AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+                AEGfxTextureSet(gridGround, 0.f, 0.f);
                 AEGfxSetTransform(grids2D[rows][cols].transformation.m);
                 AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
                 break;
             case EMPTY:
+                AEGfxSetRenderMode(AE_GFX_RM_COLOR);
                 AEGfxSetColorToMultiply(0.25f, 0.25f, 0.25f, 1.0f);
                 AEGfxSetTransform(grids2D[rows][cols].transformation.m);
                 AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
                 break;
             case LAVA_GRID:
-                AEGfxSetColorToMultiply(0.9f, 0.5f, 0.1f, 1.0f); //Orange
+                AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+                AEGfxTextureSet(gridLava, 0.f, 0.f);
                 AEGfxSetTransform(grids2D[rows][cols].transformation.m);
                 AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+                break;
+            case RETURN_PORTAL_GRID:
+                if (gameManager->GetPlayer()->GetIsPlayerKillBoss()) //Boss is killed
+                {
+                    AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+                    AEGfxTextureSet(gridPortal, 0.f, 0.f);
+                    AEGfxSetTransform(grids2D[rows][cols].transformation.m);
+                    AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
+                }
                 break;
             case MAP_TRANSITION_GRID_1:
             case MAP_TRANSITION_GRID_2:
             case MAP_TRANSITION_GRID_3:
             case MAP_TRANSITION_GRID_4:
-                AEGfxSetColorToMultiply(0.0f, 1.f, 0.0f, 1.0f); //Green
+                AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+                AEGfxSetColorToMultiply(0.f, 0.7f, 0.f, 1.0f);
+                AEGfxTextureSet(gridGround, 0.f, 0.f);
                 AEGfxSetTransform(grids2D[rows][cols].transformation.m);
                 AEGfxMeshDraw(&mesh, AE_GFX_MDM_TRIANGLES);
                 break;

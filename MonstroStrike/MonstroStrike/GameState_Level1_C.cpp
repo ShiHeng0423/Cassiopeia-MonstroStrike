@@ -437,8 +437,7 @@ namespace {
 
 						ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
 						                         &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
-						                         &tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
-						                         &tmpEnemy.isFalling);
+						                         &tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce);
 					}
 					//Check horizontal box (Left arm -> Right arm)
 					if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))

@@ -10,6 +10,9 @@ enum GridTypes
     DIAGONAL_PLATFORM_POS = 4,
     LAVA_GRID = 5,
 
+    RETURN_PORTAL_GRID = 6,
+
+
     //NPC Positions grid,
     NPC_BLACKSMITH_A_POS = 10,
     NPC_BLACKSMITH_B_POS = 11,

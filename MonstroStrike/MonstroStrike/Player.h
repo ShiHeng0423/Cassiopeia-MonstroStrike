@@ -60,7 +60,7 @@ public:
 	f32& GetFrictionOnPlayer();
 
 	bool& GetIsPlayerOnFloor();
-	bool& GetIsPlayerFalling();
+	bool& GetIsPlayerKillBoss();
 
 	bool& GetPlayerPoisoned();
 	bool& GetPlayerSlowed();
@@ -82,7 +82,7 @@ private:
 	f32 friction;
 
 	bool onFloor; //Added to check entity on floor, hence can jump
-	bool isFalling;
+	bool killedBoss;
 	bool justDied;
 
 	//Status effects
