@@ -20,8 +20,6 @@ namespace
 
 	Player* player;
 
-	AEGfxTexture* background;
-
 	Camera* cam;
 	PauseMenu_Manager* menu;
 
@@ -71,7 +69,6 @@ void Level1_D_Load()
 
 	player = gameManager->GetPlayer();
 	playerReference = player;
-	background = AEGfxTextureLoad("Assets/Background2.jpg");
 	const char* fileName = "Assets/GameMaps/GameMap_Level1_D.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2))
@@ -285,15 +282,6 @@ void Level1_D_Draw()
 {
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
-#pragma region Background_Render
-
-	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-	AEGfxTextureSet(background, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 4200, 1080.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-#pragma endregion
-
 #pragma region Grid_Render
 	DrawTraps(pWhiteSquareMesh);
 
@@ -388,7 +376,6 @@ void Level1_D_Unload()
 	Inventory::SaveInventory();
 	Inventory::FreeInventory();
 
-	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
 	AEGfxTextureUnload(enemyJumperDropTex);

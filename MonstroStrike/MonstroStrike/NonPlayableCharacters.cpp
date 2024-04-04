@@ -68,7 +68,7 @@ namespace
 		const char* hoverMissionDetails;
 		std::vector<std::string> rewardsDetails;
 
-		size_t missionID;
+		size_t missionID = -1;
 
 		
 		Recipe theRecipe;
@@ -292,17 +292,18 @@ void UpdateNPC(Player* player)
 							currentCraftingInfo.theRecipe = *recipePtr;
 							if (AEInputCheckTriggered(AEVK_LBUTTON))
 							{
-								// for (int i = 0; i < playerInventory.size(); i++)
-								// {
-								// 	if (playerInventory[i].ID == recipePtr->mat_requirements.first.mat_ID)
-								// 	{
-								// 		loc1 = i;
-								// 	}
-								// 	if (playerInventory[i].ID == recipePtr->mat_requirements.second.mat_ID)
-								// 	{
-								// 		loc2 = i;
-								// 	}
-								// }
+								 for (int j = 0; j < playerInventory.size(); j++)
+								 {
+								 	if (playerInventory[j].ID == recipePtr->mat_requirements.first.mat_ID)
+								 	{
+								 		loc1 = j;
+								 	}
+								 	if (playerInventory[j].ID == recipePtr->mat_requirements.second.mat_ID)
+								 	{
+								 		loc2 = j;
+								 	}
+								 }
+
 								if (Crafting::Can_Craft(*recipePtr, playerInventory, loc1, loc2))
 								{
 									confirmAcceptPrompt = true;
@@ -325,9 +326,9 @@ void UpdateNPC(Player* player)
 
 						//Reset the content bars...
 						contentBarContainer.clear();
-						for (int i = 0; i < Crafting::recipeList.size(); i++)
+						for (int j = 0; j < Crafting::recipeList.size(); j++)
 						{
-							CreateContentBarInstance(i);
+							CreateContentBarInstance(j);
 						}
 						confirmAcceptPrompt = false;
 					}
