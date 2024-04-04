@@ -4,59 +4,130 @@
 #include "CollisionShape.h" //To add AABB boxes
 #include "Armor.h"
 #include "Weapon.h"
+#include "CSVMapLoader.h"
+#include "StatusEffect.h"
+
+#include <vector>
 
 f32 const PlayerMaxBasehealth = 100.f;
 
+
 class Player {
+
 
 public:
 
-	//Player();
-	//~Player();
+	Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRight);
+	~Player();
 
+	void Update(bool isInventoryOpen);
+	void CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol);
+	void RenderPlayer();
+	void RenderPlayerStatUI();
+
+	//Camera Effects
+	AEVec2& GetCameraExpectedPosition();
+	bool IsPlayerFacingRight();
+
+	//Weapon & Armor
+	Armor_System::Armor_Set& GetArmorSet();
+	Weapon_System::Weapon_Set& GetWeaponSet();
+
+	//Player Health
+	f32& GetMaxHealth();
+	f32& GetCurrentHealth();
+
+	//combo system
+	int& GetComboState();
+	bool& GetIsPlayerAttacking();
+
+	//Get Player Sprite Data
+	AEVec2& GetPlayerCurrentPosition();
+	AEVec2& GetPlayerScale();
+
+	//Get If Player currently talking to npc
+	bool& GetIsTalkingToNpc();
+
+	//Collision boxes Data
+	AABB& GetPlayerBoxHeadFeet();
+	AABB& GetPlayerBoxArm();
+	AABB& GetPlayerCollisionBox();
+
+	AEVec2& GetPlayerVelocity();
+	AEVec2& GetPlayerCollisionNormal();
+
+	f32& GetGravityOnPlayer();
+	f32& GetFrictionOnPlayer();
+
+	bool& GetIsPlayerOnFloor();
+	bool& GetIsPlayerKillBoss();
+
+	bool& GetPlayerPoisoned();
+	bool& GetPlayerSlowed();
+	bool& GetPlayerJustDied();
+
+	
+	void OnPlayerDeath();
+	std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
+private:
+
+	//Sprite Data
 	Object obj;
 	AEVec2 prevPos;
 
-	bool isFacingRight;
-	bool onFloor; //Added to check entity on floor, hence can jump
-	bool isAttacking;
-	bool isFalling;
-
-	AEVec2 expectedLocation;
-	AEVec2 velocity; //Added for movement - Johny
-	AEVec2 collisionNormal;
-	f32 lookAheadMutliplier;
-
-	Armor_System::Armor equippedArmor;
-
-	Weapon equippedWeapon;
 	//Gravity affection
+	AEVec2 velocity; //Added for movement - Johny
 	f32 mass;
-	
+	f32 gravityForce;
+	f32 friction;
+
+	bool onFloor; //Added to check entity on floor, hence can jump
+	bool killedBoss;
+	bool justDied;
+
+	//Status effects
+	bool isPoisoned;
+	bool isSlowed;
+
 	//Collision boxes
+	AEVec2 collisionNormal;
 	AABB prevcollisionBox;
 	AABB collisionBox;
 	AABB boxHeadFeet;
 	AABB boxArms;
 
+	//Attack Combo
 	f32 attackTime;
-	bool burningEffect;
-	int comboTrig;
 	float comboTime;
+	int comboTrig;
 	int comboState;
 	bool heldCombo = false;
-	f32 gravityForce;
+	bool isAttacking;
+
+	//is Player currently interacting with NPC
+	bool isConversation;
+	
+	//Camera Follow
+	AEVec2 expectedLocation;
+	f32 lookAheadMutliplier;
+	bool isFacingRight;
 
 	//Player Stats
 	f32 maxHealth;
 	f32 currHealth;
 	f32 attack;
-	f32 defence;
+	f32 currStatusCD;
+	f32 currStatusMaxCD;
 
-	bool isConversation;
+	//List Of Status Effect
+	//std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
 
-	Armor_System::Armor piece[4];
+	//Player Armor & Weapon
+	Armor_System::Armor_Set armorSet;
+	Weapon_System::Weapon_Set weaponSet;
+
+	//player texture
+	AEGfxTexture* FacingLeft;
+	AEGfxTexture* FacingRight;
 };
 
-Player* PlayerInitialize(const char* fileName, AEVec2 scale, AEVec2 location, AEVec2 speed, bool isFacingRight); 
-void PlayerUpdate(Player& player, bool isInventoryOpen);

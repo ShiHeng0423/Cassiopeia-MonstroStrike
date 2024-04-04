@@ -39,7 +39,6 @@ void MapTransitionInit() //Call when enter a new level
 {
 	AEVec2 transitInPos;
 	AEGfxGetCamPosition(&transitInPos.x, &transitInPos.y);
-	std::cout << transitInPos.x << " " << transitInPos.y << std::endl;
 
 	transitionalImageOBJ.animationSpeed = 2500.f;
 	transitionalImageOBJ.velocity = { 0 }; //No Veloicity
@@ -48,7 +47,7 @@ void MapTransitionInit() //Call when enter a new level
 	transitionalImageOBJ.destPosition = { 0 }; //Final destination for the player to move against
 	transitionalImageOBJ.translation = { 0 };
 	transitionalImageOBJ.rotation = { 0 }; //Why I even have this?
-	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 1.85f, (f32)AEGfxGetWindowHeight() * 1.5f }; //Set both to fit window
+	transitionalImageOBJ.size = {(f32)AEGfxGetWindowWidth() * 2.25f, (f32)AEGfxGetWindowHeight() * 2.25f };
 	transitionalImageOBJ.scale = { 0 }; //Set scale as size
 	transitionalImageOBJ.transformation = { 0 };
 	
@@ -78,8 +77,6 @@ void MapTransitionInit() //Call when enter a new level
 
 void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, GameStates nextLevel) //To call when exiting a level
 {
-	std::cout << "Play Animation\n";
-
 	transitionDir = directionToPlay;
 	transitionalImageOBJ.active = true;
 	nextGameState = nextLevel;
@@ -88,11 +85,8 @@ void TransitionImageObj::PlayMapTransition(TransitionDirection directionToPlay, 
 
 void MapTransitionUpdate() //Update only when transition image is active
 {
-	//Note to future self: Initial position need to get via min max XY of the entire map size
-	//Either that or get just outside camera view *Recommended
 	if (!transitionalImageOBJ.active)
 	{
-		//std::cout << "Inactive obj\n";
 		return;
 	}
 
@@ -119,12 +113,12 @@ void MapTransitionUpdate() //Update only when transition image is active
 			case TRANSITION_LEFT: //Play left animation
 				transitionalImageOBJ.velocity.x = -transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { transitPos.x - AEGfxGetWindowWidth() * 1.75f, transitPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x - AEGfxGetWindowWidth() * 2.f, transitPos.y };
 				break;
 			case TRANSITION_RIGHT: //Play right animation
 				transitionalImageOBJ.velocity.x = transitionalImageOBJ.animationSpeed;
 				//Set destination position for this animation
-				transitionalImageOBJ.destPosition = { transitPos.x + AEGfxGetWindowWidth() * 1.75f, transitPos.y };
+				transitionalImageOBJ.destPosition = { transitPos.x + AEGfxGetWindowWidth() * 2.f, transitPos.y };
 				break;
 			default:
 				std::cerr << "Cannot find animation to play\n";
@@ -171,10 +165,8 @@ void MapTransitionUpdate() //Update only when transition image is active
 	case TRANSITION_UPDATE:
 
 		//std::cout << AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) << std::endl;
-		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 20.f)
+		if (AEVec2Distance(&transitionalImageOBJ.position, &transitionalImageOBJ.destPosition) > 45.f)
 		{
-			//std::cout << transitionalImageOBJ.position.x <<  " " << transitionalImageOBJ.position.y << std::endl;
-			//std::cout << transitionalImageOBJ.velocity.x << " " << transitionalImageOBJ.velocity.y << std::endl;
 			AEVec2 finalVelocity;
 			//Update velocity
 			AEVec2Scale(&finalVelocity, &transitionalImageOBJ.velocity, (f32)AEFrameRateControllerGetFrameTime());
@@ -195,12 +187,9 @@ void MapTransitionUpdate() //Update only when transition image is active
 		}
 		else //Reached destination
 		{
-			std::cout << "False\n";
-
 			if (nextGameState != GameStates::GAMESTATE_NONE)
 			{
 				prevTransitionDir = transitionDir;
-				std::cout << "Entering game state: " << GameStates::GAME_LOBBY << "\n";
 				next = nextGameState; //Go next game state as long as it is not a none
 			}
 			transitionalImageOBJ.velocity = { 0 }; //Pause instance of moving the object
@@ -208,7 +197,6 @@ void MapTransitionUpdate() //Update only when transition image is active
 		}
 		break;
 	case TRANSITION_EXIT:
-		std::cout << "False\n";
 		transitionalImageOBJ.active = false; //Shouldn't be outside to the player view at this point
 		break;
 	}

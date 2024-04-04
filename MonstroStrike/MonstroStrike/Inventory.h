@@ -90,21 +90,24 @@ extern std::vector< Item> fullInventoryList;
 extern std::vector< Item> equippedGear;
 
 //Misc
-extern int Player_Inventory_Count;
+extern int playerInventoryCount;
 extern s16 snapBack;
 extern Player* playerReference;
-
 
 //Display
 extern ButtonGearUI inventoryBackground;
 extern ButtonGearUI inventoryButton[25];
 extern ButtonGearUI equipmentBackground;
 extern ButtonGearUI itemDisplayBackground;
+extern ButtonGearUI item_background[25];
 
 //Textures
 extern AEGfxTexture* Gear[25];
 extern AEGfxTexture* blank;
 
+
+#define INVALID_ITEM -999
+#define MAX_INVENTORY_SIZE 25
 
 namespace Inventory
 {
@@ -113,35 +116,37 @@ namespace Inventory
 	extern std::vector<Item> allItems; //list of all items in game
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
 
+	extern ButtonGearUI displayItem;//Display item information
+
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath);
 
 	void InitInventory();
 	void LoadInventory();
+
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
+	void UpdateInventoryUI();
 
-
-	void SwapInventory(Item& lhs, Item& rhs);
-	Item GetItemById(int id);
+	void DrawInventory(AEGfxVertexList* pWhiteSquareMesh);
 
 	void OpenInventory();
+	void SwapInventory(Item& lhs, Item& rhs);
 
-	void DisplayItemInfo(const Item&);
+	Item GetItemById(int id);
 
 	void AddItem(const Item& item);
 	void ItemPickUp(Item& item);
 	void ItemDrop();
 
-
-	void EquipToBody(Item obj);
-	void ApplyItemEffect(class Player& player, const Item& item);
 	void UseItem(int index, ButtonGearUI& item, class Player& player);
-	
-	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems);
-	void SaveInventory();
+	void EquipToBody(Item obj);
+	void UnequipItem(Item obj);
 
+	void ApplyConsumableEffect(class Player& player, const Item& item);
+	void UpdatePlayerGearStats(const std::vector<Item>& equippedItems);
+
+	void SaveInventory();
 	void FreeInventory();
 
 }
-

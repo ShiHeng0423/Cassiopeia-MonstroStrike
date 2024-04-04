@@ -31,13 +31,14 @@
 #include <fstream>
 #include <sstream>
 
+#include "Crafting.h"
+#include "main.h"
+
 using namespace rapidjson;
 
  std::vector< Item> playerInventory;
  std::vector< Item> fullInventoryList;
 
-
- int Player_Inventory_Count;
 
  AEGfxTexture* Gear[25];
  s16 snapBack = -1;
@@ -46,14 +47,19 @@ using namespace rapidjson;
  std::vector< Item> equippedGear;
 
  ButtonGearUI inventoryBackground;
- ButtonGearUI inventoryButton[25];
+ ButtonGearUI inventoryButton[MAX_INVENTORY_SIZE];
+
+ ButtonGearUI item_background[MAX_INVENTORY_SIZE];
 
  ButtonGearUI equipmentBackground;
  ButtonGearUI itemDisplayBackground;
 
  AEGfxTexture* blank;
+ 
 
  int playerInventoryCount;
+
+
 
 namespace Inventory
 {
@@ -64,6 +70,7 @@ namespace Inventory
 	ButtonGearUI equipmentDisplay[5];
 	bool inventoryOpen;
 	bool itemHover;
+	ButtonGearUI displayItem;
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
@@ -124,12 +131,12 @@ namespace Inventory
 
 
 				// std::cout << newItem.UID << std::endl;
-				 std::cout << "ID: " << newItem.ID << std::endl;
-				 std::cout << newItem.name << std::endl;
+				// std::cout << "ID: " << newItem.ID << std::endl;
+				// std::cout << newItem.name << std::endl;
 				// std::cout << newItem.description << std::endl;
 				// std::cout << newItem.item_type << std::endl;
 				// std::cout << "enum" << newItem.rarity << std::endl;
-				 std::cout << "Quantity: "<<newItem.quantity << std::endl;
+				//std::cout << "Quantity: "<<newItem.quantity << std::endl;
 				// std::cout << newItem.stackable << std::endl;
 				// std::cout << newItem.attack << std::endl;
 				// std::cout << newItem.defence << std::endl;
@@ -240,7 +247,7 @@ namespace Inventory
 
 		json.Accept(writer);
 
-		std::cout << buffer.GetString() << std::endl;
+		//std::cout << buffer.GetString() << std::endl;
 
 		
 		 std::ofstream ofs;
@@ -266,22 +273,85 @@ namespace Inventory
 	//Update inventory vector every frame
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[])
 	{
-		playerInventoryCount = 0;
-		for(size_t i=0; i<inventory.size(); ++i)
+		
+		int count = 0;
+
+		for(size_t i=0; i< inventory.size(); ++i)
 		{
 			button[i].Item = inventory[i];
-			playerInventoryCount++;
+
+			if(inventory[i].ID >= 0)
+			count++;
 			
 		}
+
 		if(inventory.size()<25)
 		{
 			for(size_t i = inventory.size() ; i < 25 ; i++)
 			{
 				Item emptyItemSlot;
-				emptyItemSlot.ID = -99;
+				emptyItemSlot.ID = INVALID_ITEM;
 				button[i].Item = emptyItemSlot;
 			}
 		}
+
+		playerInventoryCount = count;
+	}
+
+	void UpdateInventoryUI()
+	{
+		s16 index = 0;
+		s32 textX = 0;
+		s32 textY = 0;
+
+
+		index = 0;
+		AEInputGetCursorPosition(&textX, &textY);
+		AEVec2 mousePos;
+		mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
+
+		for (ButtonGearUI& button : inventoryButton)
+		{
+			if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+			{
+				if (button.img.pTex != blank)
+				{
+					UseItem(index, button, *playerReference);
+					if (button.Item.quantity == 0 || button.Item.ID < 0)
+					{
+						button.img.pTex = blank;
+					}
+					break;
+				}
+			}
+
+			index++;
+		}
+
+		index = 0;
+		for (ButtonGearUI& button : equipmentDisplay)
+		{
+			if (button.Item.ID < 0)
+			{
+				button.img.pTex = blank;
+			}
+			else
+			{
+				button.img.pTex = Gear[button.Item.ID];
+			}
+			//Set scale
+			AEVec2Set(&button.img.scale, 90.f, 90.f);
+			index++;
+		}
+		//Set custom position
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
+
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
+
+		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
 	}
 
 
@@ -310,7 +380,7 @@ namespace Inventory
 	void OpenInventory()
 	{
 		//update item position
-		Inventory::UpdateInventory(playerInventory, inventoryButton);
+		UpdateInventory(playerInventory, inventoryButton);
 		s16 index = 0;
 
 
@@ -320,23 +390,23 @@ namespace Inventory
 			AEVec2Set(&button.img.scale, 60.f, 60.f);
 			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
 
-			if (button.Item.ID < 0)
-			{
-				button.img.pTex = blank;
-			}
-			else
-			{
+			AEVec2Set(&item_background[index].img.scale, 60.f, 60.f);
+			AEVec2Set(&item_background[index].pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
+
+
+
+
 				if (button.Item.quantity <= 0)
 				{
 					Item blank;
-					blank.ID = -9999;
+					blank.ID = INVALID_ITEM;
 					button.Item = blank;
 				}
 				else
 				{
 					button.img.pTex = Gear[button.Item.ID];
 				}
-			}
+			
 
 			//button.isWeapon = false;
 			index++;
@@ -345,6 +415,9 @@ namespace Inventory
 		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
+			std::cout << "Inventory Count: "<< playerInventoryCount << std::endl;
+
+
 			s32 textX = 0;
 			s32 textY = 0;
 
@@ -365,8 +438,8 @@ namespace Inventory
 						snapBack = index;
 
 						//Display item's info on l_click
-						DisplayItemInfo(button.Item);
 						itemHover = true;
+						displayItem = button;
 
 
 						break;
@@ -385,7 +458,7 @@ namespace Inventory
 			s32 textX = 0;
 			s32 textY = 0;
 
-			s16 index = 0;
+			//s16 index = 0;
 
 			AEInputGetCursorPosition(&textX, &textY);
 			AEVec2 mousePos;
@@ -425,9 +498,10 @@ namespace Inventory
 								playerInventory.resize(index + 1);
 								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
-									playerInventory[x].ID = -9999;
+									playerInventory[x].ID = INVALID_ITEM;
 								}
 							}
+							//Swap items inside inventory
 							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5) * 90.f + 180.f);
@@ -442,6 +516,21 @@ namespace Inventory
 					index++;
 				}
 
+				//check with equipped slots
+				for (ButtonGearUI& equipment_slot : equipmentDisplay)
+				{
+					if (AETestRectToRect(&inventoryButton[snapBack].pos, inventoryButton[snapBack].img.scale.x, inventoryButton[snapBack].img.scale.y, &equipment_slot.pos, equipment_slot.img.scale.x, equipment_slot.img.scale.y))
+					{
+						//check if gear location matches with equipment slot location
+						if(inventoryButton[snapBack].Item.gear_loc == equipment_slot.Item.gear_loc)
+						UseItem(snapBack, inventoryButton[snapBack], *playerReference);
+
+						//Update images
+						UpdateInventoryUI();
+					}
+				}
+
+				//Return to original position
 				if (snapBack >= 0)
 				{
 					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
@@ -450,70 +539,227 @@ namespace Inventory
 				}
 			}
 		}
-
+		
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
-			s16 index = 0;
-			s32 textX = 0;
-			s32 textY = 0;
-
-
-			index = 0;
-			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
-			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
-
-			for (ButtonGearUI& button : inventoryButton)
-			{
-				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
-				{
-					if (button.img.pTex != blank)
-					{
-						Inventory::UseItem(index, button, *playerReference);
-						if (button.Item.quantity == 0 || button.Item.ID < 0)
-						{
-							button.img.pTex = blank;
-						}
-						break;
-					}
-				}
-
-				index++;
-			}
-
-			index = 0;
-			for (ButtonGearUI& button : Inventory::equipmentDisplay)
-			{
-				if (button.Item.ID < 0)
-				{
-					button.img.pTex = blank;
-				}
-				else
-				{
-					button.img.pTex = Gear[button.Item.ID];
-				}
-				AEVec2Set(&button.img.scale, 60.f, 60.f);
-				AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
-				index++;
-			}
+			UpdateInventoryUI();
 		}
 	}
 
-	void DisplayItemInfo(const Item& item)
+	void DrawInventory(AEGfxVertexList* pWhiteSquareMesh)
 	{
-		std::cout << "Display item info: "<< item.name << std::endl;
-		//set background
 
-		//set item position
+		//Inventory images
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		if (Inventory::inventoryOpen)
+		{
+			f32 x, y;
+			AEGfxGetCamPosition(&x, &y);
+
+			AEGfxTextureSet(inventoryBackground.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(x, y, 0.f,
+				inventoryBackground.img.scale.x,
+				inventoryBackground.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			AEGfxTextureSet(equipmentBackground.img.pTex, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(
+				equipmentBackground.pos.x + x,
+				equipmentBackground.pos.y + y, 0.f,
+				equipmentBackground.img.scale.x,
+				equipmentBackground.img.scale.y).m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			for (ButtonGearUI inventory_backing : item_background)
+			{
+				AEGfxTextureSet(blank, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(inventory_backing.pos.x + x,
+					inventory_backing.pos.y + y, 0.f,
+					inventory_backing.img.scale.x,
+					inventory_backing.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
+			for (ButtonGearUI button : inventoryButton)
+			{
+				if (button.Item.ID != INVALID_ITEM)
+				{
+					AEGfxTextureSet(button.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+						button.pos.y + y, 0.f,
+						button.img.scale.x, button.img.scale.y).m);
+					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+				}
+			}
+
+
+			f32 width, height;
+			std::string playerStatsHeader = "Player Stats: ";
+			auto pStats = playerStatsHeader.c_str();
+			AEGfxGetPrintSize(fontID, pStats, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pStats, -0.75f,
+				0.45f - height * 0.5f,
+				0.35f, 1, 1, 1, 1);
+
+
+			auto playerHealth = "Health: " + std::to_string((int)PlayerMaxBasehealth) + " + (" + std::to_string(
+				(int)playerReference->GetMaxHealth()) + ")";
+			const char* pHealthText = playerHealth.c_str();
+			AEGfxGetPrintSize(fontID, pHealthText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pHealthText, -0.75f,
+				0.35f - height * 0.5f,
+				0.35f, 0, 1, 0, 1);
+
+			auto playerAttack = "Attack: " + std::to_string((int)playerReference->GetWeaponSet().damage);
+			const char* pAttackText = playerAttack.c_str();
+			AEGfxGetPrintSize(fontID, pAttackText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pAttackText, -0.75f,
+				0.25f - height * 0.5f,
+				0.35f, 1, 0, 0, 1);
+
+
+			for (ButtonGearUI button : Inventory::equipmentDisplay)
+			{
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
+
+			//ItemInfoDisplay
+			if (Inventory::itemHover)
+			{
+				//Inventory::DisplayItemInfo(Inventory::displayItem);
+
+				AEGfxTextureSet(itemDisplayBackground.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(
+					itemDisplayBackground.pos.x + x,
+					itemDisplayBackground.pos.y + y, 0.f,
+					itemDisplayBackground.img.scale.x,
+					itemDisplayBackground.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+				f32 width, height;
+
+				auto pText = Inventory::displayItem.Item.name.c_str();
+				AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+				AEGfxPrint(fontID, pText, 0.35f,
+					0.45f - height * 0.5f,
+					0.4f, 1, 1, 1, 1);
+
+				auto quantityString = "Qty: " + std::to_string(Inventory::displayItem.Item.quantity);
+				const char* pText1 = quantityString.c_str();
+				AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+				AEGfxPrint(fontID, pText1, 0.35f,
+					0.35f - height * 0.5f,
+					0.35f, 1, 1, 1, 1);
+
+				AEGfxTextureSet(blank, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+					90.f + y, 0.f,
+					Inventory::displayItem.img.scale.x * 2,
+					Inventory::displayItem.img.scale.y * 2).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+				AEGfxTextureSet(Inventory::displayItem.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(480.f + x,
+					90.f + y, 0.f,
+					Inventory::displayItem.img.scale.x * 2,
+					Inventory::displayItem.img.scale.y * 2).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+				std::string descriptionHeader = "Description: ";
+				auto pDescription = descriptionHeader.c_str();
+				AEGfxGetPrintSize(fontID, pDescription, 0.5f, &width, &height);
+				AEGfxPrint(fontID, pDescription, 0.35f,
+					0.f - height * 0.5f,
+					0.35f, 1, 1, 1, 1);
+
+				//Read string & cut the string up to implement newline
+				auto pText2 = Inventory::displayItem.Item.description.c_str();
+				AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+				AEGfxPrint(fontID, pText2, 0.35f,
+					-0.1f - height * 0.5f,
+					0.35f, 1, 1, 1, 1);
+
+				if (Inventory::displayItem.Item.item_type != MATERIAL)
+				{
+					if ((Inventory::displayItem.Item.item_type == FOOD) || (Inventory::displayItem.Item.item_type ==
+						POTION))
+					{
+						auto healthString = "Healing Amount: " + std::to_string(Inventory::displayItem.Item.health);
+						const char* pText3 = healthString.c_str();
+						AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+						AEGfxPrint(fontID, pText3, 0.35f,
+							-0.25f - height * 0.5f,
+							0.35f, 1, 1, 1, 1);
+
+						auto attackString = "Atk Buff: " + std::to_string(Inventory::displayItem.Item.attack);
+						const char* pText4 = attackString.c_str();
+						AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+						AEGfxPrint(fontID, pText4, 0.35f,
+							-0.35f - height * 0.5f,
+							0.35f, 1, 1, 1, 1);
+					}
+					else
+					{
+						auto healthString = "Bonus HP: " + std::to_string(Inventory::displayItem.Item.health);
+						const char* pText3 = healthString.c_str();
+						AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+						AEGfxPrint(fontID, pText3, 0.35f,
+							-0.25f - height * 0.5f,
+							0.35f, 1, 1, 1, 1);
+
+						auto attackString = "Bonus Atk: " + std::to_string(Inventory::displayItem.Item.attack);
+						const char* pText4 = attackString.c_str();
+						AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+						AEGfxPrint(fontID, pText4, 0.35f,
+							-0.35f - height * 0.5f,
+							0.35f, 1, 1, 1, 1);
+					}
+				}
+			}
+		}
 
 	}
 
 
 	void AddItem(const Item& item)
 	{
+		
+		if(item.stackable)
+		{
+			for (auto& playeritem : playerInventory)
+			{
+				//check if got existing ID, item++
+				if ((playeritem.ID == item.ID))
+				{
+					playeritem.quantity++;
+					return;
+				}
+			}
+		}
+
+		//Check for empty spaces in inventory
+		for (auto& playeritem : playerInventory)
+		{
+			//Add new item to empty space if found
+			if(playeritem.ID < 0)
+			{
+				playeritem = item;
+				return;
+			}
+		}
+		//if no empty spaces found, add to the back of list
 		playerInventory.push_back(item);
+
+		UpdateInventory(playerInventory, inventoryButton);
 	}
 
 
@@ -526,20 +772,26 @@ namespace Inventory
 	}
 
 	//Function to apply the effect of a consumable item on the player
-	void ApplyItemEffect(class Player& player, const Item& item)
+	void ApplyConsumableEffect(class Player& player, const Item& item)
 	{
 		// Check if the item is a consumable (food or potion)
 		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
 		{
 			// Apply the effect of the item on the player
 
-			// player.max_health += static_cast<f32> (item.health);
+			 player.GetCurrentHealth() += static_cast<f32> (item.health);
 			// player.attack += static_cast<f32> (item.attack);
 			// player.defence += static_cast<f32> (item.defence);
 			//
 			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
 			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
 			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
+
+			//Cap player hp
+			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
+			 {
+				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
+			 }
 
 		}
 		else
@@ -549,32 +801,7 @@ namespace Inventory
 	}
 
 
-	// Function to update the player's stats after equipping or unequipping items
-	void UpdatePlayerStats(Player& player, const std::vector<Item>& equippedItems)
-	{
-		// Reset player's stats to base values
-		// player.hp = player.maxHp;
-		// player.attack = 0;
-		// player.defence = 0;
 
-		// Iterate through equipped items and update player's stats accordingly
-		for (const auto& item : equippedItems)
-		{
-			// Update player's attack based on equipped weapon(s)
-			if (item.item_type == Item_Type::WEAPON)
-			{
-				//player.attack += item.attack;
-			}
-			// Update player's defence based on equipped armor(s)
-			else if (item.item_type == Item_Type::ARMOUR)
-			{
-				//player.health += item.health;
-				//player.defence += item.defence;
-			}
-			// Apply other effects of equipped items as needed
-			// For example: increase player's maxHp, mana, agility, etc.
-		}
-	}
 
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player)
@@ -582,8 +809,6 @@ namespace Inventory
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
 
-		const int MAX_INVENTORY_SIZE = 25;
-		const int MAX_EQUIPPED_ITEMS = 5;
 
 		// Check if the item is available in the player's inventory
 		if (index >= 0 && index < MAX_INVENTORY_SIZE)
@@ -603,7 +828,7 @@ namespace Inventory
 						std::cout << "Consumed " << item.Item.name << std::endl;
 
 						// Apply item effect
-						ApplyItemEffect(player, item.Item);
+						ApplyConsumableEffect(player, item.Item);
 			
 						// Example: Reduce the quantity of the consumed item
 						playerInventory[index].quantity -= 1;
@@ -625,104 +850,114 @@ namespace Inventory
 
 
 
-					// switch (item.Item.item_type)
-					// {
-					// case WEAPON:
-					//
-					// 	break;
-					//
-					// case ARMOUR:
-					//
-					// 	switch (item.Item.gear_loc)
-					// 	{
-					// 	case head:
-					//
-					// 		switch (item.Item.rarity)
-					// 		{
-					// 		case COMMON:
-					//
-					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 			break;
-					// 		case RARE:
-					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
-					// 			break;
-					// 		case EPIC:
-					// 			Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::HEAD], Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
-					// 			break;
-					//
-					// 	}
-					//
-					//
-					// 	
-					//
-					// 	break;
-					//
-					// case body:
-					// 	switch (item.Item.rarity)
-					// 	{
-					// 	case COMMON:
-					//
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 		break;
-					// 	case RARE:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
-					// 		break;
-					// 	case EPIC:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::BODY], Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
-					// 		break;
-					// 	}
-					// 	break;
-					// case pants:
-					// 	switch (item.Item.rarity)
-					// 	{
-					// 	case COMMON:
-					//
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 		break;
-					// 	case RARE:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
-					// 		break;
-					// 	case EPIC:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::LEGS], Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
-					// 		break;
-					// 	}
-					// 	break;
-					// case boots:
-					// 	switch (item.Item.rarity)
-					// 	{
-					// 	case COMMON:
-					//
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
-					//
-					// 		break;
-					// 	case RARE:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
-					// 		break;
-					// 	case EPIC:
-					// 		Equip_Armor(player, player.piece[Armor_System::ARMOR_TYPE::FOOT], Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
-					// 		break;
-					// 	}
-					// 	break;
-					//
-					//
-					// 	}
-					//
-					//
-					// 	break;
-					// }
+					 switch (item.Item.item_type)
+					 {
+					 case WEAPON:
+						 switch (item.Item.rarity)
+						 {
+						 case COMMON:
+						 case RARE:
+						 case EPIC:
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_1);
+							 break;
+						 case LEGENDARY:
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_2);
+							 break;
+						 case UNIQUE:
+							 Equip_Weapon(player, Weapon_System::WEAPON_GRADE::TIER_3);
+							 break;
+						 }
+					 	break;
+					
+					 case ARMOUR:
+					
+					 	switch (item.Item.gear_loc)
+					 	{
+					 	case head:
+					
+					 		switch (item.Item.rarity)
+					 		{
+					 		case COMMON:
+								std::cout << "Common: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+					 			break;
+					 		case RARE:
+							case LEGENDARY:
+								std::cout << "Rare: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+					 			break;
+					 		case EPIC:
+								std::cout << "Epic: " << item.Item.name << std::endl;
+					 			Equip_Armor(player, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+					 			break;
+					
+					 	}
+					 	break;
+					
+					 case body:
+					 	switch (item.Item.rarity)
+					 	{
+					 	case COMMON:
+					
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 		break;
+					 	case RARE:
+						case LEGENDARY:
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+					 		break;
+					 	case EPIC:
+					 		Equip_Armor(player,   Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+					 		break;
+					 	}
+					 	break;
+					 case pants:
+					 	switch (item.Item.rarity)
+					 	{
+					 	case COMMON:
+					
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 		break;
+					 	case RARE:
+						case LEGENDARY:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+					 		break;
+					 	case EPIC:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+					 		break;
+					 	}
+					 	break;
+					 case boots:
+					 	switch (item.Item.rarity)
+					 	{
+					 	case COMMON:
+					
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+					
+					 		break;
+					 	case RARE:
+						case LEGENDARY:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+					 		break;
+					 	case EPIC:
+					 		Equip_Armor(player,  Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+					 		break;
+					 	}
+					 	break;
+					 	}
+					 	break;
+					 }
 						
 					Item equipping = item.Item;
-					Item blank;
-					blank.ID = -9999;
-					item.Item = blank;
-					playerInventory[index].ID = -9999;
+					Item blank_gear{"",INVALID_ITEM, "","",IT_NONE,IR_NONE,GL_NONE,0,false,0,0,0};
+					item.Item = blank_gear;
+					item.img.pTex = blank;
+					playerInventory[index].ID = INVALID_ITEM;
 					EquipToBody(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-						UpdatePlayerStats(player, equippedGear);
+					UpdatePlayerGearStats(equippedGear);
 
 				}
 			
@@ -735,11 +970,27 @@ namespace Inventory
 		}
 	}
 
+	// Function to update the player's stats after equipping or unequipping items
+	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
+	{
+		// Reset player's stats to base values
+		playerReference->GetMaxHealth() = 0.f;
+		playerReference->GetWeaponSet().damage = 0.f;
+
+		for (auto gear : equippedItems)
+		{
+			playerReference->GetMaxHealth() += (f32)gear.health;
+			playerReference->GetWeaponSet().damage += (f32)gear.attack;
+
+		}
+	}
+
+
 	void EquipToBody(Item obj)
 	{
 		Item backup[5];
 		for(int i = 0; i< 5; ++i)
-		backup[i].ID = -9999;
+		backup[i].ID = INVALID_ITEM;
 
 
 			switch (obj.gear_loc)
@@ -768,8 +1019,6 @@ namespace Inventory
 
 			equippedGear[obj.gear_loc] = obj;
 			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
-
-			//playerReference->equippedArmor.defence = obj.defence;
 			break;
 
 			case body:
@@ -818,7 +1067,7 @@ namespace Inventory
 		//Assign the previously equipped item to empty inventory slot
 		for (auto& inventory : playerInventory)
 		{
-			if (inventory.ID < 0) //check for -99 id
+			if (inventory.ID < 0) //check for invalid item id
 			{
 				
 				inventory = backup[obj.gear_loc];
@@ -835,13 +1084,13 @@ namespace Inventory
 
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
-		itemDisplayBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
+		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/UI_Sprite/ItemPanel/display_item_left.png");
+		itemDisplayBackground.img.pTex = AEGfxTextureLoad("Assets/UI_Sprite/ItemPanel/display_item_right.png");
 
 		blank = AEGfxTextureLoad("Assets/panelInset_beige.png");
 
 		//Item images
-		for (size_t i = 0 ; i < fullInventoryList.size(); ++i)
+		for (size_t i = 0; i < fullInventoryList.size(); ++i)
 		{
 			// Construct the file path for the texture
 			std::stringstream ss;
@@ -853,30 +1102,50 @@ namespace Inventory
 		}
 
 
-		Item nothing {"", -999, "", "",
+		Item emptySpace{ "", -999, "", "",
 			IT_NONE, IR_NONE, GL_NONE, 0,
-			false, 0, 0, 0};
+			false, 0, 0, 0 };
+
 
 		for (size_t i = 0; i < 5; ++i)
 		{
+			
 			//fillup equippedGear vector with empty elements if less than maxslots occupied
-			if(equippedGear.size() < 5)
+			if (equippedGear.size() < 5)
 			{
-				equippedGear.push_back(nothing);
+				equippedGear.push_back(emptySpace);
+				equipmentDisplay[i].Item = emptySpace;
+				//Init the empty slots, this will match to the enum values
+				equipmentDisplay[i].Item.gear_loc = (Gear_Location)i;
 			}
+		}
 
-			if(equippedGear[i].ID < 0)
+		for (size_t i = 0; i < 5; ++i)
+		{
+
+			if (equippedGear[i].ID >= 0)
 			{
-				equipmentDisplay[i].Item = nothing;
-			}else
-			{
-				equipmentDisplay[i].Item = equippedGear[i];
+				equipmentDisplay[equippedGear[i].gear_loc].Item = equippedGear[i];
 			}
+		}
+
+		for (size_t i = 0; i < 5; i++)
+		{
+			equippedGear[i] = equipmentDisplay[i].Item;
 		}
 	}
 
 	void InitInventory()
 	{
+		UpdateInventory(playerInventory, inventoryButton);
+
+		for(auto gear:equippedGear)
+		{
+			EquipToBody(gear);
+		}
+
+		UpdatePlayerGearStats(equippedGear);
+
 		AEVec2Set(&inventoryBackground.img.scale, 500.f, 500.f);
 
 		inventoryOpen = false;
@@ -885,12 +1154,12 @@ namespace Inventory
 		snapBack = -1;
 
 		//Display inventory
-		AEVec2Set(&equipmentBackground.img.scale, 250.f, 500.f);
-		AEVec2Set(&equipmentBackground.pos, -375.f, 0.f);
+		AEVec2Set(&equipmentBackground.img.scale, 400.f, 500.f);
+		AEVec2Set(&equipmentBackground.pos, -450.f, 0.f);
 
 		//Item Info Display
-		AEVec2Set(&itemDisplayBackground.img.scale, 250.f, 500.f);
-		AEVec2Set(&itemDisplayBackground.pos, 375.f, 0.f);
+		AEVec2Set(&itemDisplayBackground.img.scale, 400.f, 500.f);
+		AEVec2Set(&itemDisplayBackground.pos, 450.f, 0.f);
 
 		index = 0;
 		for (ButtonGearUI& button : Inventory::equipmentDisplay)
@@ -902,10 +1171,19 @@ namespace Inventory
 			{
 				button.img.pTex = Gear[button.Item.ID];
 			}
-			AEVec2Set(&button.img.scale, 60.f, 60.f);
-			AEVec2Set(&button.pos, -375.f, -index * 90.f + 180.f);
+			//Set scale
+			AEVec2Set(&button.img.scale, 90.f, 90.f);
 			index++;
 		}
+		//Set custom position
+		AEVec2Set(&equipmentDisplay[0].pos, -550.f, 30.f);
+		AEVec2Set(&equipmentDisplay[1].pos, -350.f, 30.f);
+
+		AEVec2Set(&equipmentDisplay[2].pos, -450.f, -65.f);
+
+		AEVec2Set(&equipmentDisplay[3].pos, -550.f, -160.f);
+		AEVec2Set(&equipmentDisplay[4].pos, -350.f, -160.f);
+
 
 	}
 

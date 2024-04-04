@@ -5,6 +5,7 @@ enum Audio_List
 {
 	MAINMENU_SONG,
 	ATTACK_SLASH_SFX,
+	REJECT_SFX,
 	TOTAL_AUDIO
 };
 

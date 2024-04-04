@@ -1,28 +1,37 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
 
 
 
 
 
-
-void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
+void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
-	//f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	//f32 distanceFromPlayer = AEVec2Distance(&player.GetPlayerCurrentPosition(), &enemy.obj.pos);
 	static f32 timePassed = 0;	//for up and down cos
-	AEVec2 Spawnloc;
+	AEVec2 Spawnloc1 = { enemy.startingPosition.x, enemy.startingPosition.y + 50.f };
 
 //health check
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		player.GetIsPlayerKillBoss() = true; //Set that player killed boss successfully
 	}
 	if (enemy.wing1.health <= 0)
 	{
+		if (enemy.wing1.isAlive) {
+			ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		}
 		enemy.wing1.isAlive = false;
 	}
 	if (enemy.wing2.health <= 0)
 	{
+		if (enemy.wing2.isAlive) {
+			ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		}
 		enemy.wing2.isAlive = false;
 	}
 
@@ -30,17 +39,17 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 		enemy.isFlying = false;
 	}
 
-	if (AEInputCheckCurr(AEVK_M)) {
-		enemy.health--;
+	enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.GetPlayerCollisionBox());
+	// Handle collision with player
+	if (enemy.isCollidedWithPlayer) {
+		if (!enemy.hasDealtDmg) {
+			enemy.hasDealtDmg = true;
+			player.GetCurrentHealth() -= 20.f;
+		}
 	}
-
-	if (AEInputCheckCurr(AEVK_L)) {
-		enemy.wing1.isAlive = false;
+	else {
+		enemy.hasDealtDmg = false;
 	}
-	if (AEInputCheckCurr(AEVK_K)) {
-		enemy.wing2.isAlive = false;
-	}
-
 
 	switch (enemy.enemyCurrent)
 	{
@@ -56,10 +65,9 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 		enemy.wing1.isAlive = true;
 		enemy.wing2.isAlive = true;
 		enemy.isFlying = true;
-		Spawnloc = enemy.startingPosition;
-		if (enemy.obj.pos.y <= Spawnloc.y) {
+		if (enemy.obj.pos.y <= Spawnloc1.y) {
 			enemy.speed =  120.f;
-			MoveTowardsFLY(enemy, Spawnloc);
+			MoveTowardsFLY(enemy, Spawnloc1);
 			enemy.timePassed = 0.0f;
 		}
 		else {
@@ -80,17 +88,17 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 
 			if (loopCounter < 20) {	//20bullets
 				if (CanPartFire(enemy.wing1) && enemy.wing1.isAlive) {
-					Spawnloc.x = enemy.wing1.obj.pos.x;
-					Spawnloc.y = enemy.wing1.obj.pos.y;
-					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					Spawnloc1.x = enemy.wing1.obj.pos.x;
+					Spawnloc1.y = enemy.wing1.obj.pos.y;
+					SpawnBullet(Spawnloc1, player.GetPlayerCurrentPosition(), enemy.bullets);
 					loopCounter++;
 				}
 			}
 			else {
 				if (CanPartFire(enemy.wing2) && enemy.wing2.isAlive) {
-					Spawnloc.x = enemy.wing2.obj.pos.x;
-					Spawnloc.y = enemy.wing2.obj.pos.y;
-					SpawnBullet(Spawnloc, player.obj.pos, enemy.bullets);
+					Spawnloc1.x = enemy.wing2.obj.pos.x;
+					Spawnloc1.y = enemy.wing2.obj.pos.y;
+					SpawnBullet(Spawnloc1, player.GetPlayerCurrentPosition(), enemy.bullets);
 					loopCounter++;
 				}
 			}
@@ -105,7 +113,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 
 			//locking on which direction to dash
 			if (enemy.targetPosition == ENEMY_DEFAULT) {
-				if (enemy.obj.pos.x >= player.obj.pos.x) {
+				if (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) {
 					enemy.targetPosition = ENEMY_LEFT;
 				}
 				else {
@@ -147,7 +155,6 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 				if (enemy.timePassed >= 1.f) {
 					enemy.timePassed = 0.0f;
 					enemy.speed = 80.f;
-
 					enemy.targetPosition = ENEMY_DEFAULT;
 					enemy.attackState = ENEMY_ATTACK_CHOOSING;
 				}
@@ -165,7 +172,8 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 			case ENEMY_ATTACK_REVERSE:
 
 				MoveTowards(enemy, enemy.wayPoint);
-				if (ReachedPos(enemy, enemy.wayPoint)) {
+				if (ReachedPos(enemy, enemy.wayPoint) || enemy.timePassed >= 0.2f) {
+					enemy.timePassed = 0.0f;
 					enemy.attackState = ENEMY_ATTACK_CHARGE;
 				}
 				break;
@@ -174,7 +182,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 
 
 			if (!enemy.onFloor) { //for the jumping
-				MoveTowards(enemy, player.obj.pos);
+				MoveTowards(enemy, player.GetPlayerCurrentPosition());
 			}
 
 
@@ -207,19 +215,19 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player)
 		enemy.wing1.obj.pos.x = enemy.obj.pos.x + enemy.wing1.Offset;
 		enemy.wing1.obj.pos.y = enemy.obj.pos.y + 10.f;
 
-		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.img.scale.y * 0.5f;
-		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.img.scale.x * 0.5f;
-		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.img.scale.y * 0.5f;
+		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.scale.x * 0.5f;
+		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.scale.y * 0.5f;
+		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.scale.x * 0.5f;
+		enemy.wing1.collisionBox.maximum.y = enemy.wing1.obj.pos.y + enemy.wing1.obj.scale.y * 0.5f;
 	}
 	if (enemy.wing2.isAlive) {
 
 		enemy.wing2.obj.pos.x = enemy.obj.pos.x + enemy.wing2.Offset;
 		enemy.wing2.obj.pos.y = enemy.obj.pos.y + 10.f;
 
-		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.img.scale.y * 0.5f;
-		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.img.scale.x * 0.5f;
-		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.img.scale.y * 0.5f;
+		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.scale.x * 0.5f;
+		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.scale.y * 0.5f;
+		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.scale.x * 0.5f;
+		enemy.wing2.collisionBox.maximum.y = enemy.wing2.obj.pos.y + enemy.wing2.obj.scale.y * 0.5f;
 	}
 }

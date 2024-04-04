@@ -1,14 +1,45 @@
 #include "Player.h"
 #include "Armor.h"
 
-void Equip_Armor(class Player& player, Armor_System::Armor& playerCurrArmor, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)
+f32 REGEN_TIME = 2.0f;
+f32 BURN_TIME = 3.0f;
+
+void Armor_Effect_Update(class Player& player)
 {
-    playerCurrArmor = ArmorInformation(newArmorType, newArmorGrade);
+    player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
+    switch (player.GetArmorSet().extraEffect)
+    {
+    case Status_Effect_System::Status_Effect::BURNING:
+    {
+        if (player.GetArmorSet().effectTimer < 0.f)
+        {
+            player.GetArmorSet().effectTimer = BURN_TIME;
+            player.GetCurrentHealth() = max(1, player.GetCurrentHealth() - 5);
+        }
+        break;
+    }
+    case Status_Effect_System::Status_Effect::REGEN:
+    {
+        if (player.GetArmorSet().effectTimer < 0.f)
+        {
+            player.GetArmorSet().effectTimer = REGEN_TIME;
+            player.GetCurrentHealth() = min(player.GetCurrentHealth() + 10, player.GetMaxHealth());
+        }
+        break;
+    }
+    default:
+        break;
+    }
+}
 
-    player.maxHealth = PlayerMaxBasehealth + Check_Set_Effect(player);
+void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)
+{
+    player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
 
-    if (player.currHealth > player.maxHealth)
-        player.currHealth = player.maxHealth;
+    player.GetMaxHealth() = PlayerMaxBasehealth + Check_Set_Effect(player);
+
+    if (player.GetCurrentHealth() > player.GetMaxHealth())
+        player.GetCurrentHealth() = player.GetMaxHealth();
 }
 
 f32 Check_Set_Effect(class Player& player)
@@ -17,7 +48,7 @@ f32 Check_Set_Effect(class Player& player)
     f32 bonusHealth = 0;
     for (size_t loop = 0; loop < 4; loop++)
     {
-        switch (player.piece[loop].rarity)
+        switch (player.GetArmorSet().pieces[loop].rarity)
         {
         case Armor_System::ARMOR_GRADE::TIER_1:
             setEffect += 1;
@@ -32,25 +63,48 @@ f32 Check_Set_Effect(class Player& player)
             break;
         }
 
-        bonusHealth += player.piece[loop].boost;
+        bonusHealth += player.GetArmorSet().pieces[loop].boost;
     }
 
     int setID = Armor_System::ARMOR_GRADE::TIER_1;
+
+    Status_Effect_System::Status_Effect currEffect = player.GetArmorSet().extraEffect;
     while (setEffect > 0)
     {
         if (setEffect % 10 >= 2)
         {
             if (setEffect == 4)
             {
-                bonusHealth += ArmorSetBonusInformation(setID, true);
+                bonusHealth += ArmorSetBonusInformation(setID, true, player.GetArmorSet().extraEffect);
             }
             else
             {
-                bonusHealth += ArmorSetBonusInformation(setID, false);
+                bonusHealth += ArmorSetBonusInformation(setID, false, player.GetArmorSet().extraEffect);
             }
         }
         setID++;
         setEffect /= 10;
+    }
+    if (currEffect != player.GetArmorSet().extraEffect)
+    {
+        if (currEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)
+        {
+            size_t index = 0;
+            for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : player.playerStatusEffectList)
+            {
+                if (effect.second == Status_Effect_System::Status_Effect_Source::ARMOR)
+                {
+                    std::cout << index << std::endl;
+                    break;
+                }
+                index++;
+            }
+            player.playerStatusEffectList.erase(player.playerStatusEffectList.begin() + index);
+        }
+        if (player.GetArmorSet().extraEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)
+        {
+            player.playerStatusEffectList.push_back({ player.GetArmorSet().extraEffect, Status_Effect_System::Status_Effect_Source::ARMOR });
+        }
     }
 
     return bonusHealth;
@@ -148,7 +202,7 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 }
 
 
-f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus)
+f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect)
 {
     if (fullSetBonus)
     {
@@ -156,12 +210,15 @@ f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus)
         {
 
         case Armor_System::ARMOR_GRADE::TIER_1:
+            effect = Status_Effect_System::NONE_EFFECT;
             return 80;
             break;
         case Armor_System::ARMOR_GRADE::TIER_2:
+            effect = Status_Effect_System::REGEN;
             return 150;
             break;
         case Armor_System::ARMOR_GRADE::TIER_3:
+            effect = Status_Effect_System::BURNING;
             return 250;
             break;
         default:
@@ -171,6 +228,7 @@ f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus)
     }
     else
     {
+        effect = Status_Effect_System::NONE_EFFECT;
         //half set bonus
         switch (armorSetID)
         {

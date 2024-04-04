@@ -1,10 +1,8 @@
 #pragma once
 
 //Headers necessary for a level
-#include "GameState_Level1.h"
 #include "AEEngine.h"
 #include "GameStateManager.h"
-#include "TransformMatrix.h"
 #include "Player.h"
 #include "Enemy.h"
 #include "EnemyUtils.h"
@@ -28,5 +26,6 @@
 #include "Crafting.h"
 #include "main.h"
 #include "MissionList.h"
+#include "MapTraps.h"
 
 //Slapped it here first

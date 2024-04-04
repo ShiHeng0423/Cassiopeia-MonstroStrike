@@ -1,16 +1,20 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
+#include "MissionList.h"
 
 
-
-void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
+void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
     const f32 frameTime = (f32)AEFrameRateControllerGetFrameTime();
-    f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
-    enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.collisionBox);
+    f32 distanceFromPlayer = AEVec2Distance(&player.GetPlayerCurrentPosition(), &enemy.obj.pos);
+    enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.GetPlayerCollisionBox());
 
     // Update enemy state based on health
     if (enemy.health <= 0) {
+        EnemyLootSpawn(enemy, vecCollectables);
         enemy.isAlive = false;
+        ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+        missionSystem.slimesKilled++;
         return;
     }
 
@@ -18,7 +22,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
     if (enemy.isCollidedWithPlayer) {
         if (!enemy.hasDealtDmg) {
             enemy.hasDealtDmg = true;
-            std::cout << "Hit!\n";
+            player.GetCurrentHealth() -= 10;
         }
     }
     else {
@@ -75,7 +79,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
     case ENEMY_TRANSITION:
         if (enemy.targetPosition == ENEMY_DEFAULT) {
             // Determine which direction to charge towards
-            enemy.targetPosition = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
+            enemy.targetPosition = (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) ? ENEMY_LEFT : ENEMY_RIGHT;
         }
         enemy.timePassed += frameTime;
         enemy.isAttacking = true;
@@ -91,11 +95,11 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player) {
             if (enemy.timePassed >= 1.5f) {
                 enemy.timePassed = 0.0f;
                 if (enemy.onFloor) {
-                    Jump(enemy, 600.f);
+                    Jump(enemy, 800.f);
                 }
             }
             if (!enemy.onFloor) {
-                MoveTowards(enemy, player.obj.pos);
+                MoveTowards(enemy, player.GetPlayerCurrentPosition());
             }
         }
         else {

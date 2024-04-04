@@ -1,13 +1,12 @@
 #include "GameState_Mainmenu.h"
 #include "Utils.h"
-#include "TransformMatrix.h"
 #include "GameStateManager.h"
 #include "main.h"
-#include "TextPrinting.h"
 
-namespace {
-
-	enum CurrentScene {
+namespace
+{
+	enum CurrentScene
+	{
 		MAIN_SCENE,
 		CREDIT_SCENE,
 		CONTROL_SCENE,
@@ -15,7 +14,8 @@ namespace {
 		QUIT_SCENE
 	};
 
-	enum Interactable {
+	enum Interactable
+	{
 		START,
 		LOAD,
 		CREDIT,
@@ -28,12 +28,13 @@ namespace {
 	Button interactableButtonMainMenu[6];
 
 	//Option button
-	Sprite_V2 optionbackground;
-	Sprite_V2 optionSoundBar[2];
-	Sprite_V2 optionBackgroundBar[2];
+	Sprite optionbackground;
+	Sprite optionSoundBar[2];
+	Sprite optionBackgroundBar[2];
 	Button interactableButtonOption[4];
 	AEGfxTexture* audioUp;
 	AEGfxTexture* audioDown;
+	AEGfxTexture* gameControlsImg;
 
 
 	Button backButton;
@@ -43,10 +44,12 @@ namespace {
 	AEGfxTexture* backgroundTexture;
 	AEGfxTexture* boxBackground;
 
+
 	AEGfxVertexList* pWhiteSquareMesh;
 	AEGfxVertexList* pBlackSquareMesh;
 
 	Sprite background;
+	Sprite gameControls;
 
 	//menu buttons
 	//Start Game Option - "Start Game" or "New Game" (if multiple files and saved data)
@@ -56,9 +59,27 @@ namespace {
 	//How To Play - "How to Play" or "Controls"
 	//Options Menu - "Options"
 
+
 	s8 currScene;
-	std::vector<PrintedCharacter> printedCharVec;
 	f32 printTimer = 0.0f;
+
+	void CreditAnimationUpdate();
+	void CreditAnimationEnter();
+	void CreditAnimationEnd();
+
+	struct CreditSlides {
+		Object slidesObj;
+		AEVec2 velocity;
+
+		AEGfxTexture* creditsSlides;
+	} credits[6];
+
+	f32 creditTime = 0;
+	f32 creditHeightUpdate = 0;
+	f32 maxCreditTime = 20.f;
+
+	Object gameTitle;
+
 }
 
 void GoNewGameLevel1();
@@ -77,6 +98,7 @@ void IncreaseSfxVolume()
 	f32 maths = 0 - 250 * (1.f - audioManager->GetSFXVolume() * 2.f);
 	AEVec2Set(&optionSoundBar[1].pos, 0 - 250 * (0.5f - audioManager->GetSFXVolume()), -100); // bar 2
 	AEVec2Set(&optionSoundBar[1].scale, 250 * audioManager->GetSFXVolume() * 2.f, 50);
+	optionSoundBar[1].UpdateTransformMatrix();
 }
 
 void IncreaseBgmVolume()
@@ -84,6 +106,7 @@ void IncreaseBgmVolume()
 	audioManager->IncreaseBGMVolume();
 	AEVec2Set(&optionSoundBar[0].pos, 0 - 250 * (0.5f - audioManager->GetBGMVolume()), 0); // bar 1
 	AEVec2Set(&optionSoundBar[0].scale, 250 * audioManager->GetBGMVolume() * 2.f, 50);
+	optionSoundBar[0].UpdateTransformMatrix();
 }
 
 void DecreaseSfxVolume()
@@ -91,6 +114,7 @@ void DecreaseSfxVolume()
 	audioManager->DecreaseSFXVolume();
 	AEVec2Set(&optionSoundBar[1].pos, 0 - 250 * (0.5f - audioManager->GetSFXVolume()), -100); // bar 2
 	AEVec2Set(&optionSoundBar[1].scale, 250 * audioManager->GetSFXVolume() * 2.f, 50);
+	optionSoundBar[1].UpdateTransformMatrix();
 }
 
 void DecreaseBgmVolume()
@@ -98,6 +122,7 @@ void DecreaseBgmVolume()
 	audioManager->DecreaseBGMVolume();
 	AEVec2Set(&optionSoundBar[0].pos, 0 - 250 * (0.5f - audioManager->GetBGMVolume()), 0); // bar 1
 	AEVec2Set(&optionSoundBar[0].scale, 250 * audioManager->GetBGMVolume() * 2.f, 50);
+	optionSoundBar[0].UpdateTransformMatrix();
 }
 
 void Mainmenu_Load()
@@ -107,6 +132,16 @@ void Mainmenu_Load()
 	boxBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
 	audioUp = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_right.png");
 	audioDown = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_left.png");
+	gameControlsImg = AEGfxTextureLoad("Assets/Keyboard_Keys/Game Control.png");
+
+	credits[0].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_Opening.png");
+	credits[1].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_1.png");
+	credits[2].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_2.png");
+	credits[3].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_3.png");
+	credits[4].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_4.png");
+	credits[5].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_Ending.png");
+
+	gameTitle.pTex = AEGfxTextureLoad("Assets/GameTitle.png");
 
 	AEGfxMeshStart();
 
@@ -137,7 +172,6 @@ void Mainmenu_Load()
 
 	// Saving the mesh (list of triangles) in pMesh
 	pBlackSquareMesh = AEGfxMeshEnd();
-
 }
 
 void Mainmenu_Initialize()
@@ -147,6 +181,7 @@ void Mainmenu_Initialize()
 		interactableButtonMainMenu[i].pTex = buttonTexture;
 		AEVec2Set(&interactableButtonMainMenu[i].scale, 250.f, 80.f);
 		AEVec2Set(&interactableButtonMainMenu[i].pos, 0.f, 100.f - 100.f * i);
+		interactableButtonMainMenu[i].UpdateTransformMatrix();
 
 		switch (i)
 		{
@@ -177,60 +212,86 @@ void Mainmenu_Initialize()
 	AEVec2Set(&interactableButtonOption[0].scale, 50, 50);
 	interactableButtonOption[0].Ptr = DecreaseBgmVolume;
 	interactableButtonOption[0].pTex = audioDown;
+	interactableButtonOption[0].UpdateTransformMatrix();
 
 	AEVec2Set(&interactableButtonOption[1].pos, 200, 0);
 	AEVec2Set(&interactableButtonOption[1].scale, 50, 50);
 	interactableButtonOption[1].Ptr = IncreaseBgmVolume;
 	interactableButtonOption[1].pTex = audioUp;
+	interactableButtonOption[1].UpdateTransformMatrix();
 
 	AEVec2Set(&interactableButtonOption[2].pos, -200, -100);
 	AEVec2Set(&interactableButtonOption[2].scale, 50, 50);
 	interactableButtonOption[2].Ptr = DecreaseSfxVolume;
 	interactableButtonOption[2].pTex = audioDown;
+	interactableButtonOption[2].UpdateTransformMatrix();
 
 	AEVec2Set(&interactableButtonOption[3].pos, 200, -100);
 	AEVec2Set(&interactableButtonOption[3].scale, 50, 50);
 	interactableButtonOption[3].Ptr = IncreaseSfxVolume;
 	interactableButtonOption[3].pTex = audioUp;
+	interactableButtonOption[3].UpdateTransformMatrix();
 
 	AEVec2Set(&optionSoundBar[0].pos, 0, 0); // bar 1
 	AEVec2Set(&optionSoundBar[0].scale, 250, 50);
+	optionSoundBar[0].UpdateTransformMatrix();
 
 	AEVec2Set(&optionSoundBar[1].pos, 0, -100); // bar 2
 	AEVec2Set(&optionSoundBar[1].scale, 250, 50);
+	optionSoundBar[1].UpdateTransformMatrix();
 
 	AEVec2Set(&optionBackgroundBar[0].pos, 0, 0); // bar 1
 	AEVec2Set(&optionBackgroundBar[0].scale, 250, 50);
+	optionBackgroundBar[0].UpdateTransformMatrix();
 
 	AEVec2Set(&optionBackgroundBar[1].pos, 0, -100); // bar 2
 	AEVec2Set(&optionBackgroundBar[1].scale, 250, 50);
+	optionBackgroundBar[1].UpdateTransformMatrix();
 
 	optionbackground.pTex = boxBackground;
 	optionbackground.scale.x = 1000.f;
 	optionbackground.scale.y = 500.f;
+	optionbackground.UpdateTransformMatrix();
 
 	backButton.pTex = buttonTexture;
 	AEVec2Set(&backButton.scale, 250.f, 80.f);
 	AEVec2Set(&backButton.pos, -675.f, -410.f);
 	backButton.Ptr = BackMainMenu;
+	backButton.UpdateTransformMatrix();
 
 	confirmationButtion[0].pTex = buttonTexture;
 	AEVec2Set(&confirmationButtion[0].scale, 250.f, 80.f);
 	AEVec2Set(&confirmationButtion[0].pos, 250.f, 0.f);
 	confirmationButtion[0].Ptr = BackMainMenu;
+	confirmationButtion[0].UpdateTransformMatrix();
 
 	confirmationButtion[1].pTex = buttonTexture;
 	AEVec2Set(&confirmationButtion[1].scale, 250.f, 80.f);
 	AEVec2Set(&confirmationButtion[1].pos, -250.f, 0.f);
 	confirmationButtion[1].Ptr = GoQuitGame;
+	confirmationButtion[1].UpdateTransformMatrix();
 
 	background.pTex = backgroundTexture;
 	background.scale.x = 1600;
 	background.scale.y = 900;
+	background.UpdateTransformMatrix();
+
+	gameControls.pTex = gameControlsImg;
+	gameControls.scale.x = 600;
+	gameControls.scale.y = 400;
+	gameControls.UpdateTransformMatrix();
 
 	currScene = CurrentScene::MAIN_SCENE;
 
 	audioManager->PlayAudio(true, Audio_List::MAINMENU_SONG);
+
+	gameTitle.scale.x = (f32)AEGfxGetWindowWidth() * 0.5f;
+	gameTitle.scale.y = (f32)AEGfxGetWindowHeight() * 0.15f;
+
+	gameTitle.pos.x = 0.f;
+	gameTitle.pos.y = (f32)AEGfxGetWindowHeight() * 0.3f;
+
+	gameTitle.UpdateTransformMatrix();
 }
 
 void Mainmenu_Update()
@@ -239,7 +300,7 @@ void Mainmenu_Update()
 	{
 		s32 x, y;
 		AEInputGetCursorPosition(&x, &y);
-		AEVec2 mousePos{ 0,0 };
+		AEVec2 mousePos{0, 0};
 		mousePos.x = x - AEGfxGetWindowWidth() * 0.5f;
 		mousePos.y = AEGfxGetWindowHeight() * 0.5f - y;
 
@@ -248,11 +309,15 @@ void Mainmenu_Update()
 		case CurrentScene::MAIN_SCENE:
 			for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 			{
-				if (AETestPointToRect(&mousePos, &interactableButtonMainMenu[i].pos, interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y))
+				if (AETestPointToRect(&mousePos, &interactableButtonMainMenu[i].pos,
+				                      interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y))
 					interactableButtonMainMenu[i].Ptr();
 			}
 			break;
 		case CurrentScene::CREDIT_SCENE:
+			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
+				backButton.Ptr();
+			break;
 		case CurrentScene::CONTROL_SCENE:
 			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
 				backButton.Ptr();
@@ -267,14 +332,21 @@ void Mainmenu_Update()
 				backButton.Ptr();
 			break;
 		case CurrentScene::QUIT_SCENE:
-			if (AETestPointToRect(&mousePos, &confirmationButtion[0].pos, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y))
+			if (AETestPointToRect(&mousePos, &confirmationButtion[0].pos, confirmationButtion[0].scale.x,
+			                      confirmationButtion[0].scale.y))
 				confirmationButtion[0].Ptr();
-			if (AETestPointToRect(&mousePos, &confirmationButtion[1].pos, confirmationButtion[1].scale.x, confirmationButtion[1].scale.y))
+			if (AETestPointToRect(&mousePos, &confirmationButtion[1].pos, confirmationButtion[1].scale.x,
+			                      confirmationButtion[1].scale.y))
 				confirmationButtion[1].Ptr();
 			break;
 		default:
 			break;
 		}
+	}
+
+	if (currScene == CurrentScene::CREDIT_SCENE)
+	{
+		CreditAnimationUpdate();
 	}
 }
 
@@ -288,9 +360,16 @@ void Mainmenu_Draw()
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(1.0f);
 
-	AEGfxTextureSet(background.pTex, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, background.scale.x, background.scale.y).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	if (currScene != CurrentScene::CREDIT_SCENE)
+	{
+		AEGfxTextureSet(background.pTex, 0, 0);
+		AEGfxSetTransform(background.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(gameTitle.pTex, 0, 0);
+		AEGfxSetTransform(gameTitle.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
 
 	switch (currScene)
 	{
@@ -299,14 +378,11 @@ void Mainmenu_Draw()
 		for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 		{
 			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButtonMainMenu[i].pos.x, interactableButtonMainMenu[i].pos.y, 0.f, interactableButtonMainMenu[i].scale.x, interactableButtonMainMenu[i].scale.y).m);
+			AEGfxSetTransform(interactableButtonMainMenu[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 		f32 width, height;
-		//const char* testText = "Did you know? Mejiro Mcqueen is my first UD horse? HAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHAH";
-		//PrintTextOverTime(testText, 0.01f, -1.f, 0.f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, pFont, printedCharVec, & printTimer);
-		////AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText = "Start";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
@@ -334,10 +410,38 @@ void Mainmenu_Draw()
 		break;
 	}
 	case CurrentScene::CREDIT_SCENE:
+	{
+
+		f32 width, height;
+
+		for (size_t i = 0; i < (sizeof(credits) / sizeof(credits[0])); ++i)
+		{
+			AEGfxTextureSet(credits[i].creditsSlides, 0, 0);
+			AEGfxSetTransform(credits[i].slidesObj.transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(backButton.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		const char* pText = "Back";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
 	case CurrentScene::CONTROL_SCENE:
 	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(optionbackground.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(gameControls.pTex, 0, 0);
+		AEGfxSetTransform(gameControls.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
 		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
+		AEGfxSetTransform(backButton.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;
@@ -350,52 +454,62 @@ void Mainmenu_Draw()
 	case CurrentScene::OPTION_SCENE:
 	{
 		AEGfxTextureSet(optionbackground.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(optionbackground.pos.x, optionbackground.pos.y, 0.f, optionbackground.scale.x, optionbackground.scale.y).m);
+		AEGfxSetTransform(optionbackground.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
 		for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
 		{
 			AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(interactableButtonOption[i].pos.x, interactableButtonOption[i].pos.y, 0.f, interactableButtonOption[i].scale.x, interactableButtonOption[i].scale.y).m);
+			AEGfxSetTransform(interactableButtonOption[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
-
 		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(backButton.pos.x, backButton.pos.y, 0.f, backButton.scale.x, backButton.scale.y).m);
+		AEGfxSetTransform(backButton.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-		
+
 		for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
 		{
 			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(optionBackgroundBar[i].pos.x, optionBackgroundBar[i].pos.y, 0.f, optionBackgroundBar[i].scale.x, optionBackgroundBar[i].scale.y).m);
+			AEGfxSetTransform(optionBackgroundBar[i].transform.m);
 			AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
 		}
 
 		for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
 		{
 			AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(optionSoundBar[i].pos.x, optionSoundBar[i].pos.y, 0.f, optionSoundBar[i].scale.x, optionSoundBar[i].scale.y).m);
+			AEGfxSetTransform(optionSoundBar[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 		}
 
 		f32 width, height;
 
-		const char* pText = "Back";
+		const char* pText = "BGM";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
+
+		const char* pText1 = "SFX";
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
+
+		const char* pText2 = "Back";
+		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
+
 	}
 	case CurrentScene::QUIT_SCENE:
 	{
 		AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[0].pos.x, confirmationButtion[0].pos.y, 0.f, confirmationButtion[0].scale.x, confirmationButtion[0].scale.y).m);
+		AEGfxSetTransform(confirmationButtion[0].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(confirmationButtion[1].pos.x, confirmationButtion[1].pos.y, 0.f, confirmationButtion[1].scale.x, confirmationButtion[1].scale.y).m);
+		AEGfxSetTransform(confirmationButtion[1].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 		f32 width, height;
@@ -416,7 +530,6 @@ void Mainmenu_Draw()
 
 void Mainmenu_Free()
 {
-
 }
 
 void Mainmenu_Unload()
@@ -428,6 +541,15 @@ void Mainmenu_Unload()
 	AEGfxTextureUnload(boxBackground);
 	AEGfxTextureUnload(audioUp);
 	AEGfxTextureUnload(audioDown);
+	AEGfxTextureUnload(gameControlsImg);
+	AEGfxTextureUnload(gameTitle.pTex);
+
+
+	//Unload all slides
+	for (int i = 0; i < (sizeof(credits) / sizeof(credits[0])); i++)
+	{
+		AEGfxTextureUnload(credits[i].creditsSlides);
+	}
 }
 
 void BackMainMenu()
@@ -442,11 +564,12 @@ void GoNewGameLevel1()
 
 void GoLoadSaveLevel()
 {
-
 }
 
 void GoCreditScene()
 {
+	CreditAnimationEnter();
+
 	currScene = CurrentScene::CREDIT_SCENE;
 }
 
@@ -468,4 +591,56 @@ void GoConfirmQuitScene()
 void GoQuitGame()
 {
 	next = GameStates::QUIT;
+}
+
+namespace {
+	void CreditAnimationUpdate()
+	{
+		creditTime += (f32)AEFrameRateControllerGetFrameTime();
+
+		for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+		{
+			credits[i].slidesObj.pos.y += creditHeightUpdate * (f32)AEFrameRateControllerGetFrameTime();
+			credits[i].slidesObj.UpdateTransformMatrix();
+		}
+
+		if (creditTime >= maxCreditTime)
+		{
+			BackMainMenu();
+		}
+	}
+
+	void CreditAnimationEnter() //Initialise the slides position
+	{
+		creditTime = 0.f;
+
+		f32 slideDisplayDuration = 2.f; //Total animation time will be number of slides * this value
+
+		maxCreditTime = (sizeof(credits) / sizeof(credits[0]) - 1) * slideDisplayDuration;
+
+		creditHeightUpdate = (f32)AEGfxGetWindowHeight() / slideDisplayDuration;
+
+		for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+		{
+			credits[i].slidesObj.pos.x = 0.f; //All at center
+
+			if (i == 0)
+			{
+				credits[i].slidesObj.pos.y = (f32)AEGfxGetWindowHeight() * -0.5f; //First Position at center y
+			}
+			else
+			{
+
+				credits[i].slidesObj.pos.y = credits[0].slidesObj.pos.y - i * (f32)AEGfxGetWindowHeight(); //Need to below each slides
+
+			}
+			credits[i].slidesObj.scale.x = (f32)AEGfxGetWindowWidth();
+			credits[i].slidesObj.scale.y = (f32)AEGfxGetWindowHeight();
+			credits[i].slidesObj.UpdateTransformMatrix();
+		}
+	}
+	void CreditAnimationEnd()
+	{
+
+	}
 }

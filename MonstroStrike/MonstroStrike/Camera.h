@@ -7,7 +7,7 @@ public:
 	Camera(AEVec2 player);
 	~Camera();
 
-	void UpdatePos(Player player, f32 gameMinWidth, f32 gameMaxWidth, f32 gameMinHeight, f32 gameMaxHeight);
+	void UpdatePos(class Player* player, f32 gameMinWidth, f32 gameMaxWidth, f32 gameMinHeight, f32 gameMaxHeight);
 	void CameraShake();
 	void LookAhead(AEVec2 locationPlayer);
 

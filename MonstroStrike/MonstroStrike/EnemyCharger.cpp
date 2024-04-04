@@ -1,19 +1,24 @@
 #include "Enemy.h"
 #include "EnemyUtils.h"
+#include "ParticleSystem.h"
+#include "MissionList.h"
 
 
-
-void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
+void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
 {
-	f32 distanceFromPlayer = AEVec2Distance(&player.obj.pos, &enemy.obj.pos);
+	f32 distanceFromPlayer = AEVec2Distance(&player.GetPlayerCurrentPosition(), &enemy.obj.pos);
 	enemy.timePassed += (f32)AEFrameRateControllerGetFrameTime();
 
 	// Check collision with player
-	enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.collisionBox);
+	enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.GetPlayerCollisionBox());
 	
 	if (enemy.health <= 0)
 	{
+		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
+		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
+		missionSystem.chargersKilled++;
+		return;
 	}
 
 	// Handle collision with player
@@ -28,7 +33,8 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		enemy.isRecoil = true;
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
-			std::cout << "Hit!\n";
+			player.GetCurrentHealth() -= 10.f;
+			player.GetPlayerVelocity().x = enemy.velocity.x * 3.f;
 		}
 	}
 	else {
@@ -42,6 +48,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 			enemy.enemyCurrent = ENEMY_IDLE;
 			enemy.speed = 80.f;
 			enemy.isRecoil = false;
+
 		}
 	}
 	else {
@@ -49,7 +56,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		switch (enemy.enemyCurrent) {
 		case ENEMY_IDLE:
 			// Check if player is within line of sight and aligned with enemy
-			if (distanceFromPlayer <= enemy.lineOfSight && AreAligned(player.obj.pos, enemy.obj.pos)) {
+			if (distanceFromPlayer <= enemy.lineOfSight && AreAligned(player.GetPlayerCurrentPosition(), enemy.obj.pos)) {
 				enemy.enemyNext = ENEMY_TRANSITION;
 				enemy.isCollision = false;
 				enemy.timePassed = 0.0f;
@@ -66,7 +73,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player)
 		case ENEMY_TRANSITION:
 			// Lock on to player's position
 			if (enemy.targetPosition == ENEMY_DEFAULT) {
-				enemy.targetPosition = (enemy.obj.pos.x >= player.obj.pos.x) ? ENEMY_LEFT : ENEMY_RIGHT;
+				enemy.targetPosition = (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) ? ENEMY_LEFT : ENEMY_RIGHT;
 			}
 			enemy.isAttacking = true;
 			enemy.isCollision = false;

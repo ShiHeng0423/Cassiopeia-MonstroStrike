@@ -108,29 +108,42 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="EnemyFly.cpp" />
     <ClCompile Include="EnemyJumper.cpp" />
     <ClCompile Include="EnemyUtils.cpp" />
+    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameState_BossRoom.cpp" />
+    <ClCompile Include="GameState_Level1.cpp" />
+    <ClCompile Include="GameState_Level1_B.cpp" />
+    <ClCompile Include="GameState_Level1_C.cpp" />
+    <ClCompile Include="GameState_Level1_D.cpp" />
+    <ClCompile Include="GameState_Level1_E.cpp" />
+    <ClCompile Include="GameState_Level1_F.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameState_GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
-    <ClCompile Include="GameState_Level1.cpp" />
     <ClCompile Include="GameState_Mainmenu.cpp" />
     <ClCompile Include="GameState_SplashScreen.cpp" />
+    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameStateHeaders.h" />
+    <ClInclude Include="GameState_BossRoom.h" />
+    <ClInclude Include="GameState_Level1_B.h" />
+    <ClInclude Include="GameState_Level1_C.h" />
+    <ClInclude Include="GameState_Level1_D.h" />
+    <ClInclude Include="GameState_Level1_E.h" />
+    <ClInclude Include="GameState_Level1_F.h" />
     <ClInclude Include="main.h" />
     <ClCompile Include="MapTransition.cpp" />
+    <ClCompile Include="MapTraps.cpp" />
     <ClCompile Include="MissionList.cpp" />
     <ClCompile Include="PauseMenuManager.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="TextPrinting.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="TransformMatrix.cpp" />
     <ClCompile Include="CollisionShape.cpp" />
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="TriggerAttack.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -141,7 +154,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyUtils.h" />
     <ClInclude Include="GameState_GameLobby.h" />
+    <ClInclude Include="MapTraps.h" />
     <ClInclude Include="MissionList.h" />
+    <ClInclude Include="StatusEffect.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
@@ -193,9 +208,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\uri.h" />
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
-    <ClInclude Include="TextPrinting.h" />
-    <ClInclude Include="TransformMatrix.h" />
-    <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="CSVMapLoader.h" />
@@ -205,13 +217,18 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="json.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Assets\GameMap.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Assets\player_inventory.json" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Assets\GameMap_Lobby.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_BossStage.csv" />
+    <None Include="..\Assets\SaveFiles\equipped_gears.json" />
+    <None Include="..\Assets\SaveFiles\full_item_list.json" />
+    <None Include="..\Assets\SaveFiles\player_inventory.json" />
+    <None Include="..\Assets\SaveFiles\recipe_list.json" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_A.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_B.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_C.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_D.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_E.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_Level1_F.csv" />
+    <None Include="..\Assets\GameMaps\GameMap_Lobby.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
