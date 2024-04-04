@@ -7,13 +7,17 @@
 namespace {
 	AEGfxVertexList* pSquareMesh;
 	AEGfxTexture* digipenLogoSprite;
+	AEGfxTexture* teamNameSprite;
 	AEGfxTexture* copyrightSprite;
 
 	Sprite digipenLogo;
+	Sprite teamName;
 	Sprite copyright;
 
 	f32 timer;
 	f32 alpha;
+	
+	bool logoChange;
 }
 
 void SplashScreen_Load()
@@ -34,32 +38,54 @@ void SplashScreen_Load()
 
 	digipenLogoSprite = AEGfxTextureLoad("Assets/Digipen_Logo/DigiPen_Singapore_WEB_WHITE.png");
 	copyrightSprite = AEGfxTextureLoad("Assets/Digipen_Logo/Copyright.png");
+	teamNameSprite = AEGfxTextureLoad("Assets/Digipen_Logo/Team_Name_WEB_WHITE.png");
 }
 
 void SplashScreen_Initialize()
 {
+	
 	digipenLogo.pTex = digipenLogoSprite;
 	AEVec2Set(&digipenLogo.scale, 800.f, 400.f);
 	digipenLogo.UpdateTransformMatrix();
+
+	teamName.pTex = teamNameSprite;
+	AEVec2Set(&teamName.scale, 800.f, 400.f);
+	teamName.UpdateTransformMatrix();
 
 	copyright.pTex = copyrightSprite;
 	AEVec2Set(&copyright.pos, 0.f, AEGfxGetWinMinY() * 0.9f);
 	AEVec2Set(&copyright.scale, 600.f, 50.f);
 	copyright.UpdateTransformMatrix();
 
-	timer = 3.0f;
+	timer = 6.0f;
 	alpha = 0.f;
+	logoChange = false;
 }
 
 void SplashScreen_Update()
 {
 	timer -= (f32)AEFrameRateControllerGetFrameTime();
-	if (timer > 0.f)
-		alpha += 1.f / ((f32)AEFrameRateControllerGetFrameRate() * 2.f);
-	else
+	if (timer > 3.f) {
+		alpha = (6.0f - timer) / 3.0f;
+		alpha = AEClamp(alpha, 0.f, 1.0f);
+		digipenLogo.pTex = digipenLogoSprite;
+		teamName.pTex = NULL; 
+	}
+	else if (timer > 0.0f && timer < 3.f) {
+		if (!logoChange) {
+			alpha = 0.f; 
+			logoChange = true;
+		}
+		alpha += (1.f / ((f32)AEFrameRateControllerGetFrameRate() * 2.f));
+		digipenLogo.pTex = NULL;
+		teamName.pTex = teamNameSprite;
+	}
+	else {
+		alpha -= (1.f / ((f32)AEFrameRateControllerGetFrameRate() * 2.f));
+		alpha = AEClamp(alpha, 0.f, 1.0f);
 		next = MAINMENU;
+	}
 
-	alpha = AEClamp(alpha, 0.f, 1.0f);
 }
 
 void SplashScreen_Draw()
@@ -72,9 +98,16 @@ void SplashScreen_Draw()
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(alpha);
 
-	AEGfxTextureSet(digipenLogo.pTex, 0, 0);
-	AEGfxSetTransform(digipenLogo.transform.m);
-	AEGfxMeshDraw(pSquareMesh, AE_GFX_MDM_TRIANGLES);
+	if (!logoChange) {
+		AEGfxTextureSet(digipenLogo.pTex, 0, 0);
+		AEGfxSetTransform(digipenLogo.transform.m);
+		AEGfxMeshDraw(pSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
+	else {
+		AEGfxTextureSet(teamName.pTex, 0, 0);
+		AEGfxSetTransform(teamName.transform.m);
+		AEGfxMeshDraw(pSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
 
 	AEGfxTextureSet(copyright.pTex, 0, 0);
 	AEGfxSetTransform(copyright.transform.m);
@@ -90,5 +123,6 @@ void SplashScreen_Unload()
 {
 	AEGfxMeshFree(pSquareMesh);
 	AEGfxTextureUnload(digipenLogoSprite);
+	AEGfxTextureUnload(teamNameSprite);
 	AEGfxTextureUnload(copyrightSprite);
 }
