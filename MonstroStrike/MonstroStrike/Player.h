@@ -62,11 +62,12 @@ public:
 	f32& GetFrictionOnPlayer();
 
 	bool& GetIsPlayerOnFloor();
-	bool& GetIsPlayerFalling();
+	bool& GetIsPlayerKillBoss();
 
 	bool& GetPlayerPoisoned();
 	bool& GetPlayerSlowed();
 	bool& GetPlayerJustDied();
+	bool& GetPlayerHeldCombo();
 
 	
 	void OnPlayerDeath();
@@ -91,7 +92,7 @@ private:
 	f32 friction;
 
 	bool onFloor; //Added to check entity on floor, hence can jump
-	bool isFalling;
+	bool killedBoss;
 	bool justDied;
 
 	//Status effects
@@ -110,6 +111,7 @@ private:
 	float comboTime;
 	int comboTrig;
 	int comboState;
+	bool heldCombo;
 	bool isAttacking;
 
 	//is Player currently interacting with NPC

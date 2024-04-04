@@ -69,7 +69,7 @@ namespace Crafting
 			matReq2.mat_quantity = matRequirementsValue[1]["mat_quantity"].GetInt();
 
 			// Create and store the recipe
-			recipes.push_back({ itemId, {matReq1, matReq2} });
+			recipes.push_back({itemId, {matReq1, matReq2}});
 		}
 
 		return recipes;
@@ -137,6 +137,8 @@ namespace Crafting
 		Inventory::AddItem(fullInventoryList[recipe.item_id]);
 
 		std::cout << "Crafted: " << fullInventoryList[recipe.item_id].name << std::endl;
+		std::cout << "Material 1: " << fullInventoryList[recipe.mat_requirements.first.mat_ID].name << std::endl;
+		std::cout << "Material 2: " << fullInventoryList[recipe.mat_requirements.second.mat_ID].name << std::endl;
 	}
 
 

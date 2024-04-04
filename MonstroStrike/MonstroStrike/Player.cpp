@@ -26,6 +26,9 @@ namespace
 	auto currentTime = Clock::now();
 	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
 
+#pragma region AnimationQueue
+
+
 	constexpr f32 comboWindowDuration = 1.0f;
 	constexpr f32 PRESS_THRESHOLD = 0.5f;
 	//Attack hold and atack release
@@ -33,7 +36,7 @@ namespace
 	bool undealtTriggerInput = false; // identifier
 	bool isReleased = true;
 	bool if_first_input = false;
-
+	
 	auto triggeredTime = Clock::now();
 	auto releasedTime = Clock::now();
 	auto comboTime = Clock::now();
@@ -53,6 +56,13 @@ namespace
 	AEGfxTexture* se_Regen;
 	AEGfxTexture* se_Lifesteal;
 
+	//Attack animation
+	AEGfxTexture* swordthrustTex;
+	AEGfxTexture* revswordthrustTex;
+	AEGfxTexture* swordmultithrustTex;
+	AEGfxTexture* revswordmultithrustTex;
+	AEGfxTexture* swordslashTex;
+	AEGfxTexture* revswordslashTex;
 }
 
 
@@ -68,6 +78,14 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	se_Regen = AEGfxTextureLoad("Assets/StatusEffects/Status_Regen.png");
 	se_Lifesteal = AEGfxTextureLoad("Assets/StatusEffects/Status_LifeSteal.png");
 
+	//Jian Wei (Moved from level 1 to player by Johny)
+	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
+	revswordthrustTex = AEGfxTextureLoad("Assets/Sword thrustrev.png");
+	swordmultithrustTex = AEGfxTextureLoad("Assets/sword mutiple thrust.png");
+	revswordmultithrustTex = AEGfxTextureLoad("Assets/Swordmutiplethrustrev.png");
+	swordslashTex = AEGfxTextureLoad("Assets/SwordSlash.png");
+	revswordslashTex = AEGfxTextureLoad("Assets/Sword Slashrev.png");
+
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
 	pMeshRed = GenerateSquareMesh(0xFFFF0000);
 
@@ -81,10 +99,11 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	friction = 0.85f;
 
 	onFloor = true; //Set as false first, will be set as true when ground detected
-	isFalling = false;
+	killedBoss = false;
 	isPoisoned = false;
 	isSlowed = false;
 	justDied = false;
+	heldCombo = false;
 
 	AEVec2Set(&velocity, 0.f, 0.f); //Begin with no velocity	
 
@@ -136,6 +155,15 @@ Player::~Player()
 
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pWhiteSquareMesh);
+
+	//Jian Wei (Moved from Level 1 to player by Johny)
+	AEGfxTextureUnload(swordthrustTex);
+	AEGfxTextureUnload(revswordthrustTex);
+	AEGfxTextureUnload(swordmultithrustTex);
+	AEGfxTextureUnload(revswordmultithrustTex);
+	AEGfxTextureUnload(swordslashTex);
+	AEGfxTextureUnload(revswordslashTex);
+
 }
 
 void Player::Update(bool isInventoryOpen)
@@ -202,10 +230,11 @@ void Player::Update(bool isInventoryOpen)
 		velocity.y = 700.f;		
 		ParticleEmit(10, obj.pos.x, obj.pos.y,
 		obj.scale.x * 0.25f, obj.scale.y * 0.25f, 0.f, PARTICLE_JUMP, this);
+		//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 	}
 
 	//Apply Gravity
-	ApplyGravity(&velocity, mass, &onFloor, &gravityForce, &isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&velocity, mass, &onFloor, &gravityForce); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 
 	//Player position update
 	prevPos = obj.pos;
@@ -245,6 +274,7 @@ void Player::Update(bool isInventoryOpen)
 			undealtTriggerInput = true;
 			isReleased = false;
 			if_first_input = true;
+			//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 
 		}
 		if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
@@ -254,21 +284,19 @@ void Player::Update(bool isInventoryOpen)
 		//reset
 		if (!undealtTriggerInput)
 		{
-			::elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
-			if (::elapsedTime > comboWindowDuration)
+			elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
+			if (elapsedTime > comboWindowDuration)
 			{
-				isAttacking = false;
 				weaponSet.weaponHIT = false;
-				comboTime = 0.0f; // Reset combo time
-				comboState = 0;   // Reset combo state
-
+				comboState = 0;
+				comboTime = 0.f;
+				isAttacking = false;
 			}
-
 		}
 		if (undealtTriggerInput)
 		{
-			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
-				1000.0; // Convert to seconds
+			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
+				
 			if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
 			{
 				if (comboState == 2) //held
@@ -280,8 +308,9 @@ void Player::Update(bool isInventoryOpen)
 				}
 				::comboTime = Clock::now();
 				undealtTriggerInput = false;
-
+				heldCombo = false;
 			}
+
 			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 			{
 				f32 attackProgress = 1.0f - (attackTime / comboWindowDuration);
@@ -437,6 +466,40 @@ void Player::RenderPlayer()
 		AEGfxSetColorToMultiply(0.4f, 0.4f, 0.4f, 1.f);
 	}
 
+#pragma region is_attacking
+
+	if (isAttacking)
+	{
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTexture* weaponTexture = nullptr;
+
+		if (weaponSet.name == "Short-Sword")
+		{
+			if (heldCombo)
+				weaponTexture = isFacingRight ? swordmultithrustTex : revswordmultithrustTex;
+			else
+				weaponTexture = isFacingRight ? swordthrustTex : revswordthrustTex;
+		}
+		else
+		{
+			weaponTexture = isFacingRight ? swordslashTex : revswordslashTex;
+		}
+
+		if (weaponTexture != nullptr)
+		{
+			AEGfxTextureSet(weaponTexture, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(weaponSet.position.x,
+				weaponSet.position.y, 0.f,
+				weaponSet.scale.x,
+				weaponSet.scale.y).m);
+
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		isAttacking = false;
+	}
+#pragma endregion
+
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(obj.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(obj.pos.x, obj.pos.y, 0.f, obj.scale.x, obj.scale.y).m);
@@ -472,15 +535,15 @@ void Player::RenderPlayerStatUI()
 	std::string str = "Player Stats";
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8f, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
 	
 	str = "HP";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
 
 	str = "Buff";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
 	
 	size_t buff_index = 0;
 	for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
@@ -652,8 +715,7 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 						gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveVerticalCollision(boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
 						&collisionNormal, &obj.pos,
-						&velocity, &onFloor, &gravityForce,
-						&isFalling);
+						&velocity, &onFloor, &gravityForce);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)
@@ -770,6 +832,14 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 				{
 					OnPlayerDeath();
 				}
+				break;
+			case RETURN_PORTAL_GRID:
+				if (AABBvsAABB(collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox) && killedBoss)
+				{
+					if (!transitionalImageOBJ.active)
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+				}
+				break;
 			case EMPTY:
 				break;
 			}
@@ -809,14 +879,19 @@ f32& Player::GetGravityOnPlayer()
 	return gravityForce;
 }
 
-bool& Player::GetIsPlayerFalling()
+bool& Player::GetIsPlayerKillBoss()
 {
-	return isFalling;
+	return killedBoss;
 }
 
 bool& Player::GetPlayerJustDied()
 {
 	return justDied;
+}
+
+bool& Player::GetPlayerHeldCombo()
+{
+	return heldCombo;
 }
 
 void Player::OnPlayerDeath() {

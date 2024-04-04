@@ -1,3 +1,15 @@
+/*!************************************************************************
+  \file					EnemyCharger.cpp
+  \project name			Monstrostrike
+  \primary author		Goh Jun Jie
+  \secondary author
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
+
+
 #include "Enemy.h"
 #include "EnemyUtils.h"
 #include "ParticleSystem.h"

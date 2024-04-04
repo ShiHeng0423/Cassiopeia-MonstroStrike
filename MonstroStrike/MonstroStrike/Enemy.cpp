@@ -1,3 +1,13 @@
+/*!************************************************************************
+  \file					Enemy.cpp
+  \project name			Monstrostrike
+  \primary author		Goh Jun Jie
+  \secondary author
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "Enemy.h"
 #include "Player.h"
 #include "AEEngine.h"
@@ -229,7 +239,7 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 
 	if (!enemy.isFlying) {
-		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
+		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce);
 	}
 
 	switch (enemy.enemyType) {
@@ -329,8 +339,7 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 
 			ResolveVerticalCollision(enemy.boxHeadFeet, gridBoxAABB,
 				&enemy.collisionNormal, &enemy.obj.pos,
-				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
-				&enemy.isFalling);
+				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
 		}
 		//Check horizontal box (Left arm -> Right arm)
 		if (AABBvsAABB(enemy.boxArms, gridBoxAABB))

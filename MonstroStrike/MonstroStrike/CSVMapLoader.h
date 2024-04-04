@@ -53,6 +53,10 @@ struct Grids2D {
 	AABB collisionBox; //Rectangle collision box
 };
 
+void GridTextureLoad();
+
+void GridTextureUnload();
+
 bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, int rows, int cols);
 
 void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols);
