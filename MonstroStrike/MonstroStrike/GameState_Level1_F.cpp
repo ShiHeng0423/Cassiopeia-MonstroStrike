@@ -137,6 +137,10 @@ void Level1_F_Initialize()
 			{
 				player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
 			}
+			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_2 && previous == AREA_BOSS)
+			{
+				player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
+			}
 		}
 	}
 	player->GetPlayerScale() = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };

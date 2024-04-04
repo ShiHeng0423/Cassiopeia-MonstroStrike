@@ -462,8 +462,6 @@ void Player::RenderPlayerStatUI()
 	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f, AEGfxGetWinMaxY() - 60.f, 0, 300.f, 25.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-	std::cout << (currHealth / maxHealth * 300.f) << std::endl;
-
 	//Health Bar
 	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - ((float)currHealth / (float)maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (currHealth * 300.f) / maxHealth , 25.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
