@@ -431,7 +431,7 @@ false, 0, 0, 0 };
 			s32 textX = 0;
 			s32 textY = 0;
 
-			s16 index = 0;
+			s16 indexTmp = 0;
 
 			AEInputGetCursorPosition(&textX, &textY);
 			AEVec2 mousePos;
@@ -445,7 +445,7 @@ false, 0, 0, 0 };
 					if (button.Item.ID >= 0)
 					{
 						//snap origin of img to mouse pos
-						snapBack = index;
+						snapBack = indexTmp;
 
 						//Display item's info on l_click
 						itemHover = true;
@@ -460,7 +460,7 @@ false, 0, 0, 0 };
 				//Reset itemHover
 				itemHover = false;
 
-				index++;
+				indexTmp++;
 			}
 
 
@@ -505,7 +505,7 @@ false, 0, 0, 0 };
 
 		if (AEInputCheckReleased(AEVK_LBUTTON))
 		{
-			s16 index = 0;
+			s16 indexTmp = 0;
 			if (snapBack >= 0)
 			{
 				for (ButtonGearUI& button : inventoryButton)
@@ -517,7 +517,7 @@ false, 0, 0, 0 };
 						button.img.scale.y))
 					{
 						//Different items overlapping
-						if (index != snapBack)
+						if (indexTmp != snapBack)
 						{
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5.f) * 90.f + 180.f);
@@ -527,22 +527,22 @@ false, 0, 0, 0 };
 							button = inventoryButton[snapBack];
 							inventoryButton[snapBack] = tmp;
 
-							if (playerInventory.size() <= index)
+							if (playerInventory.size() <= indexTmp)
 							{
 								size_t oldsize = playerInventory.size();
-								playerInventory.resize(index + 1);
+								playerInventory.resize(indexTmp + 1);
 								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
 									playerInventory[x].ID = INVALID_ITEM;
 								}
 							}
 							//Swap items inside inventory
-							Inventory::SwapInventory(playerInventory[index], playerInventory[snapBack]);
+							Inventory::SwapInventory(playerInventory[indexTmp], playerInventory[snapBack]);
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5) * 90.f + 180.f);
 
-							AEVec2Set(&button.pos, (index % 5) * 90.f - 180.f,
-								-(index / 5.f) * 90.f + 180.f);
+							AEVec2Set(&button.pos, (indexTmp % 5) * 90.f - 180.f,
+								-(indexTmp / 5.f) * 90.f + 180.f);
 
 							snapBack = -1;
 							break;
@@ -689,8 +689,6 @@ false, 0, 0, 0 };
 					itemDisplayBackground.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-				f32 width, height;
-
 				auto pText = Inventory::displayItem.Item.name.c_str();
 				AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 				AEGfxPrint(fontID, pText, 0.35f,
@@ -820,6 +818,7 @@ false, 0, 0, 0 };
 
 	void ItemPickup(Item& item)
 	{
+		UNREFERENCED_PARAMETER(item);
 	}
 
 	void ItemDrop()
@@ -1086,7 +1085,7 @@ false, 0, 0, 0 };
 						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
 						break;
 					case IR_NONE:
-						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::NO_GRADE);
 						break;
 
 					}
@@ -1107,7 +1106,7 @@ false, 0, 0, 0 };
 						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
 						break;
 					case IR_NONE:
-						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::NO_GRADE);
 						break;
 					}
 					break;
@@ -1127,7 +1126,7 @@ false, 0, 0, 0 };
 						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
 						break;
 					case IR_NONE:
-						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::NO_GRADE);
 						break;
 					}
 					break;

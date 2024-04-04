@@ -142,7 +142,7 @@ void Lobby_Update()
 
 	if (!player->GetIsTalkingToNpc())
 	{
-		menu->Update(cam);
+		menu->Update();
 
 		if (currScene == CurrentScene::PAUSE_SCENE || currScene == CurrentScene::CONTROL_SCENE || currScene ==
 			CurrentScene::QUIT_SCENE)

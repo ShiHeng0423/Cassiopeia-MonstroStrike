@@ -133,9 +133,9 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	isConversation = false;
 
 	//Player Stats
-	maxHealth = 100.f;
+	maxHealth = 100;
 	currHealth = maxHealth;
-	attack = 100.f;
+	attack = 100;
 	currStatusMaxCD = 3.f;
 	currStatusCD = currStatusMaxCD;
 
@@ -295,9 +295,9 @@ void Player::Update(bool isInventoryOpen)
 		}
 		if (undealtTriggerInput)
 		{
-			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
+			double g_elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
 				
-			if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
+			if (g_elapsedTime >= PRESS_THRESHOLD && !isReleased)
 			{
 				if (comboState == 2) //held
 				{
@@ -311,7 +311,7 @@ void Player::Update(bool isInventoryOpen)
 				heldCombo = false;
 			}
 
-			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
+			if (g_elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 			{
 				f32 attackProgress = 1.0f - (attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxTrig(this, isFacingRight, &weaponSet, attackProgress);
@@ -320,7 +320,7 @@ void Player::Update(bool isInventoryOpen)
 				if (comboState < 2)
 				{
 					comboState++;
-					comboTime += (float)elapsedTime;
+					comboTime += (float)g_elapsedTime;
 				}
 
 				else
@@ -350,11 +350,11 @@ void Player::Update(bool isInventoryOpen)
 			timeSinceLastDamage += (f32)AEFrameRateControllerGetFrameTime();
 			if (timeSinceLastDamage >= damageInterval)
 			{
-				const f32 poisonDamage = 0.1f * currHealth;
+				const int poisonDamage = (int)(0.1 * (double)currHealth);
 				DamageToPlayer(poisonDamage);
-				if (currHealth < 1.f)
+				if (currHealth < 1)
 				{
-					currHealth = 1.f;
+					currHealth = 1;
 				}
 				timeSinceLastDamage = 0.0f; // Reset timer
 			}

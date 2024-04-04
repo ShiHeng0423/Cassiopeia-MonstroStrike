@@ -115,7 +115,7 @@ void PauseMenu_Manager::Init(Camera* cam)
 	gameControls.pos = cam->GetCameraWorldPoint();
 }
 
-void PauseMenu_Manager::Update(Camera* cam)
+void PauseMenu_Manager::Update()
 {
 	if (AEInputCheckTriggered(AEVK_ESCAPE))
 	{
@@ -262,8 +262,6 @@ void PauseMenu_Manager::Render()
 		AEGfxSetTransform(gameControls.transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		f32 width, height;
-
 		const char* pText = "Back";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText, -width / 2 + 0.35f, -height / 2 -0.4f, 0.5f, 1, 1, 1, 1);
@@ -282,8 +280,6 @@ void PauseMenu_Manager::Render()
 		AEGfxTextureSet(quitToMainmenu[1].pTex, 0, 0);
 		AEGfxSetTransform(quitToMainmenu[1].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
 
 		const char* pText = "Yes";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);

@@ -32,6 +32,11 @@ namespace Weapon_System
             tmp.damage = 5;
             tmp.extraEffect = Status_Effect_System::NONE_EFFECT;
             break;
+        case Weapon_System::WEAPON_GRADE::NO_GRADE:
+            tmp.name = "No-Weapon";
+            tmp.damage = 0;
+            tmp.extraEffect = Status_Effect_System::NONE_EFFECT;
+            break;
         default:
             break;
         }
@@ -84,9 +89,9 @@ namespace Weapon_System
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -115,9 +120,9 @@ namespace Weapon_System
                 playerEquip->position.x = player->GetPlayerCurrentPosition().x;
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -146,9 +151,9 @@ namespace Weapon_System
 
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -188,9 +193,9 @@ namespace Weapon_System
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -218,9 +223,9 @@ namespace Weapon_System
                 yScale = 55.0f;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -245,9 +250,9 @@ namespace Weapon_System
                 xScaler = 0.9f;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -279,9 +284,9 @@ namespace Weapon_System
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -310,9 +315,9 @@ namespace Weapon_System
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -346,9 +351,9 @@ namespace Weapon_System
 
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, 80.f, 60.f);
 
@@ -384,9 +389,9 @@ namespace Weapon_System
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -424,9 +429,9 @@ namespace Weapon_System
 
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -462,9 +467,9 @@ namespace Weapon_System
                 playerEquip->position.y = player->GetPlayerCurrentPosition().y;
 
                 // change the hitbox
-                f32 hit = playerFacingRight ?  // change the hitbox
-                    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
-                playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
+                //f32 hit = playerFacingRight ?  // change the hitbox
+                //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
+                //playerEquip->position.y = player->GetPlayerCurrentPosition().y - yHitOffset;
 
                 AEVec2Set(&player->GetWeaponSet().scale, xScale, yScale);
 
@@ -506,7 +511,7 @@ namespace Weapon_System
             }
             else
             {
-                theEnemy.wing1.health -= (int)playerEquip->damage;
+                theEnemy.wing1.health -= playerEquip->damage;
                 if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
                 {
                     player.RecoverHpToPlayer(player.GetWeaponSet().damage);
@@ -524,7 +529,7 @@ namespace Weapon_System
             }
             else
             {
-                theEnemy.wing2.health -= (int)playerEquip->damage;
+                theEnemy.wing2.health -= playerEquip->damage;
                 if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
                 {
                     player.RecoverHpToPlayer(player.GetWeaponSet().damage);
@@ -543,7 +548,7 @@ namespace Weapon_System
             }
             else
             {
-                theEnemy.health -= (int)playerEquip->damage;
+                theEnemy.health -= playerEquip->damage;
                 if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
                 {
                     player.RecoverHpToPlayer(player.GetWeaponSet().damage);

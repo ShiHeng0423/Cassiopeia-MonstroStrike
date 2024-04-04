@@ -89,9 +89,9 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
         }
         break;
     case ENEMY_TRANSITION:
-        if (enemy.targetPosition == ENEMY_DEFAULT) {
+        if ((int)enemy.targetPosition == ENEMY_DEFAULT) {
             // Determine which direction to charge towards
-            enemy.targetPosition = (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) ? ENEMY_LEFT : ENEMY_RIGHT;
+            enemy.targetPosition = (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) ? (s8)ENEMY_LEFT : (s8)ENEMY_RIGHT;
         }
         enemy.timePassed += frameTime;
         enemy.isAttacking = true;

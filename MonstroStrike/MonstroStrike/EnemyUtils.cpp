@@ -144,6 +144,7 @@ void IsStuck(Enemy& enemy) {
 }
 
 bool ReachedPos(Enemy& enemy, AEVec2 wayPoint) {
+	UNREFERENCED_PARAMETER(wayPoint);
 	if ((enemy.obj.pos.x >= enemy.wayPoint.x - 1.0f) && (enemy.obj.pos.x <= enemy.wayPoint.x + 1.0f)) {
 		return true;
 	}

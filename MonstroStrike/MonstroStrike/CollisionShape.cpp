@@ -30,6 +30,9 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //}
 void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity, bool* onFloor, f32* gravityForce)
 {
+    UNREFERENCED_PARAMETER(onFloor);
+    UNREFERENCED_PARAMETER(gravityForce);
+
     f32 penetrationDepth = 0.f;
 
     if (collisionNormal->y == 1) // Colliding from entity bottom

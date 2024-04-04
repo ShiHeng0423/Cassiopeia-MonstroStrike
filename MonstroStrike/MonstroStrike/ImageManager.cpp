@@ -3,5 +3,5 @@
 
 void ImageInit(const int item)
 {
-
+	UNREFERENCED_PARAMETER(item);
 }

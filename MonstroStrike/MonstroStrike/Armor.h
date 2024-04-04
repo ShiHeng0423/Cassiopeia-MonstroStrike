@@ -18,8 +18,8 @@ namespace Armor_System
 	{
 		HEAD,
 		BODY,
-		LEGS = 3,
-		FOOT = 4,
+		LEGS,
+		FOOT,
 
 		NO_TYPE
 	};
@@ -42,10 +42,10 @@ namespace Armor_System
 
 Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System::ARMOR_GRADE grade);
 
-f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect);
+int ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect);
 
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade);
 
-f32 Check_Set_Effect(class Player& player);
+int Check_Set_Effect(class Player& player);
 
 void Armor_Effect_Update(class Player& player);

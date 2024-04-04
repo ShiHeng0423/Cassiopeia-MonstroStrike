@@ -32,6 +32,6 @@ public:
 	~PauseMenu_Manager();
 
 	void Init(Camera* cam);
-	void Update(Camera* cam);
+	void Update();
 	void Render();
 };

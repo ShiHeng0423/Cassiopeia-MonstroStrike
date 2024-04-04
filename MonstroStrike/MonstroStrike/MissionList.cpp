@@ -143,7 +143,7 @@ std::vector<int> MissionSystem::GetAvailableEnemyMissionsIDs()
 	return availableIDs;
 }
 
-size_t MissionSystem::GetAcceptedMissionID()
+int MissionSystem::GetAcceptedMissionID()
 {
 	for (const KillEnemyMission& mission : enemyMissions)
 	{
