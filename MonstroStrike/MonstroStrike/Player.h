@@ -44,6 +44,7 @@ public:
 	int comboTrig;
 	float comboTime;
 	int comboState;
+	bool heldCombo = false;
 	f32 gravityForce;
 
 	//Player Stats

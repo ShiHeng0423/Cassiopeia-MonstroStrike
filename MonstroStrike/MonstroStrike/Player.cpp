@@ -34,15 +34,7 @@ auto comboTime = Clock::now();
 
 #pragma region AnimationQueue
 
-//std::queue<anima> con_anima;
-//
-//class anima
-//{
-// public:
-//	bool is_playing = false;
-//	
-//
-//};
+
 
 
 #pragma endregion
@@ -288,6 +280,7 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 		{
 			if (player.comboState == 2) //held
 			{
+				player.heldCombo = true;
 				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 				player.comboState = 0;
@@ -295,13 +288,14 @@ void PlayerUpdate(Player& player, bool isInventoryOpen)
 			}
 			comboTime = Clock::now();
 			undealtTriggerInput = false;
-
+			player.heldCombo = false;
 		}
 		if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 		{
 			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
 			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
 			player.isAttacking = true;
+			
 
 			if (player.comboState < 2)
 			{
