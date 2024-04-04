@@ -42,6 +42,9 @@ namespace
 	AEVec2 playerBoundaryMax;
 
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy);
+
+	bool isShaking;
+	bool isLookingToBoss;
 }
 
 void Level1_BOSS_Load()
@@ -109,11 +112,11 @@ void Level1_BOSS_Initialize()
 			//Previous zone is area a
 			if (grids2D[rows][cols].typeOfGrid == PLAYER_POS_GRID_1)
 			{
-				player->GetPlayerCurrentPosition() = {grids2D[rows][cols].position}; //Set position based on grid
+				player->GetPlayerCurrentPosition() = { grids2D[rows][cols].position }; //Set position based on grid
 			}
 		}
 	}
-	player->GetPlayerScale() = {grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f};
+	player->GetPlayerScale() = { grids2D[0][0].size.x * 1.25f, grids2D[0][0].size.y * 1.25f };
 
 #pragma endregion
 
@@ -125,11 +128,15 @@ void Level1_BOSS_Initialize()
 
 #pragma endregion
 
-	Enemy_Init({70.f, 70.f}, {225.f, -500.f}, ENEMY_IDLE, vecEnemy[0]);
+	Enemy_Init({ 70.f, 70.f }, { 225.f, -500.f }, ENEMY_IDLE, vecEnemy[0]);
 
 	menu->Init(cam);
 	ParticleInitialize();
 	MapTransitionInit();
+
+	cam->CameraShake(3.f);
+	isShaking = true;
+	isLookingToBoss = false;
 }
 
 void Level1_BOSS_Update()
@@ -154,17 +161,6 @@ void Level1_BOSS_Update()
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		Inventory::itemHover = false;
 		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
-	}
-
-	if (AEInputCheckTriggered(AEVK_0))
-	{
-		//next = GameStates::Quit;
-		AEVec2 test{100.f, 100.f};
-		cam->LookAhead(test);
-	}
-	if (AEInputCheckCurr(AEVK_1))
-	{
-		cam->CameraShake();
 	}
 
 	//This is set here temporary so that thing actually work, need to move
@@ -231,9 +227,28 @@ void Level1_BOSS_Update()
 
 #pragma region CameraUpdate
 
+	if (isShaking)
+	{
+		if (cam->IsCameraShakeFinish())
+		{
+			isShaking = false;
+			isLookingToBoss = true;
+			cam->LookAhead(vecEnemy[0].startingPosition);
+		}
+	}
+
+	if (isLookingToBoss)
+	{
+		if (cam->IsCameraLookAheadFinish())
+		{
+			isLookingToBoss = false;
+		}
+	}
 	cam->UpdatePos(player, grids2D[0][0].collisionBox.minimum.x,
 	               grids2D[0][MAP_COLUMN_BOSS_SIZE - 1].collisionBox.maximum.x,
 	               grids2D[MAP_ROW_BOSS_SIZE - 1][0].collisionBox.minimum.y, grids2D[0][0].collisionBox.maximum.y);
+
+	
 
 #pragma endregion
 
@@ -320,14 +335,14 @@ void Level1_BOSS_Draw()
 
 #pragma region Center_Line_Render
 
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+	//AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
-	                                                (f32)AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
-	                                                0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	//AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y, 0.f,
+	//                                                (f32)AEGfxGetWindowWidth(), 1.f).m);
+	//AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	//AEGfxSetTransform(ObjectTransformationMatrixSet(cam->GetCameraWorldPoint().x, cam->GetCameraWorldPoint().y,
+	//                                                0.5f * PI, (f32)AEGfxGetWindowWidth(), 1.f).m);
+	//AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 #pragma endregion
 	missionSystem.PrintMissionText();

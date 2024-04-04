@@ -197,17 +197,6 @@ void Level1_C_Update()
 		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 	}
 
-	if (AEInputCheckTriggered(AEVK_0))
-	{
-		//next = GameStates::Quit;
-		AEVec2 test{100.f, 100.f};
-		cam->LookAhead(test);
-	}
-	if (AEInputCheckCurr(AEVK_1))
-	{
-		cam->CameraShake();
-	}
-
 	//This is set here temporary so that thing actually work, need to move
 	if (player->GetIsPlayerAttacking())
 	{

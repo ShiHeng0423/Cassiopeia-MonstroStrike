@@ -50,8 +50,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		else
 			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
 
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &expectedLookAheadDir, 0.05f);
-		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &expectedLookAheadDir, 0.05f);
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &expectedLookAheadDir, 0.03f);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &expectedLookAheadDir, 0.03f);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
 		if (AEVec2Distance(&currLookAheadDir, &expectedLookAheadDir) < 1.0f && lookbackTimer <= 0.f && !cameraOnHold)
@@ -82,8 +82,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		else
 			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
 
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, 0.05f);
-		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, 0.05f);
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, 0.03f);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, 0.03f);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
 		if (AEVec2Distance(&currLookAheadDir, &this->worldCoordinate) < 1.0f)
@@ -96,8 +96,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		shakeTimer -= (f32)AEFrameRateControllerGetFrameTime();
 		if (shakeTimer > 0.f)
 		{
-			f32 randX = (AERandFloat() - 0.5f) * 100.f;
-			f32 randY = (AERandFloat() - 0.5f) * 100.f;
+			f32 randX = (AERandFloat() - 0.5f) * 200.f;
+			f32 randY = (AERandFloat() - 0.5f) * 200.f;
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x + randX,this->worldCoordinate.y + randY };
 			AEVec2Lerp(&this->worldCoordinate, &this->worldCoordinate, &desiredCamLocation, 0.05f);
 		}
@@ -158,9 +158,23 @@ void Camera::LookAhead(AEVec2 locationPlayer)
 	lookAhead = true;
 }
 
-void Camera::CameraShake()
+void Camera::CameraShake(float shakeDuration)
 {
-	shakeTimer = 0.3f;
+	shakeTimer = shakeDuration;
+}
+
+bool Camera::IsCameraShakeFinish()
+{
+	if (shakeTimer < 0.f)
+		return true;
+	return false;
+}
+
+bool Camera::IsCameraLookAheadFinish()
+{
+	if (!lookAhead && !lookBack)
+		return true;
+	return false;
 }
 
 Camera::~Camera() {
