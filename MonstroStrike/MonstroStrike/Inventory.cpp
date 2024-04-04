@@ -32,6 +32,7 @@
 #include <sstream>
 
 #include "Crafting.h"
+#include "GameStateManager.h"
 #include "main.h"
 
 using namespace rapidjson;
@@ -39,7 +40,7 @@ using namespace rapidjson;
  std::vector< Item> playerInventory;
  std::vector< Item> fullInventoryList;
 
- AEGfxTexture* Gear[28];
+ AEGfxTexture* Gear[29];
  s16 snapBack = -1;
 
  Player* playerReference;
@@ -60,6 +61,8 @@ using namespace rapidjson;
 namespace Inventory
 {
 	//Global Variable
+	bool isNewAccount;
+	GameStates fileLoadedState;
 	
 	std::vector<Item> allItems; //list of all items in game
 	ButtonGearUI equipmentDisplay[5];
@@ -102,9 +105,23 @@ false, 0, 0, 0 };
 			std::cout << "Access items in " << filepath << std::endl;
 			assert(json.IsObject());
 
+			//Load the map location for player
+			assert(json["map"].IsInt());
+
+			if (filepath == "Assets/SaveFiles/player_inventory.json")
+			{
+				fileLoadedState = static_cast<GameStates> (json["map"].GetInt());
+				std::cout << "Previous Map loaded from file: " << fileLoadedState << std::endl;
+			}
+			
+
+
+			
+
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
 
+			//Check if items list is empty
 			if (items.Size() == 0)
 				return inventory;
 
@@ -129,6 +146,7 @@ false, 0, 0, 0 };
 
 				inventory.push_back(newItem);
 			}
+
 			if (json.HasParseError())
 			{
 				std::cerr << "Error parsing JSON: " << std::endl;
@@ -143,6 +161,11 @@ false, 0, 0, 0 };
 
 		 Document json = nullptr;
 		 json.SetObject();
+
+		 // Value map(int);
+		 // Value theMap(kObjectType);
+
+
 
 		Value items( kArrayType);
 
@@ -170,6 +193,9 @@ false, 0, 0, 0 };
 
 			items.PushBack(ind_item, json.GetAllocator());
 		}
+		std::cout << "Current map SAVED to file: " << current << std::endl;
+
+		json.AddMember("map", current, json.GetAllocator());
 
 		json.AddMember("items", items, json.GetAllocator());
 
@@ -1237,7 +1263,19 @@ false, 0, 0, 0 };
 
 	void LoadInventory()
 	{
-		playerInventory = ReadJsonFile("Assets/SaveFiles/player_inventory.json");
+		std::string player_filepath = "";
+
+		if (isNewAccount)
+		{
+			isNewAccount = false;
+			player_filepath = "Assets/SaveFiles/player_inventory_new.json";
+		}
+		else
+		{
+			player_filepath = "Assets/SaveFiles/player_inventory.json";
+		}
+
+		playerInventory = ReadJsonFile(player_filepath);
 		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
 		equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 

@@ -1,4 +1,5 @@
 {
+  "map": 2,
   "items": [
     {
       "UID": "ahi2bfi2",
@@ -10,9 +11,9 @@
       "gear_location": 0,
       "quantity": 1,
       "stackable": false,
-      "health": 420,
-      "attack": 69,
-      "defence": 96
+      "health": 200,
+      "attack": 10,
+      "defence": 0
     },
     {
       "UID": "ahi2bdsf2",
@@ -25,8 +26,8 @@
       "quantity": 1,
       "stackable": false,
       "health": 420,
-      "attack": 69,
-      "defence": 96
+      "attack": 10,
+      "defence": 0
     },
     {
       "UID": "asfag",
@@ -38,9 +39,9 @@
       "gear_location": 2,
       "quantity": 1,
       "stackable": false,
-      "health": 420,
-      "attack": 0,
-      "defence": 1
+      "health": 50,
+      "attack": 200,
+      "defence": 0
     },
     {
       "UID": "kjhjbdsf2",
@@ -52,8 +53,8 @@
       "gear_location": 3,
       "quantity": 1,
       "stackable": false,
-      "health": 420,
-      "attack": 69,
+      "health": 150,
+      "attack": 20,
       "defence": 96
     },
     {
@@ -80,9 +81,9 @@
       "gear_location": 0,
       "quantity": 1,
       "stackable": false,
-      "health": 4200,
-      "attack": 690,
-      "defence": 720
+      "health": 1000,
+      "attack": 200,
+      "defence": 0
     },
     {
       "UID": "ahi2bdsf2",
@@ -94,9 +95,9 @@
       "gear_location": 1,
       "quantity": 1,
       "stackable": false,
-      "health": 420,
-      "attack": 69,
-      "defence": 96
+      "health": 2500,
+      "attack": 100,
+      "defence": 0
     },
     {
       "UID": "jj2bfi2",
@@ -109,7 +110,7 @@
       "quantity": 1,
       "stackable": false,
       "health": 0,
-      "attack": 6900,
+      "attack": 1000,
       "defence": 0
     },
 
@@ -123,8 +124,8 @@
       "gear_location": 3,
       "quantity": 1,
       "stackable": false,
-      "health": 420,
-      "attack": 69,
+      "health": 800,
+      "attack": 50,
       "defence": 96
     },
     {
@@ -137,8 +138,8 @@
       "gear_location": 4,
       "quantity": 1,
       "stackable": false,
-      "health": 420,
-      "attack": 69,
+      "health": 300,
+      "attack": 200,
       "defence": 96
     },
     {
@@ -148,7 +149,7 @@
       "description": "Dragon slayer walker",
       "rarity": 5,
       "item_type": 3,
-      "gear_location": 4,
+      "gear_location": 0,
       "quantity": 1,
       "stackable": false,
       "health": 1500,
@@ -162,7 +163,7 @@
       "description": "Dragon slayer walker",
       "rarity": 5,
       "item_type": 3,
-      "gear_location": 4,
+      "gear_location": 1,
       "quantity": 1,
       "stackable": false,
       "health": 1500,
@@ -175,8 +176,8 @@
       "name": "White Dragon Sword",
       "description": "Dragon slayer walker",
       "rarity": 5,
-      "item_type": 3,
-      "gear_location": 4,
+      "item_type": 2,
+      "gear_location": 2,
       "quantity": 1,
       "stackable": false,
       "health": 1500,
@@ -190,7 +191,7 @@
       "description": "Dragon slayer walker",
       "rarity": 5,
       "item_type": 3,
-      "gear_location": 4,
+      "gear_location": 3,
       "quantity": 1,
       "stackable": false,
       "health": 1500,
@@ -365,7 +366,6 @@
       "attack": 200,
       "defence": 200
     },
-
     {
       "UID": "ygvrfc9",
       "ID": 26,

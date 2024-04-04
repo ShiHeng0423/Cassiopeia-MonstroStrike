@@ -1,6 +1,7 @@
 #include "GameState_Mainmenu.h"
 #include "Utils.h"
 #include "GameStateManager.h"
+#include "Inventory.h"
 #include "main.h"
 #include "TextPrinting.h"
 
@@ -287,7 +288,8 @@ void Mainmenu_Update()
 		case CurrentScene::OPTION_SCENE:
 			for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
 			{
-				if (AETestPointToRect(&mousePos, &interactableButtonOption[i].pos, interactableButtonOption[i].scale.x, interactableButtonOption[i].scale.y))
+				if (AETestPointToRect(&mousePos, &interactableButtonOption[i].pos, interactableButtonOption[i].scale.x,
+				                      interactableButtonOption[i].scale.y))
 					interactableButtonOption[i].Ptr();
 			}
 			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
@@ -324,154 +326,153 @@ void Mainmenu_Draw()
 	switch (currScene)
 	{
 	case CurrentScene::MAIN_SCENE:
-	{
-		for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 		{
-			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-			AEGfxSetTransform(interactableButtonMainMenu[i].transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
+			{
+				AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+				AEGfxSetTransform(interactableButtonMainMenu[i].transform.m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
+			f32 width, height;
+			//const char* testText = "Did you know? Mejiro Mcqueen is my first UD horse? HAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHAH";
+			//PrintTextOverTime(testText, 0.01f, -1.f, 0.f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, pFont, printedCharVec, & printTimer);
+			////AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
+
+			auto pText = "Start";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
+
+			auto pText1 = "Load";
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
+
+			auto pText2 = "Credit";
+			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
+
+			auto pText3 = "Controls";
+			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
+
+			auto pText4 = "Options";
+			AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
+
+			auto pText5 = "Quit";
+			AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
+			break;
 		}
-
-		f32 width, height;
-		//const char* testText = "Did you know? Mejiro Mcqueen is my first UD horse? HAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHAH";
-		//PrintTextOverTime(testText, 0.01f, -1.f, 0.f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, pFont, printedCharVec, & printTimer);
-		////AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
-
-		auto pText = "Start";
-		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
-
-		auto pText1 = "Load";
-		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
-
-		auto pText2 = "Credit";
-		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
-
-		auto pText3 = "Controls";
-		AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
-
-		auto pText4 = "Options";
-		AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
-
-		auto pText5 = "Quit";
-		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
-		break;
-	}
 	case CurrentScene::CREDIT_SCENE:
-	{
-		AEGfxTextureSet(optionbackground.pTex, 0, 0);
-		AEGfxSetTransform(optionbackground.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(backButton.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
-
-		const char* pText = "Back";
-		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	case CurrentScene::CONTROL_SCENE:
-	{
-		AEGfxTextureSet(optionbackground.pTex, 0, 0);
-		AEGfxSetTransform(optionbackground.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(gameControls.pTex, 0, 0);
-		AEGfxSetTransform(gameControls.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(backButton.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		f32 width, height;
-
-		auto pText = "Back";
-		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
-		break;
-	}
-	case CurrentScene::OPTION_SCENE:
-	{
-		AEGfxTextureSet(optionbackground.pTex, 0, 0);
-		AEGfxSetTransform(optionbackground.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-
-		for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
 		{
-			AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
-			AEGfxSetTransform(interactableButtonOption[i].transform.m);
+			AEGfxTextureSet(optionbackground.pTex, 0, 0);
+			AEGfxSetTransform(optionbackground.transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			AEGfxTextureSet(backButton.pTex, 0, 0);
+			AEGfxSetTransform(backButton.transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			f32 width, height;
+
+			auto pText = "Back";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+			break;
 		}
-		AEGfxTextureSet(backButton.pTex, 0, 0);
-		AEGfxSetTransform(backButton.transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-
-		for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
+	case CurrentScene::CONTROL_SCENE:
 		{
-			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-			AEGfxSetTransform(optionBackgroundBar[i].transform.m);
-			AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
+			AEGfxTextureSet(optionbackground.pTex, 0, 0);
+			AEGfxSetTransform(optionbackground.transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			AEGfxTextureSet(gameControls.pTex, 0, 0);
+			AEGfxSetTransform(gameControls.transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			AEGfxTextureSet(backButton.pTex, 0, 0);
+			AEGfxSetTransform(backButton.transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+			f32 width, height;
+
+			auto pText = "Back";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+			break;
 		}
-
-		for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
+	case CurrentScene::OPTION_SCENE:
 		{
-			AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
-			AEGfxSetTransform(optionSoundBar[i].transform.m);
+			AEGfxTextureSet(optionbackground.pTex, 0, 0);
+			AEGfxSetTransform(optionbackground.transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+			for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
+			{
+				AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
+				AEGfxSetTransform(interactableButtonOption[i].transform.m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+			AEGfxTextureSet(backButton.pTex, 0, 0);
+			AEGfxSetTransform(backButton.transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 			AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
+			for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
+			{
+				AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+				AEGfxSetTransform(optionBackgroundBar[i].transform.m);
+				AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
+			for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
+			{
+				AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
+				AEGfxSetTransform(optionSoundBar[i].transform.m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+				AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+			}
+
+			f32 width, height;
+
+			auto pText = "BGM";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
+
+			auto pText1 = "SFX";
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
+
+			auto pText2 = "Back";
+			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+			break;
 		}
-
-		f32 width, height;
-
-		auto pText = "BGM";
-		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
-
-		auto pText1 = "SFX";
-		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
-
-		auto pText2 = "Back";
-		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
-		break;
-
-	}
 	case CurrentScene::QUIT_SCENE:
-	{
-		AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
-		AEGfxSetTransform(confirmationButtion[0].transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		{
+			AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
+			AEGfxSetTransform(confirmationButtion[0].transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
-		AEGfxSetTransform(confirmationButtion[1].transform.m);
-		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
+			AEGfxSetTransform(confirmationButtion[1].transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		f32 width, height;
+			f32 width, height;
 
-		auto pText = "Yes";
-		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+			auto pText = "Yes";
+			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 
-		auto pText1 = "No";
-		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-		AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-		break;
-	}
+			auto pText1 = "No";
+			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+			AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+			break;
+		}
 	default:
 		break;
 	}
@@ -501,10 +502,15 @@ void BackMainMenu()
 void GoNewGameLevel1()
 {
 	next = GameStates::GAME_LOBBY;
+	Inventory::isNewAccount = true;
 }
 
 void GoLoadSaveLevel()
 {
+	next = GAME_LOBBY;
+	Inventory::isNewAccount = false;
+
+	//Need to check if got available account?
 }
 
 void GoCreditScene()

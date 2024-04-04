@@ -1,0 +1,118 @@
+{
+  "map": 2,
+
+  "items": [
+    {
+      "UID": "ahi2bfi2",
+      "ID": 0,
+      "name": "Basic Helmet",
+      "description": "Just enough to protect you@right?",
+      "rarity": 1,
+      "item_type": 3,
+      "gear_location": 0,
+      "quantity": 1,
+      "stackable": false,
+      "health": 200,
+      "attack": 10,
+      "defence": 0
+    },
+    {
+      "UID": "ahi2bdsf2",
+      "ID": 1,
+      "name": "Basic Torso",
+      "description": "Popular among new adventurers.@Hope it protects you well!",
+      "rarity": 1,
+      "item_type": 3,
+      "gear_location": 1,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 10,
+      "defence": 0
+    },
+    {
+      "UID": "asfag",
+      "ID": 2,
+      "name": "small basic sword",
+      "description": "Same size as a banana,@is it a banana?",
+      "rarity": 1,
+      "item_type": 2,
+      "gear_location": 2,
+      "quantity": 1,
+      "stackable": false,
+      "health": 50,
+      "attack": 200,
+      "defence": 0
+    },
+    {
+      "UID": "kjhjbdsf2",
+      "ID": 3,
+      "name": "Basic Leggings",
+      "description": "Sacrificing protection for@mobility. You only live once.@Right?",
+      "rarity": 1,
+      "item_type": 3,
+      "gear_location": 3,
+      "quantity": 1,
+      "stackable": false,
+      "health": 150,
+      "attack": 20,
+      "defence": 96
+    },
+    {
+      "UID": "34jgdsf2",
+      "ID": 4,
+      "name": "Basic Boots",
+      "description": "Clank, clank, clank. @Your enemies might hear you@before they see you...",
+      "rarity": 1,
+      "item_type": 3,
+      "gear_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 69,
+      "defence": 96
+    },
+    {
+      "UID": "aqad112341ssssss",
+      "ID": 15,
+      "name": "Merlion saliva",
+      "description": "Doesn't age like fine wine",
+      "rarity": 2,
+      "item_type": 5,
+      "gear_location": 5,
+      "quantity": 5,
+      "stackable": true,
+      "health": 300,
+      "attack": 0,
+      "defence": 30
+    },
+    {
+      "UID": "asfnjjj",
+      "ID": 24,
+      "name": "Banana",
+      "description": "Is there a banana god?",
+      "rarity": 1,
+      "item_type": 4,
+      "gear_location": 5,
+      "quantity": 5,
+      "stackable": true,
+      "health": 100,
+      "attack": 50,
+      "defence": 50
+    },
+    {
+      "UID": "kasdh23n9",
+      "ID": 25,
+      "name": "Lychee",
+      "description": "Sweet & hairy",
+      "rarity": 1,
+      "item_type": 4,
+      "gear_location": 5,
+      "quantity": 5,
+      "stackable": true,
+      "health": 200,
+      "attack": 200,
+      "defence": 200
+    }
+  ]
+}

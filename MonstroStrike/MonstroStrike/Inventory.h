@@ -19,11 +19,18 @@
 #include <vector>
 
 #include "AEEngine.h"
+#include "GameStateManager.h"
 #include "Player.h"
 #include "Utils.h"
 
 #include "rapidjson/document.h"
 // ---------------------------------------------------------------------------
+
+enum Account_Slot
+{
+	ACC_NEW_SLOT = 0,
+	ACC_SLOT_1,
+};
 
 
 enum Item_Type
@@ -105,7 +112,7 @@ extern ButtonGearUI itemDisplayBackground;
 extern ButtonGearUI item_background[25];
 
 //Textures
-extern AEGfxTexture* Gear[28];
+extern AEGfxTexture* Gear[29];
 extern AEGfxTexture* blank;
 
 
@@ -114,6 +121,10 @@ extern AEGfxTexture* blank;
 
 namespace Inventory
 {
+	extern bool isNewAccount;
+	extern GameStates fileLoadedState;
+
+
 	extern bool inventoryOpen;
 	extern bool itemHover;
 	extern std::vector<Item> allItems; //list of all items in game
