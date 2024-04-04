@@ -974,13 +974,14 @@ namespace Inventory
 	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
 	{
 		// Reset player's stats to base values
-		playerReference->GetMaxHealth() = 0.f;
+		//playerReference->GetMaxHealth() = 0.f;
 		playerReference->GetWeaponSet().damage = 0.f;
 
 		for (auto gear : equippedItems)
 		{
 			playerReference->GetMaxHealth() += (f32)gear.health;
 			playerReference->GetWeaponSet().damage += (f32)gear.attack;
+			std::cout << "ATK: " << gear.attack << std::endl;
 
 		}
 	}

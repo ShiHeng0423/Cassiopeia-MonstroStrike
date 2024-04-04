@@ -65,6 +65,7 @@ public:
 	bool& GetPlayerPoisoned();
 	bool& GetPlayerSlowed();
 	bool& GetPlayerJustDied();
+	bool& GetPlayerHeldCombo();
 
 	
 	void OnPlayerDeath();
@@ -101,7 +102,7 @@ private:
 	float comboTime;
 	int comboTrig;
 	int comboState;
-	bool heldCombo = false;
+	bool heldCombo;
 	bool isAttacking;
 
 	//is Player currently interacting with NPC

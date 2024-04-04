@@ -31,12 +31,7 @@ namespace
 	//User Health
 	AEGfxVertexList* pMeshRedBar;
 	AEGfxTexture* HealthBorder;
-	AEGfxTexture* swordthrustTex;
-	AEGfxTexture* revswordthrustTex;
-	AEGfxTexture* swordmultithrustTex;
-	AEGfxTexture* revswordmultithrustTex;
-	AEGfxTexture* swordslashTex;
-	AEGfxTexture* revswordslashTex;
+
 
 #pragma endregion UserInterface
 
@@ -67,13 +62,6 @@ void Level1_A_Load()
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
-	
-	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
-	revswordthrustTex = AEGfxTextureLoad("Assets/Sword thrustrev.png");
-	swordmultithrustTex = AEGfxTextureLoad("Assets/sword mutiple thrust.png");
-	revswordmultithrustTex = AEGfxTextureLoad("Assets/Swordmutiplethrustrev.png");
-	swordslashTex = AEGfxTextureLoad("Assets/SwordSlash.png");
-	revswordslashTex = AEGfxTextureLoad("Assets/Sword Slashrev.png");
 
 	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
 	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
@@ -290,42 +278,6 @@ void Level1_A_Draw()
 	//drawing enemy
 	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
 
-
-#pragma region is_attacking
-	
-
-	if (player->GetIsPlayerAttacking())
-	{
-		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
-		AEGfxTexture* weaponTexture = nullptr;
-
-		if (player->equippedWeapon.name == "Short-Sword")
-		{
-			if (player->heldCombo)
-				weaponTexture = player->isFacingRight ? swordmultithrustTex : revswordmultithrustTex;
-			else
-				weaponTexture = player->isFacingRight ? swordthrustTex : revswordthrustTex;
-		}
-		else
-		{
-			weaponTexture = player->isFacingRight ? swordslashTex : revswordslashTex;
-		}
-
-		if (weaponTexture != nullptr)
-		{
-			AEGfxTextureSet(weaponTexture, 0, 0);
-			AEGfxSetTransform(ObjectTransformationMatrixSet(player->equippedWeapon.position.x,
-				player->equippedWeapon.position.y, 0.f,
-				player->equippedWeapon.scale.x,
-				player->equippedWeapon.scale.y).m);
-
-			AEGfxMeshDraw(pMeshWep, AE_GFX_MDM_TRIANGLES);
-		}
-
-		player->isAttacking = false;
-	}
-#pragma endregion
-
 #pragma region Game_UI_Render
 
 	player->RenderPlayerStatUI();
@@ -399,12 +351,6 @@ void Level1_A_Unload()
 
 	UnloadTrapsTexture();
 
-	AEGfxTextureUnload(swordthrustTex);
-	AEGfxTextureUnload(revswordthrustTex);
-	AEGfxTextureUnload(swordmultithrustTex);
-	AEGfxTextureUnload(revswordmultithrustTex);
-	AEGfxTextureUnload(swordslashTex);
-    AEGfxTextureUnload(revswordslashTex);
 
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);

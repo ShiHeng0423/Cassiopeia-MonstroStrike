@@ -266,7 +266,7 @@ bool MissionSystem::CheckMissionClear()
 
 int MissionSystem::FindItemID(const std::string& itemName)
 {
-	for (size_t i = 0; i < fullInventoryList.size(); ++i)
+	for (int i = 0; i < (int)fullInventoryList.size(); ++i)
 	{
 		if (fullInventoryList[i].name == itemName)
 		{

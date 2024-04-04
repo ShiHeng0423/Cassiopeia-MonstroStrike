@@ -26,14 +26,6 @@ namespace
 	auto currentTime = Clock::now();
 	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
 
-bool undealtTriggerInput = false; // identifier
-bool isReleased = true;
-bool if_first_input = false;
-
-auto triggeredTime = Clock::now();
-auto releasedTime = Clock::now();
-auto comboTime = Clock::now();
-
 #pragma region AnimationQueue
 
 
@@ -44,7 +36,7 @@ auto comboTime = Clock::now();
 	bool undealtTriggerInput = false; // identifier
 	bool isReleased = true;
 	bool if_first_input = false;
-
+	
 	auto triggeredTime = Clock::now();
 	auto releasedTime = Clock::now();
 	auto comboTime = Clock::now();
@@ -64,6 +56,13 @@ auto comboTime = Clock::now();
 	AEGfxTexture* se_Regen;
 	AEGfxTexture* se_Lifesteal;
 
+	//Attack animation
+	AEGfxTexture* swordthrustTex;
+	AEGfxTexture* revswordthrustTex;
+	AEGfxTexture* swordmultithrustTex;
+	AEGfxTexture* revswordmultithrustTex;
+	AEGfxTexture* swordslashTex;
+	AEGfxTexture* revswordslashTex;
 }
 
 
@@ -78,6 +77,14 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	se_Burning = AEGfxTextureLoad("Assets/StatusEffects/Status_BurningEffect.png");
 	se_Regen = AEGfxTextureLoad("Assets/StatusEffects/Status_Regen.png");
 	se_Lifesteal = AEGfxTextureLoad("Assets/StatusEffects/Status_LifeSteal.png");
+
+	//Jian Wei (Moved from level 1 to player by Johny)
+	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
+	revswordthrustTex = AEGfxTextureLoad("Assets/Sword thrustrev.png");
+	swordmultithrustTex = AEGfxTextureLoad("Assets/sword mutiple thrust.png");
+	revswordmultithrustTex = AEGfxTextureLoad("Assets/Swordmutiplethrustrev.png");
+	swordslashTex = AEGfxTextureLoad("Assets/SwordSlash.png");
+	revswordslashTex = AEGfxTextureLoad("Assets/Sword Slashrev.png");
 
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
 	pMeshRed = GenerateSquareMesh(0xFFFF0000);
@@ -96,6 +103,7 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	isPoisoned = false;
 	isSlowed = false;
 	justDied = false;
+	heldCombo = false;
 
 	AEVec2Set(&velocity, 0.f, 0.f); //Begin with no velocity	
 
@@ -147,6 +155,15 @@ Player::~Player()
 
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pWhiteSquareMesh);
+
+	//Jian Wei (Moved from Level 1 to player by Johny)
+	AEGfxTextureUnload(swordthrustTex);
+	AEGfxTextureUnload(revswordthrustTex);
+	AEGfxTextureUnload(swordmultithrustTex);
+	AEGfxTextureUnload(revswordmultithrustTex);
+	AEGfxTextureUnload(swordslashTex);
+	AEGfxTextureUnload(revswordslashTex);
+
 }
 
 void Player::Update(bool isInventoryOpen)
@@ -267,33 +284,18 @@ void Player::Update(bool isInventoryOpen)
 		//reset
 		if (!undealtTriggerInput)
 		{
-			::elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
-			if (::elapsedTime > comboWindowDuration)
+			elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
+			if (elapsedTime > comboWindowDuration)
 			{
-				player.heldCombo = true;
-				f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-				UpdateWeaponHitBoxHeld(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-				player.comboState = 0;
-				player.isAttacking = true;
+				weaponSet.weaponHIT = false;
+				comboState = 0;
+				comboTime = 0.f;
+				isAttacking = false;
 			}
-			comboTime = Clock::now();
-			undealtTriggerInput = false;
-			player.heldCombo = false;
-			isAttacking = false;
-			weaponSet.weaponHIT = false;
-			comboTime = 0.0f; // Reset combo time
-			comboState = 0;   // Reset combo state
 		}
 		if (undealtTriggerInput)
 		{
-			f32 attackProgress = 1.0f - (player.attackTime / comboWindowDuration);
-			UpdateWeaponHitBoxTrig(&player, player.isFacingRight, &player.equippedWeapon, attackProgress);
-			player.isAttacking = true;
-			
-
-			if (player.comboState < 2)
-			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
-				1000.0; // Convert to seconds
+			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
 				
 			if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
 			{
@@ -306,8 +308,9 @@ void Player::Update(bool isInventoryOpen)
 				}
 				::comboTime = Clock::now();
 				undealtTriggerInput = false;
-
+				heldCombo = false;
 			}
+
 			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 			{
 				f32 attackProgress = 1.0f - (attackTime / comboWindowDuration);
@@ -399,6 +402,40 @@ void Player::RenderPlayer()
 	{
 		AEGfxSetColorToMultiply(0.4f, 0.4f, 0.4f, 1.f);
 	}
+
+#pragma region is_attacking
+
+	if (isAttacking)
+	{
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTexture* weaponTexture = nullptr;
+
+		if (weaponSet.name == "Short-Sword")
+		{
+			if (heldCombo)
+				weaponTexture = isFacingRight ? swordmultithrustTex : revswordmultithrustTex;
+			else
+				weaponTexture = isFacingRight ? swordthrustTex : revswordthrustTex;
+		}
+		else
+		{
+			weaponTexture = isFacingRight ? swordslashTex : revswordslashTex;
+		}
+
+		if (weaponTexture != nullptr)
+		{
+			AEGfxTextureSet(weaponTexture, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(weaponSet.position.x,
+				weaponSet.position.y, 0.f,
+				weaponSet.scale.x,
+				weaponSet.scale.y).m);
+
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		isAttacking = false;
+	}
+#pragma endregion
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(obj.pTex, 0, 0);
@@ -776,6 +813,11 @@ bool& Player::GetIsPlayerKillBoss()
 bool& Player::GetPlayerJustDied()
 {
 	return justDied;
+}
+
+bool& Player::GetPlayerHeldCombo()
+{
+	return heldCombo;
 }
 
 void Player::OnPlayerDeath() {

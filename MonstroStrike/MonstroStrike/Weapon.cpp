@@ -520,8 +520,11 @@ namespace Weapon_System
         if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.collisionBox)) //Success
         {
             theEnemy.health -= (int)playerEquip->damage;
+
             std::cout << "Attack landed" << std::endl;
             std::cout << theEnemy.health << std::endl;
+            std::cout << "Held Damage: " << playerEquip->damage;
+
 
 
             playerEquip->weaponHIT = true;
