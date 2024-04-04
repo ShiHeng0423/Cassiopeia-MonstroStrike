@@ -10,6 +10,9 @@ enum GridTypes
     DIAGONAL_PLATFORM_POS = 4,
     LAVA_GRID = 5,
 
+    RETURN_PORTAL_GRID = 6,
+
+
     //NPC Positions grid,
     NPC_BLACKSMITH_A_POS = 10,
     NPC_BLACKSMITH_B_POS = 11,
@@ -19,6 +22,13 @@ enum GridTypes
     ENEMY_CHARGER_POS = 20,
     ENEMY_FLY_POS = 21,
     ENEMY_SLIME_POS = 22,
+
+    //Level gimmicks grid
+    TRAPS_POISON_ARROW_GRID = 30,
+    TRAPS_SLOWNESS_ARROW_GRID = 31,
+    TRAPS_FIRE_CIRCLE_GRID = 32,
+    TRAPS_ROTATING_SAW_GRID = 33,
+
 
     //Player positions
     PLAYER_POS_GRID_1 = 91,

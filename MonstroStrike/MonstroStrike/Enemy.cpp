@@ -233,7 +233,53 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	}
 //(update bullet)---------------------------------------------------------------------------------------
 
-//(update drops)---------------------------------------------------------------------------------------
+
+	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
+
+	if (!enemy.isFlying) {
+		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce);
+	}
+
+	switch (enemy.enemyType) {
+	case ENEMY_JUMPER:
+		ENEMY_JUMPER_Update(enemy, player, vecCollectables);
+		break;
+	case ENEMY_CHARGER:
+		ENEMY_CHARGER_Update(enemy, player, vecCollectables);
+		break;
+	case ENEMY_FLY:
+		ENEMY_FLY_Update(enemy, player, vecCollectables);
+		break;
+	case ENEMY_BOSS1:
+		ENEMY_BOSS_Update(enemy, player, vecCollectables);
+		break;
+	}
+
+
+	//main body collision box
+	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.scale.x * 0.5f;
+	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.scale.y * 0.5f;
+	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.scale.x * 0.5f;
+	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.scale.y * 0.5f;
+
+	f32 verticalOffset = enemy.obj.scale.y * 0.05f;
+	//Vertical
+	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
+	enemy.boxHeadFeet.minimum.y -= verticalOffset;
+	enemy.boxHeadFeet.maximum.y += verticalOffset;
+
+	f32 horizontalOffset = enemy.obj.scale.x * 0.02f;
+	//Horizontal
+	enemy.boxArms = enemy.collisionBox;
+	enemy.boxArms.minimum.x -= horizontalOffset;
+	enemy.boxArms.maximum.x += horizontalOffset;
+}
+
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
+
+	//(update drops)---------------------------------------------------------------------------------------
 	std::vector<EnemyDrops>::iterator it = vecCollectables.begin();
 
 	// Iterate over the vector
@@ -273,53 +319,8 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 			++it;
 		}
 	}
-//(update drops)---------------------------------------------------------------------------------------
+	//(update drops)---------------------------------------------------------------------------------------
 
-
-	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
-	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
-	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
-
-	if (!enemy.isFlying) {
-		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
-	}
-
-	switch (enemy.enemyType) {
-	case ENEMY_JUMPER:
-		ENEMY_JUMPER_Update(enemy, player, vecCollectables);
-		break;
-	case ENEMY_CHARGER:
-		ENEMY_CHARGER_Update(enemy, player, vecCollectables);
-		break;
-	case ENEMY_FLY:
-		ENEMY_FLY_Update(enemy, player, vecCollectables);
-		break;
-	case ENEMY_BOSS1:
-		ENEMY_BOSS_Update(enemy, player, vecCollectables);
-		break;
-	}
-
-
-	//main body collision box
-	enemy.collisionBox.minimum.x = enemy.obj.pos.x - enemy.obj.scale.x * 0.5f;
-	enemy.collisionBox.minimum.y = enemy.obj.pos.y - enemy.obj.scale.y * 0.5f;
-	enemy.collisionBox.maximum.x = enemy.obj.pos.x + enemy.obj.scale.x * 0.5f;
-	enemy.collisionBox.maximum.y = enemy.obj.pos.y + enemy.obj.scale.y * 0.5f;
-
-	f32 verticalOffset = enemy.obj.scale.y * 0.05f;
-	//Vertical
-	enemy.boxHeadFeet = enemy.collisionBox; // Get original collision box size
-	enemy.boxHeadFeet.minimum.y -= verticalOffset;
-	enemy.boxHeadFeet.maximum.y += verticalOffset;
-
-	f32 horizontalOffset = enemy.obj.scale.x * 0.02f;
-	//Horizontal
-	enemy.boxArms = enemy.collisionBox;
-	enemy.boxArms.minimum.x -= horizontalOffset;
-	enemy.boxArms.maximum.x += horizontalOffset;
-}
-
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
 	for (Enemy& enemy : vecEnemyVar)
 	{
 		if (enemy.isAlive)
@@ -338,8 +339,7 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 
 			ResolveVerticalCollision(enemy.boxHeadFeet, gridBoxAABB,
 				&enemy.collisionNormal, &enemy.obj.pos,
-				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
-				&enemy.isFalling);
+				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
 		}
 		//Check horizontal box (Left arm -> Right arm)
 		if (AABBvsAABB(enemy.boxArms, gridBoxAABB))

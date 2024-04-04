@@ -26,6 +26,9 @@ namespace
 	auto currentTime = Clock::now();
 	auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastInputTime).count() / 1000.0; // Convert to seconds
 
+#pragma region AnimationQueue
+
+
 	constexpr f32 comboWindowDuration = 1.0f;
 	constexpr f32 PRESS_THRESHOLD = 0.5f;
 	//Attack hold and atack release
@@ -33,7 +36,7 @@ namespace
 	bool undealtTriggerInput = false; // identifier
 	bool isReleased = true;
 	bool if_first_input = false;
-
+	
 	auto triggeredTime = Clock::now();
 	auto releasedTime = Clock::now();
 	auto comboTime = Clock::now();
@@ -44,14 +47,48 @@ namespace
 	//meshes
 	AEGfxVertexList* pMeshRed;
 	AEGfxVertexList* pWhiteSquareMesh;
+
 	AEGfxTexture* HealthBorder;
+	AEGfxTexture* gearDisplayBorder;
+
+	//status effect sprite
+	AEGfxTexture* se_Burning;
+	AEGfxTexture* se_Regen;
+	AEGfxTexture* se_Lifesteal;
+
+	//Attack animation
+	AEGfxTexture* swordthrustTex;
+	AEGfxTexture* revswordthrustTex;
+	AEGfxTexture* swordmultithrustTex;
+	AEGfxTexture* revswordmultithrustTex;
+	AEGfxTexture* swordslashTex;
+	AEGfxTexture* revswordslashTex;
 }
 
 
 Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRight)
 {
+	//Meshes & Texture
+	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
 	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
 	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
+	gearDisplayBorder = AEGfxTextureLoad("Assets/panel_brown.png");
+
+	se_Burning = AEGfxTextureLoad("Assets/StatusEffects/Status_BurningEffect.png");
+	se_Regen = AEGfxTextureLoad("Assets/StatusEffects/Status_Regen.png");
+	se_Lifesteal = AEGfxTextureLoad("Assets/StatusEffects/Status_LifeSteal.png");
+
+	//Jian Wei (Moved from level 1 to player by Johny)
+	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
+	revswordthrustTex = AEGfxTextureLoad("Assets/Sword thrustrev.png");
+	swordmultithrustTex = AEGfxTextureLoad("Assets/sword mutiple thrust.png");
+	revswordmultithrustTex = AEGfxTextureLoad("Assets/Swordmutiplethrustrev.png");
+	swordslashTex = AEGfxTextureLoad("Assets/SwordSlash.png");
+	revswordslashTex = AEGfxTextureLoad("Assets/Sword Slashrev.png");
+
+	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
+	pMeshRed = GenerateSquareMesh(0xFFFF0000);
+
 	obj.speed = speed;
 
 	AEVec2Set(&obj.pos, location.x, location.y);
@@ -59,8 +96,15 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 
 	//Gravity affection
 	mass = 60.f;
+	friction = 0.85f;
+
 	onFloor = true; //Set as false first, will be set as true when ground detected
-	isFalling = false;
+	killedBoss = false;
+	isPoisoned = false;
+	isSlowed = false;
+	justDied = false;
+	heldCombo = false;
+
 	AEVec2Set(&velocity, 0.f, 0.f); //Begin with no velocity	
 
 	//camera
@@ -92,11 +136,10 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	maxHealth = 100.f;
 	currHealth = maxHealth;
 	attack = 100.f;
+	currStatusMaxCD = 3.f;
+	currStatusCD = currStatusMaxCD;
 
-	//Meshes & Texture
-	HealthBorder		= AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
-	pWhiteSquareMesh	= GenerateSquareMesh(0xFFFFFFFF);
-	pMeshRed			= GenerateSquareMesh(0xFFFF0000);
+
 }
 
 Player::~Player()
@@ -104,9 +147,23 @@ Player::~Player()
 	AEGfxTextureUnload(FacingRight);
 	AEGfxTextureUnload(FacingLeft);
 	AEGfxTextureUnload(HealthBorder);
+	AEGfxTextureUnload(gearDisplayBorder);
+
+	AEGfxTextureUnload(se_Burning);
+	AEGfxTextureUnload(se_Lifesteal);
+	AEGfxTextureUnload(se_Regen);
 
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pWhiteSquareMesh);
+
+	//Jian Wei (Moved from Level 1 to player by Johny)
+	AEGfxTextureUnload(swordthrustTex);
+	AEGfxTextureUnload(revswordthrustTex);
+	AEGfxTextureUnload(swordmultithrustTex);
+	AEGfxTextureUnload(revswordmultithrustTex);
+	AEGfxTextureUnload(swordslashTex);
+	AEGfxTextureUnload(revswordslashTex);
+
 }
 
 void Player::Update(bool isInventoryOpen)
@@ -164,7 +221,7 @@ void Player::Update(bool isInventoryOpen)
 
 	//For friction
 	if (onFloor) //Means confirm on floor
-		velocity.x *= 0.85f; //Friction application
+		velocity.x *= friction; //Friction application
 
 	//For jumping
 	if (AEInputCheckTriggered(VK_SPACE) && onFloor && !isInventoryOpen)
@@ -173,10 +230,11 @@ void Player::Update(bool isInventoryOpen)
 		velocity.y = 700.f;		
 		ParticleEmit(10, obj.pos.x, obj.pos.y,
 		obj.scale.x * 0.25f, obj.scale.y * 0.25f, 0.f, PARTICLE_JUMP, this);
+		//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 	}
 
 	//Apply Gravity
-	ApplyGravity(&velocity, mass, &onFloor, &gravityForce, &isFalling); //Velocity passed in must be modifiable, mass can be adjusted if needed to
+	ApplyGravity(&velocity, mass, &onFloor, &gravityForce); //Velocity passed in must be modifiable, mass can be adjusted if needed to
 
 	//Player position update
 	prevPos = obj.pos;
@@ -216,6 +274,7 @@ void Player::Update(bool isInventoryOpen)
 			undealtTriggerInput = true;
 			isReleased = false;
 			if_first_input = true;
+			//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 
 		}
 		if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
@@ -225,21 +284,19 @@ void Player::Update(bool isInventoryOpen)
 		//reset
 		if (!undealtTriggerInput)
 		{
-			::elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
-			if (::elapsedTime > comboWindowDuration)
+			elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - ::comboTime).count() / 1000.0; // Convert to seconds
+			if (elapsedTime > comboWindowDuration)
 			{
-				isAttacking = false;
 				weaponSet.weaponHIT = false;
-				comboTime = 0.0f; // Reset combo time
-				comboState = 0;   // Reset combo state
-
+				comboState = 0;
+				comboTime = 0.f;
+				isAttacking = false;
 			}
-
 		}
 		if (undealtTriggerInput)
 		{
-			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() /
-				1000.0; // Convert to seconds
+			auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - triggeredTime).count() / 1000.0; // Convert to seconds
+				
 			if (elapsedTime >= PRESS_THRESHOLD && !isReleased)
 			{
 				if (comboState == 2) //held
@@ -251,8 +308,9 @@ void Player::Update(bool isInventoryOpen)
 				}
 				::comboTime = Clock::now();
 				undealtTriggerInput = false;
-
+				heldCombo = false;
 			}
+
 			if (elapsedTime < PRESS_THRESHOLD && isReleased) //Trigger (Here is flag for initialization)
 			{
 				f32 attackProgress = 1.0f - (attackTime / comboWindowDuration);
@@ -280,6 +338,48 @@ void Player::Update(bool isInventoryOpen)
 
 	Armor_Effect_Update(*this);
 
+	if (isPoisoned)
+	{
+		if (currStatusCD > 0.f)
+		{
+			currStatusCD -= (f32)AEFrameRateControllerGetFrameTime();
+
+			// Apply damage over time every specified interval
+			const f32 damageInterval = 2.0f; 
+			static f32 timeSinceLastDamage = 0.0f;
+			timeSinceLastDamage += (f32)AEFrameRateControllerGetFrameTime();
+			if (timeSinceLastDamage >= damageInterval)
+			{
+				const f32 poisonDamage = 0.1f * currHealth;
+				currHealth -= poisonDamage;
+				if (currHealth < 1.f)
+				{
+					currHealth = 1.f;
+				}
+				timeSinceLastDamage = 0.0f; // Reset timer
+			}
+		}
+		else
+		{
+			isPoisoned = false; // Set status to false
+			currStatusCD = currStatusMaxCD; // Reset cooldown
+		}
+	}
+	if (isSlowed)
+	{
+		if (currStatusCD > 0.f)
+		{
+			currStatusCD -= (f32)AEFrameRateControllerGetFrameTime();
+			friction = 0.5f;
+		}
+		else
+		{
+			isSlowed = false; //Set status to false
+			friction = 0.85f;
+			currStatusCD = currStatusMaxCD; //reset cd
+		}
+	}
+
 	if (currHealth <= 0.f)
 	{
 		OnPlayerDeath();
@@ -289,43 +389,144 @@ void Player::Update(bool isInventoryOpen)
 //Render player sprite
 void Player::RenderPlayer()
 {
+	
+	if (isSlowed && isPoisoned)
+	{
+		AEGfxSetColorToMultiply(0.8f, 0.f, 0.f, 1.f);
+	}
+	else if (isPoisoned)
+	{
+		AEGfxSetColorToMultiply(0.7f, 0.f, 0.7f, 1.f);
+	}
+	else if (isSlowed)
+	{
+		AEGfxSetColorToMultiply(0.4f, 0.4f, 0.4f, 1.f);
+	}
+
+#pragma region is_attacking
+
+	if (isAttacking)
+	{
+		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+		AEGfxTexture* weaponTexture = nullptr;
+
+		if (weaponSet.name == "Short-Sword")
+		{
+			if (heldCombo)
+				weaponTexture = isFacingRight ? swordmultithrustTex : revswordmultithrustTex;
+			else
+				weaponTexture = isFacingRight ? swordthrustTex : revswordthrustTex;
+		}
+		else
+		{
+			weaponTexture = isFacingRight ? swordslashTex : revswordslashTex;
+		}
+
+		if (weaponTexture != nullptr)
+		{
+			AEGfxTextureSet(weaponTexture, 0, 0);
+			AEGfxSetTransform(ObjectTransformationMatrixSet(weaponSet.position.x,
+				weaponSet.position.y, 0.f,
+				weaponSet.scale.x,
+				weaponSet.scale.y).m);
+
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		isAttacking = false;
+	}
+#pragma endregion
+
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 	AEGfxTextureSet(obj.pTex, 0, 0);
 	AEGfxSetTransform(ObjectTransformationMatrixSet(obj.pos.x, obj.pos.y, 0.f, obj.scale.x, obj.scale.y).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	AEGfxSetColorToMultiply(1.f, 1.f, 1.f, 1.f); //Reset color multiplied
 }
 
 //Render Player Health bar and Current equipped weapons
 void Player::RenderPlayerStatUI()
 {
+	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+
+	AEGfxTextureSet(gearDisplayBorder, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() +200.f,
+		AEGfxGetWinMaxY() - 60.f, 0.f,
+		400.f, 120.f).m);
+	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
 	//Health Border
 	//AEGfxTextureSet(HealthBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + (int)maxHealth, AEGfxGetWinMaxY(), 0, (int)maxHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f, AEGfxGetWinMaxY() - 60.f, 0, 300.f, 25.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//Health Bar
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + (int)currHealth, AEGfxGetWinMaxY(), 0, (int)currHealth * 2.f, 80.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - (currHealth / maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0.f, (currHealth / maxHealth * 300.f), 25.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
-	//Health Text
-	std::string str = std::to_string((int)currHealth);
-	f32 width, height;
-	AEGfxGetPrintSize(fontID, str.c_str(), 0.5f, &width, &height);
-	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 0, 0, 0, 1);
-
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+
+	//Health Text
+	std::string str = "Player Stats";
+	f32 width, height;
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8f, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
+	
+	str = "HP";
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
+
+	str = "Buff";
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
+	
+	size_t buff_index = 0;
+	for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
+	{
+		switch (effect.first)
+		{
+		case Status_Effect_System::BURNING:
+			AEGfxTextureSet(se_Burning, 0, 0);
+			break;
+		case Status_Effect_System::LIFE_STEAL:
+			AEGfxTextureSet(se_Lifesteal, 0, 0);
+			break;
+		case Status_Effect_System::REGEN:
+			AEGfxTextureSet(se_Regen, 0, 0);
+			break;
+		default:
+			break;
+		}
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f + buff_index++ * 50.f, AEGfxGetWinMaxY() - 100.f, 0, 25.f, 25.f).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
+
+	str = std::to_string((int)currHealth) + "/" + std::to_string((int)maxHealth);
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.35f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.75f, -height / 2 + 0.865f, 0.35f, 0, 0, 0, 1);
+
+	AEGfxTextureSet(gearDisplayBorder, 0, 0);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f,
+		AEGfxGetWinMinY() + 60.f, 0.f,
+		450.f, 125.f).m);
+	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
 	int index = 1;
 	for (ButtonGearUI button : Inventory::equipmentDisplay)
 	{
 		AEGfxTextureSet(button.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 100.f * index++,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() -15.f+ 80.f * index++,
 			AEGfxGetWinMinY() + 50.f, 0.f,
-			button.img.scale.x, button.img.scale.y).m);
+			button.img.scale.x * 0.8f, button.img.scale.y * 0.8f).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 	}
-}	
+
+	str = "Gears Equipped";
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.85f, -height / 2 - 0.775f, 0.3f, 1, 1, 1, 1);
+}
 
 //Get Player Armor Set
 Armor_System::Armor_Set& Player::GetArmorSet()
@@ -363,6 +564,11 @@ f32& Player::GetCurrentHealth()
 	return currHealth;
 }
 
+f32& Player::GetFrictionOnPlayer()
+{
+	return friction;
+}
+
 int& Player::GetComboState()
 {
 	return comboState;
@@ -387,6 +593,16 @@ bool& Player::GetIsPlayerAttacking()
 bool& Player::GetIsTalkingToNpc()
 {
 	return isConversation;
+}
+
+bool& Player::GetPlayerPoisoned()
+{
+	return isPoisoned;
+}
+
+bool& Player::GetPlayerSlowed()
+{
+	return isSlowed;
 }
 
 
@@ -425,8 +641,7 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 						gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveVerticalCollision(boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
 						&collisionNormal, &obj.pos,
-						&velocity, &onFloor, &gravityForce,
-						&isFalling);
+						&velocity, &onFloor, &gravityForce);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)
@@ -543,6 +758,14 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 				{
 					OnPlayerDeath();
 				}
+				break;
+			case RETURN_PORTAL_GRID:
+				if (AABBvsAABB(collisionBox, gridMap[playerIndexY][playerIndexX].collisionBox) && killedBoss)
+				{
+					if (!transitionalImageOBJ.active)
+						transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+				}
+				break;
 			case EMPTY:
 				break;
 			}
@@ -582,16 +805,27 @@ f32& Player::GetGravityOnPlayer()
 	return gravityForce;
 }
 
-bool& Player::GetIsPlayerFalling()
+bool& Player::GetIsPlayerKillBoss()
 {
-	return isFalling;
+	return killedBoss;
+}
+
+bool& Player::GetPlayerJustDied()
+{
+	return justDied;
+}
+
+bool& Player::GetPlayerHeldCombo()
+{
+	return heldCombo;
 }
 
 void Player::OnPlayerDeath() {
 	//Return to lobby
 	if (!transitionalImageOBJ.active)
 	{
-		Player::GetCurrentHealth() = Player::GetMaxHealth();
 		transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, GAME_LOBBY);
+		GetCurrentHealth() = GetMaxHealth();
+		justDied = true;
 	}
 }

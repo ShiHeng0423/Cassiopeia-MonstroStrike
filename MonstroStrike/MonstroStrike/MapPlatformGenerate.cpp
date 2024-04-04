@@ -120,16 +120,24 @@ void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<s
 
 void PlatformCollision(Platforms& movingObject, Player& player)
 {
-	bool collided = false;
 	//Vertical
 	if (AABBvsAABB(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox)) {
 		player.GetPlayerCollisionNormal() = AABBNormalize(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox);
-
 		ResolveVerticalCollision(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox, &player.GetPlayerCollisionNormal(), &player.GetPlayerCurrentPosition(),
-			&player.GetPlayerVelocity(), &player.GetIsPlayerOnFloor(), &player.GetGravityOnPlayer(), &player.GetIsPlayerFalling());
+			&player.GetPlayerVelocity(), &player.GetIsPlayerOnFloor(), &player.GetGravityOnPlayer());
 
-		player.GetPlayerCurrentPosition().x += movingObject.velocity.x;
-		player.GetPlayerCurrentPosition().y += movingObject.velocity.y;
+		if (player.GetPlayerCollisionNormal().y == 1)
+		{
+			player.GetPlayerCurrentPosition().x += movingObject.velocity.x;
+			player.GetPlayerCurrentPosition().y += movingObject.velocity.y;
+		}
+		else if (player.GetPlayerCollisionNormal().y == -1)
+		{
+			if (movingObject.velocity.y <= 0.f) //Only moving down
+			{
+				player.GetPlayerCurrentPosition().y += movingObject.velocity.y * 5.f;
+			}
+		}
 	}
 
 	//Check horizontal box (Left arm -> Right arm)
@@ -147,20 +155,22 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 	//Check vertical box (Head + Feet) 
 	if (AABBvsAABB(enemy.boxHeadFeet, movingObject.collisionBox)) {
 
-		bool eCollided = false;
 		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
+			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
 
 		if (enemy.collisionNormal.y == 1) {
-			eCollided = true;
-		}
-		if (eCollided) {
 			enemy.obj.pos.x += movingObject.velocity.x;
 			enemy.obj.pos.y += movingObject.velocity.y;
 		}
-
+		else if (enemy.collisionNormal.y == -1)
+		{
+			if (movingObject.velocity.y <= 0.f)
+			{
+				enemy.obj.pos.y += movingObject.velocity.y * 5.f;
+			}
+		}
 	}
 	//Check horizontal box (Left arm -> Right arm)
 	if (AABBvsAABB(enemy.boxArms, movingObject.collisionBox)) {

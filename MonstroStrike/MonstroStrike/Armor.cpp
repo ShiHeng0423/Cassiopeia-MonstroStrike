@@ -9,7 +9,7 @@ void Armor_Effect_Update(class Player& player)
     player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
     switch (player.GetArmorSet().extraEffect)
     {
-    case Status_Effect_System::Armor_Status_Effect::BURNING:
+    case Status_Effect_System::Status_Effect::BURNING:
     {
         if (player.GetArmorSet().effectTimer < 0.f)
         {
@@ -18,7 +18,7 @@ void Armor_Effect_Update(class Player& player)
         }
         break;
     }
-    case Status_Effect_System::Armor_Status_Effect::REGEN:
+    case Status_Effect_System::Status_Effect::REGEN:
     {
         if (player.GetArmorSet().effectTimer < 0.f)
         {
@@ -67,6 +67,8 @@ f32 Check_Set_Effect(class Player& player)
     }
 
     int setID = Armor_System::ARMOR_GRADE::TIER_1;
+
+    Status_Effect_System::Status_Effect currEffect = player.GetArmorSet().extraEffect;
     while (setEffect > 0)
     {
         if (setEffect % 10 >= 2)
@@ -82,6 +84,27 @@ f32 Check_Set_Effect(class Player& player)
         }
         setID++;
         setEffect /= 10;
+    }
+    if (currEffect != player.GetArmorSet().extraEffect)
+    {
+        if (currEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)
+        {
+            size_t index = 0;
+            for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : player.playerStatusEffectList)
+            {
+                if (effect.second == Status_Effect_System::Status_Effect_Source::ARMOR)
+                {
+                    std::cout << index << std::endl;
+                    break;
+                }
+                index++;
+            }
+            player.playerStatusEffectList.erase(player.playerStatusEffectList.begin() + index);
+        }
+        if (player.GetArmorSet().extraEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)
+        {
+            player.playerStatusEffectList.push_back({ player.GetArmorSet().extraEffect, Status_Effect_System::Status_Effect_Source::ARMOR });
+        }
     }
 
     return bonusHealth;
@@ -179,7 +202,7 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 }
 
 
-f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Armor_Status_Effect& effect)
+f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect)
 {
     if (fullSetBonus)
     {
@@ -187,7 +210,7 @@ f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_Sy
         {
 
         case Armor_System::ARMOR_GRADE::TIER_1:
-            effect = Status_Effect_System::NONE_ARMOR_EFFECT;
+            effect = Status_Effect_System::NONE_EFFECT;
             return 80;
             break;
         case Armor_System::ARMOR_GRADE::TIER_2:
@@ -205,6 +228,7 @@ f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_Sy
     }
     else
     {
+        effect = Status_Effect_System::NONE_EFFECT;
         //half set bonus
         switch (armorSetID)
         {
@@ -222,7 +246,6 @@ f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_Sy
             break;
 
         }
-        effect = Status_Effect_System::NONE_ARMOR_EFFECT;
     }
 
     return 0;

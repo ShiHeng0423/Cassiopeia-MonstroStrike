@@ -1,15 +1,7 @@
 #pragma once
 #include "AEEngine.h"
-
-namespace Status_Effect_System
-{
-    enum Armor_Status_Effect {
-        BURNING,
-        REGEN,
-
-        NONE_ARMOR_EFFECT
-    };
-}
+#include "Player.h"
+#include "StatusEffect.h"
 
 namespace Armor_System
 {
@@ -40,7 +32,7 @@ namespace Armor_System
     struct Armor_Set
     {
         Armor pieces[4];
-        Status_Effect_System::Armor_Status_Effect extraEffect{ Status_Effect_System::Armor_Status_Effect::NONE_ARMOR_EFFECT };
+        Status_Effect_System::Status_Effect extraEffect{ Status_Effect_System::Status_Effect::NONE_EFFECT };
         f32 effectTimer{ 0.f };
     };
 }
@@ -48,7 +40,7 @@ namespace Armor_System
 
 Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System::ARMOR_GRADE grade);
 
-f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Armor_Status_Effect& effect);
+f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect);
 
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade);
 

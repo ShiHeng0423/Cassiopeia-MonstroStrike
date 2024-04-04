@@ -5,9 +5,11 @@
 #include "Armor.h"
 #include "Weapon.h"
 #include "CSVMapLoader.h"
+#include "StatusEffect.h"
+
+#include <vector>
 
 f32 const PlayerMaxBasehealth = 100.f;
-
 
 
 class Player {
@@ -55,12 +57,19 @@ public:
 	AEVec2& GetPlayerCollisionNormal();
 
 	f32& GetGravityOnPlayer();
-	
+	f32& GetFrictionOnPlayer();
+
 	bool& GetIsPlayerOnFloor();
-	bool& GetIsPlayerFalling();
+	bool& GetIsPlayerKillBoss();
 
+	bool& GetPlayerPoisoned();
+	bool& GetPlayerSlowed();
+	bool& GetPlayerJustDied();
+	bool& GetPlayerHeldCombo();
+
+	
 	void OnPlayerDeath();
-
+	std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
 private:
 
 	//Sprite Data
@@ -71,9 +80,16 @@ private:
 	AEVec2 velocity; //Added for movement - Johny
 	f32 mass;
 	f32 gravityForce;
+	f32 friction;
+
 	bool onFloor; //Added to check entity on floor, hence can jump
-	bool isFalling;
-	
+	bool killedBoss;
+	bool justDied;
+
+	//Status effects
+	bool isPoisoned;
+	bool isSlowed;
+
 	//Collision boxes
 	AEVec2 collisionNormal;
 	AABB prevcollisionBox;
@@ -86,11 +102,12 @@ private:
 	float comboTime;
 	int comboTrig;
 	int comboState;
+	bool heldCombo;
 	bool isAttacking;
 
 	//is Player currently interacting with NPC
 	bool isConversation;
-
+	
 	//Camera Follow
 	AEVec2 expectedLocation;
 	f32 lookAheadMutliplier;
@@ -100,6 +117,11 @@ private:
 	f32 maxHealth;
 	f32 currHealth;
 	f32 attack;
+	f32 currStatusCD;
+	f32 currStatusMaxCD;
+
+	//List Of Status Effect
+	//std::vector<std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source>> playerStatusEffectList;
 
 	//Player Armor & Weapon
 	Armor_System::Armor_Set armorSet;

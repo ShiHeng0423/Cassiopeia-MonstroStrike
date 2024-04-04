@@ -94,14 +94,12 @@ extern int playerInventoryCount;
 extern s16 snapBack;
 extern Player* playerReference;
 
-
-
-
 //Display
 extern ButtonGearUI inventoryBackground;
 extern ButtonGearUI inventoryButton[25];
 extern ButtonGearUI equipmentBackground;
 extern ButtonGearUI itemDisplayBackground;
+extern ButtonGearUI item_background[25];
 
 //Textures
 extern AEGfxTexture* Gear[25];
@@ -118,8 +116,7 @@ namespace Inventory
 	extern std::vector<Item> allItems; //list of all items in game
 	extern ButtonGearUI equipmentDisplay[5]; //Array of equipped display
 
-	//AEGfxVertexList* pWhiteSquareMesh;
-	extern ButtonGearUI displayItem;
+	extern ButtonGearUI displayItem;//Display item information
 
 
 	std::vector<Item> ReadJsonFile(const std::string& filepath);
@@ -127,15 +124,16 @@ namespace Inventory
 
 	void InitInventory();
 	void LoadInventory();
+
 	void UpdateInventory(const std::vector<Item>& inventory, ButtonGearUI button[]);
+	void UpdateInventoryUI();
 
-
-	void SwapInventory(Item& lhs, Item& rhs);
-	Item GetItemById(int id);
+	void DrawInventory(AEGfxVertexList* pWhiteSquareMesh);
 
 	void OpenInventory();
+	void SwapInventory(Item& lhs, Item& rhs);
 
-	//void DisplayItemInfo(const Item&);
+	Item GetItemById(int id);
 
 	void AddItem(const Item& item);
 	void ItemPickUp(Item& item);
@@ -143,9 +141,10 @@ namespace Inventory
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player);
 	void EquipToBody(Item obj);
+	void UnequipItem(Item obj);
 
 	void ApplyConsumableEffect(class Player& player, const Item& item);
-	void ApplyWeaponEffect(Player& player, const std::vector<Item>& equippedItems);
+	void UpdatePlayerGearStats(const std::vector<Item>& equippedItems);
 
 	void SaveInventory();
 	void FreeInventory();

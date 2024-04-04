@@ -132,10 +132,10 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="GameState_Level1_F.h" />
     <ClInclude Include="main.h" />
     <ClCompile Include="MapTransition.cpp" />
+    <ClCompile Include="MapTraps.cpp" />
     <ClCompile Include="MissionList.cpp" />
     <ClCompile Include="PauseMenuManager.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
-    <ClCompile Include="TextPrinting.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="MapPlatformGenerate.cpp" />
     <ClCompile Include="NonPlayableCharacters.cpp" />
@@ -144,7 +144,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="CSVMapLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Physics.cpp" />
-    <ClCompile Include="TriggerAttack.cpp" />
     <ClCompile Include="Weapon.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -155,7 +154,9 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyUtils.h" />
     <ClInclude Include="GameState_GameLobby.h" />
+    <ClInclude Include="MapTraps.h" />
     <ClInclude Include="MissionList.h" />
+    <ClInclude Include="StatusEffect.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
@@ -207,8 +208,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="rapidjson\uri.h" />
     <ClInclude Include="rapidjson\writer.h" />
     <ClInclude Include="GameState_SplashScreen.h" />
-    <ClInclude Include="TextPrinting.h" />
-    <ClInclude Include="TriggerAttack.h" />
     <ClInclude Include="Weapon.h" />
     <ClInclude Include="CollisionShape.h" />
     <ClInclude Include="CSVMapLoader.h" />
