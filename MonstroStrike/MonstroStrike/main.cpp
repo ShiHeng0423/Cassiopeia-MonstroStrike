@@ -53,6 +53,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	GSM_Initialize(GameStates::SPLASHSCREEN);
 	fontID = AEGfxCreateFont("Assets/liberation-mono.ttf", 72);
 	MapTransitionLoad(); //Placed here to share its usage for all the states (Similar logic to font)
+	GridTextureLoad(); //Placed here to share its usage for all states
+
 	audioManager = new AudioManager();
 	gameManager = new GameManager();
 	while (current != GameStates::QUIT)
@@ -66,9 +68,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			// Informing the system about the loop's start
 			AESysFrameStart();
+			gameManager->Update();
 			fpUpdate();
 			fpDraw();
-
+			gameManager->Render();
 			if (0 == AESysDoesWindowExist())
 				next = GameStates::QUIT;
 
@@ -82,6 +85,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	MapTransitionUnload();//Unload Map Transition image here
+	GridTextureUnload();
 	AEGfxDestroyFont(fontID);
 	missionSystem.CleanMemory();
 	delete audioManager;

@@ -1,3 +1,15 @@
+/*!************************************************************************
+  \file					EnemyFly.cpp
+  \project name			Monstrostrike
+  \primary author		Goh Jun Jie
+  \secondary author
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
+
+
 #include "Enemy.h"
 #include "EnemyUtils.h"
 #include "ParticleSystem.h"
@@ -22,7 +34,7 @@ void ENEMY_JUMPER_Update(Enemy& enemy, class Player& player, std::vector<EnemyDr
     if (enemy.isCollidedWithPlayer) {
         if (!enemy.hasDealtDmg) {
             enemy.hasDealtDmg = true;
-            player.GetCurrentHealth() -= 10;
+            player.DamageToPlayer(10);
         }
     }
     else {

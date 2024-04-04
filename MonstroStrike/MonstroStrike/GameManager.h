@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Player.h"
+#include "DebuggerManager.h"
 
 //game manager
 //hold player data
@@ -21,5 +22,8 @@ public:
 	void Render();
 
 private:
+	bool debuggerModeOn;
+
 	Player* player;
+	DebuggerManager* debug;
 };

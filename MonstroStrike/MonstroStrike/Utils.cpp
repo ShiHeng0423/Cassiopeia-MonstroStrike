@@ -46,6 +46,21 @@ void Button::UpdateTransformMatrix()
 	AEMtx33Concat(&transform, &translateMatrix, &transform);
 }
 
+void ButtonUI::UpdateTransformMatrix()
+{
+	AEMtx33 scaleMatrix = { 0 };
+	AEMtx33Scale(&scaleMatrix, scale.x, scale.y);
+
+	AEMtx33 rotateMatrix = { 0 };
+	AEMtx33Rot(&rotateMatrix, rotate);
+
+	AEMtx33 translateMatrix = { 0 };
+	AEMtx33Trans(&translateMatrix, pos.x, pos.y);
+
+	AEMtx33Concat(&transform, &rotateMatrix, &scaleMatrix);
+	AEMtx33Concat(&transform, &translateMatrix, &transform);
+}
+
 AEGfxVertexList* GenerateSquareMesh(u32 MeshColor)
 {
 	AEGfxMeshStart();

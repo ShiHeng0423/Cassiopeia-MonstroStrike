@@ -5,7 +5,8 @@ AudioManager::AudioManager()
 	// Loads a sound from a file named 'bouken.mp3' in the 'Assets' folder
 	// and assign it to 'bouken'.
 	audio[MAINMENU_SONG] = AEAudioLoadMusic("Assets/bouken.mp3");
-	audio[ATTACK_SLASH_SFX] = AEAudioLoadMusic("Assets/bouken.mp3");
+	audio[ATTACK_SLASH_SFX] = AEAudioLoadMusic("Assets/Audio/SFX/Attack.wav");
+	audio[REJECT_SFX] = AEAudioLoadMusic("Assets/Audio/SFX/Error.wav");
 
 	audio[INVENTORY_OPEN] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/inventory_open.mp3");
 	audio[ITEM_EQUIP] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_equip.mp3");

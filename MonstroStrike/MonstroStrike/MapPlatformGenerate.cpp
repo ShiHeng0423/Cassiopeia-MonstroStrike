@@ -124,7 +124,7 @@ void PlatformCollision(Platforms& movingObject, Player& player)
 	if (AABBvsAABB(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox)) {
 		player.GetPlayerCollisionNormal() = AABBNormalize(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox);
 		ResolveVerticalCollision(player.GetPlayerBoxHeadFeet(), movingObject.collisionBox, &player.GetPlayerCollisionNormal(), &player.GetPlayerCurrentPosition(),
-			&player.GetPlayerVelocity(), &player.GetIsPlayerOnFloor(), &player.GetGravityOnPlayer(), &player.GetIsPlayerFalling());
+			&player.GetPlayerVelocity(), &player.GetIsPlayerOnFloor(), &player.GetGravityOnPlayer());
 
 		if (player.GetPlayerCollisionNormal().y == 1)
 		{
@@ -158,7 +158,7 @@ void PlatformCollision(Platforms& movingObject, Enemy& enemy)
 		enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, movingObject.collisionBox);
 
 		ResolveVerticalCollision(enemy.boxHeadFeet, movingObject.collisionBox, &enemy.collisionNormal, &enemy.obj.pos,
-			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
+			&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
 
 		if (enemy.collisionNormal.y == 1) {
 			enemy.obj.pos.x += movingObject.velocity.x;

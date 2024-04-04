@@ -165,6 +165,9 @@
     <ClCompile Include="MapTraps.cpp">
       <Filter>Source Files\MapDesign</Filter>
     </ClCompile>
+    <ClCompile Include="Debugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Inventory.h">
@@ -304,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="MapTraps.h">
       <Filter>Header Files\MapDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="DebuggerManager.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

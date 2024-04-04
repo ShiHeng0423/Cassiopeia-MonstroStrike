@@ -8,30 +8,34 @@ f32 BURN_TIME = 3.0f;
 
 void Armor_Effect_Update(class Player& player)
 {
-	player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
-	switch (player.GetArmorSet().extraEffect)
-	{
-	case Status_Effect_System::Status_Effect::BURNING:
-		{
-			if (player.GetArmorSet().effectTimer < 0.f)
-			{
-				player.GetArmorSet().effectTimer = BURN_TIME;
-				player.GetCurrentHealth() = max(1, player.GetCurrentHealth() - 5);
-			}
-			break;
-		}
-	case Status_Effect_System::Status_Effect::REGEN:
-		{
-			if (player.GetArmorSet().effectTimer < 0.f)
-			{
-				player.GetArmorSet().effectTimer = REGEN_TIME;
-				player.GetCurrentHealth() = min(player.GetCurrentHealth() + 10, player.GetMaxHealth());
-			}
-			break;
-		}
-	default:
-		break;
-	}
+    player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
+    switch (player.GetArmorSet().extraEffect)
+    {
+    case Status_Effect_System::Status_Effect::BURNING:
+    {
+        if (player.GetArmorSet().effectTimer < 0.f)
+        {
+            player.GetArmorSet().effectTimer = BURN_TIME;
+
+            if (player.GetCurrentHealth() - 5 < 1)
+                player.DamageToPlayer(player.GetCurrentHealth() - 1);
+            else
+                player.DamageToPlayer(5);
+        }
+        break;
+    }
+    case Status_Effect_System::Status_Effect::REGEN:
+    {
+        if (player.GetArmorSet().effectTimer < 0.f)
+        {
+            player.GetArmorSet().effectTimer = REGEN_TIME;
+            player.RecoverHpToPlayer(10);
+        }
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)

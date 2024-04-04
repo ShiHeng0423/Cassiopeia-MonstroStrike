@@ -3,8 +3,6 @@
 #include "GameStateManager.h"
 #include "Inventory.h"
 #include "main.h"
-#include "TextPrinting.h"
-
 namespace
 {
 	enum CurrentScene
@@ -46,6 +44,7 @@ namespace
 	AEGfxTexture* backgroundTexture;
 	AEGfxTexture* boxBackground;
 
+
 	AEGfxVertexList* pWhiteSquareMesh;
 	AEGfxVertexList* pBlackSquareMesh;
 
@@ -60,9 +59,27 @@ namespace
 	//How To Play - "How to Play" or "Controls"
 	//Options Menu - "Options"
 
+
 	s8 currScene;
-	std::vector<PrintedCharacter> printedCharVec;
 	f32 printTimer = 0.0f;
+
+	void CreditAnimationUpdate();
+	void CreditAnimationEnter();
+	void CreditAnimationEnd();
+
+	struct CreditSlides {
+		Object slidesObj;
+		AEVec2 velocity;
+
+		AEGfxTexture* creditsSlides;
+	} credits[6];
+
+	f32 creditTime = 0;
+	f32 creditHeightUpdate = 0;
+	f32 maxCreditTime = 20.f;
+
+	Object gameTitle;
+
 }
 
 void GoNewGameLevel1();
@@ -117,6 +134,15 @@ void Mainmenu_Load()
 	audioDown = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_left.png");
 	gameControlsImg = AEGfxTextureLoad("Assets/Keyboard_Keys/Game Control.png");
 
+	credits[0].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_Opening.png");
+	credits[1].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_1.png");
+	credits[2].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_2.png");
+	credits[3].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_3.png");
+	credits[4].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_4.png");
+	credits[5].creditsSlides = AEGfxTextureLoad("Assets/Credits/Credit_Ending.png");
+
+	gameTitle.pTex = AEGfxTextureLoad("Assets/GameTitle.png");
+
 	AEGfxMeshStart();
 
 	AEGfxTriAdd(
@@ -146,6 +172,7 @@ void Mainmenu_Load()
 
 	// Saving the mesh (list of triangles) in pMesh
 	pBlackSquareMesh = AEGfxMeshEnd();
+
 }
 
 void Mainmenu_Initialize()
@@ -258,6 +285,14 @@ void Mainmenu_Initialize()
 	currScene = CurrentScene::MAIN_SCENE;
 
 	audioManager->PlayAudio(true, Audio_List::MAINMENU_SONG);
+
+	gameTitle.scale.x = (f32)AEGfxGetWindowWidth() * 0.5f;
+	gameTitle.scale.y = (f32)AEGfxGetWindowHeight() * 0.15f;
+
+	gameTitle.pos.x = 0.f;
+	gameTitle.pos.y = (f32)AEGfxGetWindowHeight() * 0.3f;
+
+	gameTitle.UpdateTransformMatrix();
 }
 
 void Mainmenu_Update()
@@ -281,6 +316,9 @@ void Mainmenu_Update()
 			}
 			break;
 		case CurrentScene::CREDIT_SCENE:
+			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
+				backButton.Ptr();
+			break;
 		case CurrentScene::CONTROL_SCENE:
 			if (AETestPointToRect(&mousePos, &backButton.pos, backButton.scale.x, backButton.scale.y))
 				backButton.Ptr();
@@ -307,6 +345,11 @@ void Mainmenu_Update()
 			break;
 		}
 	}
+
+	if (currScene == CurrentScene::CREDIT_SCENE)
+	{
+		CreditAnimationUpdate();
+	}
 }
 
 void Mainmenu_Draw()
@@ -319,9 +362,16 @@ void Mainmenu_Draw()
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(1.0f);
 
-	AEGfxTextureSet(background.pTex, 0, 0);
-	AEGfxSetTransform(background.transform.m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	if (currScene != CurrentScene::CREDIT_SCENE)
+	{
+		AEGfxTextureSet(background.pTex, 0, 0);
+		AEGfxSetTransform(background.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxTextureSet(gameTitle.pTex, 0, 0);
+		AEGfxSetTransform(gameTitle.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	}
 
 	switch (currScene)
 	{
@@ -334,74 +384,75 @@ void Mainmenu_Draw()
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 
-			f32 width, height;
-			//const char* testText = "Did you know? Mejiro Mcqueen is my first UD horse? HAHAHAHAHHAHAHAHAHAHAHAHAHAHAHAHAHAH";
-			//PrintTextOverTime(testText, 0.01f, -1.f, 0.f, 0.5f, 1.0f, 1.0f, 1.0f, 1.0f, pFont, printedCharVec, & printTimer);
-			////AEGfxPrint(pFont, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
+		f32 width, height;
 
-			auto pText = "Start";
-			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
+		const char* pText = "Start";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2, -height / 2 + 0.22f, 0.5f, 1, 1, 1, 1);
 
-			auto pText1 = "Load";
-			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
+		const char* pText1 = "Load";
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2, -height / 2, 0.5f, 1, 1, 1, 1);
 
-			auto pText2 = "Credit";
-			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
+		const char* pText2 = "Credit";
+		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText2, -width / 2, -height / 2 - 0.22f, 0.5f, 1, 1, 1, 1);
 
-			auto pText3 = "Controls";
-			AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
+		const char* pText3 = "Controls";
+		AEGfxGetPrintSize(fontID, pText3, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText3, -width / 2, -height / 2 - 0.44f, 0.5f, 1, 1, 1, 1);
 
-			auto pText4 = "Options";
-			AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
+		const char* pText4 = "Options";
+		AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
 
-			auto pText5 = "Quit";
-			AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
-			break;
+		const char* pText5 = "Quit";
+		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
+		break;
 		}
 	case CurrentScene::CREDIT_SCENE:
+	{
+
+		f32 width, height;
+
+		for (size_t i = 0; i < (sizeof(credits) / sizeof(credits[0])); ++i)
 		{
-			AEGfxTextureSet(optionbackground.pTex, 0, 0);
-			AEGfxSetTransform(optionbackground.transform.m);
+			AEGfxTextureSet(credits[i].creditsSlides, 0, 0);
+			AEGfxSetTransform(credits[i].slidesObj.transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-			AEGfxTextureSet(backButton.pTex, 0, 0);
-			AEGfxSetTransform(backButton.transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-			f32 width, height;
-
-			auto pText = "Back";
-			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
-			break;
 		}
+
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(backButton.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		const char* pText = "Back";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
 	case CurrentScene::CONTROL_SCENE:
-		{
-			AEGfxTextureSet(optionbackground.pTex, 0, 0);
-			AEGfxSetTransform(optionbackground.transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(optionbackground.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-			AEGfxTextureSet(gameControls.pTex, 0, 0);
-			AEGfxSetTransform(gameControls.transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		AEGfxTextureSet(gameControls.pTex, 0, 0);
+		AEGfxSetTransform(gameControls.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-			AEGfxTextureSet(backButton.pTex, 0, 0);
-			AEGfxSetTransform(backButton.transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(backButton.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-			f32 width, height;
+		f32 width, height;
 
-			auto pText = "Back";
-			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
-			break;
-		}
+		const char* pText = "Back";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
+	}
 	case CurrentScene::OPTION_SCENE:
 		{
 			AEGfxTextureSet(optionbackground.pTex, 0, 0);
@@ -437,20 +488,20 @@ void Mainmenu_Draw()
 				AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 			}
 
-			f32 width, height;
+		f32 width, height;
 
-			auto pText = "BGM";
-			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
+		const char* pText = "BGM";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.35f, -height / 2, 0.5f, 1, 1, 1, 1);
 
-			auto pText1 = "SFX";
-			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
+		const char* pText1 = "SFX";
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2 - 0.35f, -height / 2 - 0.225f, 0.5f, 1, 1, 1, 1);
 
-			auto pText2 = "Back";
-			AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
-			break;
+		const char* pText2 = "Back";
+		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
+		break;
 		}
 	case CurrentScene::QUIT_SCENE:
 		{
@@ -464,18 +515,19 @@ void Mainmenu_Draw()
 
 			f32 width, height;
 
-			auto pText = "Yes";
-			AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+		const char* pText = "Yes";
+		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 
-			auto pText1 = "No";
-			AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
-			AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
-			break;
+		const char* pText1 = "No";
+		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
+		break;
 		}
 	default:
 		break;
 	}
+
 }
 
 void Mainmenu_Free()
@@ -492,6 +544,14 @@ void Mainmenu_Unload()
 	AEGfxTextureUnload(audioUp);
 	AEGfxTextureUnload(audioDown);
 	AEGfxTextureUnload(gameControlsImg);
+	AEGfxTextureUnload(gameTitle.pTex);
+
+
+	//Unload all slides
+	for (int i = 0; i < (sizeof(credits) / sizeof(credits[0])); i++)
+	{
+		AEGfxTextureUnload(credits[i].creditsSlides);
+	}
 }
 
 void BackMainMenu()
@@ -515,6 +575,8 @@ void GoLoadSaveLevel()
 
 void GoCreditScene()
 {
+	CreditAnimationEnter();
+
 	currScene = CurrentScene::CREDIT_SCENE;
 }
 
@@ -536,4 +598,56 @@ void GoConfirmQuitScene()
 void GoQuitGame()
 {
 	next = GameStates::QUIT;
+}
+
+namespace {
+	void CreditAnimationUpdate()
+	{
+		creditTime += (f32)AEFrameRateControllerGetFrameTime();
+
+		for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+		{
+			credits[i].slidesObj.pos.y += creditHeightUpdate * (f32)AEFrameRateControllerGetFrameTime();
+			credits[i].slidesObj.UpdateTransformMatrix();
+		}
+
+		if (creditTime >= maxCreditTime)
+		{
+			BackMainMenu();
+		}
+	}
+
+	void CreditAnimationEnter() //Initialise the slides position
+	{
+		creditTime = 0.f;
+
+		f32 slideDisplayDuration = 2.f; //Total animation time will be number of slides * this value
+
+		maxCreditTime = (sizeof(credits) / sizeof(credits[0]) - 1) * slideDisplayDuration;
+
+		creditHeightUpdate = (f32)AEGfxGetWindowHeight() / slideDisplayDuration;
+
+		for (int i = 0; i < sizeof(credits) / sizeof(credits[0]); i++)
+		{
+			credits[i].slidesObj.pos.x = 0.f; //All at center
+
+			if (i == 0)
+			{
+				credits[i].slidesObj.pos.y = (f32)AEGfxGetWindowHeight() * -0.5f; //First Position at center y
+			}
+			else
+			{
+
+				credits[i].slidesObj.pos.y = credits[0].slidesObj.pos.y - i * (f32)AEGfxGetWindowHeight(); //Need to below each slides
+
+			}
+			credits[i].slidesObj.scale.x = (f32)AEGfxGetWindowWidth();
+			credits[i].slidesObj.scale.y = (f32)AEGfxGetWindowHeight();
+			credits[i].slidesObj.UpdateTransformMatrix();
+		}
+	}
+	void CreditAnimationEnd()
+	{
+
+	}
 }

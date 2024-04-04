@@ -1,5 +1,6 @@
 #include "LevelHeaders.h"
 #include "MapTransition.h"
+#include "DebuggerManager.h"
 
 namespace
 {
@@ -16,8 +17,6 @@ namespace
 	std::vector<AEVec2> NPCPositions;
 
 	Player* player;
-
-	AEGfxTexture* background;
 
 	Camera* cam;
 	PauseMenu_Manager* menu;
@@ -49,8 +48,7 @@ void Lobby_Load()
 	}
 
 	player = gameManager->GetPlayer();
-	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
@@ -186,10 +184,6 @@ void Lobby_Draw()
 	AEGfxSetBlendMode(AE_GFX_BM_BLEND);
 	AEGfxSetTransparency(1.0f);
 
-	AEGfxTextureSet(background, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 4200, 1080.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
 	//For Grid Drawing
 	RenderGrids(grids2D, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE, *pWhiteSquareMesh);
 
@@ -217,6 +211,7 @@ void Lobby_Draw()
 	DrawConvBox(player->GetIsTalkingToNpc(), *pWhiteSquareMesh);
 
 	MapTransitionDraw();
+
 }
 
 void Lobby_Free()
@@ -235,7 +230,6 @@ void Lobby_Unload()
 	Inventory::SaveInventory();
 	Inventory::FreeInventory();
 
-	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 
 	AEGfxMeshFree(pMeshGrey);

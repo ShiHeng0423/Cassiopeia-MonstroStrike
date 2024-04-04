@@ -8,6 +8,7 @@ namespace
 	AEGfxVertexList* pLineMesh;
 	AEGfxVertexList* pMeshYellow;
 	AEGfxVertexList* pMeshRed;
+	AEGfxVertexList* pMeshWep;
 	AEGfxVertexList* pMeshGrey;
 	AEGfxVertexList* pWhiteSquareMesh;
 	AEGfxVertexList* pGreenSquareMesh;
@@ -22,8 +23,6 @@ namespace
 
 	Player* player;
 
-	AEGfxTexture* background;
-
 	Camera* cam;
 	PauseMenu_Manager* menu;
 
@@ -32,6 +31,7 @@ namespace
 	//User Health
 	AEGfxVertexList* pMeshRedBar;
 	AEGfxTexture* HealthBorder;
+
 
 #pragma endregion UserInterface
 
@@ -62,6 +62,7 @@ void Level1_A_Load()
 	Enemy_Load(ENEMY_CHARGER, vecEnemy);
 
 	bulletTex = AEGfxTextureLoad("Assets/RedCircle.png");
+
 	enemyJumperDropTex = AEGfxTextureLoad("Assets/ENEMY_JUMPER_DROP.png");
 	enemyChargerDropTex = AEGfxTextureLoad("Assets/ENEMY_CHARGER_DROP.png");
 	enemyFlyDropTex = AEGfxTextureLoad("Assets/ENEMY_FLY_DROP.png");
@@ -69,8 +70,7 @@ void Level1_A_Load()
 
 	player = gameManager->GetPlayer();
 	playerReference = player;
-	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	auto fileName = "Assets/GameMaps/GameMap_Level1_A.csv"; //Change name as per level
+	const char* fileName = "Assets/GameMaps/GameMap_Level1_A.csv"; //Change name as per level
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE, MAP_COLUMN_SIZE))
 	{
@@ -85,6 +85,7 @@ void Level1_A_Load()
 #pragma region Mesh Creations
 	pMeshGrey = GenerateSquareMesh(0xFFa9a9a9);
 	pMeshRed = GenerateSquareMesh(0xFFFF0000);
+	pMeshWep = GenerateSquareMesh(0xFFFF0000);
 	pMeshRedBar = GenerateSquareMesh(0xFFFF0000);
 	pMeshYellow = GenerateSquareMesh(0xFFFFFF00);
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
@@ -259,15 +260,6 @@ void Level1_A_Draw()
 {
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
-#pragma region Background_Render
-
-	AEGfxSetBackgroundColor(0.0f, 0.0f, 0.0f);
-	AEGfxTextureSet(background, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(0.f, 0.f, 0.f, 4200, 1080.f).m);
-	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-#pragma endregion
-
 #pragma region Grid_Render
 
 	DrawTraps(pWhiteSquareMesh);
@@ -287,20 +279,6 @@ void Level1_A_Draw()
 
 	//drawing enemy
 	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
-
-	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-
-	if (player->GetIsPlayerAttacking())
-	{
-		AEGfxSetTransform(ObjectTransformationMatrixSet(player->GetWeaponSet().position.x,
-		                                                player->GetWeaponSet().position.y, 0.f,
-		                                                player->GetWeaponSet().scale.x,
-		                                                player->GetWeaponSet().scale.y).m);
-		AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
-		player->GetIsPlayerAttacking() = false;
-	}
-
-#pragma endregion
 
 #pragma region Game_UI_Render
 
@@ -365,7 +343,6 @@ void Level1_A_Unload()
 	Inventory::SaveInventory();
 	Inventory::FreeInventory();
 
-	AEGfxTextureUnload(background);
 	AEGfxTextureUnload(HealthBorder);
 	AEGfxTextureUnload(bulletTex);
 
@@ -376,9 +353,11 @@ void Level1_A_Unload()
 
 	UnloadTrapsTexture();
 
+
 	AEGfxMeshFree(pMeshGrey);
 	AEGfxMeshFree(pMeshYellow);
 	AEGfxMeshFree(pMeshRed);
+	AEGfxMeshFree(pMeshWep);
 	AEGfxMeshFree(pLineMesh);
 	AEGfxMeshFree(pMeshRedBar);
 	AEGfxMeshFree(pWhiteSquareMesh);
@@ -417,8 +396,7 @@ namespace
 
 						ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
 						                         &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
-						                         &tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce,
-						                         &tmpEnemy.isFalling);
+						                         &tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce);
 					}
 					//Check horizontal box (Left arm -> Right arm)
 					if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))

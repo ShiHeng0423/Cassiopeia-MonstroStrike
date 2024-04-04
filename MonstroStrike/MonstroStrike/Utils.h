@@ -1,5 +1,6 @@
 #pragma once
 #include "AEEngine.h"
+#include <string>
 
 //Static Image
 struct Sprite
@@ -43,6 +44,24 @@ struct Button
 	AEVec2 speed{ 0.f, 0.f };
 
 	AEMtx33 transform;
+
+	void (*Ptr)(void);
+	void UpdateTransformMatrix();
+};
+
+struct ButtonUI
+{
+	AEGfxTexture* pTex;
+
+	AEVec2 pos{ 0.f,0.f };
+	AEVec2 scale{ 0.f,0.f };
+	float rotate{ 0.f };
+
+	AEVec2 speed{ 0.f, 0.f };
+
+	AEMtx33 transform;
+
+	std::string str{ "" };
 
 	void (*Ptr)(void);
 	void UpdateTransformMatrix();

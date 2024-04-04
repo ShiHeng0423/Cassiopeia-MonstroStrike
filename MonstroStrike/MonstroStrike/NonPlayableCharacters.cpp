@@ -37,6 +37,7 @@ namespace
 		CONVERSATION_ENTRY,
 		CONVERSATION_CONTENT,
 		CONVERSATION_EXIT
+
 	} currentConvState;
 
 	AEVec2 screenPos;
@@ -65,8 +66,11 @@ namespace
 	{
 		const char* hoverContentName;
 		const char* hoverMissionDetails;
-		size_t missionID;
+		std::vector<std::string> rewardsDetails;
 
+		size_t missionID = -1;
+
+		
 		Recipe theRecipe;
 	} currentMissionInfo, currentCraftingInfo;
 
@@ -182,7 +186,7 @@ void UpdateNPC(Player* player)
 	}
 
 	//Check if there are any collided NPC
-	if (AEInputCheckTriggered(AEVK_I) && !collidedPlayer.empty())
+	if (AEInputCheckTriggered(AEVK_I) && !collidedPlayer.empty() && !player->GetIsTalkingToNpc())
 	{
 		std::sort(collidedPlayer.begin(), collidedPlayer.end()); //Sort the closest collided NPC to be front
 		currentConvState = CONVERSATION_ENTRY;
@@ -288,17 +292,18 @@ void UpdateNPC(Player* player)
 							currentCraftingInfo.theRecipe = *recipePtr;
 							if (AEInputCheckTriggered(AEVK_LBUTTON))
 							{
-								// for (int i = 0; i < playerInventory.size(); i++)
-								// {
-								// 	if (playerInventory[i].ID == recipePtr->mat_requirements.first.mat_ID)
-								// 	{
-								// 		loc1 = i;
-								// 	}
-								// 	if (playerInventory[i].ID == recipePtr->mat_requirements.second.mat_ID)
-								// 	{
-								// 		loc2 = i;
-								// 	}
-								// }
+								 for (int j = 0; j < playerInventory.size(); j++)
+								 {
+								 	if (playerInventory[j].ID == recipePtr->mat_requirements.first.mat_ID)
+								 	{
+								 		loc1 = j;
+								 	}
+								 	if (playerInventory[j].ID == recipePtr->mat_requirements.second.mat_ID)
+								 	{
+								 		loc2 = j;
+								 	}
+								 }
+
 								if (Crafting::Can_Craft(*recipePtr, playerInventory, loc1, loc2))
 								{
 									confirmAcceptPrompt = true;
@@ -307,6 +312,7 @@ void UpdateNPC(Player* player)
 								{
 									//Play Unavailable sound effect here, something like DE DEEE
 									std::cout << "Unavailable\n";
+									audioManager->PlayAudio(false, REJECT_SFX);
 								}
 							}
 						}
@@ -320,9 +326,9 @@ void UpdateNPC(Player* player)
 
 						//Reset the content bars...
 						contentBarContainer.clear();
-						for (int i = 0; i < Crafting::recipeList.size(); i++)
+						for (int j = 0; j < Crafting::recipeList.size(); j++)
 						{
-							CreateContentBarInstance(i);
+							CreateContentBarInstance(j);
 						}
 						confirmAcceptPrompt = false;
 					}
@@ -358,6 +364,8 @@ void UpdateNPC(Player* player)
 
 							currentMissionInfo.hoverContentName = missionPtr->missionName;
 							currentMissionInfo.hoverMissionDetails = missionPtr->missionDetails;
+							currentMissionInfo.rewardsDetails = missionPtr->rewardDetails;
+
 							CreateInfoDisplayBanner(); //Update
 
 							if (AEInputCheckTriggered(AEVK_LBUTTON))
@@ -370,6 +378,7 @@ void UpdateNPC(Player* player)
 								else
 								{
 									//Play Unavailable sound effect here, something like DE DEEE
+									audioManager->PlayAudio(false, REJECT_SFX);
 									std::cout << "Unavailable\n";
 								}
 							}
@@ -603,6 +612,13 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 
 				AEGfxPrint(fontID, "QUEST INFO", 0.7f, 0.8f, 0.35f, 0.f, 0.f, 0.f, 1.f);
 				AEGfxPrint(fontID, currentMissionInfo.hoverMissionDetails, 0.63f, 0.f, 0.3f, 0.f, 0.f, 0.f, 1.f);
+				
+				AEGfxPrint(fontID, "REWARDS", 0.7f, -0.1f, 0.35f, 0.f, 0.f, 0.f, 1.f);
+				f32 yOffset = -0.2f;
+				for (const std::string& reward : currentMissionInfo.rewardsDetails) {
+					AEGfxPrint(fontID, reward.c_str(), 0.63f, yOffset, 0.28f, 0.f, 0.f, 0.f, 1.f);
+					yOffset -= 0.1f;
+				}
 			}
 			break;
 		}

@@ -11,6 +11,7 @@ enum Audio_List
 	ITEM_CLICK,
 	ITEM_RELEASE,
 	ITEM_SWAP,
+	REJECT_SFX,
 	TOTAL_AUDIO
 };
 

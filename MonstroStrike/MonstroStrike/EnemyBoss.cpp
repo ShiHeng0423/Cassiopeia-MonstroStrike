@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file					EnemyBoss.cpp
+  \project name			Monstrostrike
+  \primary author		Goh Jun Jie
+  \secondary author
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
+
 #include "Enemy.h"
 #include "EnemyUtils.h"
 #include "ParticleSystem.h"
@@ -18,7 +29,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		EnemyLootSpawn(enemy, vecCollectables);
 		enemy.isAlive = false;
 		ParticleEmit(10, enemy.obj.pos.x, enemy.obj.pos.y, 15 * AERandFloat(), 15 * AERandFloat(), 0, ENEMY_DEATH_EFFECT, nullptr);
-
+		player.GetIsPlayerKillBoss() = true; //Set that player killed boss successfully
 	}
 	if (enemy.wing1.health <= 0)
 	{
@@ -39,14 +50,12 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		enemy.isFlying = false;
 	}
 
-
-
 	enemy.isCollidedWithPlayer = AABBvsAABB(enemy.collisionBox, player.GetPlayerCollisionBox());
 	// Handle collision with player
 	if (enemy.isCollidedWithPlayer) {
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
-			player.GetCurrentHealth() -= 20.f;
+			player.DamageToPlayer(20.f);
 		}
 	}
 	else {

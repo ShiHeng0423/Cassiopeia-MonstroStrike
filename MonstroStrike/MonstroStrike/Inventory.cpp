@@ -831,13 +831,17 @@ false, 0, 0, 0 };
 	void ApplyConsumableEffect(class Player& player, const Item& item)
 	{
 			// Apply the effect of the item on the player
-			 player.GetCurrentHealth() += static_cast<f32> (item.health);
+
+			 player.RecoverHpToPlayer(item.health);
+			// player.attack += static_cast<f32> (item.attack);
+			// player.defence += static_cast<f32> (item.defence);
+			//
+			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
+			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
+			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
 			//Cap player hp
-			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
-			 {
-				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
-			 }
+			 
 
 	}
 

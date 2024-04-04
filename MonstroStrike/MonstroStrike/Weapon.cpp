@@ -495,43 +495,61 @@ namespace Weapon_System
     void CheckWeaponCollision(struct Weapon_Set* playerEquip, struct Enemy& theEnemy, class Player& player)
     {
         //wings
-        if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) {
-            theEnemy.wing1.health -= (int)playerEquip->damage;
+        if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing1.collisionBox)) 
+        {
             std::cout << "Attack landed wing1" << std::endl;
-
             playerEquip->weaponHIT = true;
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
+
+            if (player.GetDebugModeOverpower())
             {
-                player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
+                theEnemy.wing1.health = 0;
+            }
+            else
+            {
+                theEnemy.wing1.health -= (int)playerEquip->damage;
+                if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
+                {
+                    player.RecoverHpToPlayer(player.GetWeaponSet().damage);
+                }
             }
         }
-        if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing2.collisionBox)) {
-            theEnemy.wing2.health -= (int)playerEquip->damage;
-            std::cout << "Attack landed wing2" << std::endl;
 
+        if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.wing2.collisionBox))
+        {
+            std::cout << "Attack landed wing1" << std::endl;
             playerEquip->weaponHIT = true;
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
+            if (player.GetDebugModeOverpower())
             {
-                player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
+                theEnemy.wing2.health = 0;
+            }
+            else
+            {
+                theEnemy.wing2.health -= (int)playerEquip->damage;
+                if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
+                {
+                    player.RecoverHpToPlayer(player.GetWeaponSet().damage);
+                }
             }
         }
 
 
         if (!playerEquip->weaponHIT && AABBvsAABB(playerEquip->collisionBox, theEnemy.collisionBox)) //Success
         {
-            theEnemy.health -= (int)playerEquip->damage;
-            std::cout << "Attack landed" << std::endl;
-            std::cout << theEnemy.health << std::endl;
-
-
             playerEquip->weaponHIT = true;
 
-            if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
+            if (player.GetDebugModeOverpower())
             {
-                player.GetCurrentHealth() = min(player.GetCurrentHealth() + player.GetWeaponSet().damage, player.GetMaxHealth());
+                theEnemy.health = 0;
+            }
+            else
+            {
+                theEnemy.health -= (int)playerEquip->damage;
+                if (player.GetWeaponSet().extraEffect == Status_Effect_System::Status_Effect::LIFE_STEAL)
+                {
+                    player.RecoverHpToPlayer(player.GetWeaponSet().damage);
+                }
             }
         }
-
 
     }
 }

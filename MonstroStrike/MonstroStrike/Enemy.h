@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file					Enemy.h
+  \project name			Monstrostrike
+  \primary author		Goh Jun Jie
+  \secondary author
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
+
+
+
 #pragma once
 #include "Utils.h"
 #include "Player.h"
