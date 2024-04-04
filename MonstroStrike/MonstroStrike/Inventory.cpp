@@ -1276,17 +1276,19 @@ false, 0, 0, 0 };
 
 		if (isNewAccount)
 		{
-			isNewAccount = false;
 			player_filepath = "Assets/SaveFiles/player_inventory_new.json";
+
+			for (auto& gear : equippedGear)
+			{
+				gear = emptySpace;
+			}
 		}
 		else
 		{
 			player_filepath = "Assets/SaveFiles/player_inventory.json";
-			
 			equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 		}
 		playerInventory = ReadJsonFile(player_filepath);
-		
 		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
@@ -1322,19 +1324,10 @@ false, 0, 0, 0 };
 		}
 		
 
-
+		//Initialise the UI based on equippedGear list
 		for (size_t i = 0; i < 5; ++i)
 		{
-
-			if (equippedGear[i].ID >= 0)
-			{
-				equipmentDisplay[equippedGear[i].gear_loc].Item = equippedGear[i];
-			}
-		}
-
-		for (size_t i = 0; i < 5; i++)
-		{
-			equippedGear[i] = equipmentDisplay[i].Item;
+			equipmentDisplay[i].Item = equippedGear[i];
 		}
 	}
 
@@ -1342,13 +1335,19 @@ false, 0, 0, 0 };
 	{
 		UpdateInventory(playerInventory, inventoryButton);
 
-		for(auto gear:equippedGear)
+		if(!isNewAccount)
 		{
+			for (auto gear : equippedGear)
+			{
 
-			std::cout << "check: "<< gear.name << std::endl;
-			EquipItemLogic(gear);
-			
+				std::cout << "check: " << gear.name << std::endl;
+				EquipItemLogic(gear);
+
+			}
+
+			isNewAccount = false;
 		}
+
 
 		UpdatePlayerGearStats(equippedGear);
 
