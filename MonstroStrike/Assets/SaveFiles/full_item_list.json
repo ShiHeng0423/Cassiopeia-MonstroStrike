@@ -29,8 +29,22 @@
       "defence": 96
     },
     {
-      "UID": "kjhjbdsf2",
+      "UID": "asfag",
       "ID": 2,
+      "name": "small basic sword",
+      "description": "Same size as a banana,@is it a banana?",
+      "rarity": 1,
+      "item_type": 2,
+      "gear_location": 2,
+      "quantity": 1,
+      "stackable": false,
+      "health": 420,
+      "attack": 0,
+      "defence": 1
+    },
+    {
+      "UID": "kjhjbdsf2",
+      "ID": 3,
       "name": "Basic Leggings",
       "description": "Sacrificing protection for@mobility. You only live once.@Right?",
       "rarity": 1,
@@ -44,7 +58,7 @@
     },
     {
       "UID": "34jgdsf2",
-      "ID": 3,
+      "ID": 4,
       "name": "Basic Boots",
       "description": "Clank, clank, clank. @Your enemies might hear you@before they see you...",
       "rarity": 1,
@@ -55,21 +69,6 @@
       "health": 420,
       "attack": 69,
       "defence": 96
-    },
-
-    {
-      "UID": "asfag",
-      "ID": 4,
-      "name": "small basic sword",
-      "description": "Same size as a banana,@is it a banana?",
-      "rarity": 1,
-      "item_type": 2,
-      "gear_location": 2,
-      "quantity": 1,
-      "stackable": false,
-      "health": 420,
-      "attack": 0,
-      "defence": 1
     },
     {
       "UID": "ahi2bfi2",
@@ -100,8 +99,23 @@
       "defence": 96
     },
     {
-      "UID": "kjhjbdsf2",
+      "UID": "jj2bfi2",
       "ID": 7,
+      "name": "Elite Knight Sword",
+      "description": "Pure & unadulterated pain",
+      "rarity": 4,
+      "item_type": 2,
+      "gear_location": 2,
+      "quantity": 1,
+      "stackable": false,
+      "health": 0,
+      "attack": 6900,
+      "defence": 0
+    },
+
+    {
+      "UID": "kjhjbdsf2",
+      "ID": 8,
       "name": "Elite Knight Leggings",
       "description": "For the king, for honor@and for glory.",
       "rarity": 1,
@@ -115,7 +129,7 @@
     },
     {
       "UID": "34jgdsf2",
-      "ID": 8,
+      "ID": 9,
       "name": "Elite Knight Boots",
       "description": "For the king, for honor@and for glory.",
       "rarity": 1,
@@ -128,22 +142,78 @@
       "defence": 96
     },
     {
-      "UID": "jj2bfi2",
-      "ID": 9,
-      "name": "Elite Knight Sword",
-      "description": "Pure & unadulterated pain",
-      "rarity": 4,
-      "item_type": 2,
-      "gear_location": 2,
+      "UID": "gjdwqrq",
+      "ID": 10,
+      "name": "White Dragon Helmet",
+      "description": "Dragon slayer walker",
+      "rarity": 5,
+      "item_type": 3,
+      "gear_location": 4,
       "quantity": 1,
       "stackable": false,
-      "health": 0,
-      "attack": 6900,
-      "defence": 0
+      "health": 1500,
+      "attack": 2000,
+      "defence": 2000
+    },
+    {
+      "UID": "gjdwqrq",
+      "ID": 11,
+      "name": "White Dragon Torso",
+      "description": "Dragon slayer walker",
+      "rarity": 5,
+      "item_type": 3,
+      "gear_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 1500,
+      "attack": 2000,
+      "defence": 2000
+    },
+    {
+      "UID": "gjdwqrq",
+      "ID": 12,
+      "name": "White Dragon Sword",
+      "description": "Dragon slayer walker",
+      "rarity": 5,
+      "item_type": 3,
+      "gear_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 1500,
+      "attack": 2000,
+      "defence": 2000
+    },
+    {
+      "UID": "gjdwqrq",
+      "ID": 13,
+      "name": "White Dragon Leggings",
+      "description": "Dragon slayer walker",
+      "rarity": 5,
+      "item_type": 3,
+      "gear_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 1500,
+      "attack": 2000,
+      "defence": 2000
+    },
+    {
+      "UID": "gjdwqrq",
+      "ID": 14,
+      "name": "White Dragon Boots",
+      "description": "Dragon slayer walker",
+      "rarity": 5,
+      "item_type": 3,
+      "gear_location": 4,
+      "quantity": 1,
+      "stackable": false,
+      "health": 1500,
+      "attack": 2000,
+      "defence": 2000
     },
     {
       "UID": "aqad112341ssssss",
-      "ID": 10,
+      "ID": 15,
       "name": "Merlion saliva",
       "description": "Doesn't age like fine wine",
       "rarity": 2,
@@ -157,7 +227,7 @@
     },
     {
       "UID": "ameow112adss",
-      "ID": 11,
+      "ID": 16,
       "name": "Horn of Salvation",
       "description": "It takes 10 years to attain@bankai, but with this 1 second.",
       "rarity": 4,
@@ -171,7 +241,7 @@
     },
     {
       "UID": "kasdh23n9",
-      "ID": 12,
+      "ID": 17,
       "name": "Hilt of baal",
       "description": "To kill a demon, you need an@item of a demon",
       "rarity": 3,
@@ -185,7 +255,7 @@
     },
     {
       "UID": "poioiu",
-      "ID": 13,
+      "ID": 18,
       "name": "Scales of Kimaris",
       "description": "Hanibal lector of demons",
       "rarity": 2,
@@ -199,7 +269,7 @@
     },
     {
       "UID": "qwertygvc3",
-      "ID": 14,
+      "ID": 19,
       "name": "Scales of Barbatos",
       "description": "Unlike fish skin, demon skin@is inedible ",
       "rarity": 4,
@@ -213,7 +283,7 @@
     },
     {
       "UID": "mnbvcjhgh",
-      "ID": 15,
+      "ID": 20,
       "name": "Chalise of Gusion",
       "description": "He who sits, shall drink while@sitting",
       "rarity": 2,
@@ -227,7 +297,7 @@
     },
     {
       "UID": "gsdfajn",
-      "ID": 16,
+      "ID": 21,
       "name": "Chalice of Astaroth",
       "description": "Once filled with the blood of@his enemies",
       "rarity": 5,
@@ -241,7 +311,7 @@
     },
     {
       "UID": "kasdh23n9",
-      "ID": 17,
+      "ID": 22,
       "name": "Crown of Marchosias",
       "description": "He ruled over the demons!@For a minute...",
       "rarity": 3,
@@ -255,7 +325,7 @@
     },
     {
       "UID": "sdjjwerf",
-      "ID": 18,
+      "ID": 23,
       "name": "Hilt of baal",
       "description": "To kill a demon, you need an@item of a demon",
       "rarity": 3,
@@ -269,7 +339,7 @@
     },
     {
       "UID": "asfnjjj",
-      "ID": 19,
+      "ID": 24,
       "name": "Banana",
       "description": "Is there a banana god?",
       "rarity": 1,
@@ -283,7 +353,7 @@
     },
     {
       "UID": "kasdh23n9",
-      "ID": 20,
+      "ID": 25,
       "name": "Lychee",
       "description": "Sweet & hairy",
       "rarity": 1,
@@ -295,23 +365,10 @@
       "attack": 200,
       "defence": 200
     },
-    {
-      "UID": "gjdwqrq",
-      "ID": 21,
-      "name": "White Dragon Boots",
-      "description": "Dragon slayer walker",
-      "rarity": 5,
-      "item_type": 3,
-      "gear_location": 4,
-      "quantity": 1,
-      "stackable": false,
-      "health": 1500,
-      "attack": 2000,
-      "defence": 2000
-    },
+
     {
       "UID": "ygvrfc9",
-      "ID": 22,
+      "ID": 26,
       "name": "Sword of Kirmish",
       "description": "Forged in the heart of a dragon's den",
       "rarity": 5,
@@ -325,7 +382,7 @@
     },
     {
       "UID": "uytgr3426",
-      "ID": 23,
+      "ID": 27,
       "name": "Claymore of Kirmish",
       "description": "Can literally cleave through anything",
       "rarity": 5,
@@ -339,7 +396,7 @@
     },
     {
       "UID": "ygvrfc9",
-      "ID": 24,
+      "ID": 28,
       "name": "Attack Potion",
       "description": "Makes you as strong as a demon",
       "rarity": 1,

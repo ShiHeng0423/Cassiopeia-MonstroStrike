@@ -5,36 +5,38 @@
 
 namespace Armor_System
 {
-    enum ARMOR_GRADE {
-        TIER_1,
-        TIER_2,
-        TIER_3,
+	enum ARMOR_GRADE
+	{
+		TIER_1,
+		TIER_2,
+		TIER_3,
 
-        NO_GRADE
-    };
+		NO_GRADE
+	};
 
-    enum ARMOR_TYPE {
-        HEAD,
-        BODY,
-        LEGS,
-        FOOT,
+	enum ARMOR_TYPE
+	{
+		HEAD,
+		BODY,
+		LEGS = 3,
+		FOOT = 4,
 
-        NO_TYPE
-    };
+		NO_TYPE
+	};
 
-    struct Armor
-    {
-        int boost{ 0 };
-        ARMOR_GRADE rarity{ ARMOR_GRADE::NO_GRADE };
-        ARMOR_TYPE type{ ARMOR_TYPE::NO_TYPE };
-    };
+	struct Armor
+	{
+		int boost{0};
+		ARMOR_GRADE rarity{ARMOR_GRADE::NO_GRADE};
+		ARMOR_TYPE type{ARMOR_TYPE::NO_TYPE};
+	};
 
-    struct Armor_Set
-    {
-        Armor pieces[4];
-        Status_Effect_System::Status_Effect extraEffect{ Status_Effect_System::Status_Effect::NONE_EFFECT };
-        f32 effectTimer{ 0.f };
-    };
+	struct Armor_Set
+	{
+		Armor pieces[4];
+		Status_Effect_System::Status_Effect extraEffect{Status_Effect_System::Status_Effect::NONE_EFFECT};
+		f32 effectTimer{0.f};
+	};
 }
 
 

@@ -54,6 +54,9 @@ enum Gear_Location
 	weaponry,
 	pants,
 	boots,
+
+	GL_Total,
+
 	GL_NONE
 
 };
@@ -102,7 +105,7 @@ extern ButtonGearUI itemDisplayBackground;
 extern ButtonGearUI item_background[25];
 
 //Textures
-extern AEGfxTexture* Gear[25];
+extern AEGfxTexture* Gear[28];
 extern AEGfxTexture* blank;
 
 
@@ -143,7 +146,7 @@ namespace Inventory
 	void ItemDrop();
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player);
-	void EquipToBody(Item obj);
+	void EquipItemLogic(Item obj);
 	void UnequipItem(const Gear_Location slot);
 
 	void ApplyConsumableEffect(class Player& player, const Item& item);

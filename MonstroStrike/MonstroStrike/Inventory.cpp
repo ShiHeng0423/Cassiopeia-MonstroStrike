@@ -39,8 +39,7 @@ using namespace rapidjson;
  std::vector< Item> playerInventory;
  std::vector< Item> fullInventoryList;
 
-
- AEGfxTexture* Gear[25];
+ AEGfxTexture* Gear[28];
  s16 snapBack = -1;
 
  Player* playerReference;
@@ -78,8 +77,6 @@ false, 0, 0, 0 };
 
 	std::vector< Item> ReadJsonFile(const std::string& filepath)
 	{
-		
-		//std::vector<Inventory> inventory = new std::vector<Inventory>[1000];
 		std::vector<Item> inventory;
 
 		std::ifstream ifs(filepath);
@@ -104,7 +101,6 @@ false, 0, 0, 0 };
 
 			std::cout << "Access items in " << filepath << std::endl;
 			assert(json.IsObject());
-			// Document is a JSON value represents the root of DOM. Root can be either an object or array.
 
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
@@ -140,43 +136,6 @@ false, 0, 0, 0 };
 		}
 		return inventory;
 	}
-
-	
-
-
-	// void Button_Update()
-	// {
-	// 	for (const auto& obj : Object::ui_queue) {
-	// 		switch (obj->object_render_type) {
-	// 		case ot_img_button:
-	// 			if (point_to_aabb(obj, &Object::mouse))
-	// 			{
-	// 				
-	// 				if (!obj->in_area)
-	// 				{
-	// 					obj->in_area = true;
-	// 					obj->temp_scale = 1.1f;
-	//					panel.text = in
-	// 				}
-	// 			}
-	// 			else
-	// 			{
-	// 				if (obj->in_area)
-	// 				{
-	// 					obj->in_area = false;
-	// 					obj->temp_scale = 1.0;
-	//					Hover exit
-	//					panel.text = "";
-	// 				}
-	// 			}
-	// 			break;
-	// 		default:;
-	// 		}
-	// 	}
-	// }
-
-
-
 
 	void WriteJsonFile(const std::vector<Item>& inventory, const std::string& filepath)
 	{
@@ -996,10 +955,10 @@ false, 0, 0, 0 };
 					item.Item = blank_gear;
 					item.img.pTex = blank;
 					playerInventory[index].ID = INVALID_ITEM;
-					EquipToBody(equipping);
+					EquipItemLogic(equipping);
 					
 					// 	Remove previous item effect and apply new item effect
-					UpdatePlayerGearStats(equippedGear);
+					//UpdatePlayerGearStats(equippedGear);
 				}
 		}
 		else
@@ -1017,10 +976,129 @@ false, 0, 0, 0 };
 		// playerReference->GetMaxHealth() = 0.f;
 		// playerReference->GetWeaponSet().damage = 0.f;
 
-		for (auto gear : equippedItems)
+		for (const auto gear : equippedItems)
 		{
-			playerReference->GetMaxHealth() += (f32)gear.health;
-			playerReference->GetWeaponSet().damage += (f32)gear.attack;
+			// playerReference->GetMaxHealth() += (f32)gear.health;
+			// playerReference->GetWeaponSet().damage += (f32)gear.attack;
+			//
+			// Equip_Armor(*playerReference, ()gear.item_type, gear.rarity);
+
+
+			switch (gear.item_type)
+			{
+			case WEAPON:
+				switch (gear.rarity)
+				{
+				case COMMON:
+				case RARE:
+				case EPIC:
+					Equip_Weapon(*playerReference, Weapon_System::WEAPON_GRADE::TIER_1);
+					break;
+				case LEGENDARY:
+					Equip_Weapon(*playerReference, Weapon_System::WEAPON_GRADE::TIER_2);
+					break;
+				case UNIQUE:
+					Equip_Weapon(*playerReference, Weapon_System::WEAPON_GRADE::TIER_3);
+					break;
+				case IR_NONE:
+					Equip_Weapon(*playerReference, Weapon_System::WEAPON_GRADE::NO_GRADE);
+						break;
+
+				}
+				break;
+
+			case ARMOUR:
+
+				switch (gear.gear_loc)
+				{
+				case head:
+
+					switch (gear.rarity)
+					{
+					case COMMON:
+						std::cout << "Common: " << gear.name << std::endl;
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_1);
+						break;
+					case RARE:
+					case LEGENDARY:
+						std::cout << "Rare: " << gear.name << std::endl;
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_2);
+						break;
+					case EPIC:
+						std::cout << "Epic: " << gear.name << std::endl;
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::TIER_3);
+						break;
+					case IR_NONE:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE) ;
+						break;
+					}
+					break;
+
+				case body:
+					switch (gear.rarity)
+					{
+					case COMMON:
+
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_1);
+
+						break;
+					case RARE:
+					case LEGENDARY:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_2);
+						break;
+					case EPIC:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::BODY, Armor_System::ARMOR_GRADE::TIER_3);
+						break;
+					case IR_NONE:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+						break;
+
+					}
+					break;
+				case pants:
+					switch (gear.rarity)
+					{
+					case COMMON:
+
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_1);
+
+						break;
+					case RARE:
+					case LEGENDARY:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_2);
+						break;
+					case EPIC:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::LEGS, Armor_System::ARMOR_GRADE::TIER_3);
+						break;
+					case IR_NONE:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+						break;
+					}
+					break;
+				case boots:
+					switch (gear.rarity)
+					{
+					case COMMON:
+
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_1);
+
+						break;
+					case RARE:
+					case LEGENDARY:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_2);
+						break;
+					case EPIC:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::FOOT, Armor_System::ARMOR_GRADE::TIER_3);
+						break;
+					case IR_NONE:
+						Equip_Armor(*playerReference, Armor_System::ARMOR_TYPE::HEAD, Armor_System::ARMOR_GRADE::NO_GRADE);
+						break;
+					}
+					break;
+				}
+				break;
+			}
+
 
 		}
 	}
@@ -1047,7 +1125,7 @@ false, 0, 0, 0 };
 	}
 
 
-	void EquipToBody(Item obj)
+	void EquipItemLogic(Item obj)
 	{
 		
 		for(int i = 0; i< 5; ++i)
@@ -1144,6 +1222,8 @@ false, 0, 0, 0 };
 			std::cout << "Inventory full!";
 			return;
 		}
+		equippedGear[slot].rarity = IR_NONE;
+		UpdatePlayerGearStats(equippedGear);
 
 		equippedGear[slot] = emptySpace;
 		equipmentDisplay[slot].Item = emptySpace;
@@ -1215,7 +1295,10 @@ false, 0, 0, 0 };
 
 		for(auto gear:equippedGear)
 		{
-			EquipToBody(gear);
+
+			std::cout << "check: "<< gear.name << std::endl;
+			EquipItemLogic(gear);
+			
 		}
 
 		UpdatePlayerGearStats(equippedGear);
