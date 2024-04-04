@@ -113,10 +113,6 @@ false, 0, 0, 0 };
 				fileLoadedState = static_cast<GameStates> (json["map"].GetInt());
 				std::cout << "Previous Map loaded from file: " << fileLoadedState << std::endl;
 			}
-			
-
-
-			
 
 			assert(json["items"].IsArray());
 			const Value& items = json["items"];
@@ -234,22 +230,28 @@ false, 0, 0, 0 };
 		
 		int count = 0;
 
-		for(size_t i=0; i< inventory.size(); ++i)
+		for(size_t i=0; i< playerInventory.size(); ++i)
 		{
-			button[i].Item = inventory[i];
+			if (playerInventory[i].quantity <= 0)
+			{
+				playerInventory[i] = emptySpace;
+			}
 
-			if(inventory[i].ID >= 0)
-			count++;
-			
+			button[i].Item = playerInventory[i];
+
+			if(playerInventory[i].ID >= 0)
+			{
+				count++;
+			}
 		}
+
+		
 
 		if(inventory.size()<25)
 		{
 			for(size_t i = inventory.size() ; i < 25 ; i++)
 			{
-				Item emptyItemSlot;
-				emptyItemSlot.ID = INVALID_ITEM;
-				button[i].Item = emptyItemSlot;
+				button[i].Item = emptySpace;
 			}
 		}
 
@@ -283,7 +285,6 @@ false, 0, 0, 0 };
 					break;
 				}
 			}
-
 			index++;
 		}
 
@@ -333,12 +334,15 @@ false, 0, 0, 0 };
 		{
 			if (AETestPointToRect(&mousePos, &equipment_slot.pos, equipment_slot.img.scale.x, equipment_slot.img.scale.y))
 			{
+				if(equipment_slot.Item.ID >=0)
+				{
+					Item backup = equipment_slot.Item;
 
-				Item backup = equipment_slot.Item;
+					UnequipItem(equipment_slot.Item.gear_loc);
 
-				UnequipItem(equipment_slot.Item.gear_loc);
+					AddItem(backup);
+				}
 
-				AddItem(backup);
 			}
 		}
 
@@ -377,6 +381,7 @@ false, 0, 0, 0 };
 		lhs = rhs;
 		rhs = tmp;
 
+		audioManager->PlayAudio(false, Audio_List::ITEM_SWAP);
 	}
 
 	// Function to get an item by its ID
@@ -395,11 +400,8 @@ false, 0, 0, 0 };
 
 	void OpenInventory()
 	{
-		//update item position
-		UpdateInventory(playerInventory, inventoryButton);
+
 		s16 index = 0;
-
-
 		for (ButtonGearUI& button : inventoryButton)
 		{
 			button.img.pTex = blank;
@@ -409,22 +411,14 @@ false, 0, 0, 0 };
 			AEVec2Set(&item_background[index].img.scale, 60.f, 60.f);
 			AEVec2Set(&item_background[index].pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
 
-
-
-
-				if (button.Item.quantity <= 0)
-				{
-					Item blank;
-					blank.ID = INVALID_ITEM;
-					button.Item = blank;
-				}
-				else
-				{
-					button.img.pTex = Gear[button.Item.ID];
-				}
-			
-
-			//button.isWeapon = false;
+		if (button.Item.quantity <= 0)
+		{
+			button.Item = emptySpace;
+		}
+		else
+		{
+			button.img.pTex = Gear[button.Item.ID];
+		}
 			index++;
 		}
 
@@ -457,6 +451,7 @@ false, 0, 0, 0 };
 						itemHover = true;
 						displayItem = button;
 
+						audioManager->PlayAudio(false, Audio_List::ITEM_CLICK);
 
 						break;
 					}
@@ -467,6 +462,30 @@ false, 0, 0, 0 };
 
 				index++;
 			}
+
+
+			for (ButtonGearUI& button : equipmentDisplay)
+			{
+				if (AETestPointToRect(&mousePos, &button.pos, button.img.scale.x, button.img.scale.y))
+				{
+					if (button.Item.ID >= 0)
+					{
+
+						//Display item's info on l_click
+						itemHover = true;
+						displayItem = button;
+						displayItem.img.scale.x = inventoryButton->img.scale.x;
+						displayItem.img.scale.y = inventoryButton->img.scale.y;
+
+						audioManager->PlayAudio(false, Audio_List::ITEM_CLICK);
+
+						break;
+					}
+					//button.Ptr();
+				}
+
+			}
+
 		}
 
 		if (snapBack >= 0)
@@ -528,6 +547,7 @@ false, 0, 0, 0 };
 							snapBack = -1;
 							break;
 						}
+
 					}
 					index++;
 				}
@@ -546,6 +566,8 @@ false, 0, 0, 0 };
 
 						//Update images
 						UpdateInventoryUI();
+
+						audioManager->PlayAudio(false, Audio_List::ITEM_EQUIP);
 					}
 				}
 
@@ -555,6 +577,8 @@ false, 0, 0, 0 };
 					AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 						-(snapBack / 5.f) * 90.f + 180.f);
 					snapBack = -1;
+
+					audioManager->PlayAudio(false, Audio_List::ITEM_RELEASE);
 				}
 			}
 		}
@@ -562,12 +586,12 @@ false, 0, 0, 0 };
 
 		if (AEInputCheckTriggered(AEVK_RBUTTON))
 		{
-
-
 			UpdateInventoryUI();
 
 			UpdateEquipmentUI();
 		}
+		//update item position
+		UpdateInventory(playerInventory, inventoryButton);
 	}
 
 	void DrawInventory(AEGfxVertexList* pWhiteSquareMesh)
@@ -802,21 +826,12 @@ false, 0, 0, 0 };
 	{
 	}
 
+	
 	//Function to apply the effect of a consumable item on the player
 	void ApplyConsumableEffect(class Player& player, const Item& item)
 	{
-		// Check if the item is a consumable (food or potion)
-		if (item.item_type == Item_Type::FOOD || item.item_type == Item_Type::POTION)
-		{
 			// Apply the effect of the item on the player
-
 			 player.GetCurrentHealth() += static_cast<f32> (item.health);
-			// player.attack += static_cast<f32> (item.attack);
-			// player.defence += static_cast<f32> (item.defence);
-			//
-			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
-			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
-			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
 			//Cap player hp
 			 if(playerReference->GetCurrentHealth() > playerReference->GetMaxHealth())
@@ -824,11 +839,6 @@ false, 0, 0, 0 };
 				 playerReference->GetCurrentHealth() = playerReference->GetMaxHealth();
 			 }
 
-		}
-		else
-		{
-			std::cerr << "Error: Cannot apply effect. Item is not a consumable." << std::endl;
-		}
 	}
 
 	void UseItem(int index, ButtonGearUI& item, class Player& player)
@@ -836,12 +846,9 @@ false, 0, 0, 0 };
 		//ButtonGearUI has properties like img, isWeapon, etc.
 		//equipmentDisplay is an array or vector representing equipped items
 
-
 		// Check if the item is available in the player's inventory
 		if (index >= 0 && index < MAX_INVENTORY_SIZE)
 		{
-			// @TODO implement more sophisticated logic here
-
 				// Perform actions based on the type of item equipped
 				if (item.Item.item_type == FOOD || item.Item.item_type == POTION)
 				{
@@ -983,8 +990,7 @@ false, 0, 0, 0 };
 					playerInventory[index].ID = INVALID_ITEM;
 					EquipItemLogic(equipping);
 					
-					// 	Remove previous item effect and apply new item effect
-					//UpdatePlayerGearStats(equippedGear);
+					audioManager->PlayAudio(false, Audio_List::ITEM_EQUIP);
 				}
 		}
 		else
@@ -1253,11 +1259,10 @@ false, 0, 0, 0 };
 
 		equippedGear[slot] = emptySpace;
 		equipmentDisplay[slot].Item = emptySpace;
-		//backupPreviousItem[obj.gear_loc] = emptySpace;
-		//UpdateEquipmentUI();
 
-		std::cout << "Unequipped called" << std::endl;;
 
+		std::cout << "Unequipped called" << std::endl;
+		audioManager->PlayAudio(false, Audio_List::ITEM_UNEQUIP);
 		
 	}
 
@@ -1273,12 +1278,12 @@ false, 0, 0, 0 };
 		else
 		{
 			player_filepath = "Assets/SaveFiles/player_inventory.json";
+			
+			equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 		}
-
 		playerInventory = ReadJsonFile(player_filepath);
+		
 		fullInventoryList = ReadJsonFile("Assets/SaveFiles/full_item_list.json");
-		equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
-
 
 		inventoryBackground.img.pTex = AEGfxTextureLoad("Assets/panel_brown.png");
 		equipmentBackground.img.pTex = AEGfxTextureLoad("Assets/UI_Sprite/ItemPanel/display_item_left.png");
@@ -1299,18 +1304,20 @@ false, 0, 0, 0 };
 		}
 
 
+		
 		for (size_t i = 0; i < 5; ++i)
 		{
-			
-			//fillup equippedGear vector with empty elements if less than maxslots occupied
 			if (equippedGear.size() < 5)
 			{
+				//fillup equippedGear vector with empty elements if less than maxslots occupied
 				equippedGear.push_back(emptySpace);
 				equipmentDisplay[i].Item = emptySpace;
 				//Init the empty slots, this will match to the enum values
 				equipmentDisplay[i].Item.gear_loc = (Gear_Location)i;
 			}
 		}
+		
+
 
 		for (size_t i = 0; i < 5; ++i)
 		{

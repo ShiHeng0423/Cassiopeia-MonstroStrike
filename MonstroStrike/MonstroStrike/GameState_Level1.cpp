@@ -115,7 +115,7 @@ void Level1_A_Initialize()
 			grids2D[rows][cols].colIndex = cols;
 
 			InitializeGrid(grids2D[rows][cols]);
-			
+
 			StoreTrapDetails(grids2D[rows][cols]); //Add any traps if any
 
 			//Previous zone is lobby
@@ -172,6 +172,8 @@ void Level1_A_Update()
 	if (AEInputCheckTriggered(AEVK_TAB))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
+		Inventory::itemHover = false;
+		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -394,8 +396,8 @@ void Level1_A_Unload()
 }
 
 //Function definition for private functions
-namespace {
-
+namespace
+{
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{
 		for (Enemy& tmpEnemy : enemy)

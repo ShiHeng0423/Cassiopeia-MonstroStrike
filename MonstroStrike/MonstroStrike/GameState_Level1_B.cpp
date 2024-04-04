@@ -187,6 +187,7 @@ void Level1_B_Update()
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		Inventory::itemHover = false;
+		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -401,9 +402,8 @@ void Level1_B_Unload()
 	delete menu;
 }
 
-namespace {
-
-
+namespace
+{
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{
 		for (Enemy& tmpEnemy : enemy)

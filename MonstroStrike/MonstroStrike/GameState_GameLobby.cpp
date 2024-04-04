@@ -50,7 +50,7 @@ void Lobby_Load()
 
 	player = gameManager->GetPlayer();
 	background = AEGfxTextureLoad("Assets/Background2.jpg");
-	const char* fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
+	auto fileName = "Assets/GameMaps/GameMap_Lobby.csv"; //Change name as per level
 
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_LOBBY_SIZE, MAP_COLUMN_LOBBY_SIZE))
@@ -162,6 +162,7 @@ void Lobby_Update()
 		{
 			Inventory::inventoryOpen = !Inventory::inventoryOpen;
 			Inventory::itemHover = false;
+			audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 		}
 
 		if (Inventory::inventoryOpen)
@@ -209,7 +210,7 @@ void Lobby_Draw()
 
 	menu->Render();
 	ParticlesDraw(*pWhiteSquareMesh);
-	
+
 	//Print Mission Name
 	missionSystem.PrintMissionText();
 

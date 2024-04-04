@@ -199,6 +199,7 @@ void Level1_E_Update()
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		Inventory::itemHover = false;
+		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -278,7 +279,6 @@ void Level1_E_Update()
 #pragma endregion
 
 	UpdateTraps();
-
 }
 
 void Level1_E_Draw()

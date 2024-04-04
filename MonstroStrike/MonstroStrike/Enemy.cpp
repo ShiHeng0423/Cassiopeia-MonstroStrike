@@ -6,12 +6,12 @@
 #include "Inventory.h"
 
 
-
-void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
-
+void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy)
+{
 	Enemy enemy;
 
-	switch (enemyType) {
+	switch (enemyType)
+	{
 	case ENEMY_JUMPER:
 		enemy.obj.pTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Normal.png");
 		enemy.angryTex = AEGfxTextureLoad("Assets/Enemy_Assets/Enemy_Jumper_Angry.png");
@@ -36,19 +36,22 @@ void Enemy_Load(s8 enemyType, std::vector<Enemy>& vecEnemy ) {
 	default:
 		std::cerr << "Unknown enemy type: " << enemyType << std::endl;
 		return;
-
 	}
 
 	enemy.enemyType = enemyType; //initialize enemy_type
 	vecEnemy.push_back(enemy);
 }
 
-void FreeEnemy(std::vector<Enemy>& vecEnemy) {
-	for (Enemy& enemy : vecEnemy) {
-		AEGfxTextureUnload(enemy.obj.pTex);	//default tex
-		AEGfxTextureUnload(enemy.angryTex);		//angry tex
+void FreeEnemy(std::vector<Enemy>& vecEnemy)
+{
+	for (Enemy& enemy : vecEnemy)
+	{
+		AEGfxTextureUnload(enemy.obj.pTex); //default tex
+		AEGfxTextureUnload(enemy.angryTex); //angry tex
 
-		if (enemy.enemyType == ENEMY_BOSS1) {	//check if need to free wings
+		if (enemy.enemyType == ENEMY_BOSS1)
+		{
+			//check if need to free wings
 			AEGfxTextureUnload(enemy.wing1.obj.pTex);
 			AEGfxTextureUnload(enemy.wing2.obj.pTex);
 		}
@@ -56,10 +59,8 @@ void FreeEnemy(std::vector<Enemy>& vecEnemy) {
 }
 
 
-
-
-void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
-
+void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy)
+{
 	UNREFERENCED_PARAMETER(startingState);
 
 	//Initializing Enemy struct variables
@@ -107,7 +108,8 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 	f32 enemyWingScaleOffset = 30.f;
 	f32 enemyWingPosOffset = 70.f;
 
-	switch (enemy.enemyType) {
+	switch (enemy.enemyType)
+	{
 	case ENEMY_JUMPER:
 		enemy.speed = 50.f;
 		enemy.lineOfSight = 500.f;
@@ -156,11 +158,12 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.mass = 150.f;
 		AEVec2Set(&enemy.velocity, 0.f, 0.f); //Begin with no velocity
 
-		//wing1
+	//wing1
 		enemy.wing1.isAlive = false;
 		enemy.wing1.Offset = enemyWingPosOffset;
 		AEVec2Set(&enemy.wing1.obj.pos, location.x + enemy.wing1.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing1.obj.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
+		AEVec2Set(&enemy.wing1.obj.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset);
+	//set scale of the image
 		enemy.wing1.collisionBox.minimum.x = enemy.wing1.obj.pos.x - enemy.wing1.obj.scale.x * 0.5f;
 		enemy.wing1.collisionBox.minimum.y = enemy.wing1.obj.pos.y - enemy.wing1.obj.scale.y * 0.5f;
 		enemy.wing1.collisionBox.maximum.x = enemy.wing1.obj.pos.x + enemy.wing1.obj.scale.x * 0.5f;
@@ -169,11 +172,12 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 		enemy.wing1.timeSinceLastFire = 0;
 		enemy.wing1.health = 200;
 		enemy.wing1.maxHealth = enemy.wing1.health;
-		//wing2
+	//wing2
 		enemy.wing2.isAlive = false;
 		enemy.wing2.Offset = -enemyWingPosOffset;
 		AEVec2Set(&enemy.wing2.obj.pos, location.x + enemy.wing2.Offset, location.y); //set starting location
-		AEVec2Set(&enemy.wing2.obj.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset); //set scale of the image
+		AEVec2Set(&enemy.wing2.obj.scale, scale.x + enemyWingScaleOffset, scale.y + enemyWingScaleOffset);
+	//set scale of the image
 		enemy.wing2.collisionBox.minimum.x = enemy.wing2.obj.pos.x - enemy.wing2.obj.scale.x * 0.5f;
 		enemy.wing2.collisionBox.minimum.y = enemy.wing2.obj.pos.y - enemy.wing2.obj.scale.y * 0.5f;
 		enemy.wing2.collisionBox.maximum.x = enemy.wing2.obj.pos.x + enemy.wing2.obj.scale.x * 0.5f;
@@ -186,19 +190,14 @@ void Enemy_Init(AEVec2 scale, AEVec2 location, s8 startingState, Enemy& enemy) {
 	default:
 		return;
 	}
-
-
 }
 
 
-
-
-
-
-
-void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
-//(update bullet)---------------------------------------------------------------------------------------
-	for (std::vector<Bullet>::iterator it = enemy.bullets.begin(); it != enemy.bullets.end(); ) {
+void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrops>& vecCollectables)
+{
+	//(update bullet)---------------------------------------------------------------------------------------
+	for (auto it = enemy.bullets.begin(); it != enemy.bullets.end();)
+	{
 		it->obj.pos.x += it->bulletVel.x * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 		it->obj.pos.y += it->bulletVel.y * (f32)AEFrameRateControllerGetFrameTime() * 100.f;
 
@@ -207,32 +206,37 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 		it->collisionBox.maximum.x = it->obj.pos.x + it->obj.scale.x * 0.5f;
 		it->collisionBox.maximum.y = it->obj.pos.y + it->obj.scale.y * 0.5f;
 
-		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
+		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox()))
+		{
 			it = enemy.bullets.erase(it);
 			player.GetCurrentHealth() -= 5;
 			continue;
 		}
-		it->lifeTime--;	//decrease lifetime
-		if (it->lifeTime <= 0) {
+		it->lifeTime--; //decrease lifetime
+		if (it->lifeTime <= 0)
+		{
 			it = enemy.bullets.erase(it);
 			continue;
 		}
-		else {
+		else
+		{
 			++it;
 		}
 	}
-//(update bullet)---------------------------------------------------------------------------------------
+	//(update bullet)---------------------------------------------------------------------------------------
 
 
 	enemy.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing1.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 	enemy.wing2.timeSinceLastFire += (f32)AEFrameRateControllerGetFrameTime();
 
-	if (!enemy.isFlying) {
+	if (!enemy.isFlying)
+	{
 		ApplyGravity(&enemy.velocity, enemy.mass, &enemy.onFloor, &enemy.gravityForce, &enemy.isFalling);
 	}
 
-	switch (enemy.enemyType) {
+	switch (enemy.enemyType)
+	{
 	case ENEMY_JUMPER:
 		ENEMY_JUMPER_Update(enemy, player, vecCollectables);
 		break;
@@ -267,44 +271,46 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	enemy.boxArms.maximum.x += horizontalOffset;
 }
 
-void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables) {
-
+void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables)
+{
 	//(update drops)---------------------------------------------------------------------------------------
-	std::vector<EnemyDrops>::iterator it = vecCollectables.begin();
+	auto it = vecCollectables.begin();
 
 	// Iterate over the vector
-	while (it != vecCollectables.end()) {
+	while (it != vecCollectables.end())
+	{
 		// Check collision
-		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox())) {
+		if (AABBvsAABB(it->collisionBox, player.GetPlayerCollisionBox()))
+		{
 			//addit to inventory
 			//here
 			Item holder;
-			switch (it->dropType) {
+			switch (it->dropType)
+			{
 			case ENEMY_JUMPER_DROP:
-				holder = fullInventoryList[18];
+				holder = fullInventoryList[20];
 				break;
 			case ENEMY_CHARGER_DROP:
-				holder = fullInventoryList[12];
+				holder = fullInventoryList[16];
 				std::cout << "Charger item collected\n";
 				break;
 			case ENEMY_FLY_DROP:
-				holder = fullInventoryList[12];
+				holder = fullInventoryList[19];
 				std::cout << "CHANGE item collected\n";
 				break;
 			case ENEMY_BOSS1_DROP:
-				holder = fullInventoryList[12];
+				holder = fullInventoryList[17];
 				std::cout << "CHANGE item collected\n";
 				break;
-
 			}
 
 			Inventory::AddItem(holder);
 
 			// Erase the element
 			it = vecCollectables.erase(it);
-
 		}
-		else {
+		else
+		{
 			// Move to the next element
 			++it;
 		}
@@ -320,17 +326,19 @@ void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::
 	}
 }
 
-void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB) {
-	for (Enemy& enemy : vecEnemyVar) {
-
+void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB)
+{
+	for (Enemy& enemy : vecEnemyVar)
+	{
 		//Check vertical box (Head + Feet) 
-		if (AABBvsAABB(enemy.boxHeadFeet, gridBoxAABB)) {
+		if (AABBvsAABB(enemy.boxHeadFeet, gridBoxAABB))
+		{
 			enemy.collisionNormal = AABBNormalize(enemy.boxHeadFeet, gridBoxAABB);
 
 			ResolveVerticalCollision(enemy.boxHeadFeet, gridBoxAABB,
-				&enemy.collisionNormal, &enemy.obj.pos,
-				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
-				&enemy.isFalling);
+			                         &enemy.collisionNormal, &enemy.obj.pos,
+			                         &enemy.velocity, &enemy.onFloor, &enemy.gravityForce,
+			                         &enemy.isFalling);
 		}
 		//Check horizontal box (Left arm -> Right arm)
 		if (AABBvsAABB(enemy.boxArms, gridBoxAABB))
@@ -339,7 +347,7 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 			enemy.collisionNormal = AABBNormalize(enemy.boxArms, gridBoxAABB);
 
 			ResolveHorizontalCollision(enemy.boxArms, gridBoxAABB, &enemy.collisionNormal, &enemy.obj.pos,
-				&enemy.velocity);
+			                           &enemy.velocity);
 			enemy.loopIdle = false;
 		}
 
@@ -356,11 +364,15 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 	}
 }
 
-void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh, std::vector<EnemyDrops>& vecCollectables) {
-	for (Enemy& enemy : vecEnemyVar) {
-		if (enemy.isAlive) {
-
-			if (enemy.isAttacking) {
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh,
+                  std::vector<EnemyDrops>& vecCollectables)
+{
+	for (Enemy& enemy : vecEnemyVar)
+	{
+		if (enemy.isAlive)
+		{
+			if (enemy.isAttacking)
+			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.angryTex, 0, 0);
@@ -383,7 +395,8 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			}
 
 
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive) {
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing1.isAlive)
+			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.wing1.obj.pTex, 0, 0);
@@ -392,7 +405,8 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 				AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
 				DrawEnemyHpParts(enemy.wing1, pWhitesqrMesh);
 			}
-			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive) {
+			if (enemy.enemyType == ENEMY_BOSS1 && enemy.wing2.isAlive)
+			{
 				AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
 				AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 				AEGfxTextureSet(enemy.wing2.obj.pTex, 0, 0);

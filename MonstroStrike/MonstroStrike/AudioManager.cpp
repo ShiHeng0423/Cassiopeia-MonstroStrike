@@ -7,6 +7,13 @@ AudioManager::AudioManager()
 	audio[MAINMENU_SONG] = AEAudioLoadMusic("Assets/bouken.mp3");
 	audio[ATTACK_SLASH_SFX] = AEAudioLoadMusic("Assets/bouken.mp3");
 
+	audio[INVENTORY_OPEN] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/inventory_open.mp3");
+	audio[ITEM_EQUIP] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_equip.mp3");
+	audio[ITEM_CLICK] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_click.mp3");
+	audio[ITEM_RELEASE] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_release.mp3");
+	audio[ITEM_UNEQUIP] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_unequip.mp3");
+	audio[ITEM_SWAP] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_swap.mp3");
+
 	// Creates an audio group named 'bgm'
 	bgmGroup = AEAudioCreateGroup();
 	sfxGroup = AEAudioCreateGroup();
@@ -21,6 +28,10 @@ AudioManager::~AudioManager()
 	// Release our audios.
 	AEAudioUnloadAudio(audio[MAINMENU_SONG]);
 	AEAudioUnloadAudio(audio[ATTACK_SLASH_SFX]);
+	AEAudioUnloadAudio(audio[ITEM_EQUIP]);
+	AEAudioUnloadAudio(audio[ITEM_CLICK]);
+	AEAudioUnloadAudio(audio[ITEM_RELEASE]);
+	AEAudioUnloadAudio(audio[ITEM_UNEQUIP]);
 
 	// Release our audio groups.
 	AEAudioUnloadAudioGroup(bgmGroup);

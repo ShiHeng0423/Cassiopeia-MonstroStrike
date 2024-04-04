@@ -529,8 +529,11 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 
 				if (recipePtr)
 				{
-					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f + GRID_SIZE * 2 };
-					AEGfxPrint(fontID, fullInventoryList[i].name.c_str(), posText.x,
+					AEVec2 posText = {
+						-0.5f,
+						(screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f + GRID_SIZE * 2
+					};
+					AEGfxPrint(fontID, fullInventoryList[Crafting::recipeList[i].item_id].name.c_str(), posText.x,
 					           (posText.y / AEGfxGetWindowHeight()), 0.35f, 0.f, 0.f, 0.f, 1.f);
 				}
 			}
@@ -583,7 +586,10 @@ void DrawConvBox(bool inConv, AEGfxVertexList& mesh)
 				}
 				if (missionPtr)
 				{
-					AEVec2 posText = { -0.5f, (screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f + GRID_SIZE * 2 };
+					AEVec2 posText = {
+						-0.5f,
+						(screenPos.y + (f32)AEGfxGetWindowHeight() - yScale * 0.8f) - yScale * i * 2.25f + GRID_SIZE * 2
+					};
 					AEGfxPrint(fontID, missionPtr->missionName, posText.x, (posText.y / AEGfxGetWindowHeight()), 0.35f,
 					           0.f, 0.f, 0.f, 1.f);
 				}

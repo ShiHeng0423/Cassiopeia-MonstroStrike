@@ -279,7 +279,7 @@
       "quantity": 1,
       "stackable": true,
       "health": 100,
-      "attack": 50,
+      "attack": 0,
       "defence": 50
     },
     {
@@ -293,7 +293,7 @@
       "quantity": 1,
       "stackable": true,
       "health": 200,
-      "attack": 200,
+      "attack": 0,
       "defence": 200
     },
     {

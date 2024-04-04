@@ -197,6 +197,7 @@ void Level1_C_Update()
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		Inventory::itemHover = false;
+		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -275,7 +276,6 @@ void Level1_C_Update()
 #pragma endregion
 
 	UpdateTraps();
-
 }
 
 void Level1_C_Draw()
@@ -416,8 +416,8 @@ void Level1_C_Unload()
 	delete menu;
 }
 
-namespace {
-
+namespace
+{
 	void CheckEnemyGridCollision(Grids2D** gridMap, std::vector<Enemy>& enemy)
 	{
 		for (Enemy& tmpEnemy : enemy)

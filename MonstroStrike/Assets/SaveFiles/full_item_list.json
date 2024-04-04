@@ -327,8 +327,8 @@
     {
       "UID": "sdjjwerf",
       "ID": 23,
-      "name": "Hilt of baal",
-      "description": "To kill a demon, you need an@item of a demon",
+      "name": "Jewel of Barbatos",
+      "description": "To kill a demon, you need an@gem of a demon",
       "rarity": 3,
       "item_type": 1,
       "gear_location": 5,
@@ -349,7 +349,7 @@
       "quantity": 1,
       "stackable": true,
       "health": 100,
-      "attack": 50,
+      "attack": 0,
       "defence": 50
     },
     {
@@ -363,7 +363,7 @@
       "quantity": 1,
       "stackable": true,
       "health": 200,
-      "attack": 200,
+      "attack": 0,
       "defence": 200
     },
     {

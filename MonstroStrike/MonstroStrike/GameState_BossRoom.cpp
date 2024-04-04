@@ -155,6 +155,8 @@ void Level1_BOSS_Update()
 	if (AEInputCheckTriggered(AEVK_TAB))
 	{
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
+		Inventory::itemHover = false;
+		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
 	}
 
 	if (AEInputCheckTriggered(AEVK_0))
@@ -382,7 +384,8 @@ void Level1_BOSS_Unload()
 	AEGfxMeshFree(pWhiteSquareMesh);
 	AEGfxMeshFree(pGreenSquareMesh);
 
-	for (int i = 0; i < MAP_ROW_BOSS_SIZE; ++i) {
+	for (int i = 0; i < MAP_ROW_BOSS_SIZE; ++i)
+	{
 		delete[] grids2D[i];
 	}
 
