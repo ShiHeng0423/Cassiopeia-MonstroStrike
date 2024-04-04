@@ -13,7 +13,7 @@ namespace {
 		GridTypes typeOfGrid = NONE; //To check what type of trap since it is recorded here
 		bool hitPlayer = false;
 		bool triggered = false;
-		f32 trapDamage = 0.f;
+		int trapDamage = 0;
 		AABB collisionBox;
 
 		void UpdateCollisionBox();

@@ -45,7 +45,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyD
 		enemy.isRecoil = true;
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
-			player.DamageToPlayer(10.f);
+			player.DamageToPlayer(10);
 			player.GetPlayerVelocity().x = enemy.velocity.x * 3.f;
 		}
 	}
@@ -77,7 +77,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyD
 				// If there's a collision, update target position and perform charge attack
 				if (enemy.isCollision) {
 					enemy.isCollision = false;
-					enemy.targetPosition = (enemy.targetPosition == ENEMY_LEFT) ? ENEMY_RIGHT : ENEMY_LEFT;
+					enemy.targetPosition = (enemy.targetPosition == (s8)ENEMY_LEFT) ? (s8)ENEMY_RIGHT : (s8)ENEMY_LEFT;
 				}
 				Attack_Charge(enemy, enemy.targetPosition, 80.f);
 			}
@@ -85,7 +85,7 @@ void ENEMY_CHARGER_Update(Enemy& enemy, class Player& player, std::vector<EnemyD
 		case ENEMY_TRANSITION:
 			// Lock on to player's position
 			if (enemy.targetPosition == ENEMY_DEFAULT) {
-				enemy.targetPosition = (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) ? ENEMY_LEFT : ENEMY_RIGHT;
+				enemy.targetPosition = (enemy.obj.pos.x >= player.GetPlayerCurrentPosition().x) ? (s8)ENEMY_LEFT : (s8)ENEMY_RIGHT;
 			}
 			enemy.isAttacking = true;
 			enemy.isCollision = false;

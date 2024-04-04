@@ -9,7 +9,7 @@
 
 #include <vector>
 
-f32 const PlayerMaxBasehealth = 100.f;
+int const PlayerMaxBasehealth = 100;
 
 
 class Player {

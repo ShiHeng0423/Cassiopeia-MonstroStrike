@@ -25,7 +25,7 @@ namespace Weapon_System
 
         //jian wei
         std::string name;
-        f32 damage;
+        int damage;
 
         AABB collisionBox;
         AABB hitBox;

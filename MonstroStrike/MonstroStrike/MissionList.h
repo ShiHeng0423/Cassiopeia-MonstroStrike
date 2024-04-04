@@ -55,7 +55,7 @@ struct MissionSystem {
 
 	void InitialMission(); //Called only once through out entire game
 
-	size_t GetAcceptedMissionID();
+	int GetAcceptedMissionID();
 
 	void PrintMissionText();
 

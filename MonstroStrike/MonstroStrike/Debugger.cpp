@@ -320,27 +320,27 @@ void DebuggerManager::RenderDebuggerUI()
 			case DebuggerFunction::FPS:
 				str << "FPS";
 				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 				break;
 			case DebuggerFunction::POSITION:
 				str << "Position";
 				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 				break;
 			case DebuggerFunction::IMMORTAL:
 				str << "Immortal";
 				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 				break;
 			case DebuggerFunction::MAX_POWER:
 				str << "Max Atk";
 				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 				break;
 			case DebuggerFunction::TELEPORT_LEVEL_UP:
 				str << "Level " << currArea;
 				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 				break;
 			default:
 				break;
@@ -349,11 +349,11 @@ void DebuggerManager::RenderDebuggerUI()
 			AEGfxGetPrintSize(fontID, debugFunction[index].str.c_str(), 0.3f, &width, &height);
 
 			if (index == TELEPORT_LEVEL_DOWN)
-				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.67, -height / 2 + 0.90f - TELEPORT_LEVEL_UP * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.67f, -height / 2 + 0.90f - TELEPORT_LEVEL_UP * 0.13f, 0.3f, 0, 0, 0, 1);
 			else if (index == TELEPORT_CONFIRMATION)
-				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.74, -height / 2 + 0.90f - TELEPORT_LEVEL_DOWN * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.74f, -height / 2 + 0.90f - TELEPORT_LEVEL_DOWN * 0.13f, 0.3f, 0, 0, 0, 1);
 			else
-				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.81, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.81f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 		}
 	}
 
@@ -392,7 +392,7 @@ void DebuggerManager::RenderDebuggerUI()
 			}
 
 			AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-			AEGfxPrint(fontID, str.str().c_str(), 0.6, -height / 2 + 0.95f - activeDebug++ * 0.05f, 0.3f, 0, 0, 0, 1);
+			AEGfxPrint(fontID, str.str().c_str(), 0.6f, -height / 2 + 0.95f - activeDebug++ * 0.05f, 0.3f, 0, 0, 0, 1);
 		}
 	}
 }

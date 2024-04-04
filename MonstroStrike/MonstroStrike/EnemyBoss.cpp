@@ -55,7 +55,7 @@ void ENEMY_BOSS_Update(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 	if (enemy.isCollidedWithPlayer) {
 		if (!enemy.hasDealtDmg) {
 			enemy.hasDealtDmg = true;
-			player.DamageToPlayer(20.f);
+			player.DamageToPlayer(20);
 		}
 	}
 	else {

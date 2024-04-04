@@ -15,7 +15,7 @@ namespace {
 	int numberOfFireBalls = 3;
 
 #pragma region ArrowTrap
-	void TriggerArrow(GridTypes type, AEVec2 trapPos, f32 damage);
+	void TriggerArrow(GridTypes type, AEVec2 trapPos, int damage);
 
 	void UpdateArrow();
 
@@ -30,7 +30,7 @@ namespace {
 		AEVec2 velocity;
 		f32 currLifeTime = 3.f;
 		f32 maxLifeTime = 3.f;
-		f32 damage = 0.f;
+		int damage = 0;
 
 		ArrowType type;
 
@@ -47,7 +47,7 @@ namespace {
 		Object obj;
 		AABB collisionBox;
 		AEVec2 originPoint;
-		f32 damage;
+		int damage;
 		f32 hitPlayer;
 
 		void UpdateCollisionBox();
@@ -55,7 +55,7 @@ namespace {
 
 	std::vector<FireBalls> fireBallContainer;
 
-	void SpawnFireballs(AEVec2 originPosition, f32 damage);
+	void SpawnFireballs(AEVec2 originPosition, int damage);
 	void UpdateFireballs();
 
 #pragma endregion
@@ -104,23 +104,23 @@ bool SetSpecificTrapDetail(TrapDetails* trap)
 	{
 	case TRAPS_ROTATING_SAW_GRID:
 		trap->obj.pTex = sawTexture;
-		trap->trapDamage = 10.f;
+		trap->trapDamage = 10;
 		trap->obj.pos.y -= GRID_SIZE * 0.5f;
 		return true;
 		break;
 	case TRAPS_POISON_ARROW_GRID:
 		trap->obj.pTex = arrowTrapTexture; //To be multiply color to purple
-		trap->trapDamage = 5.f;
+		trap->trapDamage = 5;
 		return true;
 		break;
 	case TRAPS_SLOWNESS_ARROW_GRID:
 		trap->obj.pTex = arrowTrapTexture; //To be multiply color to grey
-		trap->trapDamage = 5.f;
+		trap->trapDamage = 5;
 		return true;
 		break;
 	case TRAPS_FIRE_CIRCLE_GRID:
 		trap->obj.pTex = fireTrapTexture;
-		trap->trapDamage = 15.f;
+		trap->trapDamage = 15;
 		SpawnFireballs(trap->obj.pos, trap->trapDamage);
 		return true;
 		break;
@@ -261,7 +261,7 @@ void UnloadTrapsTexture()
 namespace {
 	
 #pragma region ArrowTraps
-	void TriggerArrow(GridTypes type, AEVec2 trapPos, f32 damage)
+	void TriggerArrow(GridTypes type, AEVec2 trapPos, int damage)
 	{
 		AEVec2 spawnPos = { trapPos.x + AEGfxGetWindowWidth() * 0.5f, trapPos.y };
 
@@ -343,7 +343,7 @@ namespace {
 #pragma endregion
 
 
-	void SpawnFireballs(AEVec2 originPosition, f32 damage)  //Spawn fireballs INITIALLY based on fire grid position
+	void SpawnFireballs(AEVec2 originPosition, int damage)  //Spawn fireballs INITIALLY based on fire grid position
 	{
 		for (int i = 0; i < 3; i++)
 		{

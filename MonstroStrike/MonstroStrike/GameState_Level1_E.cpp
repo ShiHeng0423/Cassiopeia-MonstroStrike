@@ -180,7 +180,7 @@ void Level1_E_Update()
 
 #pragma region PauseMenuTrigger
 
-	menu->Update(cam);
+	menu->Update();
 
 #pragma endregion
 

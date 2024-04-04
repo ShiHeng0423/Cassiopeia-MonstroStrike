@@ -40,7 +40,7 @@ void Armor_Effect_Update(class Player& player)
 
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)
 {
-	player.GetArmorSet().pieces[head] = ArmorInformation(newArmorType, newArmorGrade);
+	player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
 
 	player.GetMaxHealth() = PlayerMaxBasehealth + Check_Set_Effect(player);
 
@@ -48,10 +48,10 @@ void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Ar
 		player.GetCurrentHealth() = player.GetMaxHealth();
 }
 
-f32 Check_Set_Effect(class Player& player)
+int Check_Set_Effect(class Player& player)
 {
 	int setEffect = 0; /// xxx ->Tier3,2,1
-	f32 bonusHealth = 0;
+	int bonusHealth = 0;
 	for (size_t loop = 0; loop < 4; loop++)
 	{
 		switch (player.GetArmorSet().pieces[loop].rarity)
@@ -75,6 +75,7 @@ f32 Check_Set_Effect(class Player& player)
 	int setID = Armor_System::ARMOR_GRADE::TIER_1;
 
 	Status_Effect_System::Status_Effect currEffect = player.GetArmorSet().extraEffect;
+	std::cout << currEffect << std::endl;
 	while (setEffect > 0)
 	{
 		if (setEffect % 10 >= 2)
@@ -116,6 +117,7 @@ f32 Check_Set_Effect(class Player& player)
 		}
 	}
 
+	std::cout << currEffect << std::endl << std::endl;
 	return bonusHealth;
 }
 
@@ -125,11 +127,15 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 	tmp.rarity = grade;
 	tmp.type = type;
 
-	if (type == Armor_System::NO_TYPE)
+	if (grade == Armor_System::ARMOR_GRADE::NO_GRADE)
 		tmp.boost = 0;
 	else
 	{
-		int ID = grade * GL_Total + type;
+		int ID;
+		if(type == Armor_System::ARMOR_TYPE::FOOT || type == Armor_System::ARMOR_TYPE::LEGS)
+			ID = grade * GL_Total + type + 1;
+		else
+			ID = grade * GL_Total + type;
 		tmp.boost = fullInventoryList[ID].health;
 	}
 
@@ -137,7 +143,7 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 }
 
 
-f32 ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect)
+int ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect)
 {
 	if (fullSetBonus)
 	{

@@ -68,7 +68,7 @@ namespace
 		const char* hoverMissionDetails;
 		std::vector<std::string> rewardsDetails;
 
-		size_t missionID = -1;
+		int missionID = -1;
 
 		
 		Recipe theRecipe;

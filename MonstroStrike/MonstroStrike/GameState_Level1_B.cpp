@@ -168,7 +168,7 @@ void Level1_B_Update()
 	MapTransitionUpdate();
 #pragma region PauseMenuTrigger
 
-	menu->Update(cam);
+	menu->Update();
 
 #pragma endregion
 

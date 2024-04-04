@@ -95,7 +95,6 @@ void BackMainMenu();
 void IncreaseSfxVolume()
 {
 	audioManager->IncreaseSFXVolume();
-	f32 maths = 0 - 250 * (1.f - audioManager->GetSFXVolume() * 2.f);
 	AEVec2Set(&optionSoundBar[1].pos, 0 - 250 * (0.5f - audioManager->GetSFXVolume()), -100); // bar 2
 	AEVec2Set(&optionSoundBar[1].scale, 250 * audioManager->GetSFXVolume() * 2.f, 50);
 	optionSoundBar[1].UpdateTransformMatrix();
