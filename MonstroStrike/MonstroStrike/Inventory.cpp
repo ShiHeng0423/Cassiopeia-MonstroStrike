@@ -2,7 +2,6 @@
 \file				Inventory.cpp
 \project name		Monstrostrike
 \primary author		Keith Ng Hon Yew (100%)
-\secondary author
 \brief				This file contains the definition of all functions related
 					to the inventory system.
 

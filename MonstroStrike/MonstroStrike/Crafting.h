@@ -2,7 +2,6 @@
 \file				Crafting.h
 \project name		Monstrostrike
 \primary author		Keith Ng Hon Yew (100%)
-\secondary author
 \brief				This file contains the declarations of functions related
 					to the crafting system.
 

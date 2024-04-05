@@ -5,7 +5,7 @@
   \primary author		Johny Yong Jun Siang (35%, added initialisations of grids and traps etc, map transitions, particle effects)
   \secondary authors	Teng Shi Heng (35%, player, menu UI, Camera),
 						Goh Jun Jie (15%, enemies),
-						Keith Ng Hon Yew (15%, inventory),
+						Keith Ng Hon Yew (15%, inventory)
   \brief				File containing definitions of functions related to the level 1_E room state. Such as loading,
 						initializing, update, drawing etc... of the level.
 
