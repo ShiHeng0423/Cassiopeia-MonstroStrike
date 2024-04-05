@@ -64,7 +64,7 @@ void Level1_BOSS_Load()
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE))
 	{
-		PrintMap(gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE);
+		//PrintMap(gameMap, MAP_ROW_BOSS_SIZE, MAP_COLUMN_BOSS_SIZE);
 		//Just for checking if the map data is stored properly
 	}
 
@@ -418,7 +418,7 @@ namespace
 
 						ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
 						                         &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
-						                         &tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce);
+						                         &tmpEnemy.velocity);
 					}
 					//Check horizontal box (Left arm -> Right arm)
 					if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))

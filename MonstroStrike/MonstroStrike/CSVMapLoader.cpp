@@ -121,14 +121,13 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
 
 void PrintMap(const std::vector<std::vector<MapCell>>& map, int rows, int cols)
 {
-    UNREFERENCED_PARAMETER(map);
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
         {
-           // std::cout << map[i][j].symbol << ' ';
+           std::cout << map[i][j].symbol << ' ';
         }
-       // std::cout << std::endl;
+      std::cout << std::endl;
     }
 }
 

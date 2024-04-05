@@ -715,7 +715,7 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 						gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveVerticalCollision(boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
 						&collisionNormal, &obj.pos,
-						&velocity, &onFloor, &gravityForce);
+						&velocity);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)

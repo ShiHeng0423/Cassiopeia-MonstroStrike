@@ -342,7 +342,7 @@ void UpdateNPC(Player* player)
 				if (!confirmAcceptPrompt)
 				{
 					displayBoxActive = false;
-					const KillEnemyMission* missionPtr = nullptr;
+					const KillEnemyMission* theMission = nullptr;
 
 					for (int i = 0; i < availableMissionsID.size(); i++)
 					{
@@ -350,7 +350,7 @@ void UpdateNPC(Player* player)
 						{
 							if (mission.missionID == availableMissionsID[i])
 							{
-								missionPtr = &mission;
+								theMission = &mission;
 								break;
 							}
 						}
@@ -359,12 +359,12 @@ void UpdateNPC(Player* player)
 						                      contentBarContainer[i].size.x, contentBarContainer[i].size.y))
 						{
 							displayBoxActive = true;
-							if (missionPtr == nullptr)
+							if (theMission == nullptr)
 								return;
 
-							currentMissionInfo.hoverContentName = missionPtr->missionName;
-							currentMissionInfo.hoverMissionDetails = missionPtr->missionDetails;
-							currentMissionInfo.rewardsDetails = missionPtr->rewardDetails;
+							currentMissionInfo.hoverContentName = theMission->missionName;
+							currentMissionInfo.hoverMissionDetails = theMission->missionDetails;
+							currentMissionInfo.rewardsDetails = theMission->rewardDetails;
 
 							CreateInfoDisplayBanner(); //Update
 
@@ -372,7 +372,7 @@ void UpdateNPC(Player* player)
 							{
 								if (missionSystem.GetAcceptedMissionID() == -1)
 								{
-									currentMissionInfo.missionID = missionPtr->missionID;
+									currentMissionInfo.missionID = theMission->missionID;
 									confirmAcceptPrompt = true;
 								}
 								else
@@ -708,35 +708,35 @@ namespace
 		//Does not need put in update considering NPCS are at static position
 	}
 
-	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& convBox)
+	void CreateConvBoxInstance(f32 xPos, f32 yPos, f32 xSize, f32 ySize, ConversationContent& boxObj)
 	{
-		convBox.rotate = {0};
-		AEMtx33Rot(&convBox.rotation, 0.f);
+		boxObj.rotate = {0};
+		AEMtx33Rot(&boxObj.rotation, 0.f);
 
-		AEVec2Set(&convBox.size, xSize, ySize);
-		AEMtx33Scale(&convBox.scale, convBox.size.x, convBox.size.y);
+		AEVec2Set(&boxObj.size, xSize, ySize);
+		AEMtx33Scale(&boxObj.scale, boxObj.size.x, boxObj.size.y);
 
-		AEVec2Set(&convBox.position, xPos, yPos);
-		AEMtx33Trans(&convBox.translation, convBox.position.x, convBox.position.y);
+		AEVec2Set(&boxObj.position, xPos, yPos);
+		AEMtx33Trans(&boxObj.translation, boxObj.position.x, boxObj.position.y);
 
-		convBox.transformation = {0};
-		AEMtx33Concat(&convBox.transformation, &convBox.rotation, &convBox.scale);
-		AEMtx33Concat(&convBox.transformation, &convBox.translation, &convBox.transformation);
+		boxObj.transformation = {0};
+		AEMtx33Concat(&boxObj.transformation, &boxObj.rotation, &boxObj.scale);
+		AEMtx33Concat(&boxObj.transformation, &boxObj.translation, &boxObj.transformation);
 		//No need collision box
 	}
 
 	void CreateContentBarInstance(int num)
 	{
 		ContentBar contBar;
-		f32 yScale = (f32)AEGfxGetWindowHeight() * 0.075f;
+		f32 ySize = (f32)AEGfxGetWindowHeight() * 0.075f;
 
 		AEMtx33Rot(&contBar.rotation, 0.f);
 
-		AEVec2Set(&contBar.size, (f32)AEGfxGetWindowWidth() * 0.55f, yScale);
+		AEVec2Set(&contBar.size, (f32)AEGfxGetWindowWidth() * 0.55f, ySize);
 		AEMtx33Scale(&contBar.scale, contBar.size.x, contBar.size.y);
 
 		AEVec2Set(&contBar.position, screenPos.x * 1.02f,
-		          (screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - yScale * 0.8f) - yScale * num * 1.1f);
+		          (screenPos.y + (f32)AEGfxGetWindowHeight() * 0.5f - ySize * 0.8f) - ySize * num * 1.1f);
 		AEMtx33Trans(&contBar.translation, contBar.position.x, contBar.position.y);
 
 		contBar.transformation = {0};
