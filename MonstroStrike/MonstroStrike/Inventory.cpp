@@ -1,11 +1,11 @@
 /*!*****************************************************************************
 \file    Inventory.h
-\author
+\author	 Keith Ng Hon Yew
 \par
 \par     Course:  csd1451s24
 \par     Section: A
 \par     Software Engineering Project 2
-\date    1-27-2024
+\date    05-04-2024
 
 \brief
 *******************************************************************************/
@@ -413,17 +413,17 @@ false, 0, 0, 0 };
 			AEVec2Set(&item_background[index].img.scale, 60.f, 60.f);
 			AEVec2Set(&item_background[index].pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
 
-		if (button.Item.quantity <= 0)
-		{
-			button.Item = emptySpace;
-		}
-		else
-		{
-			button.img.pTex = Gear[button.Item.ID];
-		}
+			if (button.Item.quantity <= 0)
+			{
+				button.Item = emptySpace;
+			}
+			else
+			{
+				button.img.pTex = Gear[button.Item.ID];
+			}
 			index++;
 		}
-
+	
 		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
@@ -457,19 +457,10 @@ false, 0, 0, 0 };
 
 						break;
 					}
-					//button.Ptr();
 				}
 				//Reset itemHover
 				itemHover = false;
-
-
 				indexTmp++;
-
-				//debug
-				std::cout << button.Item.name << std::endl;
-
-				index++;
-
 			}
 
 
@@ -490,13 +481,11 @@ false, 0, 0, 0 };
 
 						break;
 					}
-					//button.Ptr();
 				}
-
 			}
-
 		}
 
+		//Drag Item with mouse logic
 		if (snapBack >= 0)
 		{
 			s32 textX = 0;
@@ -531,7 +520,7 @@ false, 0, 0, 0 };
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5.f) * 90.f + 180.f);
 
-							//std::cout << "swap\n";
+							std::cout << "items: " << indexTmp << " VS " << snapBack << std::endl;
 							ButtonGearUI tmp = button;
 							button = inventoryButton[snapBack];
 							inventoryButton[snapBack] = tmp;
@@ -556,9 +545,8 @@ false, 0, 0, 0 };
 							snapBack = -1;
 							break;
 						}
-
 					}
-					index++;
+					indexTmp++;
 				}
 
 				//check with equipped slots
@@ -1018,18 +1006,8 @@ false, 0, 0, 0 };
 	// Function to update the player's stats after equipping or unequipping items
 	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
 	{
-		// Reset player's stats to base values
-		// playerReference->GetMaxHealth() = 0.f;
-		// playerReference->GetWeaponSet().damage = 0.f;
-
 		for (const auto gear : equippedItems)
 		{
-			// playerReference->GetMaxHealth() += (f32)gear.health;
-			// playerReference->GetWeaponSet().damage += (f32)gear.attack;
-			//
-			// Equip_Armor(*playerReference, ()gear.item_type, gear.rarity);
-
-
 			switch (gear.item_type)
 			{
 			case WEAPON:
