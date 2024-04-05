@@ -1,3 +1,22 @@
+/*!************************************************************************
+  \file					Player.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (55%)
+  \secondary author		Johny Yong Jun Siang (30% - traps inflicts status effect on player, Collision, gravity system),
+						Choo Jian Wei (15% - Player Combat System) 
+
+  \brief				File containing the class Player that represents the 
+						player entity in the game. 
+						
+						It handles player movement, collision detection, 
+						rendering of player and its relevant statistics UI, 
+						health management, combat mechanics, player
+						interaction status.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 #include "Utils.h"
 #include "Weapon.h"
@@ -6,11 +25,9 @@
 #include "Weapon.h"
 #include "CSVMapLoader.h"
 #include "StatusEffect.h"
-
 #include <vector>
 
 int const PlayerMaxBasehealth = 100;
-
 
 class Player {
 

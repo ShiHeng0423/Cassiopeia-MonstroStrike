@@ -1,4 +1,19 @@
+/*!************************************************************************
+  \file					DebuggerManager.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the declaration of class DebuggerManager
+						where its responsible for allowing the developer
+						to test certain parts game mechanics faster and
+						game demo during presentations.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
+
+
 
 //capable of showing the following things
 //fps

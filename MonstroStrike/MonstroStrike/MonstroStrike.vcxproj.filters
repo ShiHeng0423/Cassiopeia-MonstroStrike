@@ -45,12 +45,6 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TriggerAttack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextPrinting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -165,7 +159,7 @@
     <ClCompile Include="MapTraps.cpp">
       <Filter>Source Files\MapDesign</Filter>
     </ClCompile>
-    <ClCompile Include="Debugger.cpp">
+    <ClCompile Include="DebuggerManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -183,12 +177,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Utils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TriggerAttack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextPrinting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Physics.h">

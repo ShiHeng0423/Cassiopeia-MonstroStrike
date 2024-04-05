@@ -102,7 +102,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Crafting.cpp" />
-    <ClCompile Include="Debugger.cpp" />
+    <ClCompile Include="DebuggerManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyBoss.cpp" />
     <ClCompile Include="EnemyCharger.cpp" />

@@ -1,6 +1,16 @@
+/*!************************************************************************
+  \file					Armor.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing definitions of all the functions
+						declared in Armor.h files
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "Player.h"
 #include "Armor.h"
-
 #include "Inventory.h"
 
 f32 REGEN_TIME = 2.0f;
