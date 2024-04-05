@@ -15,6 +15,7 @@ rights reserved.
 #pragma once
 #include "AEEngine.h"
 
+//List of audios for bgm & sfx
 enum Audio_List
 {
 	MAINMENU_SONG,
