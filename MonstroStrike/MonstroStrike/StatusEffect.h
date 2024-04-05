@@ -5,6 +5,8 @@ namespace Status_Effect_System
 		BURNING,
 		REGEN,
 		LIFE_STEAL,
+		POISON,
+		SLOW,
 
 		NONE_EFFECT
 	};
@@ -14,6 +16,7 @@ namespace Status_Effect_System
 		WEAPON,
 		CONSUMABLES,
 		ENEMY,
+		TRAPS,
 
 		NONE
 	};

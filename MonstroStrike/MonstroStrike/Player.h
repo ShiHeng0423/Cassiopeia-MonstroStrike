@@ -64,8 +64,8 @@ public:
 	bool& GetIsPlayerOnFloor();
 	bool& GetIsPlayerKillBoss();
 
-	bool& GetPlayerPoisoned();
-	bool& GetPlayerSlowed();
+	void SetPlayerPoisoned(bool getPoison);
+	void SetPlayerSlowed(bool getSlow);
 	bool& GetPlayerJustDied();
 	bool& GetPlayerHeldCombo();
 

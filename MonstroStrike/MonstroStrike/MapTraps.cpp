@@ -301,11 +301,11 @@ namespace {
 				switch (arrowContainer[i].type)
 				{
 				case POISON_ARROW:
-					gameManager->GetPlayer()->GetPlayerPoisoned() = true;
+					gameManager->GetPlayer()->SetPlayerPoisoned(true);
 					//Inflict status effect
 					break;
 				case SLOWNESS_ARROW:
-					gameManager->GetPlayer()->GetPlayerSlowed() = true;
+					gameManager->GetPlayer()->SetPlayerSlowed(true);
 
 					//Inflict status effect
 					break;
