@@ -1,13 +1,13 @@
 /*!*****************************************************************************
-\file    Inventory.h
-\author
-\par
-\par     Course:  csd1451s24
-\par     Section: A
-\par     Software Engineering Project 2
-\date    1-27-2024
+\file				Inventory.h
+\project name		Monstrostrike
+\primary author		Keith Ng Hon Yew (100%)
+\secondary author
+\brief				This file contains the declaration of all functions related
+					to the inventory system.
 
-\brief
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
 *******************************************************************************/
 
 // ---------------------------------------------------------------------------

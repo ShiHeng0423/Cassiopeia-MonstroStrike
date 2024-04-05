@@ -1,13 +1,13 @@
 ﻿/*!*****************************************************************************
-\file    Crafting.h
-\author
-\par
-\par     Course:  csd1451s24
-\par     Section: A
-\par     Software Engineering Project 2
-\date    2-27-2024
+\file				Crafting.h
+\project name		Monstrostrike
+\primary author		Keith Ng Hon Yew (100%)
+\secondary author
+\brief				This file contains the declarations of functions related
+					to the crafting system.
 
-\brief
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
 *******************************************************************************/
 
 // ---------------------------------------------------------------------------

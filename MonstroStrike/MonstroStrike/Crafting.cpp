@@ -1,3 +1,17 @@
+/*!*****************************************************************************
+\file				Crafting.cpp
+\project name		Monstrostrike
+\primary author		Keith Ng Hon Yew (100%)
+\secondary author
+\brief				This file contains the definition of functions related
+					to the crafting system.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+*******************************************************************************/
+
+// ---------------------------------------------------------------------------
+// includes
 #include "Crafting.h"
 
 #include <iostream>
