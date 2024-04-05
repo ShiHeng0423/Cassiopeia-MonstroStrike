@@ -13,6 +13,7 @@ rights reserved.
 **************************************************************************/
 
 #pragma once
+
 enum GameStates {
 	SPLASHSCREEN = 0,
 	MAINMENU,

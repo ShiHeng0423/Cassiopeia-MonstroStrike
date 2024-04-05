@@ -1,4 +1,3 @@
-#pragma once
 /*!************************************************************************
   \file					GameState_Mainmenu.h
   \project name			Monstrostrike
@@ -10,6 +9,9 @@
 All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 **************************************************************************/
+
+#pragma once
+
 void Mainmenu_Load();
 void Mainmenu_Initialize();
 void Mainmenu_Update();
