@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file					NonPlayableCharacters.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (90%)
+  \secondary author		Teng Shi Heng (5%), Keith Ng Hon Yew (5%)
+  \brief				File containing the implementation of non-playable characters (NPCs)
+  
+The file include definitions of the functions that include their initialization, updating, drawing, and memory management functions.
+Structures for current conversation state, current information regarding to crafting, mission, and checking of collision player are
+also included here as well as Functions that create the instances of the entities for NPCs, information displays.  
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "NonPlayableCharacters.h"
 #include "Player.h"
 #include <vector>
@@ -59,6 +73,7 @@ namespace
 	bool confirmAcceptPrompt = false;
 	bool checkMissionClear = false;
 
+	//For items
 	int loc1 = -1;
 	int loc2 = -1;
 

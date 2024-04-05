@@ -1,3 +1,15 @@
+/*!************************************************************************
+  \file					GameState_Mainmenu.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi Heng (85%)
+  \secondary authors	Johny Yong Jun Siang (10%), Goh Jun Jie (5%)
+  \brief				File containing definitions of functions related to the main menu room state.
+						Such as loading, initializing, update, drawing etc... of the level. It also includes
+						private functions for updating the credits when credit page is updated.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "GameState_Mainmenu.h"
 #include "Utils.h"
 #include "GameStateManager.h"
@@ -65,7 +77,6 @@ namespace
 
 	void CreditAnimationUpdate();
 	void CreditAnimationEnter();
-	void CreditAnimationEnd();
 
 	struct CreditSlides {
 		Object slidesObj;
@@ -650,8 +661,5 @@ namespace {
 			credits[i].slidesObj.UpdateTransformMatrix();
 		}
 	}
-	void CreditAnimationEnd()
-	{
 
-	}
 }

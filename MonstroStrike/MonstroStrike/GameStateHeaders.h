@@ -1,4 +1,13 @@
 #pragma once
+/*!************************************************************************
+  \file					GameStateHeaders.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang
+  \brief				File containing headers of the game state in game.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "GameState_Level1.h"
 #include "GameState_Level1_B.h"
 #include "GameState_Level1_C.h"

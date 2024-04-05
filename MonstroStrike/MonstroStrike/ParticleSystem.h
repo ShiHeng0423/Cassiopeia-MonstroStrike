@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file					ParticleSystem.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				Header file containing the declaration of a particle system for the Monstrostrike project.
+  
+  This header file defines the structure and functions related to the particle system. It provides functionalities for particle
+  initialization, updating, emission, rendering, and memory management. Utilizing object pooling techniques, the particle system 
+  efficiently manages the lifecycle of particles to minimize memory allocation overhead and improve performance.
+  
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #pragma once
 #include <AEEngine.h>
 #include <vector>

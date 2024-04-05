@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file					MapPlatformGenerate.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (90%)
+  \secondary author		Goh Jun Jie (10%)
+  \brief				This file contains defintions of functions for generating and managing moving platforms.
+						Includes functions for creating, updating, and handling collisions with these platforms.
+						The creation of the initial position of the moving platforms will be based on the grid 
+						in the csv file assigned to it.
+
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "MapPlatformGenerate.h"
 #include "CollisionShape.h"
 #include "Physics.h"
