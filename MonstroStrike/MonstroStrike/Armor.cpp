@@ -40,10 +40,7 @@ void Armor_Effect_Update(class Player& player)
 
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)
 {
-	if (newArmorType == Armor_System::ARMOR_TYPE::FOOT || newArmorType == Armor_System::ARMOR_TYPE::LEGS)
-		player.GetArmorSet().pieces[newArmorType - 1] = ArmorInformation(newArmorType, newArmorGrade);
-	else
-		player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
+	player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
 
 	player.GetMaxHealth() = PlayerMaxBasehealth + Check_Set_Effect(player);
 
@@ -135,6 +132,8 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 	else
 	{
 		int ID = grade * GL_Total + type;
+		if (type == Armor_System::ARMOR_TYPE::FOOT || type == Armor_System::ARMOR_TYPE::LEGS)
+			ID += 1;
 		tmp.boost = fullInventoryList[ID].health;
 	}
 
@@ -149,15 +148,15 @@ int ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_Sy
 		switch (armorSetID)
 		{
 		case Armor_System::ARMOR_GRADE::TIER_1:
-			effect = Status_Effect_System::NONE_EFFECT;
+			effect = Status_Effect_System::REGEN;
 			return 80;
 			break;
 		case Armor_System::ARMOR_GRADE::TIER_2:
-			effect = Status_Effect_System::REGEN;
+			effect = Status_Effect_System::BURNING;
 			return 150;
 			break;
 		case Armor_System::ARMOR_GRADE::TIER_3:
-			effect = Status_Effect_System::BURNING;
+			effect = Status_Effect_System::NONE_EFFECT;
 			return 250;
 			break;
 		default:

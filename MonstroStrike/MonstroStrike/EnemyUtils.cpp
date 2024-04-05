@@ -1,8 +1,10 @@
 /*!************************************************************************
   \file					EnemyUtils.cpp
   \project name			Monstrostrike
-  \primary author		Goh Jun Jie
-  \secondary author
+  \primary author		Goh Jun Jie(100%)
+  \secondary author		
+  \brief				This file contains the definition of utility functions
+						mainly used by enemy.
 
 All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
@@ -11,6 +13,7 @@ rights reserved.
 
 
 #include "EnemyUtils.h"
+#include "main.h"
 
 
 AEGfxTexture* bulletTex;
@@ -195,7 +198,7 @@ void DrawEnemyLoot(std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pW
 	}
 }
 
-void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh) {
+void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh, AEGfxVertexList* pMeshRed) {
 	//healthbar
 // Calculate health bar position and size
 	float healthBarWidth = 80.0f; //  width of health bar
@@ -231,6 +234,7 @@ void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh) {
 }
 
 
+
 void DrawEnemyHpParts(EnemyPart& enemy, AEGfxVertexList* pWhitesqrMesh) {
 	//healthbar
 // Calculate health bar position and size
@@ -264,4 +268,25 @@ void DrawEnemyHpParts(EnemyPart& enemy, AEGfxVertexList* pWhitesqrMesh) {
 
 	//reset
 	AEGfxSetColorToAdd(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+void DrawBossHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh, AEGfxVertexList* pMeshRed) {
+	
+	
+	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+
+	//Health Border
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 825.f, AEGfxGetWinMaxY() - 60.f, 0, 600.f, 25.f).m);
+	AEGfxMeshDraw(pWhitesqrMesh, AE_GFX_MDM_TRIANGLES);
+
+	//Health Bar
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 825.f - ((1.f - ((float)enemy.health / (float)enemy.maxHealth)) * 300.f), AEGfxGetWinMaxY() - 60.f, 0, (enemy.health * 600.f) / enemy.maxHealth, 25.f).m);
+	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
+	
+
+	std::string str = "Lucifer the 2 Winged Boss";
+	f32 width, height;
+
+	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
+	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.14f, -height / 2 + 0.80f, 0.3f, 1, 1, 1, 1);
 }

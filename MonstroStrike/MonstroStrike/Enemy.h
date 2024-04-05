@@ -163,7 +163,7 @@ void EnemyUpdateChoose(Enemy& enemy, class Player& player, std::vector<EnemyDrop
 //the functions to use in levels
 void AllEnemyUpdate(std::vector<Enemy>& vecEnemyVar, class Player& player, std::vector<EnemyDrops>& vecCollectables);
 void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBoxAABB);
-void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh, std::vector<EnemyDrops>& vecCollectables);
+void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh, std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pMeshRed);
 
 
 

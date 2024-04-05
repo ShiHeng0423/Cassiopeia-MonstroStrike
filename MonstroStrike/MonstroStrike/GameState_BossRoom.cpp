@@ -278,7 +278,7 @@ void Level1_BOSS_Draw()
 	player->RenderPlayer();
 
 	//drawing enemy
-	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect, pMeshRed);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
@@ -313,6 +313,8 @@ void Level1_BOSS_Draw()
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, pTextHP, 0.5f, &width, &height);
 	AEGfxPrint(fontID, pTextHP, -width / 2 - 0.9f, -width / 2 + 0.97f, 0.5f, 1, 1, 1, 1);*/
+
+
 
 	player->RenderPlayerStatUI();
 

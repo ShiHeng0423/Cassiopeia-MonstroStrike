@@ -267,7 +267,7 @@ void Level1_A_Draw()
 	player->RenderPlayer();
 
 	//drawing enemy
-	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect, pMeshRed);
 
 #pragma region Game_UI_Render
 

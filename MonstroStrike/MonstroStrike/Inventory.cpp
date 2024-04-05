@@ -1262,6 +1262,12 @@ false, 0, 0, 0 };
 		{
 			player_filepath = "Assets/SaveFiles/player_inventory_new.json";
 			playerReference->GetMaxHealth() = PlayerMaxBasehealth;
+			Armor_System::Armor d_ArmorPiece;
+
+			for (size_t index = 0; index < 4; index++)
+				playerReference->GetArmorSet().pieces[index] = d_ArmorPiece;
+			Weapon_System::Equip_Weapon(*playerReference, Weapon_System::WEAPON_GRADE::NO_GRADE);
+
 			for (auto& gear : equippedGear)
 			{
 				gear = emptySpace;

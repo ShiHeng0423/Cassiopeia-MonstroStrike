@@ -373,7 +373,7 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 }
 
 void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMesh,
-                  std::vector<EnemyDrops>& vecCollectables)
+                  std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pMeshRed)
 {
 	for (Enemy& enemy : vecEnemyVar)
 	{
@@ -425,7 +425,12 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 			}
 
 			//healthbar
-			DrawEnemyHp(enemy, pWhitesqrMesh);
+			if (enemy.enemyType == ENEMY_BOSS1) {
+				DrawBossHp(enemy, pWhitesqrMesh, pMeshRed);
+			}
+			else {
+				DrawEnemyHp(enemy, pWhitesqrMesh, pMeshRed);
+			}
 		}
 	}
 
