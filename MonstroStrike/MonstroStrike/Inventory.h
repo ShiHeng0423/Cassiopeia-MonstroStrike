@@ -122,6 +122,7 @@ extern AEGfxTexture* blank;
 namespace Inventory
 {
 	extern bool isNewAccount;
+	extern bool	isGodAccount;
 	extern GameStates fileLoadedState;
 
 

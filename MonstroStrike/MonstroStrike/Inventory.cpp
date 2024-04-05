@@ -62,6 +62,7 @@ namespace Inventory
 {
 	//Global Variable
 	bool isNewAccount;
+	bool isGodAccount;
 	GameStates fileLoadedState;
 	
 	std::vector<Item> allItems; //list of all items in game
@@ -461,14 +462,14 @@ false, 0, 0, 0 };
 				//Reset itemHover
 				itemHover = false;
 
-<<<<<<< Updated upstream
+
 				indexTmp++;
-=======
+
 				//debug
 				std::cout << button.Item.name << std::endl;
 
 				index++;
->>>>>>> Stashed changes
+
 			}
 
 
@@ -1287,6 +1288,15 @@ false, 0, 0, 0 };
 			{
 				equippedGear[i] = emptySpace;
 			}
+		}else if (isGodAccount)
+		{
+			player_filepath = "Assets/SaveFiles/god_inventory.json";
+
+			for (size_t i = 0; i < 5; ++i)
+			{
+				equippedGear[i] = emptySpace;
+			}
+
 		}
 		else
 		{
