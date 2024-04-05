@@ -24,17 +24,17 @@ namespace Weapon_System
         Status_Effect_System::Status_Effect extraEffect{ Status_Effect_System::Status_Effect::NONE_EFFECT };
 
         //jian wei
-        std::string name;
-        int damage;
+        std::string name{ "" };
+        int damage{ 0 };
 
-        AABB collisionBox;
-        AABB hitBox;
+        AABB collisionBox{};
+        AABB hitBox{};
 
-        AEVec2 position;
-        AEVec2 scale;
-        AEVec2 transformation;
+        AEVec2 position{ 0,0 };
+        AEVec2 scale{ 0,0 };
+        AEVec2 transformation{ 0,0 };
 
-        bool weaponHIT;
+        bool weaponHIT{ false };
     };
 
     //shi heng

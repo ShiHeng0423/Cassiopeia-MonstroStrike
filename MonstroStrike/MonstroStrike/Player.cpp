@@ -101,10 +101,12 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	obj.speed = speed;
 
 	AEVec2Set(&obj.pos, location.x, location.y);
+	AEVec2Set(&prevPos, location.x, location.y);
 	AEVec2Set(&obj.scale, scale.x, scale.y);
 
 	//Gravity affection
 	mass = 60.f;
+	gravityForce = 0.f;
 	friction = 0.85f;
 
 	onFloor = true; //Set as false first, will be set as true when ground detected
@@ -127,6 +129,8 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	collisionBox.maximum.x = obj.pos.x + obj.scale.x * 0.5f;
 	collisionBox.maximum.y = obj.pos.y + obj.scale.y * 0.5f;
 
+	prevcollisionBox = collisionBox;
+
 	AEVec2Set(&boxArms.maximum, 0.f, 0.f);
 	AEVec2Set(&boxHeadFeet.maximum, 0.f, 0.f);
 	AEVec2Set(&collisionNormal, 0.f, 0.f);
@@ -148,7 +152,8 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	currStatusMaxCD = 3.f;
 	currStatusCD = currStatusMaxCD;
 
-
+	immortalHp = false;
+	maxAttackPower = false;
 }
 
 Player::~Player()
@@ -624,7 +629,7 @@ void Player::RenderPlayerStatUI()
 		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + cx + 155.f, AEGfxGetWinMaxY() - cy, 0.f, 270.f, 30.f).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxPrint(fontID, statusEffectDescription.c_str(), mousePos.x / (AEGfxGetWindowWidth() * 0.5f) + 0.03f, mousePos.y / (AEGfxGetWindowHeight() * 0.5f)-0.02, 0.3f, 1, 1, 1, 1);
+		AEGfxPrint(fontID, statusEffectDescription.c_str(), mousePos.x / (AEGfxGetWindowWidth() * 0.5f) + 0.03f, mousePos.y / (AEGfxGetWindowHeight() * 0.5f)-0.02f, 0.3f, 1, 1, 1, 1);
 	}
 }
 

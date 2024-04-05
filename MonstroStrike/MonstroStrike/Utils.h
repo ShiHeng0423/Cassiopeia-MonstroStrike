@@ -5,13 +5,13 @@
 //Static Image
 struct Sprite
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
 	float rotate{ 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	void UpdateTransformMatrix();
 };
@@ -19,7 +19,7 @@ struct Sprite
 //Moving Image (E.g. Player, Enemy etc)
 struct Object
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
@@ -27,7 +27,7 @@ struct Object
 
 	AEVec2 speed{ 0.f, 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	void UpdateTransformMatrix();
 };
@@ -35,7 +35,7 @@ struct Object
 //Button UI
 struct Button
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
@@ -43,7 +43,7 @@ struct Button
 
 	AEVec2 speed{ 0.f, 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	void (*Ptr)(void);
 	void UpdateTransformMatrix();
@@ -51,7 +51,7 @@ struct Button
 
 struct ButtonUI
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
@@ -59,7 +59,7 @@ struct ButtonUI
 
 	AEVec2 speed{ 0.f, 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	std::string str{ "" };
 

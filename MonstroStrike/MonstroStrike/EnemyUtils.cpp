@@ -198,7 +198,7 @@ void DrawEnemyLoot(std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pW
 	}
 }
 
-void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh, AEGfxVertexList* pMeshRed) {
+void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh) {
 	//healthbar
 // Calculate health bar position and size
 	float healthBarWidth = 80.0f; //  width of health bar
