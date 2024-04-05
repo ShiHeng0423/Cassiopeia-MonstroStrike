@@ -9,6 +9,7 @@ All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 *******************************************************************************/
 
+#pragma once
 // ---------------------------------------------------------------------------
 // includes
 #include <crtdbg.h> // To check for memory leaks
@@ -24,7 +25,6 @@ rights reserved.
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/istreamwrapper.h"
-#pragma once
 
 struct MaterialRequirement
 {
