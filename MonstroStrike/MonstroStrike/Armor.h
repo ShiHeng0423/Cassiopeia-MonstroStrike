@@ -18,7 +18,7 @@ namespace Armor_System
 	{
 		HEAD,
 		BODY,
-		LEGS,
+		LEGS = 3,
 		FOOT,
 
 		NO_TYPE

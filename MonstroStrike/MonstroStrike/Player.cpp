@@ -55,6 +55,9 @@ namespace
 	AEGfxTexture* se_Burning;
 	AEGfxTexture* se_Regen;
 	AEGfxTexture* se_Lifesteal;
+	AEGfxTexture* se_Poison;
+	AEGfxTexture* se_Slow;
+
 
 	//Attack animation
 	AEGfxTexture* swordthrustTex;
@@ -77,6 +80,9 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	se_Burning = AEGfxTextureLoad("Assets/StatusEffects/Status_BurningEffect.png");
 	se_Regen = AEGfxTextureLoad("Assets/StatusEffects/Status_Regen.png");
 	se_Lifesteal = AEGfxTextureLoad("Assets/StatusEffects/Status_LifeSteal.png");
+	se_Poison = AEGfxTextureLoad("Assets/StatusEffects/Status_Poison.png");
+	se_Slow = AEGfxTextureLoad("Assets/StatusEffects/Status_Slow.png");
+
 
 	//Jian Wei (Moved from level 1 to player by Johny)
 	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
@@ -152,6 +158,8 @@ Player::~Player()
 	AEGfxTextureUnload(se_Burning);
 	AEGfxTextureUnload(se_Lifesteal);
 	AEGfxTextureUnload(se_Regen);
+	AEGfxTextureUnload(se_Poison);
+	AEGfxTextureUnload(se_Slow);
 
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pWhiteSquareMesh);
@@ -362,6 +370,18 @@ void Player::Update(bool isInventoryOpen)
 		else
 		{
 			isPoisoned = false; // Set status to false
+			size_t index = 0;
+			for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect :
+				playerStatusEffectList)
+			{
+				if (effect.first == Status_Effect_System::Status_Effect::POISON)
+				{
+					std::cout << index << std::endl;
+					break;
+				}
+				index++;
+			}
+			playerStatusEffectList.erase(playerStatusEffectList.begin() + index);
 			currStatusCD = currStatusMaxCD; // Reset cooldown
 		}
 	}
@@ -375,6 +395,18 @@ void Player::Update(bool isInventoryOpen)
 		else
 		{
 			isSlowed = false; //Set status to false
+			size_t index = 0;
+			for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect :
+				playerStatusEffectList)
+			{
+				if (effect.first == Status_Effect_System::Status_Effect::SLOW)
+				{
+					std::cout << index << std::endl;
+					break;
+				}
+				index++;
+			}
+			playerStatusEffectList.erase(playerStatusEffectList.begin() + index);
 			friction = 0.85f;
 			currStatusCD = currStatusMaxCD; //reset cd
 		}
@@ -559,6 +591,12 @@ void Player::RenderPlayerStatUI()
 		case Status_Effect_System::REGEN:
 			AEGfxTextureSet(se_Regen, 0, 0);
 			break;
+		case Status_Effect_System::POISON:
+			AEGfxTextureSet(se_Poison, 0, 0);
+			break;
+		case Status_Effect_System::SLOW:
+			AEGfxTextureSet(se_Slow, 0, 0);
+			break;
 		default:
 			break;
 		}
@@ -670,14 +708,18 @@ bool& Player::GetIsTalkingToNpc()
 	return isConversation;
 }
 
-bool& Player::GetPlayerPoisoned()
+void Player::SetPlayerPoisoned(bool getPoison)
 {
-	return isPoisoned;
+	if (!isPoisoned)
+		playerStatusEffectList.push_back({ Status_Effect_System::Status_Effect::POISON, Status_Effect_System::Status_Effect_Source::TRAPS});
+	 isPoisoned = getPoison;
 }
 
-bool& Player::GetPlayerSlowed()
+void Player::SetPlayerSlowed(bool getSlow)
 {
-	return isSlowed;
+	if (!isSlowed)
+		playerStatusEffectList.push_back({ Status_Effect_System::Status_Effect::SLOW, Status_Effect_System::Status_Effect_Source::TRAPS });
+	isSlowed = getSlow;
 }
 
 AABB& Player::GetPlayerCollisionBox()
@@ -715,7 +757,7 @@ void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 						gridMap[playerIndexY][playerIndexX].collisionBox);
 					ResolveVerticalCollision(boxHeadFeet, gridMap[playerIndexY][playerIndexX].collisionBox,
 						&collisionNormal, &obj.pos,
-						&velocity, &onFloor, &gravityForce);
+						&velocity);
 				}
 
 				//Check horizontal box (Left arm -> Right arm)

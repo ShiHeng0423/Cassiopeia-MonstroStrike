@@ -346,7 +346,7 @@ void AllEnemyNBulletCollisionCheck(std::vector<Enemy>& vecEnemyVar, AABB gridBox
 
 			ResolveVerticalCollision(enemy.boxHeadFeet, gridBoxAABB,
 				&enemy.collisionNormal, &enemy.obj.pos,
-				&enemy.velocity, &enemy.onFloor, &enemy.gravityForce);
+				&enemy.velocity);
 		}
 		//Check horizontal box (Left arm -> Right arm)
 		if (AABBvsAABB(enemy.boxArms, gridBoxAABB))

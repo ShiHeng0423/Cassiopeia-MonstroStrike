@@ -40,7 +40,10 @@ void Armor_Effect_Update(class Player& player)
 
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)
 {
-	player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
+	if (newArmorType == Armor_System::ARMOR_TYPE::FOOT || newArmorType == Armor_System::ARMOR_TYPE::LEGS)
+		player.GetArmorSet().pieces[newArmorType - 1] = ArmorInformation(newArmorType, newArmorGrade);
+	else
+		player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
 
 	player.GetMaxHealth() = PlayerMaxBasehealth + Check_Set_Effect(player);
 
@@ -131,11 +134,7 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 		tmp.boost = 0;
 	else
 	{
-		int ID;
-		if(type == Armor_System::ARMOR_TYPE::FOOT || type == Armor_System::ARMOR_TYPE::LEGS)
-			ID = grade * GL_Total + type + 1;
-		else
-			ID = grade * GL_Total + type;
+		int ID = grade * GL_Total + type;
 		tmp.boost = fullInventoryList[ID].health;
 	}
 

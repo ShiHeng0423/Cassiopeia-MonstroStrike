@@ -231,7 +231,6 @@ void DrawTraps(AEGfxVertexList* mesh)
 	{
 		if (fireBallContainer[i].obj.pTex == nullptr)
 		{
-			std::cout << "NADA\n";
 			return;
 		}
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -302,13 +301,11 @@ namespace {
 				switch (arrowContainer[i].type)
 				{
 				case POISON_ARROW:
-					std::cout << "Poison Arrow Hit\n";
-					gameManager->GetPlayer()->GetPlayerPoisoned() = true;
+					gameManager->GetPlayer()->SetPlayerPoisoned(true);
 					//Inflict status effect
 					break;
 				case SLOWNESS_ARROW:
-					std::cout << "Slowness Arrow Hit\n";
-					gameManager->GetPlayer()->GetPlayerSlowed() = true;
+					gameManager->GetPlayer()->SetPlayerSlowed(true);
 
 					//Inflict status effect
 					break;
@@ -358,7 +355,6 @@ namespace {
 			newFireBall.damage = damage;
 
 			newFireBall.originPoint = originPosition;
-			std::cout <<  newFireBall.obj.pos.x << " " << newFireBall.obj.pos.y << "\n";
 
 			fireBallContainer.push_back(newFireBall);
 		}

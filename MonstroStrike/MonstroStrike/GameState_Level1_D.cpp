@@ -73,7 +73,7 @@ void Level1_D_Load()
 	//Load map
 	if (MapLoader(fileName, gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2))
 	{
-		PrintMap(gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2); //Just for checking if the map data is stored properly
+		//PrintMap(gameMap, MAP_ROW_SIZE_2, MAP_COLUMN_SIZE_2); //Just for checking if the map data is stored properly
 	}
 
 	//Inventory assets
@@ -197,17 +197,6 @@ void Level1_D_Update()
 		Inventory::inventoryOpen = !Inventory::inventoryOpen;
 		Inventory::itemHover = false;
 		audioManager->PlayAudio(false, Audio_List::INVENTORY_OPEN);
-	}
-
-	if (AEInputCheckTriggered(AEVK_0))
-	{
-		//next = GameStates::Quit;
-		AEVec2 test{100.f, 100.f};
-		cam->LookAhead(test);
-	}
-	if (AEInputCheckCurr(AEVK_1))
-	{
-		cam->CameraShake();
 	}
 
 	//This is set here temporary so that thing actually work, need to move
@@ -505,7 +494,7 @@ namespace
 
 						ResolveVerticalCollision(tmpEnemy.boxHeadFeet, gridMap[enemyIndexY][enemyIndexX].collisionBox,
 						                         &tmpEnemy.collisionNormal, &tmpEnemy.obj.pos,
-						                         &tmpEnemy.velocity, &tmpEnemy.onFloor, &tmpEnemy.gravityForce);
+						                         &tmpEnemy.velocity);
 					}
 					//Check horizontal box (Left arm -> Right arm)
 					if (AABBvsAABB(tmpEnemy.boxArms, gridMap[enemyIndexY][enemyIndexX].collisionBox))

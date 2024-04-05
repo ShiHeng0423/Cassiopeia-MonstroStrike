@@ -1283,8 +1283,8 @@ false, 0, 0, 0 };
 		if (isNewAccount)
 		{
 			player_filepath = "Assets/SaveFiles/player_inventory_new.json";
-
-			for (size_t i =0; i<5; ++i)
+			playerReference->GetMaxHealth() = PlayerMaxBasehealth;
+			for (auto& gear : equippedGear)
 			{
 				equippedGear[i] = emptySpace;
 			}
