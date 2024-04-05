@@ -55,6 +55,9 @@ namespace
 	AEGfxTexture* se_Burning;
 	AEGfxTexture* se_Regen;
 	AEGfxTexture* se_Lifesteal;
+	AEGfxTexture* se_Poison;
+	AEGfxTexture* se_Slow;
+
 
 	//Attack animation
 	AEGfxTexture* swordthrustTex;
@@ -77,6 +80,9 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	se_Burning = AEGfxTextureLoad("Assets/StatusEffects/Status_BurningEffect.png");
 	se_Regen = AEGfxTextureLoad("Assets/StatusEffects/Status_Regen.png");
 	se_Lifesteal = AEGfxTextureLoad("Assets/StatusEffects/Status_LifeSteal.png");
+	se_Poison = AEGfxTextureLoad("Assets/StatusEffects/Status_Poison.png");
+	se_Slow = AEGfxTextureLoad("Assets/StatusEffects/Status_Slow.png");
+
 
 	//Jian Wei (Moved from level 1 to player by Johny)
 	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
@@ -152,6 +158,8 @@ Player::~Player()
 	AEGfxTextureUnload(se_Burning);
 	AEGfxTextureUnload(se_Lifesteal);
 	AEGfxTextureUnload(se_Regen);
+	AEGfxTextureUnload(se_Poison);
+	AEGfxTextureUnload(se_Slow);
 
 	AEGfxMeshFree(pMeshRed);
 	AEGfxMeshFree(pWhiteSquareMesh);
