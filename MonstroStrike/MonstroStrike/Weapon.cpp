@@ -149,7 +149,8 @@ namespace Weapon_System
                 xScale = 30.0f;
                 yScale = 20.0f;
 
-
+                playerEquip->position.x = player->GetPlayerCurrentPosition().x;
+                playerEquip->position.y = player->GetPlayerCurrentPosition().y;
                 // change the hitbox
                 //f32 hit = playerFacingRight ?  // change the hitbox
                 //    playerEquip->position.x = player->GetPlayerCurrentPosition().x + xHitOffset : playerEquip->position.x = player->GetPlayerCurrentPosition().x - xHitOffset;
