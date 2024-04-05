@@ -88,12 +88,12 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 
 
 	//Jian Wei (Moved from level 1 to player by Johny)
-	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
-	revswordthrustTex = AEGfxTextureLoad("Assets/Sword thrustrev.png");
-	swordmultithrustTex = AEGfxTextureLoad("Assets/sword mutiple thrust.png");
-	revswordmultithrustTex = AEGfxTextureLoad("Assets/Swordmutiplethrustrev.png");
-	swordslashTex = AEGfxTextureLoad("Assets/SwordSlash.png");
-	revswordslashTex = AEGfxTextureLoad("Assets/Sword Slashrev.png");
+	swordthrustTex = AEGfxTextureLoad("Assets/Attacks/Sword thrust.png");
+	revswordthrustTex = AEGfxTextureLoad("Assets/Attacks/Sword thrustrev.png");
+	swordmultithrustTex = AEGfxTextureLoad("Assets/Attacks/sword mutiple thrust.png");
+	revswordmultithrustTex = AEGfxTextureLoad("Assets/Attacks/Swordmutiplethrustrev.png");
+	swordslashTex = AEGfxTextureLoad("Assets/Attacks/SwordSlash.png");
+	revswordslashTex = AEGfxTextureLoad("Assets/Attacks/Sword Slashrev.png");
 
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
 	pMeshRed = GenerateSquareMesh(0xFFFF0000);
