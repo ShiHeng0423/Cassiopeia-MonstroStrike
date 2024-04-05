@@ -1,8 +1,10 @@
 /*!************************************************************************
   \file					EnemyFly.cpp
   \project name			Monstrostrike
-  \primary author		Goh Jun Jie
+  \primary author		Goh Jun Jie(100%)
   \secondary author
+  \brief				This file contains the definition of Update function
+						for the "Fly" enemy.
 
 All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
