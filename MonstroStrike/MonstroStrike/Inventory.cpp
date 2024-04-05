@@ -6,7 +6,7 @@
 \brief				This file contains the definition of all functions related
 					to the inventory system.
 
-All content © 2024 DigiPen Institute of Technology Singapore. All
+All content ï¿½ 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 *******************************************************************************/
 
@@ -62,7 +62,7 @@ namespace Inventory
 {
 	//Global Variable
 	bool isNewAccount;
-	bool isGodAccount;
+	bool isGodAccount = false;
 	GameStates fileLoadedState;
 	
 	std::vector<Item> allItems; //list of all items in game

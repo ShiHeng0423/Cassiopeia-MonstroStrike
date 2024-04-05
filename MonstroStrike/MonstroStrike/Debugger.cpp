@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "GameStateManager.h"
 #include "MapTransition.h"
+#include "Inventory.h"
 #include "main.h"
 #include <sstream>
 #include <vector>
@@ -162,6 +163,20 @@ void GoPrevLevel()
 	DebuggerManager::GetCurrentArea() = max(AreaNumber::AREA_0, DebuggerManager::GetCurrentArea() - 1);
 }
 
+void UsedGodModeFile()
+{
+	if (debugFunction[GOD_MODE_FILE].str == "Off")
+	{
+		debugFunction[GOD_MODE_FILE].str = "On";
+		Inventory::isGodAccount = true;
+	}
+	else
+	{
+		debugFunction[GOD_MODE_FILE].str = "Off";
+		Inventory::isGodAccount = false;
+	}
+}
+
 DebuggerManager::DebuggerManager(Player* player)
 {
 	quad = GenerateSquareMesh(0xFFFFFFFF);
@@ -199,6 +214,9 @@ DebuggerManager::DebuggerManager(Player* player)
 		case DebuggerFunction::TELEPORT_CONFIRMATION:
 			debugFunction[index].Ptr = TeleportPlayer;
 			break;
+		case DebuggerFunction::GOD_MODE_FILE:
+			debugFunction[index].Ptr = UsedGodModeFile;
+			break;
 		default:
 			break;
 		}
@@ -215,6 +233,9 @@ DebuggerManager::DebuggerManager(Player* player)
 	debugBackground.scale={ 400,400 };
 	debugBackground.pos = { AEGfxGetWinMinX() + 200.f, AEGfxGetWinMaxY() - debugBackground.scale.y * 0.5f };
 	debugBackground.UpdateTransformMatrix();
+
+	debugFunction[GOD_MODE_FILE].pos = debugFunction[FPS].pos;
+	debugFunction[GOD_MODE_FILE].UpdateTransformMatrix();
 	
 	currArea = current - GameStates::GAME_LOBBY;
 }
@@ -227,7 +248,7 @@ DebuggerManager::~DebuggerManager()
 
 void DebuggerManager::Update()
 {
-	if (AEInputCheckTriggered(AEVK_0) && current >= GameStates::GAME_LOBBY)
+	if (AEInputCheckTriggered(AEVK_0) && current >= GameStates::MAINMENU)
 	{
 		openDebugPanel = !openDebugPanel;
 		currArea = current - GameStates::GAME_LOBBY;
@@ -235,125 +256,180 @@ void DebuggerManager::Update()
 
 	if (openDebugPanel)
 	{
-		if (AEInputCheckTriggered(AEVK_LBUTTON))
+		if (current == GameStates::MAINMENU)
 		{
-			s32 cx, cy;
-			AEInputGetCursorPosition(&cx, &cy);
-			AEVec2 mousePos{ 0, 0 };
-			mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
-			mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
-
-			f32 x, y;
-			AEGfxGetCamPosition(&x, &y);
-
-			for (size_t index = 0; index < DEBUGGER_TOTAL; index++)
+			if (AEInputCheckTriggered(AEVK_LBUTTON))
 			{
-				AEVec2 translateOrigin = debugFunction[index].pos;
+				s32 cx, cy;
+				AEInputGetCursorPosition(&cx, &cy);
+				AEVec2 mousePos{ 0, 0 };
+				mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
+				mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
+
+				f32 x, y;
+				AEGfxGetCamPosition(&x, &y);
+				AEVec2 translateOrigin = debugFunction[GOD_MODE_FILE].pos;
 				translateOrigin.x -= x;
 				translateOrigin.y -= y;
 				if (AETestPointToRect(&mousePos, &translateOrigin,
-					debugFunction[index].scale.x, debugFunction[index].scale.y))
+					debugFunction[GOD_MODE_FILE].scale.x, debugFunction[GOD_MODE_FILE].scale.y))
 				{
-					debugFunction[index].Ptr();
-					switch (index)
+					debugFunction[GOD_MODE_FILE].Ptr();
+				}
+
+			}
+
+			debugBackground.pos = { AEGfxGetWinMinX() + 200.f, AEGfxGetWinMaxY() - debugBackground.scale.y * 0.5f };
+			debugBackground.UpdateTransformMatrix();
+		}
+		else
+		{
+			if (AEInputCheckTriggered(AEVK_LBUTTON))
+			{
+				s32 cx, cy;
+				AEInputGetCursorPosition(&cx, &cy);
+				AEVec2 mousePos{ 0, 0 };
+				mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
+				mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
+
+				f32 x, y;
+				AEGfxGetCamPosition(&x, &y);
+				for (size_t index = 0; index < DEBUGGER_TOTAL; index++)
+				{
+					AEVec2 translateOrigin = debugFunction[index].pos;
+					translateOrigin.x -= x;
+					translateOrigin.y -= y;
+					if (AETestPointToRect(&mousePos, &translateOrigin,
+						debugFunction[index].scale.x, debugFunction[index].scale.y))
 					{
-					case DebuggerFunction::FPS:
-					case DebuggerFunction::POSITION:
-						break;
-					case DebuggerFunction::IMMORTAL:
-						playerInfo->SetDebugModeImmortal(!playerInfo->GetDebugModeImmortal());
-						break;
-					case DebuggerFunction::MAX_POWER:
-						playerInfo->SetDebugModeOverpower(!playerInfo->GetDebugModeOverpower());
-						break;
-					case DebuggerFunction::TELEPORT_LEVEL_UP:
-					case DebuggerFunction::TELEPORT_LEVEL_DOWN:
-						break;
-					case DebuggerFunction::TELEPORT_CONFIRMATION:
-						openDebugPanel = false;
-						break;
-					default:
-						break;
+						debugFunction[index].Ptr();
+						switch (index)
+						{
+						case DebuggerFunction::FPS:
+						case DebuggerFunction::POSITION:
+							break;
+						case DebuggerFunction::IMMORTAL:
+							playerInfo->SetDebugModeImmortal(!playerInfo->GetDebugModeImmortal());
+							break;
+						case DebuggerFunction::MAX_POWER:
+							playerInfo->SetDebugModeOverpower(!playerInfo->GetDebugModeOverpower());
+							break;
+						case DebuggerFunction::TELEPORT_LEVEL_UP:
+						case DebuggerFunction::TELEPORT_LEVEL_DOWN:
+							break;
+						case DebuggerFunction::TELEPORT_CONFIRMATION:
+							openDebugPanel = false;
+							break;
+						case DebuggerFunction::GOD_MODE_FILE:
+							break;
+						default:
+							break;
+						}
 					}
 				}
 			}
-		}
-		for (size_t index = 0; index < TELEPORT_LEVEL_DOWN; index++)
-		{
-			debugFunction[index].pos.x = AEGfxGetWinMinX() + 175.f;
-			debugFunction[index].pos.y = AEGfxGetWinMaxY() - 40.f - index * 60.f;
-			debugFunction[index].UpdateTransformMatrix();
-		}
-		debugFunction[TELEPORT_LEVEL_DOWN].pos = { AEGfxGetWinMinX() + 275.f, AEGfxGetWinMaxY() - 40.f - DebuggerFunction::TELEPORT_LEVEL_UP * 60.f };
-		debugFunction[TELEPORT_LEVEL_DOWN].UpdateTransformMatrix();
 
-		debugFunction[TELEPORT_CONFIRMATION].pos = { AEGfxGetWinMinX() + 225.f, AEGfxGetWinMaxY() - 40.f - DebuggerFunction::TELEPORT_LEVEL_DOWN * 60.f };
-		debugFunction[TELEPORT_CONFIRMATION].UpdateTransformMatrix();
+			for (size_t index = 0; index < TELEPORT_LEVEL_DOWN; index++)
+			{
+				debugFunction[index].pos.x = AEGfxGetWinMinX() + 175.f;
+				debugFunction[index].pos.y = AEGfxGetWinMaxY() - 40.f - index * 60.f;
+				debugFunction[index].UpdateTransformMatrix();
+			}
+			debugFunction[TELEPORT_LEVEL_DOWN].pos = { AEGfxGetWinMinX() + 275.f, AEGfxGetWinMaxY() - 40.f - DebuggerFunction::TELEPORT_LEVEL_UP * 60.f };
+			debugFunction[TELEPORT_LEVEL_DOWN].UpdateTransformMatrix();
 
-		debugBackground.pos = { AEGfxGetWinMinX() + 200.f, AEGfxGetWinMaxY() - debugBackground.scale.y * 0.5f };
-		debugBackground.UpdateTransformMatrix();
+			debugFunction[TELEPORT_CONFIRMATION].pos = { AEGfxGetWinMinX() + 225.f, AEGfxGetWinMaxY() - 40.f - DebuggerFunction::TELEPORT_LEVEL_DOWN * 60.f };
+			debugFunction[TELEPORT_CONFIRMATION].UpdateTransformMatrix();
+
+			debugBackground.pos = { AEGfxGetWinMinX() + 200.f, AEGfxGetWinMaxY() - debugBackground.scale.y * 0.5f };
+			debugBackground.UpdateTransformMatrix();
+
+			debugFunction[GOD_MODE_FILE].pos = debugFunction[FPS].pos;
+			debugFunction[GOD_MODE_FILE].UpdateTransformMatrix();
+		}
 	}
-
 }
 
 void DebuggerManager::RenderDebuggerUI()
 {
-
 	if (openDebugPanel)
 	{
-		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE); 
-		AEGfxTextureSet(debugBackground.pTex, 0, 0);
-		AEGfxSetTransform(debugBackground.transform.m);
-		AEGfxMeshDraw(quad, AE_GFX_MDM_TRIANGLES);
-
-		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-		for (size_t index = 0; index < DEBUGGER_TOTAL; index++)
+		if (current == GameStates::MAINMENU)
 		{
-			AEGfxSetTransform(debugFunction[index].transform.m);
+			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxTextureSet(debugBackground.pTex, 0, 0);
+			AEGfxSetTransform(debugBackground.transform.m);
+			AEGfxMeshDraw(quad, AE_GFX_MDM_TRIANGLES);
+
+			AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+			AEGfxSetTransform(debugFunction[GOD_MODE_FILE].transform.m);
 			AEGfxMeshDraw(quad, AE_GFX_MDM_TRIANGLES);
 
 			f32 width, height;
 			std::stringstream str;
 
-			switch (index)
+			AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+			AEGfxPrint(fontID, debugFunction[GOD_MODE_FILE].str.c_str(), -0.81f, -height / 2 + 0.90f, 0.3f, 0, 0, 0, 1);
+
+			str << "God Mode";
+			AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+			AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f, 0.3f, 0, 0, 0, 1);
+		}
+		else
+		{
+			AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
+			AEGfxTextureSet(debugBackground.pTex, 0, 0);
+			AEGfxSetTransform(debugBackground.transform.m);
+			AEGfxMeshDraw(quad, AE_GFX_MDM_TRIANGLES);
+
+			AEGfxSetRenderMode(AE_GFX_RM_COLOR);
+			for (size_t index = 0; index < GOD_MODE_FILE; index++)
 			{
-			case DebuggerFunction::FPS:
-				str << "FPS";
-				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
-				break;
-			case DebuggerFunction::POSITION:
-				str << "Position";
-				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
-				break;
-			case DebuggerFunction::IMMORTAL:
-				str << "Immortal";
-				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
-				break;
-			case DebuggerFunction::MAX_POWER:
-				str << "Max Atk";
-				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
-				break;
-			case DebuggerFunction::TELEPORT_LEVEL_UP:
-				str << "Level " << currArea;
-				AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
-				AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
-				break;
-			default:
-				break;
+				AEGfxSetTransform(debugFunction[index].transform.m);
+				AEGfxMeshDraw(quad, AE_GFX_MDM_TRIANGLES);
+
+				f32 width, height;
+				std::stringstream str;
+
+				switch (index)
+				{
+				case DebuggerFunction::FPS:
+					str << "FPS";
+					AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+					AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+					break;
+				case DebuggerFunction::POSITION:
+					str << "Position";
+					AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+					AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+					break;
+				case DebuggerFunction::IMMORTAL:
+					str << "Immortal";
+					AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+					AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+					break;
+				case DebuggerFunction::MAX_POWER:
+					str << "Max Atk";
+					AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+					AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+					break;
+				case DebuggerFunction::TELEPORT_LEVEL_UP:
+					str << "Level " << currArea;
+					AEGfxGetPrintSize(fontID, str.str().c_str(), 0.3f, &width, &height);
+					AEGfxPrint(fontID, str.str().c_str(), -0.99f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
+					break;
+				default:
+					break;
+				}
+
+				AEGfxGetPrintSize(fontID, debugFunction[index].str.c_str(), 0.3f, &width, &height);
+				if (index == TELEPORT_LEVEL_DOWN)
+					AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.67f, -height / 2 + 0.90f - TELEPORT_LEVEL_UP * 0.13f, 0.3f, 0, 0, 0, 1);
+				else if (index == TELEPORT_CONFIRMATION)
+					AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.74f, -height / 2 + 0.90f - TELEPORT_LEVEL_DOWN * 0.13f, 0.3f, 0, 0, 0, 1);
+				else
+					AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.81f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 			}
-
-			AEGfxGetPrintSize(fontID, debugFunction[index].str.c_str(), 0.3f, &width, &height);
-
-			if (index == TELEPORT_LEVEL_DOWN)
-				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.67f, -height / 2 + 0.90f - TELEPORT_LEVEL_UP * 0.13f, 0.3f, 0, 0, 0, 1);
-			else if (index == TELEPORT_CONFIRMATION)
-				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.74f, -height / 2 + 0.90f - TELEPORT_LEVEL_DOWN * 0.13f, 0.3f, 0, 0, 0, 1);
-			else
-				AEGfxPrint(fontID, debugFunction[index].str.c_str(), -0.81f, -height / 2 + 0.90f - index * 0.13f, 0.3f, 0, 0, 0, 1);
 		}
 	}
 
@@ -365,7 +441,7 @@ void DebuggerManager::RenderDebuggerUI()
 		AEGfxMeshDraw(quad, AE_GFX_MDM_TRIANGLES);
 
 		size_t activeDebug = 0;
-		for (size_t index = 0; index < DEBUGGER_TOTAL; index++)
+		for (size_t index = 0; index < GOD_MODE_FILE; index++)
 		{
 			if (!debugMsg[index])
 				continue;
@@ -400,4 +476,9 @@ void DebuggerManager::RenderDebuggerUI()
 int& DebuggerManager::GetCurrentArea()
 {
 	return currArea;
+}
+
+void DebuggerManager::setDebugClose()
+{
+	openDebugPanel = false;
 }

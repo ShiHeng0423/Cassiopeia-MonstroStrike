@@ -1,4 +1,19 @@
 #pragma once
+/*!************************************************************************
+  \file					MapTransition.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing declarations of functions and structures for map transition effects.
+
+  This file contains declarations of functions and structures essential for managing map transition effects providing visual effects
+  when moving between different game levels or areas. The header defines structures for representing transition image objects and
+  enumerates different transition directions, along with functions for loading, initializing, updating, drawing, and unloading map 
+  transition effects.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include <AEEngine.h>
 #include "GameStateManager.h"
 

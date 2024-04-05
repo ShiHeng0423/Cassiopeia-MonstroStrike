@@ -1,4 +1,17 @@
 #pragma once
+/*!************************************************************************
+  \file					CollisionShape.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing declarations of collision detection between AABB boxes.
+
+  This file contains the implementation of collision detection functions. The functions handle collisions between 
+  axis-aligned bounding boxes (AABBs). It also includes resolving of vertical and horizontal collision between grids and
+  entities which prevent piercing through two AABB boxes should the entities should not.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include <AEEngine.h>
 #include <iostream>
 

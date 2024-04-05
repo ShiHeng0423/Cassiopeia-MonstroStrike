@@ -1,8 +1,11 @@
 /*!************************************************************************
   \file					Enemy.h
   \project name			Monstrostrike
-  \primary author		Goh Jun Jie
+  \primary author		Goh Jun Jie(100%)
   \secondary author
+  \brief				This file contains the declaration of functions
+						mainly used by enemy to load, update, and render.
+						It also contains the enums and struct used by enemy.
 
 All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.

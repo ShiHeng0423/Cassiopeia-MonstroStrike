@@ -1,3 +1,15 @@
+/*!************************************************************************
+  \file					GameState_Mainmenu.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi Heng (85%)
+  \secondary authors	Johny Yong Jun Siang (10%), Goh Jun Jie (5%)
+  \brief				File containing definitions of functions related to the main menu room state.
+						Such as loading, initializing, update, drawing etc... of the level. It also includes
+						private functions for updating the credits when credit page is updated.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "GameState_Mainmenu.h"
 #include "Utils.h"
 #include "GameStateManager.h"
@@ -65,7 +77,6 @@ namespace
 
 	void CreditAnimationUpdate();
 	void CreditAnimationEnter();
-	void CreditAnimationEnd();
 
 	struct CreditSlides {
 		Object slidesObj;
@@ -128,7 +139,7 @@ void Mainmenu_Load()
 {
 	buttonTexture = AEGfxTextureLoad("Assets/panel_brown.png");
 	backgroundTexture = AEGfxTextureLoad("Assets/1.jpg");
-	boxBackground = AEGfxTextureLoad("Assets/UI_Sprite/Transparent center/panel-transparent-center-015.png");
+	boxBackground = AEGfxTextureLoad("Assets/panelInset_beige.png");
 	audioUp = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_right.png");
 	audioDown = AEGfxTextureLoad("Assets/UI_Sprite/arrowBrown_left.png");
 	gameControlsImg = AEGfxTextureLoad("Assets/Keyboard_Keys/Game Control.png");
@@ -375,13 +386,13 @@ void Mainmenu_Draw()
 	switch (currScene)
 	{
 	case CurrentScene::MAIN_SCENE:
+	{
+		for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
 		{
-			for (size_t i = 0; i < sizeof(interactableButtonMainMenu) / sizeof(interactableButtonMainMenu[0]); i++)
-			{
-				AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-				AEGfxSetTransform(interactableButtonMainMenu[i].transform.m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
+			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+			AEGfxSetTransform(interactableButtonMainMenu[i].transform.m);
+			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
 
 		f32 width, height;
 
@@ -409,7 +420,7 @@ void Mainmenu_Draw()
 		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 		break;
-		}
+	}
 	case CurrentScene::CREDIT_SCENE:
 	{
 
@@ -453,41 +464,45 @@ void Mainmenu_Draw()
 		break;
 	}
 	case CurrentScene::OPTION_SCENE:
+	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(optionbackground.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+
+		for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
 		{
-			AEGfxTextureSet(optionbackground.pTex, 0, 0);
-			AEGfxSetTransform(optionbackground.transform.m);
+			AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
+			AEGfxSetTransform(interactableButtonOption[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+		AEGfxTextureSet(backButton.pTex, 0, 0);
+		AEGfxSetTransform(backButton.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
-			for (size_t i = 0; i < sizeof(interactableButtonOption) / sizeof(interactableButtonOption[0]); i++)
-			{
-				AEGfxTextureSet(interactableButtonOption[i].pTex, 0, 0);
-				AEGfxSetTransform(interactableButtonOption[i].transform.m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-			AEGfxTextureSet(backButton.pTex, 0, 0);
-			AEGfxSetTransform(backButton.transform.m);
+		for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
+		{
+			AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
+			AEGfxSetTransform(optionBackgroundBar[i].transform.m);
+			AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
+		}
+
+		for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
+		{
+			AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
+			AEGfxSetTransform(optionSoundBar[i].transform.m);
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 			AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-
-			for (size_t i = 0; i < sizeof(optionBackgroundBar) / sizeof(optionBackgroundBar[0]); i++)
-			{
-				AEGfxTextureSet(interactableButtonMainMenu[i].pTex, 0, 0);
-				AEGfxSetTransform(optionBackgroundBar[i].transform.m);
-				AEGfxMeshDraw(pBlackSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
-
-			for (size_t i = 0; i < sizeof(optionSoundBar) / sizeof(optionSoundBar[0]); i++)
-			{
-				AEGfxTextureSet(optionSoundBar[i].pTex, 0, 0);
-				AEGfxSetTransform(optionSoundBar[i].transform.m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-
-				AEGfxSetRenderMode(AE_GFX_RM_COLOR);
-			}
+		}
 
 		f32 width, height;
+
+		const char* pText5 = "Sound Setting";
+		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 + 0.3f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText = "BGM";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
@@ -501,18 +516,26 @@ void Mainmenu_Draw()
 		AEGfxGetPrintSize(fontID, pText2, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText2, -width / 2 - 0.85f, -height / 2 - 0.9f, 0.5f, 1, 1, 1, 1);
 		break;
-		}
+	}
 	case CurrentScene::QUIT_SCENE:
-		{
-			AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
-			AEGfxSetTransform(confirmationButtion[0].transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+	{
+		AEGfxTextureSet(optionbackground.pTex, 0, 0);
+		AEGfxSetTransform(optionbackground.transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-			AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
-			AEGfxSetTransform(confirmationButtion[1].transform.m);
-			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+		AEGfxTextureSet(confirmationButtion[0].pTex, 0, 0);
+		AEGfxSetTransform(confirmationButtion[0].transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-			f32 width, height;
+		AEGfxTextureSet(confirmationButtion[1].pTex, 0, 0);
+		AEGfxSetTransform(confirmationButtion[1].transform.m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		f32 width, height;
+
+		const char* pText5 = "Do you want to quit?";
+		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
+		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 + 0.3f, 0.5f, 1, 1, 1, 1);
 
 		const char* pText = "Yes";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
@@ -522,7 +545,7 @@ void Mainmenu_Draw()
 		AEGfxGetPrintSize(fontID, pText1, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText1, -width / 2 + 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);
 		break;
-		}
+	}
 	default:
 		break;
 	}
@@ -562,19 +585,21 @@ void GoNewGameLevel1()
 {
 	next = GameStates::GAME_LOBBY;
 	Inventory::isNewAccount = true;
+
+	gameManager->getDebugManager()->setDebugClose();
 }
 
 void GoLoadSaveLevel()
 {
 	//next = GAME_LOBBY;
 	Inventory::isNewAccount = false;
-	Inventory::isGodAccount = true;
 	const char* player_filepath = "Assets/SaveFiles/player_inventory.json";
 	Inventory::ReadJsonFile(player_filepath);
 
-
 	next = Inventory::fileLoadedState;
 	current = Inventory::fileLoadedState - 1;
+
+	gameManager->getDebugManager()->setDebugClose();
 }
 
 void GoCreditScene()
@@ -650,8 +675,5 @@ namespace {
 			credits[i].slidesObj.UpdateTransformMatrix();
 		}
 	}
-	void CreditAnimationEnd()
-	{
 
-	}
 }

@@ -38,3 +38,8 @@ Player* GameManager::GetPlayer()
 {
 	return player;
 }
+
+DebuggerManager* GameManager::getDebugManager()
+{
+	return debug;
+}

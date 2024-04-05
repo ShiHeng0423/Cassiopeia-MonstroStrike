@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file					ParticleSystem.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				The following file contain the function definitions of the particle systems in game.
+  
+ Implementation function definitions of the particle system functionality including
+ initialization, updating, emitting, rendering, and memory management. Object pooling was utilised here for efficient
+ management of particles. All the particles are first initialized and loaded into the game when entering a level, and inactive
+ particles will be activated and updated when it is only necessary.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "ParticleSystem.h"
 #include <iostream>
 #include <random>

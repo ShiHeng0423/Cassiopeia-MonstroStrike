@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file					MapTransition.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing definitions of functions and structures for map transition effects.
+
+  This file contains definitions of functions essential for managing map transition effects providing visual effects
+  when moving between different game levels or areas. The functions for loading, initializing, updating, drawing, and unloading map
+  transition effects. The animation played when entering the level is always the opposite direction of when they are exiting the level.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "MapTransition.h"
 #include <iostream>
 #include "Player.h"

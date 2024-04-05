@@ -66,13 +66,16 @@ namespace
 	AEGfxTexture* revswordmultithrustTex;
 	AEGfxTexture* swordslashTex;
 	AEGfxTexture* revswordslashTex;
+
+	bool displayStatusEffect;
+	std::string statusEffectDescription;
 }
 
 
 Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRight)
 {
 	//Meshes & Texture
-	HealthBorder = AEGfxTextureLoad("Assets/UI_Sprite/Border/panel-border-015.png");
+	HealthBorder = AEGfxTextureLoad("Assets/panelInset_beige.png");
 	FacingLeft = AEGfxTextureLoad("Assets/PlayerLeft.png");
 	FacingRight = AEGfxTextureLoad("Assets/PlayerRight.png");
 	gearDisplayBorder = AEGfxTextureLoad("Assets/panel_brown.png");
@@ -283,7 +286,6 @@ void Player::Update(bool isInventoryOpen)
 			isReleased = false;
 			if_first_input = true;
 			//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
-
 		}
 		if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 		{
@@ -417,74 +419,56 @@ void Player::Update(bool isInventoryOpen)
 		OnPlayerDeath();
 	}
 
-	if (AEInputCheckTriggered(AEVK_G))
+	displayStatusEffect = false;
+	if (playerStatusEffectList.size() > 0)
 	{
-		switch (current)
-		{
-		case GAME_LOBBY:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_A);
-			break;
-		case AREA1_A:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_B);
-			break;
-		case AREA1_B:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_C);
-			break;
-		case AREA1_C:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_D);
-			break;
-		case AREA1_D:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_E);
-			break;
-		case AREA1_E:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_F);
-			break;
-		case AREA1_F:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA_BOSS);
-			break;
-		case AREA_BOSS:
-		default:
-			break;
-		}
-	}
-	else if(AEInputCheckTriggered(AEVK_B))
-	{
-		switch (current)
-		{
-		case GAME_LOBBY:
-			break;
-		case AREA1_A:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, GAME_LOBBY);
-			break;
-		case AREA1_B:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_UP, AREA1_A);
-			break;
-		case AREA1_C:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_B);
-			break;
-		case AREA1_D:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_C);
-			break;
-		case AREA1_E:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_D);
-			break;
-		case AREA1_F:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_RIGHT, AREA1_E);
-			break;
-		case AREA_BOSS:
-			transitionalImageOBJ.PlayMapTransition(TRANSITION_LEFT, AREA1_F);
-			break;
-		default:
-			break;
-		}
-	}
+		s32 cx, cy;
+		AEInputGetCursorPosition(&cx, &cy);
+		AEVec2 mousePos{ 0, 0 };
+		mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
 
+		f32 x, y;
+		AEGfxGetCamPosition(&x, &y);
+
+		size_t buff_index = 0;
+		for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
+		{
+			AEVec2 translateOrigin = { AEGfxGetWinMinX() + 100.f + buff_index++ * 50.f, AEGfxGetWinMaxY() - 100.f };
+			translateOrigin.x -= x;
+			translateOrigin.y -= y;
+			if (AETestPointToRect(&mousePos, &translateOrigin, 25.f, 25.f))
+			{
+				switch (effect.first)
+				{
+				case Status_Effect_System::BURNING:
+					statusEffectDescription = "Atk x2, Hp -5 per 3s";
+					break;
+				case Status_Effect_System::LIFE_STEAL:
+					statusEffectDescription = "Lifesteal";
+					break;
+				case Status_Effect_System::REGEN:
+					statusEffectDescription = "Hp +10 per 2s";
+					break;
+				case Status_Effect_System::POISON:
+					statusEffectDescription = "Hp -10% per 2s";
+					break;
+				case Status_Effect_System::SLOW:
+					statusEffectDescription = "Speed -15%";
+					break;
+				default:
+					break;
+				}
+				displayStatusEffect = true;
+				break;
+			}
+		}
+	}
 }
 
 //Render player sprite
 void Player::RenderPlayer()
 {
-	
 	if (isSlowed && isPoisoned)
 	{
 		AEGfxSetColorToMultiply(0.8f, 0.f, 0.f, 1.f);
@@ -545,7 +529,7 @@ void Player::RenderPlayerStatUI()
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 	AEGfxTextureSet(gearDisplayBorder, 0, 0);
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() +200.f,
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 200.f,
 		AEGfxGetWinMaxY() - 60.f, 0.f,
 		400.f, 120.f).m);
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -558,7 +542,7 @@ void Player::RenderPlayerStatUI()
 	AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 	//Health Bar
-	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - ((float)currHealth / (float)maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (currHealth * 300.f) / maxHealth , 25.f).m);
+	AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + 225.f - ((1.f - ((float)currHealth / (float)maxHealth)) * 150.f), AEGfxGetWinMaxY() - 60.f, 0, (currHealth * 300.f) / maxHealth, 25.f).m);
 	AEGfxMeshDraw(pMeshRed, AE_GFX_MDM_TRIANGLES);
 
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -568,7 +552,7 @@ void Player::RenderPlayerStatUI()
 	f32 width, height;
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
 	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.8f, -height / 2 + 0.95f, 0.3f, 0, 0, 0, 1);
-	
+
 	str = "HP";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
 	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.86f, 0.3f, 0, 0, 0, 1);
@@ -576,7 +560,7 @@ void Player::RenderPlayerStatUI()
 	str = "Buff";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
 	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.95f, -height / 2 + 0.78f, 0.3f, 0, 0, 0, 1);
-	
+
 	size_t buff_index = 0;
 	for (std::pair<Status_Effect_System::Status_Effect, Status_Effect_System::Status_Effect_Source> effect : playerStatusEffectList)
 	{
@@ -618,7 +602,7 @@ void Player::RenderPlayerStatUI()
 	for (ButtonGearUI button : Inventory::equipmentDisplay)
 	{
 		AEGfxTextureSet(button.img.pTex, 0, 0);
-		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() -15.f+ 80.f * index++,
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() - 15.f + 80.f * index++,
 			AEGfxGetWinMinY() + 50.f, 0.f,
 			button.img.scale.x * 0.8f, button.img.scale.y * 0.8f).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
@@ -627,6 +611,21 @@ void Player::RenderPlayerStatUI()
 	str = "Gears Equipped";
 	AEGfxGetPrintSize(fontID, str.c_str(), 0.3f, &width, &height);
 	AEGfxPrint(fontID, str.c_str(), -width / 2 - 0.85f, -height / 2 - 0.775f, 0.3f, 1, 1, 1, 1);
+
+	if (displayStatusEffect)
+	{
+		s32 cx, cy;
+		AEInputGetCursorPosition(&cx, &cy);
+		AEVec2 mousePos{ 0, 0 };
+		mousePos.x = cx - AEGfxGetWindowWidth() * 0.5f;
+		mousePos.y = AEGfxGetWindowHeight() * 0.5f - cy;
+
+		AEGfxTextureSet(HealthBorder, 0, 0);
+		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + cx + 155.f, AEGfxGetWinMaxY() - cy, 0.f, 270.f, 30.f).m);
+		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+
+		AEGfxPrint(fontID, statusEffectDescription.c_str(), mousePos.x / (AEGfxGetWindowWidth() * 0.5f) + 0.03f, mousePos.y / (AEGfxGetWindowHeight() * 0.5f)-0.02, 0.3f, 1, 1, 1, 1);
+	}
 }
 
 //Get Player Armor Set

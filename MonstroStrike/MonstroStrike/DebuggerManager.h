@@ -17,6 +17,7 @@ enum DebuggerFunction
 	TELEPORT_LEVEL_UP,
 	TELEPORT_LEVEL_DOWN,
 	TELEPORT_CONFIRMATION,
+	GOD_MODE_FILE,
 
 	DEBUGGER_TOTAL
 };
@@ -44,6 +45,8 @@ public:
 	void RenderDebuggerUI();
 
 	static int& GetCurrentArea();
+
+	void setDebugClose();
 private:
 	bool openDebugPanel;
 	static int currArea;

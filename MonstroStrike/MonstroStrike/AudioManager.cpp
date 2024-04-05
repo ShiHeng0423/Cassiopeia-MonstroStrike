@@ -4,7 +4,7 @@ AudioManager::AudioManager()
 {
 	// Loads a sound from a file named 'bouken.mp3' in the 'Assets' folder
 	// and assign it to 'bouken'.
-	audio[MAINMENU_SONG] = AEAudioLoadMusic("Assets/bouken.mp3");
+	audio[MAINMENU_SONG] = AEAudioLoadMusic("Assets/Audio/BGM/GameBGM.wav");
 	audio[ATTACK_SLASH_SFX] = AEAudioLoadMusic("Assets/Audio/SFX/Attack.wav");
 	audio[REJECT_SFX] = AEAudioLoadMusic("Assets/Audio/SFX/Error.wav");
 
@@ -15,12 +15,8 @@ AudioManager::AudioManager()
 	audio[ITEM_UNEQUIP] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_unequip.mp3");
 	audio[ITEM_SWAP] = AEAudioLoadSound("Assets/Audio/Inventory_SFX/item_swap.mp3");
 
-	// Creates an audio group named 'bgm'
 	bgmGroup = AEAudioCreateGroup();
 	sfxGroup = AEAudioCreateGroup();
-
-	// Plays 'bouken' audio in the "bgm" audio group with
-	// 50% volume, 200% pitch, looped infinitely.
 	this->bgmVolume = this->sfxVolume = 0.5f;
 }
 

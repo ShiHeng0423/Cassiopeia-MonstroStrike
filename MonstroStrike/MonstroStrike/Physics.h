@@ -1,4 +1,15 @@
 #pragma once
+/*!************************************************************************
+  \file					Physics.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				The file contains declaration of physics-related functions and utilities
+                        including AABB normalization, dot product calculation,
+                        and gravity application.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #ifndef PHYSICS_H
 #define PHYSICS_H
 
