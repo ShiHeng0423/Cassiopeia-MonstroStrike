@@ -1275,7 +1275,7 @@ false, 0, 0, 0 };
 		}else if (isGodAccount)
 		{
 			player_filepath = "Assets/SaveFiles/god_inventory.json";
-			equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
+			equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_god_gears.json");
 		}
 		else
 		{
@@ -1317,8 +1317,6 @@ false, 0, 0, 0 };
 			{
 				equippedGear.pop_back();
 			}
-
-			//equippedGear[i].gear_loc = static_cast<Gear_Location> (i);
 		}
 
 
@@ -1420,8 +1418,16 @@ false, 0, 0, 0 };
 
 	void SaveInventory()
 	{
-		WriteJsonFile(playerInventory, "Assets/SaveFiles/player_inventory.json");
-		WriteJsonFile(equippedGear, "Assets/SaveFiles/equipped_gears.json");
+		if (isGodAccount)
+		{
+			WriteJsonFile(playerInventory, "Assets/SaveFiles/god_inventory.json");
+			WriteJsonFile(equippedGear, "Assets/SaveFiles/equipped_god_gears.json");
+		}
+		else
+		{
+			WriteJsonFile(playerInventory, "Assets/SaveFiles/player_inventory.json");
+			WriteJsonFile(equippedGear, "Assets/SaveFiles/equipped_gears.json");
+		}
 	}
 
 	void FreeInventory()
