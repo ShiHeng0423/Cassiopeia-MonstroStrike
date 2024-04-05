@@ -566,10 +566,15 @@ void GoNewGameLevel1()
 
 void GoLoadSaveLevel()
 {
-	next = GAME_LOBBY;
+	//next = GAME_LOBBY;
 	Inventory::isNewAccount = false;
+	Inventory::isGodAccount = true;
+	const char* player_filepath = "Assets/SaveFiles/player_inventory.json";
+	Inventory::ReadJsonFile(player_filepath);
 
-	//Need to check if got available account?
+
+	next = Inventory::fileLoadedState;
+	current = Inventory::fileLoadedState - 1;
 }
 
 void GoCreditScene()
