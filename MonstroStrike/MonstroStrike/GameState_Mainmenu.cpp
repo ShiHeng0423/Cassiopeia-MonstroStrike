@@ -562,19 +562,21 @@ void GoNewGameLevel1()
 {
 	next = GameStates::GAME_LOBBY;
 	Inventory::isNewAccount = true;
+
+	gameManager->getDebugManager()->setDebugClose();
 }
 
 void GoLoadSaveLevel()
 {
 	//next = GAME_LOBBY;
 	Inventory::isNewAccount = false;
-	Inventory::isGodAccount = true;
 	const char* player_filepath = "Assets/SaveFiles/player_inventory.json";
 	Inventory::ReadJsonFile(player_filepath);
 
-
 	next = Inventory::fileLoadedState;
 	current = Inventory::fileLoadedState - 1;
+
+	gameManager->getDebugManager()->setDebugClose();
 }
 
 void GoCreditScene()

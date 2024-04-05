@@ -18,6 +18,7 @@ public:
 	
 	//Update/Get Player Stats etc.
 	Player* GetPlayer();
+	DebuggerManager* getDebugManager();
 
 	void Render();
 
