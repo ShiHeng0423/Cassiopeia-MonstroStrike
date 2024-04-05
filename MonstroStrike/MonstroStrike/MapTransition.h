@@ -1,4 +1,3 @@
-#pragma once
 /*!************************************************************************
   \file					MapTransition.h
   \project name			Monstrostrike
@@ -14,6 +13,7 @@ All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 **************************************************************************/
 
+#pragma once
 #include <AEEngine.h>
 #include "GameStateManager.h"
 

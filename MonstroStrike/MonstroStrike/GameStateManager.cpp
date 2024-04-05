@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file					GameStateManager.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the definitions of functions declared
+						GameStateManager.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "GameStateManager.h"
 #include "GameStateHeaders.h"
 int current = 0, previous = 0, next = 0;

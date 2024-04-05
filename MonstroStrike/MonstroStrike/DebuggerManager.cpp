@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file					DebuggerManager.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the definitions of functions declared
+						DebuggerManager.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "DebuggerManager.h"
 #include "Utils.h"
 #include "GameStateManager.h"

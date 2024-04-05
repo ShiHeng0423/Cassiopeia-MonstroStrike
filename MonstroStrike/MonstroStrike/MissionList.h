@@ -1,4 +1,3 @@
-#pragma once
 /*!************************************************************************
   \file					MissionList.h
   \project name			Monstrostrike
@@ -16,6 +15,7 @@ All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 **************************************************************************/
 
+#pragma once
 #include "NonPlayableCharacters.h"
 
 struct KillEnemyMission {

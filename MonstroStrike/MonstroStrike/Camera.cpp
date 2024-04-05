@@ -1,8 +1,21 @@
+/*!************************************************************************
+  \file					Camera.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the definitions of functions declared
+						Camera.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "Camera.h"
 
 #define camXBoundary (500.f)
 #define camYBoundary (10.f)
 #define camFollowupSpeedX (0.05f)
+#define camLookAheadSpeed (0.03f)
+#define camShakeSpeed (0.05f)
 
 Camera::Camera(AEVec2 player)
 {
@@ -50,8 +63,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		else
 			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
 
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &expectedLookAheadDir, 0.03f);
-		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &expectedLookAheadDir, 0.03f);
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &expectedLookAheadDir, camLookAheadSpeed);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &expectedLookAheadDir, camLookAheadSpeed);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
 		if (AEVec2Distance(&currLookAheadDir, &expectedLookAheadDir) < 1.0f && lookbackTimer <= 0.f && !cameraOnHold)
@@ -82,8 +95,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		else
 			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
 
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, 0.03f);
-		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, 0.03f);
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, camLookAheadSpeed);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, camLookAheadSpeed);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
 		if (AEVec2Distance(&currLookAheadDir, &this->worldCoordinate) < 1.0f)
@@ -99,7 +112,7 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 			f32 randX = (AERandFloat() - 0.5f) * 200.f;
 			f32 randY = (AERandFloat() - 0.5f) * 200.f;
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x + randX,this->worldCoordinate.y + randY };
-			AEVec2Lerp(&this->worldCoordinate, &this->worldCoordinate, &desiredCamLocation, 0.05f);
+			AEVec2Lerp(&this->worldCoordinate, &this->worldCoordinate, &desiredCamLocation, camShakeSpeed);
 		}
 
 		if ((player->GetCameraExpectedPosition().x > this->worldCoordinate.x + camXBoundary) && player->IsPlayerFacingRight())
