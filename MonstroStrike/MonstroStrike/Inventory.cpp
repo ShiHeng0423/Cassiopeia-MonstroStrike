@@ -140,7 +140,10 @@ false, 0, 0, 0 };
 				newItem.attack = ind_item["attack"].GetInt();
 				newItem.defence = ind_item["defence"].GetInt();
 
+				if(newItem.ID>=0)
 				inventory.push_back(newItem);
+
+				std::cout << newItem.name << std::endl;
 			}
 
 			if (json.HasParseError())
@@ -157,11 +160,6 @@ false, 0, 0, 0 };
 
 		 Document json = nullptr;
 		 json.SetObject();
-
-		 // Value map(int);
-		 // Value theMap(kObjectType);
-
-
 
 		Value items( kArrayType);
 
@@ -186,6 +184,8 @@ false, 0, 0, 0 };
 			ind_item.AddMember("attack", item.attack, json.GetAllocator());
 			ind_item.AddMember("defence", item.defence, json.GetAllocator());
 
+			std::cout << "Saved: " << std::endl;
+			std::cout << item.name<< std::endl;
 
 			items.PushBack(ind_item, json.GetAllocator());
 		}
@@ -281,6 +281,7 @@ false, 0, 0, 0 };
 					if (button.Item.quantity == 0 || button.Item.ID < 0)
 					{
 						button.img.pTex = blank;
+						button.Item = emptySpace;
 					}
 					break;
 				}
@@ -460,7 +461,14 @@ false, 0, 0, 0 };
 				//Reset itemHover
 				itemHover = false;
 
+<<<<<<< Updated upstream
 				indexTmp++;
+=======
+				//debug
+				std::cout << button.Item.name << std::endl;
+
+				index++;
+>>>>>>> Stashed changes
 			}
 
 
@@ -987,10 +995,12 @@ false, 0, 0, 0 };
 					 }
 						
 					Item equipping = item.Item;
-					Item blank_gear{"",INVALID_ITEM, "","",IT_NONE,IR_NONE,GL_NONE,0,false,0,0,0};
-					item.Item = blank_gear;
+					item.Item = emptySpace;
 					item.img.pTex = blank;
 					playerInventory[index].ID = INVALID_ITEM;
+					playerInventory[index] = emptySpace;
+
+
 					EquipItemLogic(equipping);
 					
 					audioManager->PlayAudio(false, Audio_List::ITEM_EQUIP);
@@ -1164,7 +1174,7 @@ false, 0, 0, 0 };
 	{
 		
 		for(int i = 0; i< 5; ++i)
-		backupPreviousItem[i].ID = INVALID_ITEM;
+		backupPreviousItem[i] = emptySpace;
 
 
 			switch (obj.gear_loc)
@@ -1177,9 +1187,6 @@ false, 0, 0, 0 };
 
 			equippedGear[obj.gear_loc] = obj;
 			equipmentDisplay[obj.gear_loc].Item = equippedGear[obj.gear_loc];
-
-			//update stats
-			//playerReference->equippedWeapon.damage = static_cast<f32>(obj.attack);
 
 			break;
 
@@ -1243,7 +1250,6 @@ false, 0, 0, 0 };
 		{
 			if (inventory.ID < 0) //check for invalid item id
 			{
-				
 				inventory = backupPreviousItem[obj.gear_loc];
 				break;
 			}
@@ -1277,9 +1283,9 @@ false, 0, 0, 0 };
 		{
 			player_filepath = "Assets/SaveFiles/player_inventory_new.json";
 
-			for (auto& gear : equippedGear)
+			for (size_t i =0; i<5; ++i)
 			{
-				gear = emptySpace;
+				equippedGear[i] = emptySpace;
 			}
 		}
 		else
@@ -1309,19 +1315,53 @@ false, 0, 0, 0 };
 		}
 
 
-		
+		//check if item slot is same as gear loc
+		//if not same store into tmp
+		//current will be empty
 		for (size_t i = 0; i < 5; ++i)
 		{
 			if (equippedGear.size() < 5)
 			{
-				//fillup equippedGear vector with empty elements if less than maxslots occupied
 				equippedGear.push_back(emptySpace);
-				equipmentDisplay[i].Item = emptySpace;
+			}
+			else if (equippedGear.size() > 5)
+			{
+				equippedGear.pop_back();
+			}
+
+			//equippedGear[i].gear_loc = static_cast<Gear_Location> (i);
+		}
+
+
+
+		std::vector<Item> tmp = equippedGear;
+
+		for (size_t i = 0; i < 5; ++i)
+		{
+			for (size_t j=0; j< 5; ++j)
+			{
+				if (static_cast<Gear_Location> (i) == equippedGear[j].gear_loc)
+				{
+					tmp[i] = equippedGear[j];
+					break;
+				}else
+				{
+					tmp[i] = emptySpace;
+					tmp[i].gear_loc = static_cast<Gear_Location> (i);
+				}
+			}
+
+
+			if ((equippedGear[i].ID <0 ))
+			{
+				//fillup equippedGear vector with empty elements if less than maxslots occupied
+				equippedGear[i] = emptySpace;
+				equipmentDisplay[i].Item = equippedGear[i];
 				//Init the empty slots, this will match to the enum values
 				equipmentDisplay[i].Item.gear_loc = (Gear_Location)i;
 			}
 		}
-		
+		equippedGear = tmp;
 
 		//Initialise the UI based on equippedGear list
 		for (size_t i = 0; i < 5; ++i)
@@ -1343,10 +1383,8 @@ false, 0, 0, 0 };
 				EquipItemLogic(gear);
 
 			}
-
-			isNewAccount = false;
 		}
-
+		isNewAccount = false;
 
 		UpdatePlayerGearStats(equippedGear);
 
