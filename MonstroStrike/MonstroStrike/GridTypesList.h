@@ -1,4 +1,13 @@
 #pragma once
+/*!************************************************************************
+  \file					GridTypesList.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing the types of grid available in game, along with the value assigned to it.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 enum GridTypes
 {
     EMPTY = 0,

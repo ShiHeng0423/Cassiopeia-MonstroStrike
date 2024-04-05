@@ -1,4 +1,17 @@
 #pragma once
+/*!************************************************************************
+  \file					MapPlatformGenerate.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (90%)
+  \secondary author		Goh Jun Jie (10%)
+  \brief				  This file contains declarations of functions and structures essential for generating and
+  managing moving platforms. The header defines structures for representing platform objects and enumerates different
+  types of platforms, along with functions for creating, updating, and handling collisions with these platforms.
+
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include <AEEngine.h>
 #include "CollisionShape.h"
 #include <AEMath.h>
@@ -38,6 +51,8 @@ void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, Platfor
 
 void UpdatePlatforms(Player& player, std::vector<Enemy>& vecEnemy, std::vector<struct Platforms>& platformVector);
 
+//For player vs moving object collision
 void PlatformCollision(Platforms& movingObject, Player& player);
 
+//Overloading, for enemy moving object collision
 void PlatformCollision(Platforms& movingObject, Enemy& enemy);

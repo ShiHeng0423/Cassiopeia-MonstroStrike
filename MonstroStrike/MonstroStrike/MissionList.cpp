@@ -1,3 +1,19 @@
+/*!************************************************************************
+  \file					MissionList.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (95%)
+  \secondary author		Keith Ng Hon Yew (5%)
+  \brief				File containing definitions of  functions for managing missions.
+
+  This file contains definitions of functions essential for managing missions. A mission system to handle mission creation, 
+  acceptance, completion, and rewards. As well as getter, functions to check for current mission, available missions, number of 
+  missions, mission clearable etc are also included.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
+
 #include "MissionList.h"
 #include "main.h"
 #include "Inventory.h"
@@ -55,9 +71,6 @@ void MissionSystem::AcceptKillEnemyMission(int missionID)
 				return;
 			}
 		}
-	}
-	else
-	{
 	}
 }
 
@@ -226,10 +239,6 @@ void MissionSystem::PrintMissionText()
 bool MissionSystem::CheckMissionClear()
 {
 	size_t id = missionSystem.GetAcceptedMissionID();
-
-	if (id != -1)
-	{
-	}
 
 	switch (id)
 	{

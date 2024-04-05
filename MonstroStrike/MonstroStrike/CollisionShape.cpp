@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file					CollisionShape.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing definitions of collision detection between AABB boxes.
+
+  This file contains the implementation of collision detection functions. The functions handle collisions between
+  axis-aligned bounding boxes (AABBs). It also includes resolving of vertical and horizontal collision between grids and
+  entities which prevent piercing through two AABB boxes should the entities should not.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "CollisionShape.h"
 #include <AEMath.h>
 #include <iostream>
@@ -28,6 +41,7 @@ bool AABBvsAABB(AABB firstBox, AABB secondBox)
 //	
 //	return totalRadius < (pow(first.position.x + second.position.x, 2) + pow(first.position.y + second.position.y, 2));
 //}
+
 void ResolveVerticalCollision(AABB& firstBoxHeadFeet, AABB& second, AEVec2* collisionNormal, AEVec2* position, AEVec2* velocity)
 {
     f32 penetrationDepth = 0.f;
@@ -65,8 +79,8 @@ void ResolveHorizontalCollision(AABB& firstArms, AABB& second, AEVec2* collision
     {
         penetrationDepth = second.maximum.x - firstArms.minimum.x;
         if (penetrationDepth > 0) {
-            f32 dampingFactor = 0.3f;
-            position->x += penetrationDepth * dampingFactor;
+            f32 dampingFactor = 0.3f; 
+            position->x += penetrationDepth * dampingFactor; 
         }
     }
     else if (collisionNormal->x == -1) // Colliding from left

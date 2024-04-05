@@ -1,4 +1,5 @@
 #pragma once
+
 void SplashScreen_Load();
 void SplashScreen_Initialize();
 void SplashScreen_Update();

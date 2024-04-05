@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file					MapTraps.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing definitions of functions for managing map traps.
+
+  This file contains definitions of functions and structures of the trap entities essential for managing map traps.
+  The header defines a structure for representing trap details, along with functions for loading trap textures,
+  storing trap information, updating traps, and drawing traps on the screen. This file also include private functions
+  which handles the state of the trap entities such as the arrows and fireballs.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "MapTraps.h"
 #include <iostream>
 #include "main.h"

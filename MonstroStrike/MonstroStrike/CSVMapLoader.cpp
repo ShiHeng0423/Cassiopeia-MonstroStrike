@@ -1,35 +1,24 @@
+/*!************************************************************************
+  \file					CSVMapLoader.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing definitions of functions and structures for loading and managing CSV map data.
+
+  This file contains definitions of functions and structures essential for loading, managing, and rendering CSV map data
+  within the Monstrostrike game. The CSV map loader is responsible for parsing CSV files containing map data and
+  converting them into usable game maps represented as 2D grids based on the type of value the CSV file and assign
+  what type of grid it is into the data. As well as functions for initializing of positions, rendering, and managing these grids.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "CSVMapLoader.h"
 #include <fstream>
 #include <sstream>
 #include <iostream>
 #include <string>
 #include "main.h"
-
-//Author: Johny Yong
-//Email: j.yong\@digipen.edu
-
-/*
-\brief The function that reads the map and return if the map is successfully loaded into a vector
-
-    Done by opening the file, check if the file is opened, then enter a for loop of row such that i am able to getline per row,
-    after getting line is a success, create a stringstream to contain the line and begin to insert the value of each column. The values
-    in accordance to row and column is then stored into a vector map that has been passed on as parameter.
- 
-\param[in] csvFilePath
-Name of the file
-
-\param[in, out] map
-Reference of the map called in Main.cpp
-
-\param[in] rows
-Number of rows
-
-\param[in] cols
-Number of cols
-
-\return Result of successful map load
-*/
-
 
 namespace {
     AEGfxTexture* gridGround;

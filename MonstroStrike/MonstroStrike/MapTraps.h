@@ -1,4 +1,17 @@
 #pragma once
+/*!************************************************************************
+  \file					MapTraps.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				File containing declarations of functions and structures for managing map traps.
+
+  This file contains declarations of functions and structures essential for managing map traps.
+  The header defines a structure for representing trap details, along with functions for loading trap textures, 
+  storing trap information, updating traps, and drawing traps on the screen.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include <AEEngine.h>
 #include <AEMath.h>
 #include <vector>

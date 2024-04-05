@@ -1,3 +1,15 @@
+/*!************************************************************************
+  \file					Physics.cpp
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				Implementation of physics system-related functions
+                        and utilities. Such as calculating the normal vector of collision between two axis-aligned bounding 
+                        boxes (AABBs). Computing the dot product between two vectors. As well as
+                        application of gravity to a given velocity vector, simulating downward acceleration due to gravity.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "Physics.h"
 
 AEVec2 AABBNormalize(AABB firstBox, AABB secondBox)
