@@ -285,8 +285,7 @@ void Player::Update(bool isInventoryOpen)
 			undealtTriggerInput = true;
 			isReleased = false;
 			if_first_input = true;
-			audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
-
+			//audioManager->PlayAudio(false, ATTACK_SLASH_SFX);
 		}
 		if (AEInputCheckReleased(AEVK_LBUTTON) && !isInventoryOpen)
 		{
