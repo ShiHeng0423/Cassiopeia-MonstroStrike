@@ -2,7 +2,7 @@
   \file					GameState_Mainmenu.cpp
   \project name			Monstrostrike
   \primary author		Teng Shi Heng (85%)
-  \secondary authors	Johny Yong Jun Siang (10%), Goh Jun Jie (5%)
+  \secondary authors	Johny Yong Jun Siang (10%, implemented rolling credits), Goh Jun Jie (5%, drew the background art)
   \brief				File containing definitions of functions related to the main menu room state.
 						Such as loading, initializing, update, drawing etc... of the level. It also includes
 						private functions for updating the credits when credit page is updated.

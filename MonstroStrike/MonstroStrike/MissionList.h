@@ -3,7 +3,7 @@
   \file					MissionList.h
   \project name			Monstrostrike
   \primary author		Johny Yong Jun Siang (95%)
-  \secondary author		Keith Ng Hon Yew (5%)
+  \secondary author		Keith Ng Hon Yew (5%, provided addItemFunction for inventory)
   \brief				File containing declarations of structures and functions for managing missions.
 
   This file contains declarations of structures and functions essential for managing missions. The header defines structures for 

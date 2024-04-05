@@ -1,8 +1,10 @@
 /*!************************************************************************
   \file					NonPlayableCharacters.cpp
   \project name			Monstrostrike
-  \primary author		Johny Yong Jun Siang (90%)
-  \secondary author		Teng Shi Heng (5%), Keith Ng Hon Yew (5%)
+  \primary author		Johny Yong Jun Siang (85%)
+  \secondary author		Teng Shi Heng (10%, helped with collision of NPC), 
+						Keith Ng Hon Yew (5%, provided function to check for crafting functions)
+
   \brief				File containing the implementation of non-playable characters (NPCs)
   
 The file include definitions of the functions that include their initialization, updating, drawing, and memory management functions.

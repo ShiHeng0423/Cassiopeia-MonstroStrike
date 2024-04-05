@@ -2,7 +2,7 @@
   \file					main.cpp
   \project name			Monstrostrike
   \primary author		Teng Shi Heng (95%)
-  \secondary authors	Johny Yong Jun Siang (5%)
+  \secondary authors	Johny Yong Jun Siang (5%, added loading of map transition objects/textures and grid textures)
   \brief				The main file responsible for initializing the game engine and managing game states. Some functions,
 						such as loading for MapTransition, GridTexture, in order for the texture to be able to utilise the texture
 						throughout the maps without reloading it.

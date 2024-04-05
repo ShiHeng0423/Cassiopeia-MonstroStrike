@@ -1,7 +1,8 @@
 /*!************************************************************************
   \file					main.h
   \project name			Monstrostrike
-  \primary author		Teng Shi Heng (100%)
+  \primary author		Teng Shi Heng (95%)
+  \secondary authors	Johny Yong Jun Siang (5%, added loading of map transition objects/textures and grid textures)
   \brief				The header of the main file that include externs of managers such as audio and game managers, also include
 						the fontID.
 
