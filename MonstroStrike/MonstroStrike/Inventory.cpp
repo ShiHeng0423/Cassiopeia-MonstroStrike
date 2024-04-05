@@ -1286,17 +1286,12 @@ false, 0, 0, 0 };
 			playerReference->GetMaxHealth() = PlayerMaxBasehealth;
 			for (auto& gear : equippedGear)
 			{
-				equippedGear[i] = emptySpace;
+				gear = emptySpace;
 			}
 		}else if (isGodAccount)
 		{
 			player_filepath = "Assets/SaveFiles/god_inventory.json";
-
-			for (size_t i = 0; i < 5; ++i)
-			{
-				equippedGear[i] = emptySpace;
-			}
-
+			equippedGear = ReadJsonFile("Assets/SaveFiles/equipped_gears.json");
 		}
 		else
 		{
