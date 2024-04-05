@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file					EnemyUtils.h
+  \project name			Monstrostrike
+  \primary author		Goh Jun Jie(100%)
+  \secondary author
+  \brief				This file contains the declaration of utility functions
+						mainly used by enemy.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
+
+
 #pragma once
 #include "AEEngine.h"
 #include "Utils.h"
