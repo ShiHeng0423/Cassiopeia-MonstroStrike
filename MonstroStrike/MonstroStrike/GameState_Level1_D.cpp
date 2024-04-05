@@ -289,7 +289,7 @@ void Level1_D_Draw()
 	player->RenderPlayer();
 
 	//drawing enemy
-	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect);
+	AllEnemyDraw(vecEnemy, pWhiteSquareMesh, vecCollect, pMeshRed);
 
 	AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
