@@ -1,8 +1,8 @@
 /*!************************************************************************
   \file					Player.cpp
   \project name			Monstrostrike
-  \primary author		Teng Shi heng (100%)
-  \secondary author		Johny Yong Jun Siang (30% - traps inflicts status effect on player, Collision, gravity system),
+  \primary author		Teng Shi heng (65%)
+  \secondary author		Johny Yong Jun Siang (20% - traps inflicts status effect on player, Collision, gravity system),
 						Choo Jian Wei (15% - Player Combat System)
   \brief				File containing the definitions of functions declared
 						Player.h files.

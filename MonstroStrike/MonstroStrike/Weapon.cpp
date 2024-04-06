@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file                    Weapon.cpp
+  \project name            Monstrostrike
+  \primary author          Choo Jian Wei (80%)
+  \secondary author        Teng Shi Heng (10%, provided the Equip_weapon function), Johny Yong Jun Siang (Provided Check Weapon Collision)
+  \brief
+  This file implements functions for the weapon system.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 #include "Player.h"
 #include <string>
 #include "Weapon.h"

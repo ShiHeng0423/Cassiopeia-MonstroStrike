@@ -1,4 +1,16 @@
 #pragma once
+/*!************************************************************************
+  \file                    Weapon.h
+  \project name            Monstrostrike
+  \primary author          Choo Jian Wei (80%)
+  \secondary author        Teng Shi Heng (10%, provided the Equip_weapon function), Johny Yong Jun Siang (Provided Check Weapon Collision)
+  \brief
+  This file implements functions for the weapon system.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include <string>
 #include "Player.h"
 #include "CollisionShape.h"
@@ -44,5 +56,7 @@ namespace Weapon_System
     //jian wei
     void UpdateWeaponHitBoxTrig(class Player* player, bool playerFacingRight, struct Weapon_Set*, f32);
     void UpdateWeaponHitBoxHeld(class Player* player, bool playerFacingRight, struct Weapon_Set* playerEquip, f32);
+
+    //johny
     void CheckWeaponCollision(struct Weapon_Set* playerEquip, struct Enemy& theEnemy, class Player& player);
 }
