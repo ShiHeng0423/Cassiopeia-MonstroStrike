@@ -1,6 +1,21 @@
+/*!************************************************************************
+  \file					AudioManager.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing declaration of class AudioManager
+						that handles all the game audios for the game.
+
+						Audio_List enum defines a list of audio elements 
+						used within the game.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 
+//List of audios for bgm & sfx
 enum Audio_List
 {
 	MAINMENU_SONG,

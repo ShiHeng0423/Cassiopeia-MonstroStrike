@@ -1,3 +1,16 @@
+/*!************************************************************************
+  \file					Camera.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the declaration of the class Camera
+						that is capable of only following up to the user
+						character when going beyond the camera boundary zone,
+						looking ahead of the player and camera shake.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 #include "Player.h"
 #include "AEEngine.h"

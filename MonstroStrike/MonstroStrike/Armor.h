@@ -1,3 +1,23 @@
+/*!************************************************************************
+  \file					Armor.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the namespace that encapsulates 
+						functionality related to the armor system within 
+						the game. 
+						
+						It defines enums for armor grades and types, 
+						as well as structs for individual armor pieces 
+						and complete armor sets. 
+						
+						Additionally, this file declares functions for retrieving
+						armor information, managing armor sets, and updating
+						armor effects for player object.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 #include "Player.h"

@@ -1,11 +1,23 @@
+/*!************************************************************************
+  \file					Armor.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing definitions of all the functions
+						declared in Armor.h files
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "Player.h"
 #include "Armor.h"
-
 #include "Inventory.h"
 
+//status effect duration
 f32 REGEN_TIME = 2.0f;
 f32 BURN_TIME = 3.0f;
 
+//armor's extra status effect updates to player when same set of gears is equipped
 void Armor_Effect_Update(class Player& player)
 {
     player.GetArmorSet().effectTimer -= (f32)AEFrameRateControllerGetFrameTime();
@@ -38,6 +50,7 @@ void Armor_Effect_Update(class Player& player)
     }
 }
 
+//updates the player stats when unequipping & equipping an armor
 void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Armor_System::ARMOR_GRADE newArmorGrade)
 {
 	player.GetArmorSet().pieces[newArmorType] = ArmorInformation(newArmorType, newArmorGrade);
@@ -48,6 +61,7 @@ void Equip_Armor(class Player& player, Armor_System::ARMOR_TYPE newArmorType, Ar
 		player.GetCurrentHealth() = player.GetMaxHealth();
 }
 
+//Calculates all the armor stats and bonus stats stats granted to player  
 int Check_Set_Effect(class Player& player)
 {
 	int setEffect = 0; /// xxx ->Tier3,2,1
@@ -75,7 +89,6 @@ int Check_Set_Effect(class Player& player)
 	int setID = Armor_System::ARMOR_GRADE::TIER_1;
 
 	Status_Effect_System::Status_Effect currEffect = player.GetArmorSet().extraEffect;
-	std::cout << currEffect << std::endl;
 	while (setEffect > 0)
 	{
 		if (setEffect % 10 >= 2)
@@ -121,6 +134,7 @@ int Check_Set_Effect(class Player& player)
 	return bonusHealth;
 }
 
+//fetch armor info from the json
 Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System::ARMOR_GRADE grade)
 {
 	Armor_System::Armor tmp;
@@ -140,7 +154,7 @@ Armor_System::Armor ArmorInformation(Armor_System::ARMOR_TYPE type, Armor_System
 	return tmp;
 }
 
-
+//determine what kind of effects granted to player upon achieving 4 pieces of armor that is of the rarity / grade
 int ArmorSetBonusInformation(int armorSetID, bool fullSetBonus, Status_Effect_System::Status_Effect& effect)
 {
 	if (fullSetBonus)

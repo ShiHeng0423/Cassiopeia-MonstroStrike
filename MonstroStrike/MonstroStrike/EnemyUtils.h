@@ -44,7 +44,7 @@ void IsStuck(Enemy& enemy);
 bool ReachedPos(Enemy& enemy, AEVec2 wayPoint);
 void EnemyLootSpawn(Enemy& enemy, std::vector<EnemyDrops>& vecCollectables);
 void DrawEnemyLoot(std::vector<EnemyDrops>& vecCollectables, AEGfxVertexList* pWhiteSquareMesh);
-void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh, AEGfxVertexList* pMeshRed);
+void DrawEnemyHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh);
 void DrawEnemyHpParts(EnemyPart& enemy, AEGfxVertexList* pWhitesqrMesh);
 void DrawBossHp(Enemy& enemy, AEGfxVertexList* pWhitesqrMesh, AEGfxVertexList* pMeshRed);
 //(EnemyUtils)-------------------------------------------------------------------------

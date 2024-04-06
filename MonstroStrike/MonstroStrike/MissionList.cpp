@@ -2,7 +2,7 @@
   \file					MissionList.cpp
   \project name			Monstrostrike
   \primary author		Johny Yong Jun Siang (95%)
-  \secondary author		Keith Ng Hon Yew (5%)
+  \secondary author		Keith Ng Hon Yew (5%, provided addItemFunction for inventory)
   \brief				File containing definitions of  functions for managing missions.
 
   This file contains definitions of functions essential for managing missions. A mission system to handle mission creation, 

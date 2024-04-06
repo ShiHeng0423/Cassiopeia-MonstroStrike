@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file					LevelHeaders.h
+  \project name			Monstrostrike
+  \primary author		Johny Yong Jun Siang (100%)
+  \brief				The file that includes all the neccessary files
+						for a game level.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 
 //Headers necessary for a level
@@ -27,5 +38,3 @@
 #include "main.h"
 #include "MissionList.h"
 #include "MapTraps.h"
-
-//Slapped it here first

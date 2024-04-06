@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file					PauseMenuManager.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the definitions of functions declared
+						PauseMenuManager.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "PauseMenuManager.h"
 #include "GameStateManager.h"
 #include "Utils.h"

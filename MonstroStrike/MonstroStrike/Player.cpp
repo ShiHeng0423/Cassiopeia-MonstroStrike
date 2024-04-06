@@ -1,3 +1,15 @@
+/*!************************************************************************
+  \file					Player.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (65%)
+  \secondary author		Johny Yong Jun Siang (20% - traps inflicts status effect on player, Collision, gravity system),
+						Choo Jian Wei (15% - Player Combat System)
+  \brief				File containing the definitions of functions declared
+						Player.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
 
 #include "AEEngine.h"
 #include "Inventory.h"
@@ -88,12 +100,12 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 
 
 	//Jian Wei (Moved from level 1 to player by Johny)
-	swordthrustTex = AEGfxTextureLoad("Assets/Sword thrust.png");
-	revswordthrustTex = AEGfxTextureLoad("Assets/Sword thrustrev.png");
-	swordmultithrustTex = AEGfxTextureLoad("Assets/sword mutiple thrust.png");
-	revswordmultithrustTex = AEGfxTextureLoad("Assets/Swordmutiplethrustrev.png");
-	swordslashTex = AEGfxTextureLoad("Assets/SwordSlash.png");
-	revswordslashTex = AEGfxTextureLoad("Assets/Sword Slashrev.png");
+	swordthrustTex = AEGfxTextureLoad("Assets/Attacks/Sword thrust.png");
+	revswordthrustTex = AEGfxTextureLoad("Assets/Attacks/Sword thrustrev.png");
+	swordmultithrustTex = AEGfxTextureLoad("Assets/Attacks/sword mutiple thrust.png");
+	revswordmultithrustTex = AEGfxTextureLoad("Assets/Attacks/Swordmutiplethrustrev.png");
+	swordslashTex = AEGfxTextureLoad("Assets/Attacks/SwordSlash.png");
+	revswordslashTex = AEGfxTextureLoad("Assets/Attacks/Sword Slashrev.png");
 
 	pWhiteSquareMesh = GenerateSquareMesh(0xFFFFFFFF);
 	pMeshRed = GenerateSquareMesh(0xFFFF0000);
@@ -101,10 +113,12 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	obj.speed = speed;
 
 	AEVec2Set(&obj.pos, location.x, location.y);
+	AEVec2Set(&prevPos, location.x, location.y);
 	AEVec2Set(&obj.scale, scale.x, scale.y);
 
 	//Gravity affection
 	mass = 60.f;
+	gravityForce = 0.f;
 	friction = 0.85f;
 
 	onFloor = true; //Set as false first, will be set as true when ground detected
@@ -127,6 +141,8 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	collisionBox.maximum.x = obj.pos.x + obj.scale.x * 0.5f;
 	collisionBox.maximum.y = obj.pos.y + obj.scale.y * 0.5f;
 
+	prevcollisionBox = collisionBox;
+
 	AEVec2Set(&boxArms.maximum, 0.f, 0.f);
 	AEVec2Set(&boxHeadFeet.maximum, 0.f, 0.f);
 	AEVec2Set(&collisionNormal, 0.f, 0.f);
@@ -148,7 +164,8 @@ Player::Player(AEVec2 scale, AEVec2 location, AEVec2 speed, bool playerFacingRig
 	currStatusMaxCD = 3.f;
 	currStatusCD = currStatusMaxCD;
 
-
+	immortalHp = false;
+	maxAttackPower = false;
 }
 
 Player::~Player()
@@ -419,6 +436,7 @@ void Player::Update(bool isInventoryOpen)
 		OnPlayerDeath();
 	}
 
+	//hover over status effect description pop-ups
 	displayStatusEffect = false;
 	if (playerStatusEffectList.size() > 0)
 	{
@@ -523,7 +541,7 @@ void Player::RenderPlayer()
 	AEGfxSetColorToMultiply(1.f, 1.f, 1.f, 1.f); //Reset color multiplied
 }
 
-//Render Player Health bar and Current equipped weapons
+//Render Player Health bar and Current equipped weapons & status effects
 void Player::RenderPlayerStatUI()
 {
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -624,7 +642,7 @@ void Player::RenderPlayerStatUI()
 		AEGfxSetTransform(ObjectTransformationMatrixSet(AEGfxGetWinMinX() + cx + 155.f, AEGfxGetWinMaxY() - cy, 0.f, 270.f, 30.f).m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
-		AEGfxPrint(fontID, statusEffectDescription.c_str(), mousePos.x / (AEGfxGetWindowWidth() * 0.5f) + 0.03f, mousePos.y / (AEGfxGetWindowHeight() * 0.5f)-0.02, 0.3f, 1, 1, 1, 1);
+		AEGfxPrint(fontID, statusEffectDescription.c_str(), mousePos.x / (AEGfxGetWindowWidth() * 0.5f) + 0.03f, mousePos.y / (AEGfxGetWindowHeight() * 0.5f)-0.02f, 0.3f, 1, 1, 1, 1);
 	}
 }
 
@@ -726,6 +744,7 @@ AABB& Player::GetPlayerCollisionBox()
 	return collisionBox;
 }
 
+//scoped collision check
 void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 {
 	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - obj.pos.y) / (gridMap[0][0].size.x));

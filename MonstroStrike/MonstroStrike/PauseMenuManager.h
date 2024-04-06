@@ -1,3 +1,22 @@
+/*!************************************************************************
+  \file					PauseMenuManager.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				This file contains the declarations of class 
+						PauseMenu_Manager and the button triggered 
+						functions when the user presses the buttons in the
+						pause menu when the user pauses the game.
+
+						There area 2 Enumerator defined where the "CurrentScene"
+						enum tracks which page of the interface of the main menu
+						that the user is currently interacting to and "Interactable"
+						refers to the different types of interactable buttons
+						available int the pause menu.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 #include "Camera.h"
 

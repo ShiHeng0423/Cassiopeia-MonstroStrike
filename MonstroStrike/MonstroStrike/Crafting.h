@@ -2,7 +2,6 @@
 \file				Crafting.h
 \project name		Monstrostrike
 \primary author		Keith Ng Hon Yew (100%)
-\secondary author
 \brief				This file contains the declarations of functions related
 					to the crafting system.
 
@@ -10,6 +9,7 @@ All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 *******************************************************************************/
 
+#pragma once
 // ---------------------------------------------------------------------------
 // includes
 #include <crtdbg.h> // To check for memory leaks
@@ -25,7 +25,6 @@ rights reserved.
 #include "rapidjson/document.h"
 #include "rapidjson/filereadstream.h"
 #include "rapidjson/istreamwrapper.h"
-#pragma once
 
 struct MaterialRequirement
 {

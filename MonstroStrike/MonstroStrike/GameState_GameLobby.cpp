@@ -1,8 +1,11 @@
 /*!************************************************************************
   \file					GameState_GameLobby.cpp
   \project name			Monstrostrike
-  \primary author		Johny Yong Jun Siang (32.5%)
-  \secondary authors	Teng Shi Heng (32.5%), Goh Jun Jie (15%), Keith Ng Hon Yew (15%), Choo Jian Wei (5%)
+  \primary author		Johny Yong Jun Siang (50%, NPCs, added initialisations of grids and traps etc, map transitions, 
+						particle effects)
+  \secondary authors	Teng Shi Heng (35%, player, menu UI, Camera), 
+						Keith Ng Hon Yew (15%, inventory), 
+
   \brief				File containing definitions of functions related to the lobby room state. Such as loading,
 						initializing, update, drawing etc... of the level.
 

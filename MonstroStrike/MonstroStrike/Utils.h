@@ -1,3 +1,17 @@
+/*!************************************************************************
+  \file					Utils.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				This file contains declaration of structures and 
+						functions for managing objects of the game such 
+						as sprites, objects, and buttons, along with 
+						functions for generating meshes and calculation of
+						transformation matrices for general usage. 
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
 #include "AEEngine.h"
 #include <string>
@@ -5,13 +19,13 @@
 //Static Image
 struct Sprite
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
 	float rotate{ 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	void UpdateTransformMatrix();
 };
@@ -19,7 +33,7 @@ struct Sprite
 //Moving Image (E.g. Player, Enemy etc)
 struct Object
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
@@ -27,7 +41,7 @@ struct Object
 
 	AEVec2 speed{ 0.f, 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	void UpdateTransformMatrix();
 };
@@ -35,7 +49,7 @@ struct Object
 //Button UI
 struct Button
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
@@ -43,15 +57,16 @@ struct Button
 
 	AEVec2 speed{ 0.f, 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	void (*Ptr)(void);
 	void UpdateTransformMatrix();
 };
 
+//Button UI (with text)
 struct ButtonUI
 {
-	AEGfxTexture* pTex;
+	AEGfxTexture* pTex{ NULL };
 
 	AEVec2 pos{ 0.f,0.f };
 	AEVec2 scale{ 0.f,0.f };
@@ -59,7 +74,7 @@ struct ButtonUI
 
 	AEVec2 speed{ 0.f, 0.f };
 
-	AEMtx33 transform;
+	AEMtx33 transform{};
 
 	std::string str{ "" };
 

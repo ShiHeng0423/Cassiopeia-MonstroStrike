@@ -431,7 +431,7 @@ void AllEnemyDraw(std::vector<Enemy>& vecEnemyVar, AEGfxVertexList* pWhitesqrMes
 				DrawBossHp(enemy, pWhitesqrMesh, pMeshRed);
 			}
 			else {
-				DrawEnemyHp(enemy, pWhitesqrMesh, pMeshRed);
+				DrawEnemyHp(enemy, pWhitesqrMesh);
 			}
 		}
 	}

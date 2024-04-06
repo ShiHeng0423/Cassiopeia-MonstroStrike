@@ -45,12 +45,6 @@
     <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TriggerAttack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextPrinting.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,28 +54,13 @@
     <ClCompile Include="ParticleSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NonPlayableCharacters.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MapTransition.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Inventory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ImageManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="GameStateManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState_SplashScreen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameState_Mainmenu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Crafting.cpp">
@@ -103,9 +82,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PauseMenuManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TextPrinting.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MissionList.cpp">
@@ -165,8 +141,20 @@
     <ClCompile Include="MapTraps.cpp">
       <Filter>Source Files\MapDesign</Filter>
     </ClCompile>
-    <ClCompile Include="Debugger.cpp">
+    <ClCompile Include="DebuggerManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NonPlayableCharacters.cpp">
+      <Filter>Source Files\MapDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="MapTransition.cpp">
+      <Filter>Source Files\MapDesign</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_SplashScreen.cpp">
+      <Filter>Source Files\GameLevels</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState_Mainmenu.cpp">
+      <Filter>Source Files\GameLevels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -185,12 +173,6 @@
     <ClInclude Include="Utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TriggerAttack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextPrinting.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Physics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -198,12 +180,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ParticleSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NonPlayableCharacters.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MapTransition.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="main.h">
@@ -215,16 +191,7 @@
     <ClInclude Include="Inventory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImageManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameStateManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState_SplashScreen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GameState_Mainmenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EnemyUtils.h">
@@ -310,6 +277,18 @@
     </ClInclude>
     <ClInclude Include="DebuggerManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_Mainmenu.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState_SplashScreen.h">
+      <Filter>Header Files\GameLevels</Filter>
+    </ClInclude>
+    <ClInclude Include="MapTransition.h">
+      <Filter>Header Files\MapDesign</Filter>
+    </ClInclude>
+    <ClInclude Include="NonPlayableCharacters.h">
+      <Filter>Header Files\MapDesign</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -460,9 +439,6 @@
     <ClInclude Include="rapidjson\ostreamwrapper.h">
       <Filter>Header Files\RapidJason Header</Filter>
     </ClInclude>
-    <ClInclude Include="TriggerAttack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MapPlatformGenerate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -497,9 +473,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PauseMenuManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TextPrinting.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="main.h">

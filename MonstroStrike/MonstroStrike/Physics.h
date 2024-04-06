@@ -1,4 +1,3 @@
-#pragma once
 /*!************************************************************************
   \file					Physics.h
   \project name			Monstrostrike
@@ -10,6 +9,8 @@
 All content © 2024 DigiPen Institute of Technology Singapore. All
 rights reserved.
 **************************************************************************/
+
+#pragma once
 #ifndef PHYSICS_H
 #define PHYSICS_H
 

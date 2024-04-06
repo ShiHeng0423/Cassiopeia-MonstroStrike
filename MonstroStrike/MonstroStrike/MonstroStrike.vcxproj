@@ -102,7 +102,7 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="AudioManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Crafting.cpp" />
-    <ClCompile Include="Debugger.cpp" />
+    <ClCompile Include="DebuggerManager.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyBoss.cpp" />
     <ClCompile Include="EnemyCharger.cpp" />
@@ -117,7 +117,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClCompile Include="GameState_Level1_D.cpp" />
     <ClCompile Include="GameState_Level1_E.cpp" />
     <ClCompile Include="GameState_Level1_F.cpp" />
-    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="GameState_GameLobby.cpp" />
     <ClCompile Include="GameStateManager.cpp" />
@@ -163,7 +162,6 @@ xcopy "$(SolutionDir)Extern\AlphaEngine\lib\fmod.dll" "$(OutDir)" /s /r /y /q</C
     <ClInclude Include="GameStateManager.h" />
     <ClInclude Include="GameState_Level1.h" />
     <ClInclude Include="GameState_Mainmenu.h" />
-    <ClInclude Include="ImageManager.h" />
     <ClInclude Include="LevelHeaders.h" />
     <ClInclude Include="MapPlatformGenerate.h" />
     <ClInclude Include="MapTransition.h" />

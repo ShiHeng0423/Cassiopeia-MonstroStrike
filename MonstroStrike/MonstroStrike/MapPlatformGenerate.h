@@ -3,7 +3,7 @@
   \file					MapPlatformGenerate.h
   \project name			Monstrostrike
   \primary author		Johny Yong Jun Siang (90%)
-  \secondary author		Goh Jun Jie (10%)
+  \secondary author		Goh Jun Jie (10%, copy pasted player to moving platform collision for enemy)
   \brief				  This file contains declarations of functions and structures essential for generating and
   managing moving platforms. The header defines structures for representing platform objects and enumerates different
   types of platforms, along with functions for creating, updating, and handling collisions with these platforms.

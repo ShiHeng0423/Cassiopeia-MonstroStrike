@@ -1,9 +1,18 @@
+/*!************************************************************************
+  \file					AudioManager.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the definitions of functions declared
+						AudioManager.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "AudioManager.h"
 
 AudioManager::AudioManager()
 {
-	// Loads a sound from a file named 'bouken.mp3' in the 'Assets' folder
-	// and assign it to 'bouken'.
 	audio[MAINMENU_SONG] = AEAudioLoadMusic("Assets/Audio/BGM/GameBGM.wav");
 	audio[ATTACK_SLASH_SFX] = AEAudioLoadMusic("Assets/Audio/SFX/Attack.wav");
 	audio[REJECT_SFX] = AEAudioLoadMusic("Assets/Audio/SFX/Error.wav");

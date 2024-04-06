@@ -1,3 +1,14 @@
+/*!************************************************************************
+  \file					DebuggerManager.cpp
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				File containing the definitions of functions declared
+						DebuggerManager.h files.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #include "DebuggerManager.h"
 #include "Utils.h"
 #include "GameStateManager.h"
@@ -168,12 +179,10 @@ void UsedGodModeFile()
 	if (debugFunction[GOD_MODE_FILE].str == "Off")
 	{
 		debugFunction[GOD_MODE_FILE].str = "On";
-		Inventory::isGodAccount = true;
 	}
 	else
 	{
 		debugFunction[GOD_MODE_FILE].str = "Off";
-		Inventory::isGodAccount = false;
 	}
 }
 
@@ -236,6 +245,8 @@ DebuggerManager::DebuggerManager(Player* player)
 
 	debugFunction[GOD_MODE_FILE].pos = debugFunction[FPS].pos;
 	debugFunction[GOD_MODE_FILE].UpdateTransformMatrix();
+
+	isGodModeActivated = false;
 	
 	currArea = current - GameStates::GAME_LOBBY;
 }
@@ -275,6 +286,7 @@ void DebuggerManager::Update()
 					debugFunction[GOD_MODE_FILE].scale.x, debugFunction[GOD_MODE_FILE].scale.y))
 				{
 					debugFunction[GOD_MODE_FILE].Ptr();
+					isGodModeActivated = !isGodModeActivated;
 				}
 
 			}
@@ -476,6 +488,11 @@ void DebuggerManager::RenderDebuggerUI()
 int& DebuggerManager::GetCurrentArea()
 {
 	return currArea;
+}
+
+bool DebuggerManager::GetisGodModeActivated()
+{
+	return isGodModeActivated;
 }
 
 void DebuggerManager::setDebugClose()

@@ -1,4 +1,19 @@
+/*!************************************************************************
+  \file					GameState_Manager.h
+  \project name			Monstrostrike
+  \primary author		Teng Shi heng (100%)
+  \brief				This file defines a game state manager for handling
+						different states of the game. 
+						
+						The GameStates enum defines the different game states
+						of the game.
+
+All content © 2024 DigiPen Institute of Technology Singapore. All
+rights reserved.
+**************************************************************************/
+
 #pragma once
+
 enum GameStates {
 	SPLASHSCREEN = 0,
 	MAINMENU,

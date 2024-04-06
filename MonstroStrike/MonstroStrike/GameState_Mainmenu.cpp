@@ -2,7 +2,7 @@
   \file					GameState_Mainmenu.cpp
   \project name			Monstrostrike
   \primary author		Teng Shi Heng (85%)
-  \secondary authors	Johny Yong Jun Siang (10%), Goh Jun Jie (5%)
+  \secondary authors	Johny Yong Jun Siang (10%, implemented rolling credits), Goh Jun Jie (5%, drew the background art)
   \brief				File containing definitions of functions related to the main menu room state.
 						Such as loading, initializing, update, drawing etc... of the level. It also includes
 						private functions for updating the credits when credit page is updated.
@@ -416,7 +416,7 @@ void Mainmenu_Draw()
 		AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
 
-		const char* pText5 = "Quit";
+		const char* pText5 = "Quit Game";
 		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 		break;
@@ -585,6 +585,7 @@ void GoNewGameLevel1()
 {
 	next = GameStates::GAME_LOBBY;
 	Inventory::isNewAccount = true;
+	Inventory::isGodAccount = false;
 
 	gameManager->getDebugManager()->setDebugClose();
 }
@@ -593,6 +594,8 @@ void GoLoadSaveLevel()
 {
 	//next = GAME_LOBBY;
 	Inventory::isNewAccount = false;
+	Inventory::isGodAccount = gameManager->getDebugManager()->GetisGodModeActivated();
+
 	const char* player_filepath = "Assets/SaveFiles/player_inventory.json";
 	Inventory::ReadJsonFile(player_filepath);
 
