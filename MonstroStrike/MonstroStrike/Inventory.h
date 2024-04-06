@@ -81,9 +81,9 @@ struct Item
 
 	int quantity;
 	bool stackable;
-	int health;
-	int attack;
-	int defence;
+	int health = 0;
+	int attack = 0;
+	int defence = 0;
 };
 
 struct ButtonGearUI

@@ -144,7 +144,6 @@ false, 0, 0, 0 };
 				if(newItem.ID>=0)
 				inventory.push_back(newItem);
 
-				std::cout << newItem.name << std::endl;
 			}
 
 			if (json.HasParseError())
@@ -184,9 +183,6 @@ false, 0, 0, 0 };
 			ind_item.AddMember("health", item.health, json.GetAllocator());
 			ind_item.AddMember("attack", item.attack, json.GetAllocator());
 			ind_item.AddMember("defence", item.defence, json.GetAllocator());
-
-			std::cout << "Saved: " << std::endl;
-			std::cout << item.name<< std::endl;
 
 			items.PushBack(ind_item, json.GetAllocator());
 		}
@@ -427,9 +423,6 @@ false, 0, 0, 0 };
 		//Hover collision with button && hold left mouse button
 		if (AEInputCheckTriggered(AEVK_LBUTTON))
 		{
-			std::cout << "Inventory Count: "<< playerInventoryCount << std::endl;
-
-
 			s32 textX = 0;
 			s32 textY = 0;
 
@@ -520,7 +513,6 @@ false, 0, 0, 0 };
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
 								-(snapBack / 5.f) * 90.f + 180.f);
 
-							std::cout << "items: " << indexTmp << " VS " << snapBack << std::endl;
 							ButtonGearUI tmp = button;
 							button = inventoryButton[snapBack];
 							inventoryButton[snapBack] = tmp;
@@ -811,32 +803,13 @@ false, 0, 0, 0 };
 
 		UpdateInventory(playerInventory, inventoryButton);
 	}
-
-
-	void ItemPickup(Item& item)
-	{
-		UNREFERENCED_PARAMETER(item);
-	}
-
-	void ItemDrop()
-	{
-	}
-
 	
 	//Function to apply the effect of a consumable item on the player
 	void ApplyConsumableEffect(class Player& player, const Item& item)
 	{
 			// Apply the effect of the item on the player
-
 			 player.RecoverHpToPlayer(item.health);
-			// player.attack += static_cast<f32> (item.attack);
-			// player.defence += static_cast<f32> (item.defence);
-			//
-			// std::cout << "Increased by " << item.health << " Current hp = "  << player.max_health << std::endl;
-			// std::cout << "Attack increased by " << item.attack << " Current atk = " << player.attack << std::endl;
-			// std::cout << "Defense increased by " << item.defence << " Current df = " << player.defence << std::endl;
 
-			//Cap player hp
 			 
 
 	}
@@ -875,14 +848,7 @@ false, 0, 0, 0 };
 				}
 				else if(item.Item.item_type == WEAPON || item.Item.item_type == ARMOUR)
 				{
-					// For weapon items
-					// Assign weapon or armour to gear slot
-					// if (player.equipment.size() < MAX_EQUIPPED_ITEMS)
-					// {
-					// 	player.equipment.push_back(item.Item);
 						std::cout << "Equipped " << item.Item.name << std::endl;
-
-
 
 					 switch (item.Item.item_type)
 					 {
@@ -1366,7 +1332,7 @@ false, 0, 0, 0 };
 			for (auto gear : equippedGear)
 			{
 
-				std::cout << "check: " << gear.name << std::endl;
+				//std::cout << "check: " << gear.name << std::endl;
 				EquipItemLogic(gear);
 
 			}
