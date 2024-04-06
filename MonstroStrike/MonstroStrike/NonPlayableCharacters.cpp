@@ -210,11 +210,6 @@ void UpdateNPC(Player* player)
 		player->GetIsTalkingToNpc() = true;
 	}
 
-	if (AEInputCheckTriggered(AEVK_0))
-	{
-		missionSystem.fliesKilled = 6;
-	}
-
 	if (player->GetIsTalkingToNpc())
 	{
 		switch (currentConvState)

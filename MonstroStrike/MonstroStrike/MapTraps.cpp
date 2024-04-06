@@ -201,10 +201,12 @@ void UpdateTraps()
 
 void DrawTraps(AEGfxVertexList* mesh)
 {
+
 	for (size_t i = 0; i < levelTrapsContainer.size(); i++)
 	{
 		if (levelTrapsContainer[i].obj.pTex == nullptr)
 		{
+			std::cout << "Ai\n";
 			return;
 		}
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -217,11 +219,6 @@ void DrawTraps(AEGfxVertexList* mesh)
 
 	for (size_t i = 0; i < arrowContainer.size(); i++)
 	{
-		if (arrowContainer[i].obj.pTex == nullptr)
-		{
-			return;
-		}
-
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 
 		if (arrowContainer[i].type == POISON_ARROW)
@@ -243,17 +240,12 @@ void DrawTraps(AEGfxVertexList* mesh)
 
 	for (size_t i = 0; i < fireBallContainer.size(); i++)
 	{
-		if (fireBallContainer[i].obj.pTex == nullptr)
-		{
-			return;
-		}
 		AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
 		AEGfxTextureSet(fireCircleTexture, 0, 0);
 		AEGfxSetTransform(ObjectTransformationMatrixSet(
 			fireBallContainer[i].obj.pos.x, fireBallContainer[i].obj.pos.y, fireBallContainer[i].obj.rotate,
 			fireBallContainer[i].obj.scale.x, fireBallContainer[i].obj.scale.y).m);
 		AEGfxMeshDraw(mesh, AE_GFX_MDM_TRIANGLES);
-
 	}
 }
 
