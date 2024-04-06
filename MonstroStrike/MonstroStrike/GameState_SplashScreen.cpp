@@ -27,7 +27,7 @@ namespace {
 
 	f32 timer;
 	f32 alpha;
-	
+	f32 timeMultiplier;
 	bool logoChange;
 }
 
@@ -54,7 +54,8 @@ void SplashScreen_Load()
 
 void SplashScreen_Initialize()
 {
-	
+	timeMultiplier = 1.f;
+
 	digipenLogo.pTex = digipenLogoSprite;
 	AEVec2Set(&digipenLogo.scale, 800.f, 400.f);
 	digipenLogo.UpdateTransformMatrix();
@@ -75,7 +76,13 @@ void SplashScreen_Initialize()
 
 void SplashScreen_Update()
 {
-	timer -= (f32)AEFrameRateControllerGetFrameTime();
+	if (AEInputCheckTriggered(AEVK_SPACE))
+	{
+		next = MAINMENU;
+	}
+
+	timer -= (f32)AEFrameRateControllerGetFrameTime() * timeMultiplier;
+
 	if (timer > 3.f) {
 		alpha = (6.0f - timer) / 3.0f;
 		alpha = AEClamp(alpha, 0.f, 1.0f);

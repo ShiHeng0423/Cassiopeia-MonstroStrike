@@ -416,7 +416,7 @@ void Mainmenu_Draw()
 		AEGfxGetPrintSize(fontID, pText4, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText4, -width / 2, -height / 2 - 0.66f, 0.5f, 1, 1, 1, 1);
 
-		const char* pText5 = "Quit";
+		const char* pText5 = "Quit Game";
 		AEGfxGetPrintSize(fontID, pText5, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText5, -width / 2, -height / 2 - 0.88f, 0.5f, 1, 1, 1, 1);
 		break;
