@@ -974,7 +974,7 @@ false, 0, 0, 0 };
 	// Function to update the player's stats after equipping or unequipping items
 	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
 	{
-		for (const auto gear : equippedItems)
+		for (const auto& gear : equippedItems)
 		{
 			switch (gear.item_type)
 			{
@@ -1331,7 +1331,7 @@ false, 0, 0, 0 };
 
 		if(!isNewAccount)
 		{
-			for (auto gear : equippedGear)
+			for (auto& gear : equippedGear)
 			{
 
 				//std::cout << "check: " << gear.name << std::endl;
