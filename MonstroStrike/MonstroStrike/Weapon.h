@@ -3,7 +3,7 @@
   \file                    Weapon.h
   \project name            Monstrostrike
   \primary author          Choo Jian Wei (80%)
-  \secondary author        Teng Shi Heng (10%, provided the Equip_weapon function), Johny Yong Jun Siang (Provided Check Weapon Collision)
+  \secondary author        Teng Shi Heng (10%, provided the Equip_weapon function), Johny Yong Jun Siang (10%, Provided Check Weapon Collision)
   \brief
   This file implements functions for the weapon system.
 
