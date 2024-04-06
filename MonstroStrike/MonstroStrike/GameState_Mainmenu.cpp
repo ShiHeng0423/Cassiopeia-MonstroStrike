@@ -585,6 +585,7 @@ void GoNewGameLevel1()
 {
 	next = GameStates::GAME_LOBBY;
 	Inventory::isNewAccount = true;
+	Inventory::isGodAccount = false;
 
 	gameManager->getDebugManager()->setDebugClose();
 }
@@ -593,6 +594,8 @@ void GoLoadSaveLevel()
 {
 	//next = GAME_LOBBY;
 	Inventory::isNewAccount = false;
+	Inventory::isGodAccount = gameManager->getDebugManager()->GetisGodModeActivated();
+
 	const char* player_filepath = "Assets/SaveFiles/player_inventory.json";
 	Inventory::ReadJsonFile(player_filepath);
 
