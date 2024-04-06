@@ -445,7 +445,7 @@ void DebuggerManager::RenderDebuggerUI()
 		}
 	}
 
-	if (totalDebugFunctionUsed > 0)
+	if (totalDebugFunctionUsed > 0 && current >= GameStates::GAME_LOBBY)
 	{
 		AEGfxSetRenderMode(AE_GFX_RM_COLOR);
 
