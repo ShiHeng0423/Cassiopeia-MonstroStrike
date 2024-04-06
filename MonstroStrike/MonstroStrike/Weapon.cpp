@@ -19,7 +19,9 @@ rights reserved.
 
 namespace Weapon_System
 {
-#define M_PI 3.1415
+    #define M_PI 3.1415
+
+    //player equipping and unequip logic
     void Equip_Weapon(class Player& player, Weapon_System::WEAPON_GRADE newWeaponGrade)
     {
         Weapon_System::Weapon_Set tmp;
@@ -52,6 +54,7 @@ namespace Weapon_System
             break;
         }
 
+        //check for weapon passive granted to player
         if (player.GetWeaponSet().rarity != tmp.rarity)
         {
             if (player.GetWeaponSet().extraEffect != Status_Effect_System::Status_Effect::NONE_EFFECT)

@@ -436,6 +436,7 @@ void Player::Update(bool isInventoryOpen)
 		OnPlayerDeath();
 	}
 
+	//hover over status effect description pop-ups
 	displayStatusEffect = false;
 	if (playerStatusEffectList.size() > 0)
 	{
@@ -540,7 +541,7 @@ void Player::RenderPlayer()
 	AEGfxSetColorToMultiply(1.f, 1.f, 1.f, 1.f); //Reset color multiplied
 }
 
-//Render Player Health bar and Current equipped weapons
+//Render Player Health bar and Current equipped weapons & status effects
 void Player::RenderPlayerStatUI()
 {
 	AEGfxSetRenderMode(AE_GFX_RM_TEXTURE);
@@ -743,6 +744,7 @@ AABB& Player::GetPlayerCollisionBox()
 	return collisionBox;
 }
 
+//scoped collision check
 void Player::CheckPlayerGridCollision(Grids2D** gridMap, int maxRow, int maxCol)
 {
 	int playerIndexY = (int)((AEGfxGetWindowHeight() * 0.5f - obj.pos.y) / (gridMap[0][0].size.x));

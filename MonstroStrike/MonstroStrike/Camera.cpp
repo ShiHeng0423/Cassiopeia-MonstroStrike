@@ -51,8 +51,10 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 	this->screenX = cursor_x - AEGfxGetWindowWidth() * 0.5f;
 	this->screenY = AEGfxGetWindowHeight() * 0.5f - cursor_x;
 	
+	//check if look ahead mechanic is triggered
 	if (lookAhead)
 	{
+		//math lerp function to lerp to the designated location (expectedLookAheadDir)
 		AEVec2 desiredCamLocation{ 0,0 };
 
 		if (AEVec2Distance(&currLookAheadDir, &desiredCamLocation) == 0)
@@ -67,6 +69,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &expectedLookAheadDir, camLookAheadSpeed);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
+
+		//upon lerping near to the location, it will stay on that location for 2s (lookbackTimer)
 		if (AEVec2Distance(&currLookAheadDir, &expectedLookAheadDir) < 1.0f && lookbackTimer <= 0.f && !cameraOnHold)
 		{
 			lookbackTimer = 2.0f;
@@ -74,6 +78,7 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		}
 		else
 		{
+			//once 2s is up, proceed with lerping back to the player location
 			lookbackTimer -= (f32)AEFrameRateControllerGetFrameTime();
 			if (cameraOnHold && lookbackTimer <= 0.f)
 			{
@@ -99,6 +104,9 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, camLookAheadSpeed);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
+
+
+		//once the camera lerp back to player, it will be set back to following behind the player
 		if (AEVec2Distance(&currLookAheadDir, &this->worldCoordinate) < 1.0f)
 		{
 			lookBack = false;
@@ -106,6 +114,7 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 	}
 	else
 	{
+		//implementation of camera shake using math lerp
 		shakeTimer -= (f32)AEFrameRateControllerGetFrameTime();
 		if (shakeTimer > 0.f)
 		{
@@ -115,6 +124,7 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 			AEVec2Lerp(&this->worldCoordinate, &this->worldCoordinate, &desiredCamLocation, camShakeSpeed);
 		}
 
+		//camera following up the player when the player exits a certain boundary of the camera (camXBoundary & camYBoundary)
 		if ((player->GetCameraExpectedPosition().x > this->worldCoordinate.x + camXBoundary) && player->IsPlayerFacingRight())
 		{
 			AEVec2 desiredCamLocation{ this->worldCoordinate.x + camXBoundary,this->worldCoordinate.y };
@@ -142,6 +152,7 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		AEGfxSetCamPosition(this->worldCoordinate.x, this->worldCoordinate.y);
 	}
 
+	//clamping the camera to be within the game map boundary
 	f32 tmpx,tmpy;
 	AEGfxGetCamPosition(&tmpx, &tmpy);
 	if (tmpx - AEGfxGetWindowWidth() * 0.5f < gameMinWidth)
