@@ -19,7 +19,7 @@ rights reserved.
 
 void CreatePlatform(f32 xPos, f32 yPos, f32 xSize, f32 ySize, f32 speed, PlatformTypes typeOfPlatform, std::vector<struct Platforms>& platformVector)
 {
-	struct Platforms thePlatform;
+	struct Platforms thePlatform = {};
 	//Moving platform test, success
 	AEVec2Zero(&thePlatform.collisionNormal);
 

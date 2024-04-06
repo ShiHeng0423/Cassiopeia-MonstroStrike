@@ -79,10 +79,10 @@ namespace
 	void CreditAnimationEnter();
 
 	struct CreditSlides {
-		Object slidesObj;
-		AEVec2 velocity;
+		Object slidesObj = {};
+		AEVec2 velocity = {};
 
-		AEGfxTexture* creditsSlides;
+		AEGfxTexture* creditsSlides = {};
 	} credits[6];
 
 	f32 creditTime = 0;

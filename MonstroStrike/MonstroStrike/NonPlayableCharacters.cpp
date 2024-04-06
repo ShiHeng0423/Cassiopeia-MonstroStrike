@@ -81,14 +81,14 @@ namespace
 
 	struct HoverContentInfo
 	{
-		const char* hoverContentName;
-		const char* hoverMissionDetails;
-		std::vector<std::string> rewardsDetails;
+		const char* hoverContentName = {};
+		const char* hoverMissionDetails = {};
+		std::vector<std::string> rewardsDetails = {};
 
 		int missionID = -1;
 
 		
-		Recipe theRecipe;
+		Recipe theRecipe = {};
 	} currentMissionInfo, currentCraftingInfo;
 
 	const char* confirmText;
@@ -739,7 +739,7 @@ namespace
 
 	void CreateContentBarInstance(int num)
 	{
-		ContentBar contBar;
+		ContentBar contBar = {};
 		f32 ySize = (f32)AEGfxGetWindowHeight() * 0.075f;
 
 		AEMtx33Rot(&contBar.rotation, 0.f);

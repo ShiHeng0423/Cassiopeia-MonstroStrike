@@ -80,7 +80,7 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
                 // Convert the accumulated string to an integer
                 int number = std::stoi(numberStr);
 
-                MapCell cell;
+                MapCell cell = {};
                 cell.symbol = number;
                 //std::cout << cell.symbol << ",";
                 rowCells.push_back(cell); // Push the current cell into the row vector
@@ -91,7 +91,7 @@ bool MapLoader(const char* csvFilePath, std::vector<std::vector<MapCell>>& map, 
         // Ensure that the row vector has enough cells (if cols > number of cells in the row)
         while (col < cols)
         {
-            MapCell cell;
+            MapCell cell = {};
             cell.symbol = 0; // Default value for missing cells
             rowCells.push_back(cell);
             col++;

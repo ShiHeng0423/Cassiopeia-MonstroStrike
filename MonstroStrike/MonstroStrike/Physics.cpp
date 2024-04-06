@@ -17,16 +17,16 @@ AEVec2 AABBNormalize(AABB firstBox, AABB secondBox)
     AEVec2 result = { 0.f, 0.f };
 
     // Distance between 2 AABBs
-    AEVec2 centerDist;
+    AEVec2 centerDist = {};
     centerDist.x = (firstBox.minimum.x + firstBox.maximum.x) * 0.5f - (secondBox.minimum.x + secondBox.maximum.x) * 0.5f;
     centerDist.y = (firstBox.minimum.y + firstBox.maximum.y) * 0.5f - (secondBox.minimum.y + secondBox.maximum.y) * 0.5f;
 
-    AEVec2 halfExtents;
+    AEVec2 halfExtents = {};
     halfExtents.x = (firstBox.maximum.x - firstBox.minimum.x) * 0.5f;
     halfExtents.y = (firstBox.maximum.y - firstBox.minimum.y) * 0.5f;
 
     //Overlap check
-    AEVec2 overlap;
+    AEVec2 overlap = {};
     //Use fabsf to get absolute value for float
     overlap.x = fabsf(centerDist.x) - (halfExtents.x + (secondBox.maximum.x - secondBox.minimum.x) * 0.5f);
     overlap.y = fabsf(centerDist.y) - (halfExtents.y + (secondBox.maximum.y - secondBox.minimum.y) * 0.5f);

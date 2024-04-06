@@ -70,17 +70,17 @@ enum Gear_Location
 
 struct Item
 {
-	std::string UID;
-	int ID;
-	std::string name;
-	std::string description;
+	std::string UID = {};
+	int ID = {};
+	std::string name = {};
+	std::string description = {};
 
-	Item_Type item_type;
-	Rarity rarity;
-	Gear_Location gear_loc;
+	Item_Type item_type = {};
+	Rarity rarity = {};
+	Gear_Location gear_loc = {};
 
-	int quantity;
-	bool stackable;
+	int quantity = {};
+	bool stackable = {};
 	int health = 0;
 	int attack = 0;
 	int defence = 0;
@@ -88,10 +88,10 @@ struct Item
 
 struct ButtonGearUI
 {
-	Sprite img;
-	AEVec2 pos;
-	bool isWeapon;
-	Item Item;
+	Sprite img = {};
+	AEVec2 pos = {};
+	bool isWeapon = {};
+	Item Item = {};
 };
 
 //Inventory list
