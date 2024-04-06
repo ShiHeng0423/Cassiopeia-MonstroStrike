@@ -355,9 +355,6 @@ void DebuggerManager::Update()
 
 			debugBackground.pos = { AEGfxGetWinMinX() + 200.f, AEGfxGetWinMaxY() - debugBackground.scale.y * 0.5f };
 			debugBackground.UpdateTransformMatrix();
-
-			debugFunction[GOD_MODE_FILE].pos = debugFunction[FPS].pos;
-			debugFunction[GOD_MODE_FILE].UpdateTransformMatrix();
 		}
 	}
 }
