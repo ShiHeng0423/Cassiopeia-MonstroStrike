@@ -76,7 +76,11 @@ void SplashScreen_Initialize()
 
 void SplashScreen_Update()
 {
-	if (AEInputCheckTriggered(AEVK_SPACE))
+	if (AEInputCheckTriggered(AEVK_SPACE) || 
+		AEInputCheckTriggered(AEVK_ESCAPE) ||
+		AEInputCheckTriggered(AEVK_RBUTTON) ||
+		AEInputCheckTriggered(AEVK_LBUTTON) ||
+		AEInputCheckTriggered(AEVK_RETURN))
 	{
 		next = MAINMENU;
 	}
