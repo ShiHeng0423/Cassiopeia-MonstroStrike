@@ -54,10 +54,13 @@ public:
 	void RenderDebuggerUI();
 
 	static int& GetCurrentArea();
+	bool GetisGodModeActivated();
 
 	void setDebugClose();
 private:
 	bool openDebugPanel;
+	bool isGodModeActivated;
+
 	static int currArea;
 	Player* playerInfo;
 };
