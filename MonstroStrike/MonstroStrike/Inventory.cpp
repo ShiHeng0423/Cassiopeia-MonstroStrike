@@ -611,29 +611,17 @@ false, 0, 0, 0 };
 			AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
 
-			for (ButtonGearUI inventory_backing : item_background)
+			for (ButtonGearUI button : Inventory::equipmentDisplay)
 			{
-				AEGfxTextureSet(blank, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(inventory_backing.pos.x + x,
-					inventory_backing.pos.y + y, 0.f,
-					inventory_backing.img.scale.x,
-					inventory_backing.img.scale.y).m);
+				AEGfxTextureSet(button.img.pTex, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+					button.pos.y + y, 0.f,
+					button.img.scale.x, button.img.scale.y).m);
 				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 			}
 
-			for (ButtonGearUI button : inventoryButton)
-			{
-				if (button.Item.ID != INVALID_ITEM)
-				{
-					AEGfxTextureSet(button.img.pTex, 0, 0);
-					AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-						button.pos.y + y, 0.f,
-						button.img.scale.x, button.img.scale.y).m);
-					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-				}
-			}
 
-
+			//Player equipment panel details
 			f32 width, height;
 			std::string playerStatsHeader = "Player Stats: ";
 			auto pStats = playerStatsHeader.c_str();
@@ -657,16 +645,6 @@ false, 0, 0, 0 };
 			AEGfxPrint(fontID, pAttackText, -0.75f,
 				0.25f - height * 0.5f,
 				0.35f, 1, 0, 0, 1);
-
-
-			for (ButtonGearUI button : Inventory::equipmentDisplay)
-			{
-				AEGfxTextureSet(button.img.pTex, 0, 0);
-				AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
-					button.pos.y + y, 0.f,
-					button.img.scale.x, button.img.scale.y).m);
-				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
-			}
 
 
 			//ItemInfoDisplay
@@ -769,6 +747,33 @@ false, 0, 0, 0 };
 					}
 				}
 			}
+
+
+
+			//Inventory list
+			for (ButtonGearUI inventory_backing : item_background)
+			{
+				AEGfxTextureSet(blank, 0, 0);
+				AEGfxSetTransform(ObjectTransformationMatrixSet(inventory_backing.pos.x + x,
+					inventory_backing.pos.y + y, 0.f,
+					inventory_backing.img.scale.x,
+					inventory_backing.img.scale.y).m);
+				AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+			}
+
+			for (ButtonGearUI button : inventoryButton)
+			{
+				if (button.Item.ID != INVALID_ITEM)
+				{
+					AEGfxTextureSet(button.img.pTex, 0, 0);
+					AEGfxSetTransform(ObjectTransformationMatrixSet(button.pos.x + x,
+						button.pos.y + y, 0.f,
+						button.img.scale.x, button.img.scale.y).m);
+					AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
+				}
+			}
+
+
 		}
 
 	}
