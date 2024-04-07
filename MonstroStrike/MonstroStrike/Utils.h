@@ -59,7 +59,7 @@ struct Button
 
 	AEMtx33 transform{};
 
-	void (*Ptr)(void);
+	void (*Ptr)(void) = {};
 	void UpdateTransformMatrix();
 };
 

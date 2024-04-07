@@ -27,6 +27,9 @@ namespace {
 	TransitionState currentTransitState;
 
 	GameStates nextGameState;
+
+	AEVec2 transitPos = {};
+
 }
 
 void MapTransitionLoad() {
@@ -50,7 +53,7 @@ void MapTransitionLoad() {
 
 void MapTransitionInit() //Call when enter a new level
 {
-	AEVec2 transitInPos;
+	AEVec2 transitInPos = {};
 	AEGfxGetCamPosition(&transitInPos.x, &transitInPos.y);
 
 	transitionalImageOBJ.animationSpeed = 2500.f;
@@ -106,7 +109,6 @@ void MapTransitionUpdate() //Update only when transition image is active
 	switch (currentTransitState)
 	{
 	case TRANSITION_ENTER:
-		AEVec2 transitPos;
 		AEGfxGetCamPosition(&transitPos.x, &transitPos.y);
 
 		if (nextGameState == GameStates::GAMESTATE_NONE) //Means just enter level

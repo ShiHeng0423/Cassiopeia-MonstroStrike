@@ -263,7 +263,7 @@ false, 0, 0, 0 };
 
 		index = 0;
 		AEInputGetCursorPosition(&textX, &textY);
-		AEVec2 mousePos;
+		AEVec2 mousePos = {};
 		mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
 		mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
@@ -322,7 +322,7 @@ false, 0, 0, 0 };
 
 		index = 0;
 		AEInputGetCursorPosition(&textX, &textY);
-		AEVec2 mousePos;
+		AEVec2 mousePos = {};
 		mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
 		mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
@@ -403,10 +403,10 @@ false, 0, 0, 0 };
 		{
 			button.img.pTex = blank;
 			AEVec2Set(&button.img.scale, 60.f, 60.f);
-			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
+			AEVec2Set(&button.pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5.f) * 90.f + 180.f);
 
 			AEVec2Set(&item_background[index].img.scale, 60.f, 60.f);
-			AEVec2Set(&item_background[index].pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5) * 90.f + 180.f);
+			AEVec2Set(&item_background[index].pos, (int)(index % 5) * 90.f - 180.f, (int)-(index / 5.f) * 90.f + 180.f);
 
 			if (button.Item.quantity <= 0)
 			{
@@ -428,7 +428,7 @@ false, 0, 0, 0 };
 			s16 indexTmp = 0;
 
 			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
+			AEVec2 mousePos = {};
 			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
 			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
@@ -486,7 +486,7 @@ false, 0, 0, 0 };
 			//s16 index = 0;
 
 			AEInputGetCursorPosition(&textX, &textY);
-			AEVec2 mousePos;
+			AEVec2 mousePos = {};
 			mousePos.x = textX - AEGfxGetWindowWidth() * 0.5f;
 			mousePos.y = AEGfxGetWindowHeight() * 0.5f - textY;
 
@@ -519,7 +519,7 @@ false, 0, 0, 0 };
 							if (playerInventory.size() <= indexTmp)
 							{
 								size_t oldsize = playerInventory.size();
-								playerInventory.resize(indexTmp + 1);
+								playerInventory.resize((size_t)indexTmp + 1);
 								for (size_t x = oldsize; x < playerInventory.size(); x++)
 								{
 									playerInventory[x].ID = INVALID_ITEM;
@@ -528,7 +528,7 @@ false, 0, 0, 0 };
 							//Swap items inside inventory
 							Inventory::SwapInventory(playerInventory[indexTmp], playerInventory[snapBack]);
 							AEVec2Set(&inventoryButton[snapBack].pos, (snapBack % 5) * 90.f - 180.f,
-								-(snapBack / 5) * 90.f + 180.f);
+								-(snapBack / 5.f) * 90.f + 180.f);
 
 							AEVec2Set(&button.pos, (indexTmp % 5) * 90.f - 180.f,
 								-(indexTmp / 5.f) * 90.f + 180.f);
@@ -543,6 +543,9 @@ false, 0, 0, 0 };
 				//check with equipped slots
 				for (ButtonGearUI& equipment_slot : equipmentDisplay)
 				{
+					if (snapBack == -1)
+						return;
+
 					if (AETestRectToRect(&inventoryButton[snapBack].pos, inventoryButton[snapBack].img.scale.x, inventoryButton[snapBack].img.scale.y, &equipment_slot.pos, equipment_slot.img.scale.x, equipment_slot.img.scale.y))
 					{
 						//check if gear location matches with equipment slot location
@@ -971,7 +974,7 @@ false, 0, 0, 0 };
 	// Function to update the player's stats after equipping or unequipping items
 	void UpdatePlayerGearStats(const std::vector< Item>& equippedItems)
 	{
-		for (const auto gear : equippedItems)
+		for (const auto& gear : equippedItems)
 		{
 			switch (gear.item_type)
 			{
@@ -1328,7 +1331,7 @@ false, 0, 0, 0 };
 
 		if(!isNewAccount)
 		{
-			for (auto gear : equippedGear)
+			for (auto& gear : equippedGear)
 			{
 
 				//std::cout << "check: " << gear.name << std::endl;

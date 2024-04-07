@@ -75,7 +75,7 @@ namespace Crafting
 				std::cerr << "Error: Recipe at index " << i << " has less than 2 material requirements" << std::endl;
 				continue; // Skip this recipe and proceed to the next one
 			}
-			MaterialRequirement matReq1, matReq2;
+			MaterialRequirement matReq1 = {}, matReq2 = {};
 			matReq1.mat_ID = matRequirementsValue[0]["mat_ID"].GetInt();
 			matReq1.mat_quantity = matRequirementsValue[0]["mat_quantity"].GetInt();
 			matReq2.mat_ID = matRequirementsValue[1]["mat_ID"].GetInt();

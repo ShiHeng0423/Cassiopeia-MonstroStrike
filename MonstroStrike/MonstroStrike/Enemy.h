@@ -64,93 +64,93 @@ enum Drops {
 };
 
 struct EnemyDrops {
-	Object obj;
-	Drops dropType;
-	AABB collisionBox;
+	Object obj = {};
+	Drops dropType = {};
+	AABB collisionBox = {};
 };
  
 struct Bullet {
-	Object obj;
+	Object obj = {};
 
-	float bulletSpeed;
-	AEVec2 bulletVel;
-	int lifeTime;
-	AABB collisionBox;
+	float bulletSpeed = {};
+	AEVec2 bulletVel = {};
+	int lifeTime = {};
+	AABB collisionBox = {};
 };
 
 //for wings
 struct EnemyPart {
-	Object obj;
-	AABB collisionBox;
+	Object obj = {};
+	AABB collisionBox = {};
 
 	//stats
-	bool isAlive;
-	f32 Offset;
-	f32 fireRate;
-	f32 timeSinceLastFire;
-	int health;
-	int maxHealth;
+	bool isAlive = {};
+	f32 Offset = {};
+	f32 fireRate = {};
+	f32 timeSinceLastFire = {};
+	int health = {};
+	int maxHealth = {};
 
 };
 
 
 struct Enemy {
 
-	EnemyPart wing1, wing2;		
-	Object obj;
-	AEGfxTexture* angryTex;
+	EnemyPart wing1 = {}, wing2 = {};
+	Object obj = {};
+	AEGfxTexture* angryTex = {};
 
-	AEVec2 startingPosition;	//startinglocation whr enemy spawns
-	AEVec2 lastPosition;		//only used by flying enemy
-	AEVec2 wayPoint;			//wayPoints are for enemy idle back n forth points
-	s8 targetPosition;			//some enemies need target a specific location
-	bool loopIdle;
+	AEVec2 startingPosition = {};	//startinglocation whr enemy spawns
+	AEVec2 lastPosition = {};		//only used by flying enemy
+	AEVec2 wayPoint = {};			//wayPoints are for enemy idle back n forth points
+	s8 targetPosition = {};			//some enemies need target a specific location
+	bool loopIdle = {};
 
-	s8 enemyCurrent;			//enemy current state
-	s8 enemyNext;				//enemy next state
-	s8 enemyType;				//Type of enemy eg.charger,boss
+	s8 enemyCurrent = {};			//enemy current state
+	s8 enemyNext = {};				//enemy next state
+	s8 enemyType = {};				//Type of enemy eg.charger,boss
 	
-	s8 attackState;				//only the boss use it
+	s8 attackState = {};				//only the boss use it
 	
-	bool isAlive;				//alive or dead
-	bool isAttacking;			//in attack mode or not	
-	bool isCollision;			
-	bool isFlying;				//won't be affected by gravity	
-	bool isFalling;				//for gravity function
-	bool isCollidedWithPlayer;	//ideally use it to check AABB collision with player
-	bool isRecoil;				//only the charger uses it
-	bool hasDealtDmg;			//use to make enemy only deal 1 instance of dmg
+	bool isAlive = {};				//alive or dead
+	bool isAttacking = {};			//in attack mode or not	
+	bool isCollision = {};
+	bool isFlying = {};				//won't be affected by gravity	
+	bool isFalling = {};				//for gravity function
+	bool isCollidedWithPlayer = {};	//ideally use it to check AABB collision with player
+	bool isRecoil = {};				//only the charger uses it
+	bool hasDealtDmg = {};			//use to make enemy only deal 1 instance of dmg
 
-	bool isVisible;
+	bool isVisible = {};
 
-	f32 timePassed;				//use to "pause" the enemy 
+	f32 timePassed = {};				//use to "pause" the enemy 
 
 //(stats)----------------------------------------------
-	f32 speed;
-	f32 lineOfSight;
-	f32 shootingRange;
-	f32 fireRate;
-	f32 timeSinceLastFire;
-	int health;
-	int maxHealth;
+	f32 speed = {};
+	f32 lineOfSight = {};
+	f32 shootingRange = {};
+	f32 fireRate = {};
+	f32 timeSinceLastFire = {};
+	int health = {};
+	int maxHealth = {};
 
 	//Gravity affection
-	f32 mass;
-	f32 gravityForce;
-	AEVec2 velocity;			//speed is the scalar of the velocity
+	f32 mass = {};
+	f32 gravityForce = {};
+	AEVec2 velocity = {};			//speed is the scalar of the velocity
 //(stats)----------------------------------------------
 
-	f32 stuckTimer;				//only fly enemy uses it
-	bool onFloor;				//Added to check entity on floor, hence can jump
-	AEVec2 collisionNormal;		//check with direction is the collision from
+	f32 stuckTimer = {};				//only fly enemy uses it
+	bool onFloor = {};				//Added to check entity on floor, hence can jump
+	AEVec2 collisionNormal = {};		//check with direction is the collision from
 
 	//Collision boxes
-	AABB collisionBox;
-	AABB boxHeadFeet;
-	AABB boxArms;
+	AABB collisionBox = {};
+	AABB boxHeadFeet = {};
+	AABB boxArms = {};
 
-	std::vector<Bullet> bullets;	// Shared vector container for bullets
-	AEVec2 spawnPoint;				//point the bullet spawns from
+	std::vector<Bullet> bullets = {};	// Shared vector container for bullets
+	AEVec2 spawnPoint = {};				//point the bullet spawns from
 
 };
 
