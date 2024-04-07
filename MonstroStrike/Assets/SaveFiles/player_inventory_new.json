@@ -13,7 +13,7 @@
       "quantity": 1,
       "stackable": false,
       "health": 200,
-      "attack": 10,
+      "attack": 0,
       "defence": 0
     },
     {
@@ -27,7 +27,7 @@
       "quantity": 1,
       "stackable": false,
       "health": 420,
-      "attack": 10,
+      "attack": 0,
       "defence": 0
     },
     {
@@ -40,8 +40,8 @@
       "gear_location": 2,
       "quantity": 1,
       "stackable": false,
-      "health": 50,
-      "attack": 200,
+      "health": 0,
+      "attack": 4,
       "defence": 0
     },
     {
@@ -55,7 +55,7 @@
       "quantity": 1,
       "stackable": false,
       "health": 150,
-      "attack": 20,
+      "attack": 0,
       "defence": 96
     },
     {
@@ -69,7 +69,7 @@
       "quantity": 1,
       "stackable": false,
       "health": 420,
-      "attack": 69,
+      "attack": 0,
       "defence": 96
     },
     {
