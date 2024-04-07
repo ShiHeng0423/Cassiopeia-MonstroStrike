@@ -14,7 +14,8 @@ rights reserved.
 #define camXBoundary (500.f)
 #define camYBoundary (10.f)
 #define camFollowupSpeedX (0.05f)
-#define camLookAheadSpeed (0.03f)
+#define camLookAheadSpeed (0.05f)
+#define camLookBackSpeed (0.1f)
 #define camShakeSpeed (0.05f)
 
 Camera::Camera(AEVec2 player)
@@ -100,8 +101,8 @@ void Camera::UpdatePos(class Player* player,f32 gameMinWidth, f32 gameMaxWidth, 
 		else
 			AEGfxGetCamPosition(&desiredCamLocation.x, &desiredCamLocation.y);
 
-		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, camLookAheadSpeed);
-		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, camLookAheadSpeed);
+		AEVec2Lerp(&desiredCamLocation, &desiredCamLocation, &this->worldCoordinate, camLookBackSpeed);
+		AEVec2Lerp(&currLookAheadDir, &currLookAheadDir, &this->worldCoordinate, camLookBackSpeed);
 
 		AEGfxSetCamPosition(desiredCamLocation.x, desiredCamLocation.y);
 
