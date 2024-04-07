@@ -243,12 +243,12 @@ void Mainmenu_Initialize()
 	interactableButtonOption[3].pTex = audioUp;
 	interactableButtonOption[3].UpdateTransformMatrix();
 
-	AEVec2Set(&optionSoundBar[0].pos, 0, 0); // bar 1
-	AEVec2Set(&optionSoundBar[0].scale, 250, 50);
+	AEVec2Set(&optionSoundBar[0].pos, 0 - 250 * (0.5f - audioManager->GetBGMVolume()), 0); // bar 1
+	AEVec2Set(&optionSoundBar[0].scale, 250 * audioManager->GetBGMVolume() * 2.f, 50);
 	optionSoundBar[0].UpdateTransformMatrix();
 
-	AEVec2Set(&optionSoundBar[1].pos, 0, -100); // bar 2
-	AEVec2Set(&optionSoundBar[1].scale, 250, 50);
+	AEVec2Set(&optionSoundBar[1].pos, 0 - 250 * (0.5f - audioManager->GetSFXVolume()), -100); // bar 2
+	AEVec2Set(&optionSoundBar[1].scale, 250 * audioManager->GetSFXVolume() * 2.f, 50);
 	optionSoundBar[1].UpdateTransformMatrix();
 
 	AEVec2Set(&optionBackgroundBar[0].pos, 0, 0); // bar 1

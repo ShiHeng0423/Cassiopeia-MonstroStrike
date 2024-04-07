@@ -292,6 +292,10 @@ void PauseMenu_Manager::Render()
 		AEGfxSetTransform(quitToMainmenu[1].transform.m);
 		AEGfxMeshDraw(pWhiteSquareMesh, AE_GFX_MDM_TRIANGLES);
 
+		const char* pText2 = "Are you sure? Your progress will be autosaved.";
+		AEGfxGetPrintSize(fontID, pText2, 0.4f, &width, &height);
+		AEGfxPrint(fontID, pText2, -width / 2 , -height / 2 + 0.3f, 0.4f, 1, 1, 1, 1);
+
 		const char* pText = "Yes";
 		AEGfxGetPrintSize(fontID, pText, 0.5f, &width, &height);
 		AEGfxPrint(fontID, pText, -width / 2 - 0.31f, -height / 2, 0.5f, 1, 1, 1, 1);

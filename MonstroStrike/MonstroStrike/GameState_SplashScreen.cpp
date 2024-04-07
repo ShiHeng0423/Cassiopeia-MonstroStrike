@@ -88,7 +88,7 @@ void SplashScreen_Update()
 	timer -= (f32)AEFrameRateControllerGetFrameTime() * timeMultiplier;
 
 	if (timer > 3.f) {
-		alpha = (6.0f - timer) / 3.0f;
+		alpha = 6.0f - timer;
 		alpha = AEClamp(alpha, 0.f, 1.0f);
 		digipenLogo.pTex = digipenLogoSprite;
 		teamName.pTex = NULL; 

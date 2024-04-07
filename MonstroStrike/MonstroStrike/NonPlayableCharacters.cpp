@@ -435,6 +435,7 @@ void UpdateNPC(Player* player)
 		case CONVERSATION_OUTSIDE:
 		default:
 			player->GetIsTalkingToNpc() = false;
+			displayBoxActive = false;
 			break;
 		}
 	}

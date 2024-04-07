@@ -151,6 +151,8 @@ void Level1_BOSS_Initialize()
 	cam->CameraShake(3.f);
 	isShaking = true;
 	isLookingToBoss = false;
+
+	player->GetIsPlayerKillBoss() = false;
 }
 
 void Level1_BOSS_Update()
